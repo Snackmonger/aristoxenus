@@ -8,14 +8,14 @@ Who
 What
     Aristoxenus is a musical manipulation tool. This doc is mostly just a placeholder for now while I keep working on the program. Here are a few things it can do so far:
 
-best_heptatonic_scale
-    Choose the best name for a given interval structure and tonic note name.
-force_heptatonic_scale
-    Force a given heptatonic interval structure to follow ABCDEFG nomenclature regardless of any accidentals.
-parse_chord_symbol
-    Attempt to generate an interval map from the sub-symbols in a given chord symbol.
-encode_scientific / decode_scientific
-    Used to translate scientific notes (e.g. A4) to frequencies (e.g. 440 hz) and vice versa.
+    best_heptatonic_scale
+        Choose the best name for a given interval structure and tonic note name.
+    force_heptatonic_scale
+        Force a given heptatonic interval structure to follow ABCDEFG nomenclature regardless of any accidentals.
+    parse_chord_symbol
+        Attempt to generate an interval map from the sub-symbols in a given chord symbol.
+    encode_scientific / decode_scientific
+        Used to translate scientific notes (e.g. A4) to frequencies (e.g. 440 hz) and vice versa.
 
 In the near future, it will also be able to:
 
