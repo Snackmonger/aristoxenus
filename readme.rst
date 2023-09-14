@@ -29,10 +29,10 @@ Emphasis *like this*
 ``literal``
 
 
-This is regular text\ :sub: `this is subscript text`\ this is regular text again
+This is regular text\ :sub:`this is subscript text`\ this is regular text again
 
 We can make a substitution for |TEXT|
-.. |TEXT| replace:: text\ :sub: `subscript`\
+.. |TEXT| replace:: text\ :sub:`subscript`\
 
 +----------+-----------+------------+
 | HEADER 1 |           |            |
