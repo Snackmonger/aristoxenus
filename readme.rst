@@ -64,6 +64,7 @@ Maybe I need nest before options for it to work.
            quite long).
 -c arg     Output just arg.
 --long     Output all day long.
+-gnnd      TEST
 
 -p         This option has two paragraphs in the description.
            This is the first.
