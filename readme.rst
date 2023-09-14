@@ -40,8 +40,8 @@ We can make a substitution for |TEXT|
 +==========+===========+============+
 | body 1   |      body2|  body 3    |
 +----------+-----------+------------+
-|                      |            |
-|                      |            |
+|                      |     boobs  |
+|      boobs           |            |
 +----------------------+------------+
 
 
@@ -59,9 +59,9 @@ Definition Heading
 
 Maybe I need nest before options for it to work.
 
--option 1       cheese and ham
--option 2       beef and bean
--option=3       laminated flooring and eggs
+-option       cheese and ham
+-optin 2      beef and bean
+-optn=3       laminated flooring and eggs
 
 An enumerated list
 
