@@ -10,6 +10,7 @@ Subtitle
 Sub-subtitle
 ------------
 
+<<<<<<< HEAD
 Just learning some RST [#]_
 
 .. [#] This is an autonumbered footnote
@@ -19,6 +20,17 @@ Learning a few things [2]_
 .. [2] This is a manual footnote
 
 And again... [#]
+=======
+Just learning some RST[#]_
+
+.. [#] This is an autonumbered footnote
+
+Learning a few things[2]_
+
+.. [2] This is a manual footnote
+
+And again...[#]
+>>>>>>> 7f9764fdf1267047c16d264d2658b0bb128fe542
 
 .. [#] This is another autonumbered footnote
 
