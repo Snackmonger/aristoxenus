@@ -53,14 +53,14 @@ Definition Heading
 
 
 
--option 1  cheese and ham
--option 2  beef and bean
--option 3  laminated flooring and eggs
+-option 1       cheese and ham
+-option 2       beef and bean
+-option=3       laminated flooring and eggs
 
 An enumerated list
 
 1. Some items are given explicit numbers
-3. We don't have to keep sequence
+2. We don't have to keep sequence
 #. But we can also auto-number items
 
 
