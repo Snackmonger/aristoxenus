@@ -58,12 +58,14 @@ Definition Heading
 -option 3  laminated flooring and eggs
 
 An enumerated list
+
 1. Some items are given explicit numbers
 3. We don't have to keep sequence
 #. But we can also auto-number items
 
 
 Bullet list
+
 - item 1
 - item 2
 + item 3
