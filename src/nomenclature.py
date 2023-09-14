@@ -4,41 +4,37 @@ Functions related to generating and processing musical nomenclatural material.
 from dataclasses import dataclass
 from src.pitch_mapping import render, shift_list
 
-# ---------------------------- PRECURSOR MATERIAL -------------------------- #
-
-# Basic nomenclatural material.
-__NATURALS: list[str] = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-__HALFSTEPS: dict[str, str] = {'E': 'F', 'B': 'C'}
-
-# Basic tonal material.
-__TONES: int = 12
-__SHARP_VALUE: int = 1
-__FLAT_VALUE: int = -1
-
-# Symbolic material.
+# Symbolic precursors.
 __SHARP_SYMBOL: str = '#'
 __FLAT_SYMBOL: str = 'b'
 __BINOMIAL_DIVIDER_SYMBOL: str = '/'
+__NATURALS: list[str] = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+__HALFSTEPS: dict[str, str] = {'E': 'F', 'B': 'C'}
+__ACCIDENTAL_SYMBOLS: list[str] = [__SHARP_SYMBOL, __FLAT_SYMBOL]
 
-# Range and frequency material.
+# Numerical percursors.
+__TONES: int = 12
+__NOTES: int = 7
 __CENTRAL_REFERENCE_NOTE_NAME: str = 'A4'
 __CENTRAL_REFERENCE_NOTE_FREQUENCY: int = 440
+__SHARP_VALUE: int = 1
+__FLAT_VALUE: int = -1
 __NUMBER_OF_OCTAVES: int = 9
-__OCTAVE_EQUIVALENCE_FACTOR: int = 2
+__OCTAVE_EQUIVALENCE_FACTOR: int = 2 
 __FREQUENCY_DECIMAL_LIMIT: int = 3
 
-# --------------------------------- GENERATED MATERIAL --------------------- #
-
-__ACCIDENTAL_SYMBOLS: list[str] = [__SHARP_SYMBOL, __FLAT_SYMBOL]
+# Accidental symbols.
 __SHARPS: list[str] = [note + __SHARP_SYMBOL for note in __NATURALS
                        if note not in __HALFSTEPS]
+
 __FLATS: list[str] = [note + __FLAT_SYMBOL for note in __NATURALS
                       if note not in __HALFSTEPS.values()]
+
 __BINOMIALS: list[str] = [sharp + __BINOMIAL_DIVIDER_SYMBOL + flat
                           for flat in __FLATS for sharp in __SHARPS
                           if __FLATS.index(flat) == __SHARPS.index(sharp)]
+
 __ACCIDENTAL_NOTES: list[str] = __SHARPS + __FLATS
-#__BASIC_NOTE_NAMES = __ACCIDENTAL_NOTES + __NATURALS + __BINOMIALS
 
 
 def __chromatic(accidental_notes: list[str]) -> list[str]:
@@ -322,26 +318,22 @@ def force_heptatonic(note_name: str, scale_pattern: int) -> list[str]:
     if note_name in __BINOMIALS:
         raise ValueError(
             'Operation can only be performed on naturals, sharps, or flats.')
-    if scale_pattern.bit_count() != 7:
+    if scale_pattern.bit_count() != __NOTES or scale_pattern.bit_length() != __TONES:
         raise ValueError(
-            'Operation can only be performed on heptatonic scales.')
+            'Operation can only be performed on heptatonic scales in 12 tone style.')
     
     # Assemble basic alphabetic order to enforce.
-    plain_scale: list[str] = naturals()
     plain_name: str = __identity(note_name)
-    plain_scale = plain_scale[plain_scale.index(
-        plain_name):] + plain_scale[:plain_scale.index(plain_name)]
+    plain_scale: list[str] = shift_list(naturals(), plain_name)
 
     # Create binomial version of requested scale pattern.
     tonic: str = decode_enharmonic(note_name)
-    chrom = __chromatic(__BINOMIALS)
-    chrom = chrom[chrom.index(tonic):] + chrom[:chrom.index(tonic)]
+    chrom: list[str] = shift_list(chromatic(), tonic)
     binomial_scale: list[str] = render(scale_pattern, chrom)
-    # binomial_scale = binomial_scale[binomial_scale.index(tonic):] + binomial_scale[:binomial_scale.index(tonic)]
 
     # Force each binomial note name to become the right alphabetic note name.
     heptatonic_names: list[str] = []
-    for scale_index in range(7):
+    for scale_index in range(__NOTES):
         binomial_name = binomial_scale[scale_index]
         note_value = plain_scale[scale_index]
         heptatonic_names.append(encode_enharmonic(binomial_name, note_value))
@@ -432,7 +424,7 @@ def is_abcdefg(note_names: list[str]) -> bool:
     # Check that an enharmonic equivalent is not masking the number of notes
     # in the collection (e.g. A# and Bb should count as 1, not 2).
     enharmonic: set[str] = set(decode_enharmonic(note) for note in approved_names)
-    return len(naturals_) == 0 and len(approved_names) == 7 and len(enharmonic) == 7
+    return len(naturals_) == 0 and len(approved_names) == __NOTES and len(enharmonic) == __NOTES
 
 
 def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
@@ -449,12 +441,12 @@ def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
     '''
     tonic: str = note_names[0]
     binomial_names = [decode_enharmonic(note_name) for note_name in note_names]
-    if len(binomial_names) != 7:
+    if len(binomial_names) != __NOTES:
         raise ValueError('Only works on heptatonic scales.')
     chromatic_names: list[str] = shift_list(chromatic(), tonic)
     major_names: list[str] = render(2741, chromatic_names)
     intervals: list[str] = []
-    for index in range(7):
+    for index in range(__NOTES):
         expected_note: str = major_names[index]
         given_note: str = binomial_names[index]
         difference: int = chromatic_names.index(given_note) - chromatic_names.index(expected_note)

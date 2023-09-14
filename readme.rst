@@ -33,7 +33,7 @@ We can make a substitution for |TEXT|
 | HEADER 1 |           |            |
 +==========+===========+============+
 | body 1   |      body2|  body 3    |
-+----------------------+------------+
++----------+-----------+------------+
 |                      |            |
 |                      |            |
 +----------------------+------------+
@@ -53,9 +53,9 @@ Definition Heading
 
 
 
-option 1  cheese and ham
-option 2  beef and bean
-option 3  laminated flooring and eggs
+-option 1  cheese and ham
+-option 2  beef and bean
+-option 3  laminated flooring and eggs
 
 An enumerated list
 1. Some items are given explicit numbers

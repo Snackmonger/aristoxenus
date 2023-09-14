@@ -223,11 +223,11 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     The parser can get also confused if nonstandard combinations of otherwise
     legal symbols are used:
 
-        Em7maj9 >> (int) >> E, G, G#, B, D, F#
+        Em7maj9 >> (int) >> E, G, G#, B, D, D#, F#
 
     'maj9' usually appears like Emaj9, where we can safely assume that it
-    refers to a chord with a major 3rd. Em7 refers to a chord with a minor
-    3rd. The parser recognizes both symbols and attempts to supply the 
+    refers to a chord with a major 3rd and 7th. Em7 refers to a chord with a minor
+    3rd and 7th. The parser recognizes both symbols and attempts to supply the 
     intervals that it thinks are implied.
 
     Similarly, 
