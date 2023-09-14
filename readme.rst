@@ -32,6 +32,7 @@ Emphasis *like this*
 This is regular text\ :sub:`this is subscript text`\ this is regular text again
 
 We can make a substitution for |TEXT|
+
 .. |TEXT| replace:: text\ :sub:`subscript`\
 
 +----------+-----------+------------+
