@@ -60,8 +60,8 @@ Definition Heading
 Maybe I need nest before options for it to work.
 
 -option       cheese and ham
--optin 2      beef and bean
--optn=3       laminated flooring and eggs
+-optin arg     beef and bean
+--optn=three       laminated flooring and eggs
 
 An enumerated list
 
