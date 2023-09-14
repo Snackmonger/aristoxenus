@@ -1,0 +1,58 @@
+{
+    "interval_full_name": [
+          "tonic",
+          "minor second",
+          "major second",
+          "minor third",
+          "major third",
+          "fourth",
+          "tritone",
+          "fifth",
+          "minor sixth",
+          "major sixth",
+          "minor seventh",
+          "major seventh"
+    ],
+    "interval_short_name": [
+          "T",
+          "m2",
+          "M2",
+          "m3",
+          "M3",
+          "4",
+          "#4/b5",
+          "5",
+          "m6",
+          "M6",
+          "m7",
+          "M7"
+    ],
+    "14": [
+          "tonic",
+          "minor second",
+          "major second",
+          "minor third",
+          "major third",
+          "fourth",
+          "tritone",
+          "fifth",
+          "minor sixth",
+          "major sixth",
+          "minor seventh",
+          "major seventh"
+    ],
+    "15": [
+          "tonic",
+          "minor second",
+          "major second",
+          "minor third",
+          "major third",
+          "fourth",
+          "tritone",
+          "fifth",
+          "minor sixth",
+          "major sixth",
+          "minor seventh",
+          "major seventh"
+    ]
+}

@@ -1,0 +1,9 @@
+.vscode/settings.json
+src/__pycache__/__init__.cpython-311.pyc
+src/__pycache__/nomenclature.cpython-311.pyc
+src/__pycache__/octave.cpython-311.pyc
+src/__pycache__/pitch_mapping.cpython-311.pyc
+src/__pycache__/structures.cpython-311.pyc
+src/__pycache__/vocabulary.cpython-311.pyc
+tests/__pycache__/__init__.cpython-311.pyc
+tests/__pycache__/new_test.cpython-311.pyc
