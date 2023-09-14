@@ -10,11 +10,16 @@ Subtitle
 Sub-subtitle
 ------------
 
-Just learning some RST[#]_
+Just learning some RST [#]_
+
 .. [#] This is an autonumbered footnote
-Learning a few things[2]_
+
+Learning a few things [2]_
+
 .. [2] This is a manual footnote
-And again...[#]
+
+And again... [#]
+
 .. [#] This is another autonumbered footnote
 
 Emphasis *like this*
@@ -51,7 +56,7 @@ Definition Heading
 
 :Field Heading 2: This one is short!
 
-
+Maybe I need nest before options for it to work.
 
 -option 1       cheese and ham
 -option 2       beef and bean
