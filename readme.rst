@@ -69,12 +69,11 @@ I am curious to see what mistakes I will recognize in this module after a couple
 
 Octave
 ------
-The octave is the smallest theoretical pitch structure. This is the limit in which a structure is considered a 'scale'.
+The octave is the smallest theoretical pitch structure. 
 
 Double Octave
 -------------
-The double octave is the largest theoretical pitch structure. This is the limit in which a structure can be considered a 
-'chord', but we also allow for a multi-part 'scale' in which the upper and lower halves need not be identical. 
+The double octave is the largest theoretical pitch structure. 
 
 Instruments
 -----------
