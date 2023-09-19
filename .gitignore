@@ -7,7 +7,6 @@ src/__pycache__/structures.cpython-311.pyc
 src/__pycache__/vocabulary.cpython-311.pyc
 tests/__pycache__/__init__.cpython-311.pyc
 tests/__pycache__/new_test.cpython-311.pyc
-docs/style_guide.rst
 src/__pycache__/rendering.cpython-311.pyc
 src/__pycache__/parsing.cpython-311.pyc
 src/__pycache__/interval_structures.cpython-311.pyc
