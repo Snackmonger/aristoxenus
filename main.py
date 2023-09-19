@@ -1,9 +1,10 @@
 from tests import new_test
 from src.nomenclature import sharps, flats, naturals, chromatic, generate_interval_map
-from src.pitch_mapping import render
-from src.structures import DITONE, DIAPASON, TONE, DIATESSARON, COMPOUND_DITONE, COMPOUND_TONE, DIAPENTE
-from src.structures import parse_chord_symbol
-
+from src.rendering import render
+from src.interval_structures import DITONE, DIAPASON, TONE, DIATESSARON, COMPOUND_DITONE, COMPOUND_TONE, DIAPENTE
+from src.parsing import parse_chord_symbol
+from src.bit_manipulation import next_mode
+from src.vocabulary import roman_numeral
 # new_test.test_rendering()
 
 
@@ -37,4 +38,11 @@ from src.structures import parse_chord_symbol
 
 # print(0b101010110101)
 
-new_test.test_chord_symbol_parser('Cmaj11b13')
+#new_test.test_chord_symbol_parser('Cmaj11b13')
+
+
+# print(bin(next_mode(0b101010110101)))
+# print(bin(next_mode(0b100010010001)))
+
+#print(bin(parse_chord_symbol('Cmaj7')))
+

@@ -30,7 +30,7 @@ In the near future, it will also be able to:
 
 A few goals of the program in the less near future:
 
-- developing a system of rhythmic notation that's easily readable for humans and python parse_chord_symbol
+- developing a system of rhythmic notation that's easily readable for humans and easily parsable
 - learning how to use frequency data to generate MIDI files from given pitch data
 - simulate the specific range of real instruments
 - predict plausible fingerings for piano and guitar chords
@@ -49,6 +49,10 @@ Pitch structures are stored as integers, allowing us to manipulate
 musical material using bitwise operations. Pretty straightforward, 
 but it is convenient to be able to express scales as compounds of 
 simpler intervals made of integers.
+
+The smallest interval is the least significant bit, so that a major scale is:
+
+    0b101010110101 = 
 
 Nomenclature
 ------------
