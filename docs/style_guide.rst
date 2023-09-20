@@ -223,7 +223,7 @@ The canonical modal symbol of any given interval structure will be derived from 
 program will always identify a collection as 'doriannat7', never 'ionianb3', since the canonical form of the parent scale is 'altered ionian'
 and under this paradigm 'doriannat7' means 'altered dorian'.
 
-Modifier symbols are '#', 'b', and 'nat' (= natural) plus a numeral between 2 and 1 (we do
+Modifier symbols are '#', 'b', and 'nat' (= natural) plus a numeral between 2 and 7 (we do
 not allow for a sharp tonic, although it may be conceptually useful). No matter how the user
 attempts to rationalize a modal symbol, the parser will relate it to the canonical scales and
 their modes when seeking a match:
