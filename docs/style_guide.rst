@@ -235,11 +235,18 @@ Extended Modal Symbols
 In the same way as chords, we allow that a scale of more than 7 notes might include extra interval symbols with the 'add' suffix, or that a scale of
 fewer than 7 notes might drop an interval with the 'no' suffix. The numerals must be flat or sharp as absolute references (a 'no5' does not negate a b5 in 'locrianno5', the symbol must be 'locriannob5')
 
-We prescribe that any scale thus symbolized must relate its structure to the diatonic scale and its modes if possible. If not possible, the prescription follows the canonical order of the heptatonic permutations above.
+Because scales with even numbers of notes are often symmetrical along at least one axis, the relation of any given extended modal symbol to the canonical form
+is inherently arbitrary. We prescribe taking the first instance of the tonic tetrad in the diatonic scale, if it exists, and using that as the canonical mode. If the tonic
+tetrad is not found in the diatonic, we follow the sequence of the heptatonic scales as they are presented above until we find a scale in which the tetrad appears, and
+consider the first mode in which that tetrad appears to be the canonical mode.
 
-    - dorianadd#4 NOT lydianb3b7addnat4
-    - aeoliannat3no5 NOT mixolydianb6no4
-    - ionianno2 NOT phrygiannat3nat6nat7nob2
+Octatonic Scales
+----------------
 
-These nonstandard forms, however, will still be comprehensible to the parser.
+There are a number of octatonic scales that we treat as canonical. These scales are often symmetrical, and have fewer modes than they have notes. Therefore, we
+cannot say that 
+
+
+Diminished Scales
+-----------------
 
