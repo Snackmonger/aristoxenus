@@ -52,8 +52,7 @@ E.g.:
 Extensions 9, 11, and 13 may replace 7 in the above constructions.
 Each new extention also includes the previous one(s). The resulting 
 chord will have an idiomatic seventh as above, but the extensions are 
-always natural intervals. As above, an altered 5th comes *after* the 
-numeral. E.g.:
+always natural intervals. 
 
     - Cmaj7   >> C, E, G, B
     - Cmaj9   >> C, E, G, B, D
