@@ -113,3 +113,12 @@ which cannot adequately be described using 'pantonic' scale rules. Even inside
 the heptatonic series, there are many scales that are so uncommon that we don't
 bother incorporating them into our system of nomenclature.
 
+    Diatonic Scale
+    --------------
+
+    C D E F G A B
+
+    A scale derived from the conjunction of two diatonic tetrachords, etymologized 
+    by the Greeks as being arranged so that the intervals dividing the diatessaron 
+    are 'stretched across' (*dia* 'across, apart' + *tonikos* from *teino* 'stretch') 
+    to the greatest extent allowed under the rules of tetrachord construction.
