@@ -100,22 +100,22 @@ understanding of the underlying structure.
 The goals of the prescription of scale names are:
 
     1. Describe some interval of the scale that exists in contradistinction to a
-comparable interval of the diatonic scale, in order that the scale labels 
-might approach some amount of actual descriptiveness.
+    comparable interval of the diatonic scale, in order that the scale labels 
+    might approach some amount of actual descriptiveness.
     2. Establish a canonical primary form of a given interval structure so that 
-inversions of that structure will always be related to it, rather than being
-mistaken for a separate structure.
+    inversions of that structure will always be related to it, rather than being
+    mistaken for a separate structure.
     3. Establish a relative system of modal rotation, so that the existing names
-of the modes are employed in a consistent way across the different scales, 
-given the canonical structures mentioned above.
+    of the modes are employed in a consistent way across the different scales, 
+    given the canonical structures mentioned above.
 
 
-HEPTATONIC SCALES
------------------
+    HEPTATONIC SCALES
+    -----------------
 
-The heptatonic series comprise the most common and uncommon scales. Beyond
-this series are many other scales, but few that are found in common use, or
-which cannot adequately be described using 'pantonic' scale rules. Even inside
-the heptatonic series, there are many scales that are so uncommon that we don't
-bother incorporating them into our system of nomenclature.
+    The heptatonic series comprise the most common and uncommon scales. Beyond
+    this series are many other scales, but few that are found in common use, or
+    which cannot adequately be described using 'pantonic' scale rules. Even inside
+    the heptatonic series, there are many scales that are so uncommon that we don't
+    bother incorporating them into our system of nomenclature.
 
