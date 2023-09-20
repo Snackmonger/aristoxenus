@@ -46,3 +46,15 @@ Seventh chords are formed according to common idioms:
 E.g.:
 
     Amin7     G7      Dmaj7       Fdim7
+
+Extensions 9, 11, and 13 may replace 7 in the above constructions.
+Each new extention also includes the previous one(s). The resulting 
+chord will have an idiomatic seventh as above, but the extensions are 
+always natural intervals. As above, an altered 5th comes *after* the 
+numeral. E.g.:
+
+    Cmaj7   >> C, E, G, B
+    Cmaj9   >> C, E, G, B, D
+    Cmaj11  >> C, E, G, B, D, F
+    Cmaj13  >> C, E, G, B, D, F, A
+    Cm13    >> C, Eb, G, Bb, D, F, A
