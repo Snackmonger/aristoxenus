@@ -41,7 +41,7 @@ Seventh chords are formed according to common idioms:
 - The '7' suffix indicates a bb7 if combined in 'dim7' suffix
 - The '7' suffix indicates natural 7 if combined in the 'maj7' suffix
 - A chord suffixed 'maj7' implies a major 3 with natural 7, unless combined 
-with another suffix that suggests that there should be a minor 3. E.g.:
+    with another suffix that suggests that there should be a minor 3. E.g.:
 
     - Amin7
     - G7      
