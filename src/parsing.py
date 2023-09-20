@@ -180,7 +180,7 @@ def __parse_polychord(chord_symbol: str) -> int:
     the polychord will be understood as referring to the note
     name in the previous symbol's first octave. 
     '''
-    compiled_structure: int = 14
+    compiled_structure: int = 1
     previous_bass: str = ''
     distance: int = 0
     current_bass: str
