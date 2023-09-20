@@ -94,13 +94,12 @@ SCALES
 ------
 
 When scale structures are parsed, our parsers will attempt to return one or more names for a given scale from 
-the known names that match a given scale type. However, the names given to scales are, at best, obscure and, at worst, actually impedimental to the 
-understanding of the underlying structure. Therefore, we employ a system of unique canonical names for structures that serve as headings
-for internal use and are at least partially descriptive with respect to some part of the interval structure.
+the known names that match a given scale type. However, we also employ a system of unique canonical names for structures that serve as headings
+for internal use and are at least vaguely descriptive with respect to some part of the interval structure.
 
 The principles of the prescription of scale names are:
 
-1. Assign a one-word label based on some interval of the scale that exists in contradistinction to a comparable interval of the diatonic scale, in order that the scale labels might approach some amount of actual descriptiveness. If the label cannot describe the structure in some way, then it should have 
+1. Assign a one-word label based on some interval of the scale that exists in contradistinction to a comparable interval of the diatonic scale, in order that the scale labels might approach some amount of actual descriptiveness. If the label cannot describe the structure in some way, then it should have some relationship to a relevant concept.
 2. Establish a canonical primary form of a given interval structure so that inversions of that structure will always be related to it, rather than being mistaken for being a separate structure (e.g. ionian#4 and ionianb7 describe inversions of the same structure).
 3. Establish a relative system of modal rotation, so that the existing names of the modes are employed in a consistent way across the different scales, given the canonical structures mentioned above.
 
