@@ -122,13 +122,12 @@ Diatonic Scale
     are 'stretched across' (*dia* 'across, apart' + *tonikos* from *teino* 'stretch') 
     to the greatest extent allowed under the rules of tetrachord construction.
 
-Chromatic Scale
+Paleochromatic Scale
     C Db E F Gb A B
 
-    In the context of this program, the chromatic scale is that of the 
-    ancient Greeks, derived from the conjunction of two chromatic 
-    tetrachords, which is etymologized as being a more colourful (*chroma* 'colour')
-    form of tetrachord. 
+    The paleochromatic scale is the 'chromatic' scale of the ancient Greeks, derived from the conjunction of two chromatic tetrachords, 
+    which were etymologized as being a more colourful (*chroma* 'colour') form of tetrachord. We have added the prefix to distinguish 
+    between the modern sense of 'chromatic scale' (*paleo-* 'old, ancient').
 
 Altered Scale
     C# D E F G A B
@@ -168,10 +167,10 @@ Harmonic Scale
     traditionally seen as the major version of the 'harmonic minor' scale (in our designation,
     however, that scale is labelled 'augmented aeolian').
 
-Placeholder Label
+Biseptimal scale
     C D E F G A# B 
 
-    This scale needs a good descriptive name still...
+    Placeholder name for now... Named for the fact that the scale enharmonically seems to have a b7 and natural 7.
 
 
 Modes of the Heptatonic Series
@@ -198,7 +197,36 @@ are inconsistent with any of the structures that the ancient Greeks laid out, bu
 the ancient Greeks applied the names inconsistently and with great variation in meaning.
 Therefore, we preserve the names as a useful sequence, since many people already know it
 in order, but we relieve ourselves of the necessity of thinking that a scale is misnamed
-because an 'Aeolian' should have a b3. 
+because an 'Aeolian' should have a b3, or that a 'Lydian' should have a #4.
 
-Modal Symbol Construction
--------------------------
+We prescribe that the name of the canonical scale comes first, then the name of the mode. The parsers will recognize both orders as having the same meaning.
+
+    - diatonic aeolian, A >> A B C D E F G
+    - augmented aeolian, A >> A B C D E F G#
+    - hemiolic aeolian, A >> A B C D# E F G
+
+Modal Symbols
+-------------
+
+Interval structures can be expressed as modal symbols. 
+
+The point of reference for each modal name is the parallel mode of the diatonic scale, and every modifier is understood
+as *replacing* the corresponding note of the diatonic mode. If the modifier symbol is
+already present in the underlying diatonic mode, no replacement will take place. In this 
+context, the modifier symbols can never be used to make a scale other than a heptatonic scale. E.g.:
+
+    - aeoliannat3 >> altered aeolian
+    - lydianb3 >> harmonic lydian
+    - phrygianbb7 >> hemitonic phrygian
+
+The canonical modal symbol of any given interval structure will be derived from the canonical scales outlined above. Thus, the
+program will always identify a collection as 'doriannat7', never 'ionianb3', since the canonical form of the parent scale is 'altered ionian'
+
+Modifier symbols are '#', 'b', and 'nat' (= natural) plus a numeral between 2 and 1 (we do
+not allow for a sharp tonic, although it may be conceptually useful). No matter how the user
+attempts to rationalize a modal symbol, the parser will relate it to the canonical scales and
+their modes when seeking a match:
+
+    - mixolydianb6 >> altered aeolian
+    - lydian#6 >> hemiolic lydian
+    - dorian#4nat7 >> harmonic lydian
