@@ -102,11 +102,9 @@ The goals of the prescription of scale names are:
     1. Describe some interval of the scale that exists in contradistinction to a 
     comparable interval of the diatonic scale, in order that the scale labels 
     might approach some amount of actual descriptiveness.
-
     2. Establish a canonical primary form of a given interval structure so that 
     inversions of that structure will always be related to it, rather than being
     mistaken for a separate structure.
-
     3. Establish a relative system of modal rotation, so that the existing names
     of the modes are employed in a consistent way across the different scales, 
     given the canonical structures mentioned above.
