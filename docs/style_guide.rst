@@ -240,13 +240,27 @@ is inherently arbitrary. We prescribe taking the first instance of the tonic tet
 tetrad is not found in the diatonic, we follow the sequence of the heptatonic scales as they are presented above until we find a scale in which the tetrad appears, and
 consider the first mode in which that tetrad appears to be the canonical mode. 
 
-Octatonic Scales
+OCTATONIC SCALES
 ----------------
 
-There are a number of octatonic scales that we treat as canonical. These scales are often symmetrical, and have fewer modes than they have notes. Therefore, we
-cannot say that 
+Octatonic scales can simply be considered as heptatonic scales with chromatic notes, but we do prescribe a set of symbols for dealing with 
+specific types of octatonic interval structures.
 
+Sixth Diminished Scales
+-----------------------
 
-Diminished Scales
------------------
+When a chord containing a natural 6 or flat 7 is superimposed with a diminished 7th chord a tone sharper, the resulting scale is 
+a 'sixth diminished' scale.
+
+    - maj6 Diminished: C D E F G Ab A B
+    - min6 Diminished: C D Eb F G Ab A B
+    - dom7 Diminished: C D E F G Ab A Bb
+    - dom7b5 Diminished: C D E F Gb Ab A Bb
+
+Of these scales, we consider the canonical modal symbols to be, respectively:
+
+    - ionianadd#5
+    - dorianaddnat7
+    - mixolydianadd#5
+    - mixolydianb5add#5
 
