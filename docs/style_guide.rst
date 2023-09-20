@@ -1,5 +1,5 @@
 =============================================================
-ARISTOXENUS STANDARD STRUCTURAL SYMBOL PRESCRIPTION (12-TONE)
+ARISTOXENUS STANDARD STRUCTURAL SYMBOL PRESCRIPTION
 =============================================================
 
 This is a guide to the form of interval structure symbolism and nomenclature that the program uses
