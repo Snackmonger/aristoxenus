@@ -60,3 +60,22 @@ numeral. E.g.:
     - Cmaj11  >> C, E, G, B, D, F
     - Cmaj13  >> C, E, G, B, D, F, A
     - Cm13    >> C, Eb, G, Bb, D, F, A
+
+As above, an altered 5th comes *after* the 
+numeral. E.g.:
+
+    Cm9b5   >> C, Eb, Gb, Bb, D
+    Cmaj7#5 >> C, E, G#, B
+    C7#5    >> C, E, G#, Bb
+
+However, since 'dim7' is a prescribed synbol, no altered 5th is
+necessary in, e.g.:
+
+    Cdim11  >> C, Eb, Gb, A, D, F
+
+If an altered version of one of these extensions appears after an
+unaltered precedent, and there are no other intervening symbols,
+the chord will contain all the unaltered intervals, plus the 
+altered interval. E.g.:
+
+    Cmaj11b13 >> C, E, G, B, D, F, Ab
