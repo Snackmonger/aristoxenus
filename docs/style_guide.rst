@@ -48,6 +48,7 @@ E.g.:
     - G7 >> G B D F
     - Dmaj7 >> D F A C 
     - Fdim7 >> F Ab Cb Ebb
+    - Gmmaj7 >> G Bb D F#
 
 Extensions 9, 11, and 13 may replace 7 in the above constructions.
 Each new extention also includes the previous one(s). The resulting 
