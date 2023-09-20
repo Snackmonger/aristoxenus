@@ -90,6 +90,19 @@ The 'add' type prefixes indicate that the specified interval is
 added to the structure of the preceding symbol, without including
 any other interval. 
 
+Polychords
+----------
+
+When a chord contains more than 3 intervals that cannot easily be fit into one of the structures in the list of most common candidates,
+the program will attempt to assign a polychordal name to the interval structure. The prescription is to:
+
+    - compare the intervals of the simple triads to establish the base type of the chord
+    - once the base triad is found, superimpose the simple triads/tetrads/pentads, etc. and their inversions over each interval of the chromatic scale and compile a list of possible candidates
+
+Although polychord symbols can be decoded into complex multi-octave interval structures, we restrict encoding polychord symbols to
+the limits of the double octave; intervals beyond this range will be brought within it.
+
+
 SCALES
 ------
 
@@ -246,15 +259,19 @@ OCTATONIC SCALES
 Octatonic scales can simply be considered as heptatonic scales with chromatic notes, but we do prescribe a set of symbols for dealing with 
 specific types of octatonic interval structures.
 
-Sixth Diminished Scales
+Tonic-Diminished Scales
 -----------------------
 
 When a chord containing a natural 6 or flat 7 is superimposed with a diminished 7th chord a tone sharper, the resulting scale is 
-a 'sixth diminished' scale.
+a tonic-diminished scale. The symmetries of these scales mean that every other chord is an inversion of either the tonic or a diminished 7th, provided
+we take 'thirds' consisting of every other interval (other chords are still possible of course). E.g.:
 
-    - maj6 Diminished: C D E F G Ab A B
-    - min6 Diminished: C D Eb F G Ab A B
-    - dom7 Diminished: C D E F G Ab A Bb
-    - dom7b5 Diminished: C D E F Gb Ab A Bb
+    - maj6 diminished: C D E F G Ab A B = C6, Ddim7, C6/E, Fdim7, C6/G, Abdim7, C6/A, Bdim7
+    - min6 diminished: C D Eb F G Ab A B = Cm6, Ddim7, Cm6/Eb, Fdim7, Cm6/G, Abdim7, Cm6/A, Bdim7
+    - dom7 diminished: C D E F G Ab Bb B = C7, Ddim7, C7/E, Fdim7, C7/G, Abdim7, C7/Bb, Bdim7
+    - dom7b5 diminished: C D E F Gb Ab A Bb = C7b5, Ddim7, C7b5/E, Fdim7, C7b5/Gb, Abdim7, C7b5/Bb, Bdim7
+
+The maj6 diminished is an inversion of the min7 diminished, and the min6 diminished is an inversion of the m7b5 diminished. In addition, the
+7b5 diminished is an inversion of its own tritone mirror.
 
 
