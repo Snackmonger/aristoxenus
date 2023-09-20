@@ -26,9 +26,9 @@ We assume that a chord contains a p5 unless a symbol indicates otherwise.
 Therefore, we refer to augmented chords as 'maj#5' and diminished chords
 as 'mb5'. E.g.:
 
-    - Cmaj#5  
-    - Aminb5    
-    - Ebmajb5
+    - Cmaj#5 >> C E G#
+    - Aminb5 >> A C Eb
+    - Ebmajb5 >> Eb G Bb
 
 Exceptionally, 'dim7' is prescribed instead of the structural 'minbb7b5', for
 its readability and common usage. Although 'dim' and 'aug' are not prescribed 
@@ -44,10 +44,10 @@ Seventh chords are formed according to common idioms:
 
 E.g.:
 
-    - Amin7
-    - G7      
-    - Dmaj7       
-    - Fdim7
+    - Amin7 >> A C E G
+    - G7 >> G B D F
+    - Dmaj7 >> D F A C 
+    - Fdim7 >> F Ab Cb Ebb
 
 Extensions 9, 11, and 13 may replace 7 in the above constructions.
 Each new extention also includes the previous one(s). The resulting 
@@ -99,9 +99,9 @@ understanding of the underlying structure.
 
 The goals of the prescription of scale names are:
 
-    1. Describe some interval of the scale that exists in contradistinction to a comparable interval of the diatonic scale, in order that the scale labels might approach some amount of actual descriptiveness.
-    2. Establish a canonical primary form of a given interval structure so that inversions of that structure will always be related to it, rather than being mistaken for a separate structure.
-    3. Establish a relative system of modal rotation, so that the existing names of the modes are employed in a consistent way across the different scales, given the canonical structures mentioned above.
+1. Describe some interval of the scale that exists in contradistinction to a comparable interval of the diatonic scale, in order that the scale labels might approach some amount of actual descriptiveness.
+2. Establish a canonical primary form of a given interval structure so that inversions of that structure will always be related to it, rather than being mistaken for a separate structure.
+3. Establish a relative system of modal rotation, so that the existing names of the modes are employed in a consistent way across the different scales, given the canonical structures mentioned above.
 
 
 HEPTATONIC SCALES
@@ -120,3 +120,84 @@ Diatonic Scale
     by the Greeks as being arranged so that the intervals dividing the diatessaron 
     are 'stretched across' (*dia* 'across, apart' + *tonikos* from *teino* 'stretch') 
     to the greatest extent allowed under the rules of tetrachord construction.
+
+Chromatic Scale
+    C Db E F Gb A B
+
+    In the context of this program, the chromatic scale is that of the 
+    ancient Greeks, derived from the conjunction of two chromatic 
+    tetrachords, which is etymologized as being a more colourful (*chroma* 'colour')
+    form of tetrachord. 
+
+Altered Scale
+    C# D E F G A B
+
+    A common designation from modern times, often Jazz music context. Structurally
+    represents diatonic #1, but this makes every other interval 'altered' compared
+    to the new relative tonic.
+
+Hemitonic Scale
+    C Db E F G A B 
+
+    Our own designation, derived from the fact that the scale is the diatonic, except
+    that the first interval is the hemitone instead of the tone.
+
+Hemiolic Scale
+    C D# E F G A B 
+
+    Our own designation, derived from the fact that the scale is the diatonic, except
+    that the first interval is the hemiolion instead of the tone.
+
+Diminished Scale
+    C D E F Gb A B
+
+    Our own designation. There are many scales labelled diminished. This one is so-called
+    because it is diatonic b5, and thus conceptually 'diminished' relative to the diatonic.
+
+Augmented Scale
+    C D E F G# A B
+
+    Our own designation. There are many scales labelled augmented. This one is so-called
+    because it is diatonic #5, and thus conceptually 'augmented' relative to the diatonic.
+
+Harmonic Scale
+    C D E F G Ab B
+
+    Borrowing from the common designation 'harmonic major' scale. So-called because it is
+    traditionally seen as the major version of the 'harmonic minor' scale (in our designation,
+    however, that scale is labelled 'augmented aeolian').
+
+Placeholder Label
+    C D E F G A# B 
+
+    This scale needs a good descriptive name still...
+
+
+Modes of the Heptatonic Series
+------------------------------
+
+We do not prescribe using the modes as descriptions of interval structures, but rather
+as descriptions of relationships to a canonical primary centres of interval structures.
+In this way, each modal name always describes the same degree of the scale, relative to 
+the canonical forms described above (Ionian is always the canonical form).
+
+Thus, we always relate the structures as expressions of an enumerated onomastic series:
+    
+        1. Ionian
+        2. Dorian
+        3. Phrygian
+        4. Lydian
+        5. Mixolydian
+        6. Aeolian
+        7. Locrian
+
+Some people like to imagine that there is something like a 'Lydian' characteristic or an
+'Aeolian' characteristic that governs the choice of names. The modal names of the scales
+are inconsistent with any of the structures that the ancient Greeks laid out, but even 
+the ancient Greeks applied the names inconsistently and with great variation in meaning.
+Therefore, we preserve the names as a useful sequence, since many people already know it
+in order, but we relieve ourselves of the necessity of thinking that a scale is misnamed
+because an 'Aeolian' should have a b3. 
+
+Modal Symbol Construction
+-------------------------
