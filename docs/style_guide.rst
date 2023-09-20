@@ -1,6 +1,6 @@
--------------------------------------------------------------
+=============================================================
 ARISTOXENUS STANDARD STRUCTURAL SYMBOL PRESCRIPTION (12-TONE)
--------------------------------------------------------------
+=============================================================
 
 This is a guide to the form of interval structure symbolism and nomenclature that the program uses
 for its internal reference, and which is the default representational style used for display to the user. 
