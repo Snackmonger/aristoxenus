@@ -238,7 +238,7 @@ fewer than 7 notes might drop an interval with the 'no' suffix. The numerals mus
 Because scales with even numbers of notes are often symmetrical along at least one axis, the relation of any given extended modal symbol to the canonical form
 is inherently arbitrary. We prescribe taking the first instance of the tonic tetrad in the diatonic scale, if it exists, and using that as the canonical mode. If the tonic
 tetrad is not found in the diatonic, we follow the sequence of the heptatonic scales as they are presented above until we find a scale in which the tetrad appears, and
-consider the first mode in which that tetrad appears to be the canonical mode.
+consider the first mode in which that tetrad appears to be the canonical mode. 
 
 Octatonic Scales
 ----------------
