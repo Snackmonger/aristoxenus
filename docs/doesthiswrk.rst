@@ -81,3 +81,13 @@ the chord will contain all the unaltered intervals, plus the
 altered interval. E.g.:
 
     - Cmaj11b13 >> C, E, G, B, D, F, Ab
+
+However, if the unaltered symbol also included an altered fifth,
+which is placed after the 7, 9, 11, or 13, then the additional
+alteration is placed after the altered fifth. E.g.:
+
+    Cmaj11b5b13 >> C, E, Gb, B, D, F, Ab
+
+The 'add' type prefixes indicate that the specified interval is 
+added to the structure of the preceding symbol, without including
+any other interval. 
