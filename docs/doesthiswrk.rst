@@ -22,13 +22,15 @@ is a compromise between them.
 - Major third is indicated with 'maj' suffix.
 - Minor third is indicated with lowercase 'min' suffix.
 
-We assume that a chord contains a p5 unless a symbol indicates otherwise.
+- We assume that a chord contains a p5 unless a symbol indicates otherwise.
 Therefore, we refer to augmented chords as 'maj#5' and diminished chords
 as 'mb5'. E.g.:
 
-    Cmaj#5  Aminb5    Ebmajb5
+    - Cmaj#5  
+    - Aminb5    
+    - Ebmajb5
 
-Exceptionally, 'dim7' is prescribed instead of the structural 'minbb7b5', for
+- Exceptionally, 'dim7' is prescribed instead of the structural 'minbb7b5', for
 its readability and common usage. Although 'dim' and 'aug' are not prescribed 
 in any other contexts, the user should note that these symbols refer to 
 *triads* with a 3rd and 5th, rather than simply the interval of an altered 5th.
@@ -49,7 +51,7 @@ E.g.:
     - Dmaj7       
     - Fdim7
 
-Extensions 9, 11, and 13 may replace 7 in the above constructions.
+- Extensions 9, 11, and 13 may replace 7 in the above constructions.
 Each new extention also includes the previous one(s). The resulting 
 chord will have an idiomatic seventh as above, but the extensions are 
 always natural intervals. As above, an altered 5th comes *after* the 
@@ -61,21 +63,21 @@ numeral. E.g.:
     - Cmaj13  >> C, E, G, B, D, F, A
     - Cm13    >> C, Eb, G, Bb, D, F, A
 
-As above, an altered 5th comes *after* the 
+- As above, an altered 5th comes *after* the 
 numeral. E.g.:
 
-    Cm9b5   >> C, Eb, Gb, Bb, D
-    Cmaj7#5 >> C, E, G#, B
-    C7#5    >> C, E, G#, Bb
+    - Cm9b5   >> C, Eb, Gb, Bb, D
+    - Cmaj7#5 >> C, E, G#, B
+    - C7#5    >> C, E, G#, Bb
 
-However, since 'dim7' is a prescribed synbol, no altered 5th is
+- However, since 'dim7' is a prescribed synbol, no altered 5th is
 necessary in, e.g.:
 
-    Cdim11  >> C, Eb, Gb, A, D, F
+    - Cdim11  >> C, Eb, Gb, A, D, F
 
-If an altered version of one of these extensions appears after an
+- If an altered version of one of these extensions appears after an
 unaltered precedent, and there are no other intervening symbols,
 the chord will contain all the unaltered intervals, plus the 
 altered interval. E.g.:
 
-    Cmaj11b13 >> C, E, G, B, D, F, Ab
+    - Cmaj11b13 >> C, E, G, B, D, F, Ab
