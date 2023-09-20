@@ -122,13 +122,6 @@ Diatonic Scale
     are 'stretched across' (*dia* 'across, apart' + *tonikos* from *teino* 'stretch') 
     to the greatest extent allowed under the rules of tetrachord construction.
 
-Paleochromatic Scale
-    C Db E F Gb A B
-
-    The paleochromatic scale is the 'chromatic' scale of the ancient Greeks, derived from the conjunction of two chromatic tetrachords, 
-    which were etymologized as being a more colourful (*chroma* 'colour') form of tetrachord. We have added the prefix to distinguish 
-    between the modern sense of 'chromatic scale' (*paleo-* 'old, ancient').
-
 Altered Scale
     C# D E F G A B
 
@@ -171,6 +164,13 @@ Biseptimal scale
     C D E F G A# B 
 
     Placeholder name for now... Named for the fact that the scale enharmonically seems to have a b7 and natural 7.
+
+Paleochromatic Scale
+    C Db E F Gb A B
+
+    The paleochromatic scale is the 'chromatic' scale of the ancient Greeks, derived from the conjunction of two chromatic tetrachords, 
+    which were etymologized as being a more colourful (*chroma* 'colour') form of tetrachord. We have added the prefix to distinguish 
+    between the modern sense of 'chromatic scale' (*paleo-* 'old, ancient').
 
 
 Modes of the Heptatonic Series
@@ -231,3 +231,18 @@ their modes when seeking a match:
     - mixolydianb6 >> altered aeolian
     - lydian#6 >> hemiolic lydian
     - dorian#4nat7 >> harmonic lydian
+
+Extended Modal Symbols
+----------------------
+
+In the same way as chords, we allow that a scale of more than 7 notes might include extra interval symbols with the 'add' suffix, or that a scale of
+fewer than 7 notes might drop an interval with the 'no' suffix. The numerals must be flat or sharp as absolute references (a 'no5' does not negate a b5 in 'locrianno5', the symbol must be 'locriannob5')
+
+We prescribe that any scale thus symbolized must relate its structure to the diatonic scale and its modes if possible. If not possible, the prescription follows the canonical order of the heptatonic permutations above.
+
+    - dorianadd#4 NOT lydianb3b7addnat4
+    - aeoliannat3no5 NOT mixolydianb6no4
+    - ionianno2 NOT phrygiannat3nat6nat7nob2
+
+These nonstandard forms, however, will still be comprehensible to the parser.
+
