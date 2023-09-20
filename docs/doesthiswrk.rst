@@ -21,3 +21,9 @@ is a compromise between them.
 
 - Major third is indicated with 'maj' suffix.
 - Minor third is indicated with lowercase 'min' suffix.
+
+We assume that a chord contains a p5 unless a symbol indicates otherwise.
+Therefore, we refer to augmented chords as 'maj#5' and diminished chords
+as 'mb5'. E.g.:
+
+    Cmaj#5  Aminb5    Ebmajb5
