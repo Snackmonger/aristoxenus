@@ -235,13 +235,10 @@ Extended Modal Symbols
 In the same way as chords, we allow that a scale of more than 7 notes might include extra interval symbols with the 'add' suffix, or that a scale of
 fewer than 7 notes might drop an interval with the 'no' suffix. The numerals must be flat or sharp as absolute references (a 'no5' does not negate a b5 in 'locrianno5', the symbol must be 'locriannob5').
 
-When handling scales outside the heptatonic series, we prescribe the use of simple names outlined below, rather than using the modal symbols. If the parser is forced to 
-generate a modal symbol, it will follow the following prescription:
+When handling scales outside the heptatonic series, we prescribe the use of simple names outlined in the following sections, rather than using the modal symbols. Because scales with even numbers of notes are often symmetrical along at least one axis, the relation of any given extended modal symbol to the canonical form is inherently arbitrary. If the parser is forced to generate a modal symbol, it will follow the following prescription:
 
-    - Because scales with even numbers of notes are often symmetrical along at least one axis, the relation of any given extended modal symbol to the canonical form is inherently arbitrary. 
-    - We prescribe taking the first instance of the tonic tetrad in the diatonic scale, if it exists, and using that as the canonical mode. 
-    - If the tonic tetrad is not found in the diatonic, we follow the sequence of the heptatonic scales as they are presented above until we find a scale in which the tetrad appears, and consider the first mode in which that tetrad appears to be the canonical mode. 
-
+    - If the tonic tetrad of the given structure appears in the diatonic scale, take the first mode in which it appear as canonical. 
+    - If the tonic tetrad is not found in the diatonic scale, we follow the sequence of the heptatonic scales as they are presented above until we find a scale in which the tetrad appears, and consider the first mode in which that tetrad appears to be the canonical mode. 
 
 
 OCTATONIC SCALES
