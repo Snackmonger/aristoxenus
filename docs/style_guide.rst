@@ -19,8 +19,6 @@ Chord names are meant to (as much as is practical):
 Not all of these goals are met with the same ease, and the existing prescription
 is a compromise between them.
 
---------------
-
 -   Major third is indicated with 'maj' suffix.
 -   Minor third is indicated with lowercase 'min' suffix.
 
@@ -107,8 +105,6 @@ mistaken for a separate structure.
 3. Establish a relative system of modal rotation, so that the existing names
 of the modes are employed in a consistent way across the different scales, 
 given the canonical structures mentioned above.
-
--------------------------
 
 
 HEPTATONIC SCALES
