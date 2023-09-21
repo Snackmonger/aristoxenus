@@ -1,4 +1,4 @@
-from src.bit_manipulation import next_mode, previous_mode
+from src.bitwise import next_mode, previous_mode
 
 
 class IntervalStructure():

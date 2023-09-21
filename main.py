@@ -1,9 +1,9 @@
 from tests import new_test
 from src.nomenclature import sharps, flats, naturals, chromatic, generate_interval_map
 from src.rendering import render
-from src.interval_structures import DITONE, DIAPASON, TONE, DIATESSARON, COMPOUND_DITONE, COMPOUND_TONE, DIAPENTE
+from src.intervallic_canon import DITONE, DIAPASON, TONE, DIATESSARON, COMPOUND_DITONE, COMPOUND_TONE, DIAPENTE
 from src.parsing import parse_chord_symbol
-from src.bit_manipulation import next_mode
+from src.bitwise import next_mode
 from src.vocabulary import roman_numeral
 # new_test.test_rendering()
 
