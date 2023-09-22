@@ -58,21 +58,20 @@ def test_chord_symbol_parser(chord_symbol: str):
 def test_roman_numerals():
     # A number containing two or more decimal digits is built by appending the Roman numeral equivalent for each, from highest to lowest, as in the following examples:
 
-    print(roman_numeral(39)) # XXX + IX = XXXIX.
-    print(roman_numeral(246)) # CC + XL + VI = CCXLVI.
-    print(roman_numeral(789)) # = DCC + LXXX + IX = DCCLXXXIX.
-    print(roman_numeral(2421)) # MM + CD + XX + I = MMCDXXI.
+    def verify(indian: int, roman: str):
+        '''Verify that the correct roman numeral was generated.'''
+        res: str = 'PASS' if roman == roman_numeral(indian) else 'FAIL'
+        print(f'Expected: {roman}, Actual: {roman_numeral(indian)}, Result: {res}')
 
-    # Any missing place (represented by a zero in the place-value equivalent) is omitted, as in Latin (and English) speech:
-
-    print(roman_numeral(160)) # = C + LX = CLX
-    print(roman_numeral(207)) #= CC + VII = CCVII
-    print(roman_numeral(1009)) #= M + IX = MIX
-    print(roman_numeral(1066)) # = M + LX + VI = MLXVI[7][8]
-
-    # The largest number that can be represented in this manner is 3,999 (MMMCMXCIX), but this is sufficient for the values for which Roman numerals are commonly used today, such as year numbers:
-
-    print(roman_numeral(1776)) #= M + DCC + LXX + VI = MDCCLXXVI (the date written on the book held by the Statue of Liberty).
-    print(roman_numeral(1918)) # = M + CM + X + VIII = MCMXVIII (the first year of the Spanish flu pandemic)
-    print(roman_numeral(1944)) # = M + CM + XL + IV = MCMXLIV (erroneous copyright notice of the 1954 movie The Last Time I Saw Paris)[3]
-    print(roman_numeral(2023)) # = MMXXIII (this year)[b]
+    verify(39, 'XXXIX')
+    verify(246, 'CCXLVI')
+    verify(789, 'DCCLXXXIX')
+    verify(2421, 'MMCDXXI')
+    verify(160, 'CLX')
+    verify(207, 'CCVII')
+    verify(1009, 'MIX')
+    verify(1066, 'MLXVI')
+    verify(1776, 'MDCCLXXVI')
+    verify(1918, 'MCMXVIII')
+    verify(1944, 'MCMXLIV')
+    verify(2023, 'MMXXIII')

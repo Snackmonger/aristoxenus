@@ -1,7 +1,9 @@
 '''
 Miscellania pertaining to bitwise operations.
 '''
+import loguru
 
+logger = loguru.logger
 
 def has_interval(collection: int, interval: int) -> bool:
     '''
@@ -31,27 +33,21 @@ def rotate_bits_right(collection: int, max_bits: int) -> int:
     return (collection & (2 ** max_bits - 1)) >> 1 | (collection << (max_bits - 1) & (2 ** max_bits - 1))
 
 
-def next_mode(collection: int) -> int:
+def next_mode(collection: int, max_bits: int) -> int:
     '''
-    Rotate the bit collection left to the next mode/inversion.
+    Rotate the bit collection right to the next mode/inversion.
     '''
-    max_bits:int = collection.bit_length()
-    collection = rotate_bits_right(collection, max_bits)
-    while collection % 2 != 1:
+    logger.debug(f'{collection} : {bin(collection)}')
+    while collection % 2 == 0:
         collection = rotate_bits_right(collection, max_bits)
     return collection
 
 
-def previous_mode(collection: int) -> int:
+def previous_mode(collection: int, max_bits: int) -> int:
     '''
-    Rotate the bit collection right to the previous mode/inversion.
+    Rotate the bit collection left to the previous mode/inversion.
     '''
-    max_bits:int = collection.bit_length()
     collection = rotate_bits_left(collection, max_bits)
-    while collection % 2 != 1:
+    while collection % 2 == 0:
         collection = rotate_bits_left(collection, max_bits)
     return collection
-
-
-
-
