@@ -66,8 +66,7 @@ into enharmonic and scientific equivalents, and then bound into ranges with calc
 
 Originally the nomenclature module was a Nomenclature class. The 'state' consisted of the generated nomenclatural material, 
 and all the methods either generated material, or provided access to it. I asked myself why it was necessary for the class 
-to exist at all, and took it as an opportunity to try a more functional approach. Python often seems to be written in 
-class-based schemata almost by default, but I am realizing more and more that this sometimes introduces unnecessary complexity. 
+to exist at all, and took it as an opportunity to try a more functional approach. 
 
 I am curious to see what mistakes I will recognize in this module after a couple more months of study.
 
