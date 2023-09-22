@@ -1,5 +1,5 @@
 
-class IntervalOOBError(ValueError):
+class IntervalOutOfBoundsError(ValueError):
     '''
     Error indicating that the interval is not within the legal limits.
 
@@ -11,4 +11,10 @@ class MisconfiguredOOBError(ValueError):
     '''
     Error indicating that the LimitedIntervalStructure has parameter 'oob' set to a
     value not present in the OOBOptions enum.
+    '''
+
+
+class HeptatonicScaleError(ValueError):
+    '''
+    Error indicating that a scale does not conform to the heptatonic scale pattern or nomenclature.
     '''

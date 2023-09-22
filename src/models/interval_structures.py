@@ -1,11 +1,12 @@
-from typing import Literal, cast
+from typing import Literal
 
 from ..decorators import pos_only, check_oob
 from ..bitwise import next_mode, previous_mode
-from ..errors import IntervalOOBError
+from ..errors import IntervalOutOfBoundsError, HeptatonicScaleError
 
 
 OOB_OPTIONS = Literal['integrate', 'oct_integrate', 'error', 'ignore']
+
 
 class IntervalStructure():
     '''
@@ -36,7 +37,7 @@ class IntervalStructure():
 
     @pos_only
     def __isub__(self, interval: int) -> 'IntervalStructure':
-        self.value ^= interval + 1
+        self.value = (self.value ^ interval) +1
         return self
 
     def __len__(self) -> int:
@@ -69,7 +70,7 @@ class LimitedIntervalStructure(IntervalStructure):
         if value.bit_length() <= bits:
             super().__init__(value)
         else:
-            raise IntervalOOBError(bin(value), value.bit_length(), bits)
+            raise IntervalOutOfBoundsError(bin(value), value.bit_length(), bits)
         self.__bits: int = bits
         self.oob: str = oob
 
@@ -82,14 +83,16 @@ class LimitedIntervalStructure(IntervalStructure):
 
     @check_oob
     @pos_only
-    def __iadd__(self, interval: int) -> 'LimitedIntervalStructure':
-        return super().__iadd__(interval)
+    def __iadd__(self, interval: 'int | IntervalStructure') -> 'LimitedIntervalStructure':
+        self.value |= int(interval)
+        return self
 
 
     @check_oob
     @pos_only
-    def __isub__(self, interval: int) -> 'LimitedIntervalStructure':
-        return super().__isub__(interval)
+    def __isub__(self, interval: 'int | IntervalStructure') -> 'LimitedIntervalStructure':
+        self.value = (self.value ^ int(interval)) +1
+        return self
     
 
     def next_inversion(self) -> None:
@@ -103,9 +106,17 @@ class LimitedIntervalStructure(IntervalStructure):
 
 
 class Octave(LimitedIntervalStructure):
-    ...
+    '''
+    Representation of the octave as a 12-bit integer.
 
+    The octave provides a structural paradigm in which all intervals
+    can be expressed as numbers between 1 and 2. 
 
+    As with other intervallic schemata, the least significant bit is the 
+    root/tonic of the structure.
+    '''
+    def __init__(self, value: int = 1):
+        super().__init__(12, value)
 
 
 class DoubleOctave(LimitedIntervalStructure):
@@ -113,28 +124,19 @@ class DoubleOctave(LimitedIntervalStructure):
     Representation of the double octave as a 24-bit integer.
     
     The double octave provides a structural paradigm in which the intervals
-    of each octave are recognized as distinct (or partially distinct) from
-    one another.
-
-    Schema:
-        ========  ========  ======== 
-        aaaaaaaa  aaaabbbb  bbbbbbbb  
-        ========  ========  ======== 
-
-        a = 12-bit upper octave
-        b = 12-bit lower octave
+    between 1 and 2 are recognized as distinct (or partially distinct) from
+    the intervals between 2 and 4.
 
     As with other intervallic schemata, the least significant bit is the 
     root/tonic of the structure.
     '''
 
-    def __init__(self, value: int=1) -> None:
-        super().__init__(value)
-        self.__bits: int = 24
+    def __init__(self, value: int = 1) -> None:
+        super().__init__(24, value)
 
     def bind_octaves(self, lower: int, higher: int) -> int:
         '''Take two 12-bit octaves and bind them into a 24-bit double octave.'''
-        return (lower << int(self.__bits/2)) | higher
+        return (lower << int(self.bits/2)) | higher
     
     def union(self) -> int:
         '''Return a 12-bit integer representing the interval overlap of the two octaves.'''
@@ -143,7 +145,7 @@ class DoubleOctave(LimitedIntervalStructure):
     @property
     def lower(self) -> int:
         '''Return the lower octave.'''
-        return (self.value >> int(self.__bits/2))
+        return (self.value >> int(self.bits/2))
 
     @lower.setter
     def lower(self, lower: int) -> None:
@@ -153,7 +155,7 @@ class DoubleOctave(LimitedIntervalStructure):
     @property
     def upper(self) -> int:
         '''Return the upper octave.'''
-        return self.value & (2 ** int(self.__bits / 2) - 1)
+        return self.value & (2 ** int(self.bits / 2) - 1)
 
     @upper.setter
     def upper(self, upper: int) -> None:
@@ -161,16 +163,56 @@ class DoubleOctave(LimitedIntervalStructure):
         self.value = self.bind_octaves(self.lower, upper)
 
 
+class Scale(Octave):
+    '''
+    Abstraction of a scale of 1 - 12 notes. 
+    '''
 
+    def __init__(self, value: int = 1) -> None:
+        super().__init__(value)
+        self.tones = self.value.bit_count()
 
     
-class Chord():
+    def chords(self,
+               key: str = 'C',
+               structure: str = 'tertial',
+               extent: str|int = 'triad',
+               ) -> list[str]:
+        '''
+        Return a list of chords for this scale.
+
+        Params:
+                structure   ::  defines the pattern of how the chord is built
+                extent      ::  defines how many notes will be used in chord
+
+        Chord structure may be any of the values in the ChordStructure enum.
+        In this context, the values 'tertial', 'quartal', etc. mean 'take
+        every X note' rather than 'take a major/minor 3rd' or 'take a perfect 
+        or augmented fourth'.
+
+        Extent may either be a Greek name from the GreekNumberGroups enum, or
+        an integer between 1 and 7.
+        '''
+
+
+class HeptatonicScale(Scale):
+    '''
+    Abstraction of a heptatonic scale.
+    '''
+    def __init__(self, value: int = 1) -> None:
+        if value.bit_count() != 7:
+            raise HeptatonicScaleError(value.bit_count())
+        super().__init__(value)
+        self.tones = self.value.bit_count()
+
+
+class Chord(DoubleOctave):
     '''
     Representation of a chord in its abstract and realized states.
     '''
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, value: int = 1):
+        super().__init__(value)
 
 
 
