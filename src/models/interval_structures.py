@@ -76,6 +76,19 @@ class LimitedIntervalStructure(IntervalStructure):
 
 
     @property
+    def inversions(self) -> tuple[int, ...]:
+        '''
+        Return a tuple containing the integer representations of all possible
+        inversions of the current interval structure.
+        '''
+        rotations: list[int] = []
+        for _ in range(self.value.bit_count()):
+            self.next_inversion()
+            rotations.append(int(self))
+        return tuple(rotations)
+
+
+    @property
     def bits(self) -> int:
         '''Public reference for private bit-limit.'''
         return self.__bits

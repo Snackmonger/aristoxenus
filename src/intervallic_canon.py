@@ -7,18 +7,18 @@ from .bitwise import transpose_interval
 # -------------------------------
 
 # Intervals of the 12 tone octave.
-HEMITONE =              0b11
-TONE =                  0b101
-HEMIOLION =             0b1001
-DITONE =                0b10001
-DIATESSARON =           0b100001
-TRITONE =               0b1000001
-DIAPENTE =              0b10000001
-COMPOUND_HEMITONE =     0b100000001
-COMPOUND_TONE =         0b1000000001
-COMPOUND_HEMIOLION =    0b10000000001
-COMPOUND_DITONE =       0b100000000001
-DIAPASON =              0b1000000000001
+HEMITONE = 0b11
+TONE = 0b101
+HEMIOLION = 0b1001
+DITONE = 0b10001
+DIATESSARON = 0b100001
+TRITONE = 0b1000001
+DIAPENTE = 0b10000001
+COMPOUND_HEMITONE = 0b100000001
+COMPOUND_TONE = 0b1000000001
+COMPOUND_HEMIOLION = 0b10000000001
+COMPOUND_DITONE = 0b100000000001
+DIAPASON = 0b1000000000001
 
 # Common triads: structures that are compounds of 2 intervals.
 MAJOR_TRIAD = DITONE | DIAPENTE
@@ -45,30 +45,51 @@ AUGMENTED_MAJOR_SEVENTH = AUGMENTED_TRIAD | COMPOUND_DITONE     # Caug@Emaj
 DOMINANT_SEVENTH_FLAT_FIVE = MAJOR_FLAT_5 | COMPOUND_HEMIOLION  # Cmajb5@Gbmajb5
 
 # Heptatonic scale forms: these serve as the canonical interval structures that
-# heptatonic modes will be considered to be inversions of. Heptatonic scales can be 
+# heptatonic modes will be considered to be inversions of. Heptatonic scales can be
 # expressed as a polychord consisting of a tetrad and a triad (or vice-versa) separated
 # by a b2, 2, or #2.
-DIATONIC_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_TONE | COMPOUND_DITONE        
-ALTERED_SCALE = HEMITONE | HEMIOLION | DITONE |TRITONE | COMPOUND_HEMITONE | COMPOUND_HEMIOLION     
+DIATONIC_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_TONE | COMPOUND_DITONE
+ALTERED_SCALE = HEMITONE | HEMIOLION | DITONE | TRITONE | COMPOUND_HEMITONE | COMPOUND_HEMIOLION
 HEMITONIC_SCALE = HEMITONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_TONE | COMPOUND_DITONE
 HEMIOLIC_SCALE = HEMIOLION | DITONE | DIATESSARON | DIAPENTE | COMPOUND_TONE | COMPOUND_DITONE
 DIMINISHED_SCALE = TONE | DITONE | DIATESSARON | TRITONE | COMPOUND_TONE | COMPOUND_DITONE
 AUGMENTED_SCALE = TONE | DITONE | DIATESSARON | COMPOUND_HEMITONE | COMPOUND_TONE | COMPOUND_DITONE
 HARMONIC_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_HEMITONE | COMPOUND_DITONE
 BISEPTIMAL_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_HEMIOLION | COMPOUND_DITONE
+PALEOCHROMATIC_SCALE = HEMITONE | DITONE | DIATESSARON | TRITONE | COMPOUND_TONE | COMPOUND_DITONE
 
 # This is the order scales will be compared. Scales that arent simply rotations of one of these
 # will be expressed as a variant of one of these, with this order being the preference. Thus, if
 # a scale can be expressed as diatonic +1 modification (or a mode of same), it will be, otherwise,
 # we check if it can be expressed as altered +1, and so on until a suitable match is found.
-HEPTATONIC_ORDER = [DIATONIC_SCALE, 
-                    ALTERED_SCALE, 
-                    HEMITONIC_SCALE, 
-                    HEMIOLIC_SCALE, 
-                    DIMINISHED_SCALE, 
-                    AUGMENTED_SCALE, 
-                    HARMONIC_SCALE, 
+HEPTATONIC_ORDER = [DIATONIC_SCALE,
+                    ALTERED_SCALE,
+                    HEMITONIC_SCALE,
+                    HEMIOLIC_SCALE,
+                    DIMINISHED_SCALE,
+                    AUGMENTED_SCALE,
+                    HARMONIC_SCALE,
                     BISEPTIMAL_SCALE]
+
+DIATONIC_LABEL = 'diatonic'
+ALTERED_LABEL = 'altered'
+HEMITONIC_LABEL = 'hemitonic'
+HEMIOLIC_LABEL = 'hemiolic'
+DIMINISHED_LABEL = 'diminished'
+AUGMENTED_LABEL = 'augmented'
+HARMONIC_LABEL = 'harmonic'
+BISEPTIMAL_LABEL = 'biseptimal'
+PALEOCHROMATIC_LABEL = 'paleochromatic'
+
+HEP_DICT = {DIATONIC_SCALE: DIATONIC_LABEL,
+            ALTERED_SCALE: ALTERED_LABEL,
+            HEMITONIC_SCALE: HEMITONIC_LABEL,
+            HEMIOLIC_SCALE: HEMIOLIC_LABEL,
+            DIMINISHED_SCALE: DIMINISHED_LABEL,
+            AUGMENTED_SCALE: AUGMENTED_LABEL,
+            HARMONIC_SCALE: HARMONIC_LABEL,
+            BISEPTIMAL_SCALE: BISEPTIMAL_LABEL,
+            PALEOCHROMATIC_SCALE: PALEOCHROMATIC_LABEL}
 
 
 # Divisions of the double octave.

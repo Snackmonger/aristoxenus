@@ -3,6 +3,8 @@ import sys
 
 from .intervallic_canon import *
 from .bitwise import has_interval
+from .errors import HeptatonicScaleError
+from .models.interval_structures import HeptatonicScale
 
 from .vocabulary import (symbol_elements,
                          SLASH_CHORD_DIVIDER_SYMBOL,
@@ -209,3 +211,40 @@ def __parse_polychord(polychord_symbol: str) -> int:
                 compiled_structure |= (subchord_structure << distance)
 
     return compiled_structure
+
+
+def parse_heptatonic_scale_structure(scale_structure:int):
+    '''
+    Take an integer of no more than 12 bits, of which exactly 7 are flipped,
+    and attempt to assign a name to it.    
+    '''
+    if scale_structure.bit_length() > 12 or scale_structure.bit_count() != 7:
+        raise HeptatonicScaleError
+    
+    scale: HeptatonicScale = HeptatonicScale(scale_structure)
+    inversions: tuple[int, ...] = scale.inversions
+
+    parent: str = ''
+    mode: int = 0
+    found_parent: bool = False
+    for heptatonic_supertype in HEPTATONIC_ORDER:
+        supertype_scale: HeptatonicScale = HeptatonicScale(heptatonic_supertype)
+        supertype_modes: tuple[int, ...] = supertype_scale.inversions
+
+        for inversion in inversions:
+            if inversion in supertype_modes:
+                found_parent = True
+                parent = HEP_DICT[heptatonic_supertype]
+                mode = supertype_modes.index(inversion)
+
+    if found_parent is True:
+        return (parent, mode)
+        
+    # Find nearest comparison... starting from the diatonic, 
+    # seek out scales that have same structure with X number
+    # of mods, and return the scale with the fewest mods.
+
+
+
+
+
