@@ -401,7 +401,7 @@ def equal_temperament() -> list[float]:
     Returns
     -------
     list of float
-        A list of 12 note names, using the given accidental and the naturals.
+        A list of 108 frequencies, rounded to three decimal places.
     '''
     centre_name: str = __CENTRAL_REFERENCE_NOTE_NAME
     centre_freq: int = __CENTRAL_REFERENCE_NOTE_FREQUENCY
