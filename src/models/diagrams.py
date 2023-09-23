@@ -20,7 +20,7 @@ def guitar_tuning(strings: int = 6,
 
     Returns
     -------
-    out : tuple of tuple of str
+    tuple of tuple of str
         An array representing the notes of a guitar in the given formatting.
 
     Examples

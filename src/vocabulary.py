@@ -1,5 +1,10 @@
-'''Collection of canonical strings used as decypherable symbols and dict keys.'''
-from .intervallic_canon import *
+'''
+Collection of canonical strings used as decypherable symbols and dict keys.
+'''
+
+from .bitwise import transpose_interval
+from . import intervallic_canon as interval
+
 
 # Accidentals.
 SHARP = 'sharp'
@@ -101,30 +106,30 @@ CHORD_SYMBOL_LIST = CHORD_MAJOR_SYMBOL_LIST + CHORD_MINOR_SYMBOL_LIST + \
     CHORD_AUGMENTED_SYMBOL_LIST + CHORD_DIMINISHED_SYMBOL_LIST
 
 # Symbols that correspond explicitly to given intervals.
-basic_symbols = {HEMITONE: [CHORD_FLAT_2],
-                 TONE: [CHORD_2, CHORD_SUS_2],
-                 HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3, CHORD_MINUS, CHORD_M_LOWER, CHORD_MIN],
-                 DITONE: [CHORD_3, CHORD_FLAT_4, CHORD_MAJ, CHORD_M_UPPER, CHORD_MAJ_DELTA],
-                 DIATESSARON: [CHORD_SUS_4, CHORD_4, CHORD_SHARP_3],
-                 TRITONE: [CHORD_SHARP_4, CHORD_FLAT_5],
-                 DIAPENTE: [CHORD_5],
-                 COMPOUND_HEMITONE: [CHORD_AUG, CHORD_AUG_5, CHORD_SHARP_5, CHORD_FLAT_6, CHORD_PLUS],
-                 COMPOUND_TONE: [CHORD_6, CHORD_DOUBLE_FLAT_7],
-                 COMPOUND_HEMIOLION: [CHORD_7, CHORD_FLAT_7, CHORD_SHARP_6],
-                 COMPOUND_DITONE: [CHORD_MAJ_7, CHORD_M7_UPPER, CHORD_MAJ_DELTA7],
-                 DIAPASON: [CHORD_8],
-                 transpose_interval(HEMITONE): [CHORD_FLAT_9],
-                 transpose_interval(TONE): [CHORD_9],
-                 transpose_interval(HEMIOLION): [CHORD_SHARP_9, CHORD_FLAT_10],
-                 transpose_interval(DITONE): [CHORD_10, CHORD_FLAT_11],
-                 transpose_interval(DIATESSARON): [CHORD_11, CHORD_SHARP_10],
-                 transpose_interval(TRITONE): [CHORD_SHARP_11, CHORD_FLAT_12],
-                 transpose_interval(DIAPENTE): [CHORD_12],
-                 transpose_interval(COMPOUND_HEMITONE): [CHORD_FLAT_13, CHORD_SHARP_12],
-                 transpose_interval(COMPOUND_TONE): [CHORD_13],
-                 transpose_interval(COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
-                 transpose_interval(COMPOUND_DITONE): [CHORD_14],
-                 transpose_interval(DIAPASON): [CHORD_15],
+basic_symbols = {interval.HEMITONE: [CHORD_FLAT_2],
+                 interval.TONE: [CHORD_2, CHORD_SUS_2],
+                 interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3, CHORD_MINUS, CHORD_M_LOWER, CHORD_MIN],
+                 interval.DITONE: [CHORD_3, CHORD_FLAT_4, CHORD_MAJ, CHORD_M_UPPER, CHORD_MAJ_DELTA],
+                 interval.DIATESSARON: [CHORD_SUS_4, CHORD_4, CHORD_SHARP_3],
+                 interval.TRITONE: [CHORD_SHARP_4, CHORD_FLAT_5],
+                 interval.DIAPENTE: [CHORD_5],
+                 interval.COMPOUND_HEMITONE: [CHORD_AUG, CHORD_AUG_5, CHORD_SHARP_5, CHORD_FLAT_6, CHORD_PLUS],
+                 interval.COMPOUND_TONE: [CHORD_6, CHORD_DOUBLE_FLAT_7],
+                 interval.COMPOUND_HEMIOLION: [CHORD_7, CHORD_FLAT_7, CHORD_SHARP_6],
+                 interval.COMPOUND_DITONE: [CHORD_MAJ_7, CHORD_M7_UPPER, CHORD_MAJ_DELTA7],
+                 interval.DIAPASON: [CHORD_8],
+                 transpose_interval(interval.HEMITONE): [CHORD_FLAT_9],
+                 transpose_interval(interval.TONE): [CHORD_9],
+                 transpose_interval(interval.HEMIOLION): [CHORD_SHARP_9, CHORD_FLAT_10],
+                 transpose_interval(interval.DITONE): [CHORD_10, CHORD_FLAT_11],
+                 transpose_interval(interval.DIATESSARON): [CHORD_11, CHORD_SHARP_10],
+                 transpose_interval(interval.TRITONE): [CHORD_SHARP_11, CHORD_FLAT_12],
+                 transpose_interval(interval.DIAPENTE): [CHORD_12],
+                 transpose_interval(interval.COMPOUND_HEMITONE): [CHORD_FLAT_13, CHORD_SHARP_12],
+                 transpose_interval(interval.COMPOUND_TONE): [CHORD_13],
+                 transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
+                 transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
+                 transpose_interval(interval.DIAPASON): [CHORD_15],
 
                  }
 

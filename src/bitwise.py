@@ -8,6 +8,8 @@ logger = loguru.logger
 def has_interval(collection: int, interval: int) -> bool:
     '''
     Return true if the given interval appears in the interval collection.
+
+    
     '''
     return interval & collection == interval
 

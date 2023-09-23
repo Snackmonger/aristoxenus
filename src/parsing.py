@@ -52,15 +52,27 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     '''
     Return an integer representing an interval map of a given chord symbol.
 
-    The system outlined here is meant to parse standard chord symbols and
-    their variants. 
+    Parameters
+    ----------
+    chord_symbol : str
+        A chord symbol with note name, extensions, and modifiers.
+
+    Returns
+    -------
+    int
+        An integer representation of an interval map.
+
+    Notes
+    -----
+    A variety of standard forms are supported. If the parser encounters any
+    unrecognized symbol, it simply ignores it, and always returns a result.
 
     The parser will treat all 'add' and 'no' notations last (even if they are 
     not written last in the chord symbol), so they can be used to make explicit 
     statements and corrections about a chord's structure:
 
-        Em7add9 >> (int) >>  E, G, B, D, F#
-        Em7maj9nob3 >> (int) >> E, G#, B, D, F#
+        Em7add9 -> (int) ->  E, G, B, D, F#
+        Em7maj9nob3 -> (int) -> E, G#, B, D, F#
     '''
     structure: int = DIAPENTE
 
@@ -150,7 +162,17 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
 def __parse_slash_chord(slash_chord_symbol: str) -> int:
     '''
-    Parse a chord in 'slash' notation (e.g.: G/Bb, Cm7/Eb).    
+    Parse a chord in 'slash' notation (e.g.: G/Bb, Cm7/Eb).   
+
+    Parameters
+    ----------
+    slash_chord_symbol : str
+        A chord in slash notation
+
+    Returns
+    -------
+    int
+        An integer representation of an interval map.
     '''
     if slash_chord_symbol.count('/') > 1:
         raise ValueError(
@@ -169,6 +191,10 @@ def __parse_polychord(polychord_symbol: str) -> int:
     '''
     Parse a chord in 'polychord' notation.
 
+    ...
+
+    Notes
+    -----
     A polychord is entered as a sequence of chord symbols
     separated by the @ symbol. Each successive chord symbol in 
     the polychord will be understood as referring to the note
@@ -176,7 +202,7 @@ def __parse_polychord(polychord_symbol: str) -> int:
 
     E.g. 
 
-        Cmaj7@Ebm7b5    >>        0b10101011011001
+        Cmaj7@Ebm7b5    ->        0b10101011011001
                     (C0 Eb0 E0 Gb0 G0 Bbb0 B0 Db1)
     '''
     compiled_structure: int = 1

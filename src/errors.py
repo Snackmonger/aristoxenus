@@ -7,6 +7,7 @@ class IntervalOutOfBoundsError(ValueError):
     parameter 'oob' to 'error'
     '''
 
+
 class MisconfiguredOOBError(ValueError):
     '''
     Error indicating that the LimitedIntervalStructure has parameter 'oob' set to a
