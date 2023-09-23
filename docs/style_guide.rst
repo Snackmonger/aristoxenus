@@ -26,9 +26,9 @@ We assume that a chord contains a p5 unless a symbol indicates otherwise.
 Therefore, we refer to augmented chords as 'maj#5' and diminished chords
 as 'mb5'. E.g.:
 
-    - Cmaj#5 >> C E G#
-    - Aminb5 >> A C Eb
-    - Ebmajb5 >> Eb G Bb
+    - Cmaj#5 -> C E G#
+    - Aminb5 -> A C Eb
+    - Ebmajb5 -> Eb G Bb
 
 Exceptionally, 'dim7' is prescribed instead of the structural 'minbb7b5', for
 its readability and common usage. Although 'dim' and 'aug' are not prescribed 
@@ -44,47 +44,47 @@ Seventh chords are formed according to common idioms:
 
 E.g.:
 
-    - Amin7 >> A C E G
-    - G7 >> G B D F
-    - Dmaj7 >> D F A C 
-    - Fdim7 >> F Ab Cb Ebb
-    - Gmmaj7 >> G Bb D F#
+    - Amin7 -> A C E G
+    - G7 -> G B D F
+    - Dmaj7 -> D F A C 
+    - Fdim7 -> F Ab Cb Ebb
+    - Gmmaj7 -> G Bb D F#
 
 Extensions 9, 11, and 13 may replace 7 in the above constructions.
 Each new extention also includes the previous one(s). The resulting 
 chord will have an idiomatic seventh as above, but the extensions are 
 always natural intervals. 
 
-    - Cmaj7   >> C, E, G, B
-    - Cmaj9   >> C, E, G, B, D
-    - Cmaj11  >> C, E, G, B, D, F
-    - Cmaj13  >> C, E, G, B, D, F, A
-    - Cm13    >> C, Eb, G, Bb, D, F, A
+    - Cmaj7   -> C, E, G, B
+    - Cmaj9   -> C, E, G, B, D
+    - Cmaj11  -> C, E, G, B, D, F
+    - Cmaj13  -> C, E, G, B, D, F, A
+    - Cm13    -> C, Eb, G, Bb, D, F, A
 
 As above, an altered 5th comes *after* the 
 numeral. E.g.:
 
-    - Cm9b5   >> C, Eb, Gb, Bb, D
-    - Cmaj7#5 >> C, E, G#, B
-    - C7#5    >> C, E, G#, Bb
+    - Cm9b5   -> C, Eb, Gb, Bb, D
+    - Cmaj7#5 -> C, E, G#, B
+    - C7#5    -> C, E, G#, Bb
 
 However, since 'dim7' is a prescribed synbol, no altered 5th is
 necessary in, e.g.:
 
-    - Cdim11  >> C, Eb, Gb, A, D, F
+    - Cdim11  -> C, Eb, Gb, A, D, F
 
 If an altered version of one of these extensions appears after an
 unaltered precedent, and there are no other intervening symbols,
 the chord will contain all the unaltered intervals, plus the 
 altered interval. E.g.:
 
-    - Cmaj11b13 >> C, E, G, B, D, F, Ab
+    - Cmaj11b13 -> C, E, G, B, D, F, Ab
 
 However, if the unaltered symbol also included an altered fifth,
 which is placed after the 7, 9, 11, or 13, then the additional
 alteration is placed after the altered fifth. E.g.:
 
-    - Cmaj11b5b13 >> C, E, Gb, B, D, F, Ab
+    - Cmaj11b5b13 -> C, E, Gb, B, D, F, Ab
 
 The 'add' type prefixes indicate that the specified interval is 
 added to the structure of the preceding symbol, without including
@@ -210,9 +210,9 @@ because an 'Aeolian' should have a b3, or that a 'Lydian' should have a #4.
 
 We prescribe that the name of the canonical scale comes first, then the name of the mode. The parsers will recognize both orders as having the same meaning.
 
-    - diatonic aeolian, A >> A B C D E F G
-    - augmented aeolian, A >> A B C D E F G#
-    - hemiolic aeolian, A >> A B C D# E F G
+    - diatonic aeolian, A -> A B C D E F G
+    - augmented aeolian, A -> A B C D E F G#
+    - hemiolic aeolian, A -> A B C D# E F G
 
 Modal Symbols
 -------------
@@ -224,9 +224,9 @@ as *replacing* the corresponding note of the diatonic mode. If the modifier symb
 already present in the underlying diatonic mode, no replacement will take place. In this 
 context, the modifier symbols can never be used to make a scale other than a heptatonic scale. E.g.:
 
-    - aeoliannat3 >> altered aeolian
-    - lydianb3 >> harmonic lydian
-    - phrygianbb7 >> hemitonic phrygian
+    - aeoliannat3 -> altered aeolian
+    - lydianb3 -> harmonic lydian
+    - phrygianbb7 -> hemitonic phrygian
 
 The canonical modal symbol of any given interval structure will be derived from the canonical scales outlined above. Thus, the
 program will always identify a collection as 'doriannat7', never 'ionianb3', since the canonical form of the parent scale is 'altered ionian'
@@ -237,9 +237,9 @@ not allow for a sharp tonic, although it may be conceptually useful). No matter 
 attempts to rationalize a modal symbol, the parser will relate it to the canonical scales and
 their modes when seeking a match:
 
-    - mixolydianb6 >> altered aeolian
-    - lydian#6 >> hemiolic lydian
-    - dorian#4nat7 >> harmonic lydian
+    - mixolydianb6 -> altered aeolian
+    - lydian#6 -> hemiolic lydian
+    - dorian#4nat7 -> harmonic lydian
 
 Extended Modal Symbols
 ----------------------

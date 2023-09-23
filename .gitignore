@@ -12,3 +12,5 @@ src/__pycache__/parsing.cpython-311.pyc
 src/__pycache__/interval_structures.cpython-311.pyc
 src/__pycache__/bit_manipulation.cpython-311.pyc
 src/__pycache__/base_structures.cpython-311.pyc
+tests/__pycache__/utils_tests.cpython-311.pyc
+src/__pycache__/utils.cpython-311.pyc

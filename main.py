@@ -1,5 +1,6 @@
+from tests.utils_tests import test_greek_notation
+from src.greek_notation import parse_formatting
 
-from tests.models_tests import test1, test2, test3
 
-
-test3()
+sample = 'This is sample text to test whether the symbol replacement is working. &7i&.'
+print(parse_formatting(sample))

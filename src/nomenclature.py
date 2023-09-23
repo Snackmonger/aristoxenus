@@ -38,7 +38,19 @@ __ACCIDENTAL_NOTES: list[str] = __SHARPS + __FLATS
 def shift_list(list_: list[Any], new_first_member: Any) -> list[Any]:
     '''
     Rotate the list so that the given item is first.
-    (Just a shortcut for prettier syntax.)
+
+    Parameters
+    ----------
+    list_ : list
+        Python list with any values.
+    
+    new_first_member : Any
+        The value that will start the new order.
+
+    Returns
+    -------
+    list of Any
+        A list rotated so that the given member is first.
     '''
     return list_[list_.index(new_first_member[0]): ] + list_[ :list_.index(new_first_member[0])]
 
@@ -46,7 +58,18 @@ def shift_list(list_: list[Any], new_first_member: Any) -> list[Any]:
 
 def __chromatic(accidental_notes: list[str]) -> list[str]:
     '''
-    Return a chromatic scale using the given accidentals.
+    Return a chromatic octave using the given accidentals.
+
+    Parameters
+    ----------
+    accidental_notes : list of str
+        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
+        defines the type of accidentals that the octave will use.
+
+    Returns
+    -------
+    list of str
+        A list of 12 note names, in the given accidental style.
     '''
     new_scale: list[str] = []
     accidentals_in_scale: int = 0
@@ -60,8 +83,13 @@ def __chromatic(accidental_notes: list[str]) -> list[str]:
 
 def __enharmonic_decoder() -> dict[str, str]:
     '''
-    Generate a table for decoding the binomial form 
-    of a note with any number of sharps or flats.
+    Generate a table for decoding the binomial form of a note with any number 
+    of sharps or flats.
+
+    Returns
+    -------
+    dict
+        E.g. {'C#': 'C#|Db', ..., 'Ebb': 'D', ..., 'F###': 'G#|Ab', ...}
     '''
     enharmonic_equivalence_decoder: dict[str, str] = {}
     chromatic_binomials: list[str] = chromatic()
@@ -94,7 +122,10 @@ def __get_enharmonic_equivalents(note_name: str) -> list[str]:
     '''
     Compile a list of all enharmonic equivalents of a note in sharps or flats.
 
-        E.g.:   'E' >>  ['E', 'Fb', 'Gbbb', ..., 'D##', 'C####', ...]
+    Examples
+    --------
+    >>> __get_enharmonic_equivalents('E') 
+    ['E', 'Fb', 'Gbbb', ..., 'D##', 'C####', ...]
     '''
     list_of_equivalents: list[str] = []
     decoder: dict[str, str] = __enharmonic_decoder()
@@ -107,6 +138,12 @@ def __get_enharmonic_equivalents(note_name: str) -> list[str]:
 def legal_chord_names() -> list[str]:
     '''
     Return a list of note names that can function as legal chord root symbols. 
+
+    Returns
+    -------
+    list of str
+        A list of all notes with between 0 and 1 accidentals, excluding the
+        binomials.
     '''
     # Any natural or any natural + 1 accidental
     enharmonic_: dict[str, str] = __enharmonic_decoder()
@@ -121,7 +158,20 @@ def __identity(note_name: str) -> str:
     '''
     Return the alphabetic name of an accidental note.
 
-    E.g.:   'B###' >> 'B'
+    Parameters
+    ----------
+    note_name : str
+        An alphabetic note name with any number of accidentals.
+
+    Returns
+    -------
+    str
+        A natural note name.
+
+    Examples
+    --------
+    >>> __identity('B###') 
+    'B'
     '''
     if note_name in __BINOMIALS:
         raise ValueError('Cannot resolve a binomial note name.')
@@ -131,6 +181,26 @@ def __identity(note_name: str) -> str:
 def __is_homonymous(note_one: str, note_two: str) -> bool:
     '''
     Check whether two notes are variants of the same alphabetic name.
+
+    Parameters
+    ----------
+    note_one : str
+        An alphabetic note name with any number of accidentals.
+
+    note_two : str
+        An alphabetic note name with any number of accidentals.
+
+    Returns
+    -------
+    bool
+        True if the two notes have the same alphabetic letter name.
+
+    Examples
+    --------
+    >>> __is_homonymous('B###', 'Bb') 
+    True
+    >>> __is_homonymous('B###', 'Eb') 
+    False
     '''
     return __identity(note_one) == __identity(note_two)
 
@@ -138,7 +208,25 @@ def __is_homonymous(note_one: str, note_two: str) -> bool:
 def decode_enharmonic(note_name: str) -> str:
     '''
     Return the binomial form of a given note name with up to 12 accidentals.
+
+    Parameters
+    ----------
+    note_name : str
+        A note name with 0 to 12 accidentals.
+
+    Returns
+    -------
+    str
+        A binomial note name enharmonically equivalent to the given note name
+        
+    Examples
+    --------
+    >>> decode_scientific_enharmonic('B#')
+    'C'
+    >>> decode_scientific_enharmonic('A######')
+    'D#|Eb'
     '''
+    
     decoder: dict[str, str] = __enharmonic_decoder()
     if note_name in chromatic():
         return note_name
@@ -152,27 +240,44 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     Return a note with the same enharmonic value as the given note,
     but under the given alphabetic name.
 
-    Params:
-        note_value:     a scientific note with 0 to 1 accidentals 
-                        (binomials count as 1 accental)
+    Parameters
+    ----------
+    note_value : str
+        A note name with 0 to 1 accidentals (binomials count as 1 accental).
 
-        note_name:      one of the 7 natural notes
+    note_name : str    
+        One of the 7 natural notes
 
-    This function prefers the enharmonic equivalent with the 
-    fewest accidentals. When shifting by tritone, the number 
-    of accidentals will be equal in both sharps and flats, 
-    so we arbitrarily default to sharps.
+    Notes
+    -----
+    This function prefers the enharmonic equivalent with the fewest 
+    accidentals. When shifting by tritone, the number of accidentals will be 
+    equal in both sharps and flats, so we arbitrarily default to sharps.
 
     Returns
-    =======
-        E.g.    'Eb' , 'A' >> 'A######'
-                'Eb' , 'B' >> 'B####'
-                'Eb' , 'C' >> 'C###'
-                'Eb' , 'D' >> 'D#' 
-                'Eb' , 'E' >> 'Eb'
-                'Eb' , 'F' >> 'Fbb'
-                'Eb' , 'G' >> 'Gbbb'
-                'Eb' , 'A' >> 'A######'
+    -------
+    str
+        A note with between 0 and 6 accidentals. No note name is more than six
+        steps from any other name, depending on the direction.
+
+    Examples
+    --------
+    >>> encode_enharmonic('Eb' , 'A') 
+    'A######'
+    >>> encode_enharmonic('Eb' , 'B')
+    'B####'
+    >>> encode_enharmonic('Eb' , 'C')
+    'C###'
+    >>> encode_enharmonic('Eb' , 'D')
+    'D#' 
+    >>> encode_enharmonic('Eb' , 'E')
+    'Eb'
+    >>> encode_enharmonic('Eb' , 'F') 
+    'Fbb'
+    >>> encode_enharmonic('Eb' , 'G') 
+    'Gbbb'
+    >>> encode_enharmonic('Eb' , 'A') 
+    'A######'
     '''
     if note_name not in __NATURALS:
         raise ValueError('Target note name must be from the naturals.')
@@ -189,6 +294,21 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
 def __scientific_octave(accidental_notes: list[str], octave: int) -> list[str]:
     '''
     Return a scientific chromatic scale in the given style and octave.
+
+    Parameters
+    ----------
+    accidental_notes : list[str]
+        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
+        defines the type of accidentals that the result will use.
+
+    octave : int
+        The range number appended to the note name.
+
+    Returns
+    -------
+    str
+        A binomial note name enharmonically equivalent to the given note name
+        
     '''
     return [note + str(octave) for note in __chromatic(accidental_notes)]
 
@@ -197,9 +317,26 @@ def decode_scientific_enharmonic(note_name: str) -> str:
     '''
     Return the scientific binomial for a given scientific multi-accidental or halfstep.
 
-    E.g.:   B#4        >>  C5
-            A######7   >>  D#|Eb8
+    Parameters
+    ----------
+    note_name : str
+        A note name with 1 or more accidentals and a numeral
+
+    Returns
+    -------
+    str
+        A binomial note name enharmonically equivalent to the given note name
+        
+    Examples
+    --------
+    >>> decode_scientific_enharmonic('B#4')
+    'C5'
+
+    >>> decode_scientific_enharmonic('A######7')
+    'D#|Eb8'
+
     '''
+
     # A scientific binomial is already the requested note name.
     scientific_chromatic_binomials: list[str] = __scientific_range(__BINOMIALS)
     if note_name in scientific_chromatic_binomials:
@@ -236,8 +373,18 @@ def decode_scientific_enharmonic(note_name: str) -> str:
 
 def __scientific_range(accidental_notes: list[str]) -> list[str]:
     '''
-    Return a full range (C0 - B8) of scientific notation for a given
-    accidental.
+    Return a full range (C0 - B8) of scientific notation for a given accidental.
+
+    Parameters
+    ----------
+    accidental_notes : list of str
+        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
+        defines the type of accidentals that the result will use.
+
+    Returns
+    -------
+    list of str
+        A list of 108 note names in the given accidental style.
     '''
     full_range: list[str] = []
     for octave in range(__NUMBER_OF_OCTAVES):
@@ -248,8 +395,13 @@ def __scientific_range(accidental_notes: list[str]) -> list[str]:
 
 def equal_temperament() -> list[float]:
     '''
-    Return a list of frequencies corresponding to the range of the 
-    scientific chromatic scales (C0 - B8).
+    Return a list of frequencies corresponding to the range of the scientific 
+    chromatic scales (C0 - B8).
+
+    Returns
+    -------
+    list of float
+        A list of 12 note names, using the given accidental and the naturals.
     '''
     centre_name: str = __CENTRAL_REFERENCE_NOTE_NAME
     centre_freq: int = __CENTRAL_REFERENCE_NOTE_FREQUENCY
@@ -277,21 +429,52 @@ def equal_temperament() -> list[float]:
     return frequencies
 
 
-def encode_frequency(frequency: float, accidentals: list[str]) -> str:
+def encode_frequency(frequency: float, accidental_notes: list[str]) -> str:
     '''
-    Return a scientific note name for a 
-    given frequency and accidental style.
+    Return a scientific note name for a given frequency and accidental style.
+
+    Parameters
+    ----------
+    frequency : float 
+        A frequency in 12-TET @ A4 = 440Hz
+
+    accidental_notes : list of str
+        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
+        defines the type of accidentals that the result will use.
+
+    Returns
+    -------
+    str
+        A note name with 0 to 1 accidentals plus a numeral representing
+        the octave.
+
+    Notes
+    -----
+    This is designed to be used internally, so the given frequency will not
+    be recognized if it has been rounded to fewer than 3 decimal places.
+
     '''
+    frequency = round(frequency, __FREQUENCY_DECIMAL_LIMIT)
     frequencies: list[float] = equal_temperament()
     if frequency in frequencies:
-        return __scientific_range(accidentals)[frequencies.index(frequency)]
-    raise ValueError(f'Invalid request {frequency} {accidentals}')
+        return __scientific_range(accidental_notes)[frequencies.index(frequency)]
+    raise ValueError(f'Invalid request {frequency} {accidental_notes}')
 
 
 def decode_frequency(note_name: str) -> float:
     '''
-    Return a frequency for a given scientific 
-    note name of any accidental style.
+    Return a frequency for a given scientific note name of any accidental style.
+
+    Parameters
+    ----------
+    note_name : str
+        A note name with 0 to 1 accidentals plus a numeral representing
+        the octave.
+
+    Returns
+    -------
+    float
+        A frequency corresponding to the given note name.
     '''
     try:
         note_name = decode_scientific_enharmonic(note_name)
@@ -339,15 +522,30 @@ def render(interval_structure: int,
 
 def force_heptatonic(note_name: str, scale_pattern: int) -> list[str]:
     '''
-    Take a starting note from the naturals, sharps, or flats, 
-    and a scale pattern, and return an alphabetic spelling 
-    in which each of ABCDEFG (or a variant) appears exactly
-    once. 
+    Force a heptatonic scale pattern to conform to ABCDEFG nomenclature.
 
-    The scale pattern must have exactly 7 flipped bits in this type
-    of nomenclature.
+    For a given note name and scale pattern, return an alphabetic spelling in
+    which each of ABCDEFG (or a variant) appears exactly once. The scale 
+    pattern must have exactly 7 flipped bits in this type of nomenclature.
 
-    E.g.: 'B#', 0b101010110101 >> B#, C##, D##, E#, F##, G##, A##, B#
+    Parameters
+    ----------
+    note_name : str 
+        A real note name: a natural, sharp, or flat, but not a binomial.
+    
+    scale_pattern : int
+        An integer of no more than 12 bits with exactly 7 flipped bits.
+
+    Returns
+    -------
+    list of str
+        A list of 7 str, representing 1 each of ABCDEFG, plus accidentals.
+
+    Examples
+    --------
+    >>> force_heptatonic('B#', 0b101010110101)
+    B#, C##, D##, E#, F##, G##, A##, B#
+
     '''
     if note_name in __BINOMIALS:
         raise ValueError(
@@ -365,23 +563,35 @@ def force_heptatonic(note_name: str, scale_pattern: int) -> list[str]:
     # Force each binomial note value to adopt the next alphabetic note name.
     return [encode_enharmonic(binomial[i], plain[i]) for i in range(__NOTES)]
 
-    # heptatonic_names: list[str] = []
-    # for scale_degree in range(__NOTES):
-    #     binomial_value = binomial_scale[scale_degree]
-    #     target_name = plain_scale[scale_degree]
-    #     heptatonic_names.append(encode_enharmonic(binomial_value, target_name))
-    # return heptatonic_names
-
 
 def best_heptatonic(note_name: str, scale_pattern: int) -> list[str]:
     '''
-    Given a note name and a scale pattern, return the better 
-    spelling of the two accidental types (fewest total accidentals).
+    Choose the best set of alphabetic note names for a given heptatonic scale.
 
-    Accepts naturals, sharps, flats, and binomials.
+    Given a note name and a scale pattern, return the better spelling of the 
+    two accidental types (fewest total accidentals). Accepts naturals, sharps, 
+    flats, and binomials.
 
-        E.g.:   'A#|Bb', 0b101011010101   >>  Bb, C, D, Eb, F, G, Ab
-                'A#|Bb', 0b101101011010   >>  A#, B#, C, D#, E#, F#, G#
+    Parameters
+    ----------
+    note_name : str 
+        Any note name.
+    
+    scale_pattern : int
+        An integer of no more than 12 bits with exactly 7 flipped bits.
+
+    Returns
+    -------
+    list of str
+        A list of 7 str, representing 1 each of ABCDEFG, plus accidentals.
+
+    
+    Examples
+    --------
+
+    >>> best_heptatonic('A#|Bb', 0b101010110101)
+    Bb, C, D, Eb, F, G, Ab
+    
     '''
     # Convert sharps and flats to binomials.
     if note_name in __ACCIDENTAL_NOTES or __enharmonic_decoder():
