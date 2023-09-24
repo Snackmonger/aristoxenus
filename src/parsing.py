@@ -1,17 +1,15 @@
 import loguru
 import sys
 
-from . import vocabulary as vocab
+from . import chord_symbols
 from . import intervallic_canon as intervals
+from . import bitwise
+from . import errors
+from . import nomenclature
+from . import constants
+from . import utils
+from .models import interval_structures
 
-from .bitwise import has_interval
-from .errors import HeptatonicScaleError, ChordNameError
-from .models.interval_structures import HeptatonicScale
-
-from .nomenclature import (legal_chord_names,
-                           decode_enharmonic,
-                           chromatic,
-                           shift_list)
 
 # ----------------------------------------------------------
 logger = loguru.logger
@@ -20,22 +18,16 @@ logger.add(sys.stderr, format="{time} {level} {message}",
 logger.add("file_1.log", rotation="10 MB")
 #-----------------------------------------------------------
 
-__additive: dict[str, int] = {
-    'add' + symbol: interval for symbol, interval in vocab.symbol_elements.items()}
-__subtractive: dict[str, int] = {
-    'no' + symbol: interval for symbol, interval in vocab.symbol_elements.items()}
-
-
 def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
     root: str
-    for note in legal_chord_names():
+    for note in nomenclature.legal_chord_names():
         if note in chord_symbol:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)
             return root, chord_symbol
         
-    raise ChordNameError('Unknown note name.')
+    raise errors.ChordNameError('Unknown note name.')
 
 
 def parse_chord_symbol(chord_symbol: str) -> int:
@@ -81,9 +73,9 @@ def parse_chord_symbol(chord_symbol: str) -> int:
         chord_symbol = chord_symbol.replace('6/9', '69')
 
     # Delegate special structures to auxiliary functions.
-    if vocab.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
+    if chord_symbols.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
         return __parse_polychord(chord_symbol)
-    if vocab.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
+    if chord_symbols.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
         return __parse_slash_chord(chord_symbol)
 
     chord_symbol = __remove_chord_prefix(chord_symbol)[1]
@@ -91,11 +83,11 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     # Remove all 'add'/'no' modifiers
     # to see what the base symbol is.
     add_drop: list[str] = []
-    for add in __additive:
+    for add in chord_symbols.additive:
         if add in chord_symbol:
             chord_symbol = chord_symbol.replace(add, '')
             add_drop.append(add)
-    for drop in __subtractive:
+    for drop in chord_symbols.subtractive:
         if drop in chord_symbol:
             chord_symbol = chord_symbol.replace(drop, '')
             add_drop.append(drop)
@@ -106,15 +98,15 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
     # Powerchord suffix: D5, E5, F5, etc.,
     # (implies a p5 and p8).
-    if chord_symbol == vocab.CHORD_5:
+    if chord_symbol == chord_symbols.CHORD_5:
         return structure | intervals.DIAPASON
 
     # First element is a prototypical prefix (maj11,
     # min9, 13, etc.) implying intervening intervals.
-    for extension, extended_structure in {vocab.CHORD_9: intervals.NINTH_CHORD_EXTENSIONS,
-                                          vocab.CHORD_11: intervals.ELEVENTH_CHORD_EXTENSIONS,
-                                          vocab.CHORD_13: intervals.THIRTEENTH_CHORD_EXTENSIONS}.items():
-        for symbol in vocab.CHORD_SYMBOL_LIST:
+    for extension, extended_structure in {chord_symbols.CHORD_9: intervals.NINTH_CHORD_EXTENSIONS,
+                                          chord_symbols.CHORD_11: intervals.ELEVENTH_CHORD_EXTENSIONS,
+                                          chord_symbols.CHORD_13: intervals.THIRTEENTH_CHORD_EXTENSIONS}.items():
+        for symbol in chord_symbols.CHORD_SYMBOL_LIST:
 
             # maj7, m7, dim9, aug11, etc.
             if chord_symbol.startswith(symbol+extension):
@@ -122,7 +114,7 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
                 # maj7 implies natural 7, unless it's the
                 # first symbol, which means also add3
-                if symbol in vocab.CHORD_MAJOR_SYMBOL_LIST:
+                if symbol in chord_symbols.CHORD_MAJOR_SYMBOL_LIST:
                     structure |= intervals.DITONE
 
         # C7, D7, F#7, etc. implies b7 and 3
@@ -131,13 +123,13 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
     # First element is another number: C2, C4, C6, etc.
     # (implies major triad)
-    for symbol in [vocab.CHORD_6, vocab.CHORD_2, vocab.CHORD_4]:
+    for symbol in [chord_symbols.CHORD_6, chord_symbols.CHORD_2, chord_symbols.CHORD_4]:
         if chord_symbol.startswith(symbol):
             structure |= intervals.DITONE
 
     # Process all remaining recognisable elements
     parsed_symbols: list[str] = []
-    for symbol_element, interval in sorted(vocab.symbol_elements.items(),
+    for symbol_element, interval in sorted(chord_symbols.symbol_elements.items(),
                                            key=lambda key: len(key[0]),
                                            reverse=True):
         # Add intervals to structure
@@ -153,21 +145,21 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
     # Handle add/no notation
     for symbol in add_drop:
-        if symbol in __additive:
-            structure |= __additive[symbol]
-        elif symbol in __subtractive:
-            structure ^= (__subtractive[symbol] - 1)  # 1 = tonic
+        if symbol in chord_symbols.additive:
+            structure |= chord_symbols.additive[symbol]
+        elif symbol in chord_symbols.subtractive:
+            structure ^= (chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
 
     return structure
 
 
-def __parse_slash_chord(slash_chord_symbol: str) -> int:
+def __parse_slash_chord(chord_symbol: str) -> int:
     '''
     Parse a chord in 'slash' notation (e.g.: G/Bb, Cm7/Eb).   
 
     Parameters
     ----------
-    slash_chord_symbol : str
+    chord_symbol : str
         A chord in slash notation
 
     Returns
@@ -175,20 +167,20 @@ def __parse_slash_chord(slash_chord_symbol: str) -> int:
     int
         An integer representation of an interval map.
     '''
-    if slash_chord_symbol.count('/') > 1:
+    if chord_symbol.count('/') > 1:
         raise ValueError(
-            f'Irregularly formatted chord structure: {slash_chord_symbol}')
+            f'Irregularly formatted chord structure: {chord_symbol}')
 
-    bass: str = slash_chord_symbol.split('/')[1]
-    root: str = decode_enharmonic(__remove_chord_prefix(slash_chord_symbol)[0])
-    octave_from_bass: list[str] = shift_list(chromatic(), bass)
-    main_chord_structure: int = parse_chord_symbol(slash_chord_symbol.split('/')[0])
+    bass: str = chord_symbol.split('/')[1]
+    root: str = nomenclature.decode_enharmonic(__remove_chord_prefix(chord_symbol)[0])
+    octave_from_bass: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), bass)
+    main_chord_structure: int = parse_chord_symbol(chord_symbol.split('/')[0])
     extra_semitones: int = octave_from_bass.index(root)
 
     return (main_chord_structure << extra_semitones) + 1
 
 
-def __parse_polychord(polychord_symbol: str) -> int:
+def __parse_polychord(chord_symbol: str) -> int:
     '''
     Parse a chord in 'polychord' notation.
 
@@ -213,27 +205,26 @@ def __parse_polychord(polychord_symbol: str) -> int:
     octaves: int
     subchord_structure: int
     current_bass: str
-    chord_symbol: str
     
     # Break up the symbol and parse each subchord. For every chord that isn't
     # the first chord, transpose the resulting structure into the range of the
     # previous one.
-    for subchord_symbol in polychord_symbol.split('@'):
+    for subchord_symbol in chord_symbol.split('@'):
 
         # The polychord octave symbol means 'transpose the next chord up 1
         # octave'. The symbol can also be compounded to transpose multiple
         # octaves.
-        if vocab.POLYCHORD_OCTAVE_SYMBOL in subchord_symbol:
-            octaves = subchord_symbol.count(vocab.POLYCHORD_OCTAVE_SYMBOL)
+        if chord_symbols.POLYCHORD_OCTAVE_SYMBOL in subchord_symbol:
+            octaves = subchord_symbol.count(chord_symbols.POLYCHORD_OCTAVE_SYMBOL)
             distance += octaves * 12
 
 
         else:
             current_bass, chord_symbol = __remove_chord_prefix(subchord_symbol)
             subchord_structure = parse_chord_symbol(subchord_symbol)
-            if vocab.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
+            if chord_symbols.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
                 current_bass = chord_symbol.split(
-                    vocab.SLASH_CHORD_DIVIDER_SYMBOL)[-1]
+                    chord_symbols.SLASH_CHORD_DIVIDER_SYMBOL)[-1]
                 
             # First symbol
             if previous_bass == '':
@@ -241,7 +232,7 @@ def __parse_polychord(polychord_symbol: str) -> int:
                 previous_bass = decode_enharmonic(current_bass)
 
             else:
-                octave = shift_list(chromatic(), previous_bass)
+                octave = nomenclature.shift_list(chromatic(), previous_bass)
                 distance += octave.index(decode_enharmonic(current_bass))
                 previous_bass = decode_enharmonic(current_bass)
                 compiled_structure |= (subchord_structure << distance)
@@ -249,22 +240,38 @@ def __parse_polychord(polychord_symbol: str) -> int:
     return compiled_structure
 
 
-def parse_heptatonic_scale_structure(scale_structure:int):
+def parse_heptatonic_scale_structure(interval_structure:int):
     '''
     Take an integer of no more than 12 bits, of which exactly 7 are flipped,
-    and attempt to assign a name to it.    
+    and attempt to assign a name to it.
+
+    Parameters
+    ----------
+    scale_structure : int
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+
+    Raises
+    ------
+    HeptatonicScaleError
+        _description_
     '''
-    if scale_structure.bit_length() > 12 or scale_structure.bit_count() != 7:
-        raise HeptatonicScaleError
     
-    scale: HeptatonicScale = HeptatonicScale(scale_structure)
+    if interval_structure.bit_length() > 12 or interval_structure.bit_count() != 7:
+        raise errors.HeptatonicScaleError
+    
+    scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(interval_structure)
     inversions: tuple[int, ...] = scale.inversions
 
     parent: str = ''
     mode: int = 0
     found_parent: bool = False
     for heptatonic_supertype in intervals.HEPTATONIC_ORDER:
-        supertype_scale: HeptatonicScale = HeptatonicScale(heptatonic_supertype)
+        supertype_scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(heptatonic_supertype)
         supertype_modes: tuple[int, ...] = supertype_scale.inversions
 
         for inversion in inversions:
@@ -281,11 +288,36 @@ def parse_heptatonic_scale_structure(scale_structure:int):
     # of mods, and return the scale with the fewest mods.
 
 
-def identify_chord_type(interval_structure: int) -> tuple[str, int, ...]:
+def identify_triad(interval_structure: int) -> dict[str, int|str]:
     '''
-    
+    Return the canonical identity of a given triadic interval structure.
+
+    The function searches through the canonical triads and permutes their
+    inversions and spread forms to seek a match for the given structure. 
+
+    Parameters
+    ----------
+    interval_structure : int
+        An integer of no more than 24 bits, representing a maximum of two
+        octaves.
+
+    Returns
+    -------
+    dict 
+        chord_identity : str
+            The canonical name of the chord structure.
+        inversion : int
+            The number of rotations the given structure is from the canonical
+            structure.
+        canonical_form : int
+            An integer representing the canonical form that was found.
+        structural_mods : list of str
+            A list containing any structural modifications that the parser
+            identified during analysis. For the triad parser, this is limited
+            to 'spread triad'.
     '''
-    
+
+
 
 
 def generate_chord_symbol(interval_structure: int, bass_note: str) -> str:
@@ -306,10 +338,20 @@ def generate_chord_symbol(interval_structure: int, bass_note: str) -> str:
 
     Notes
     -----
-    The interval structure will be parsed *as a chord*. We do not 
-    automatically transpose colour tones up to become extensions. The maximum
-    extent of the interval structure is 24 bits; any intervals beyond this 
-    limit will be transposed down one octave.
+    The interval structure will be parsed *as a chord*, even if its form might
+    more typically suggest a scalar structure. This entails that a colour tone
+    is treated differently than an extension, and we only transpose intervals
+    if they exceed the compass of two octaves.
+
+    The parser will attempt to find the most reasonable name for a chord. In 
+    some cases, this means articulating a structure as a slash chord or poly-
+    chord so as to avoid an awkward or complicated symbol. 
+
+    See Also
+    --------
+    `force_chord_symbol`
+        Also parses interval structures, but also ensures that the given bass
+        note will be considered the root, regardless of awkward nomenclature.
 
     '''
     # NOTE: this is the wrong approach. we should build a system to invert chords and 
@@ -319,43 +361,74 @@ def generate_chord_symbol(interval_structure: int, bass_note: str) -> str:
     symbols: list[str] = []
 
     # Check major third
-    if has_interval(interval_structure, intervals.DITONE):
+    if bitwise.has_interval(interval_structure, intervals.DITONE):
 
 
         # Check 7
-        if has_interval(interval_structure, intervals.COMPOUND_HEMIOLION):
+        if bitwise.has_interval(interval_structure, intervals.COMPOUND_HEMIOLION):
 
         # Check maj7
-        elif has_interval(interval_structure, intervals.COMPOUND_DITONE):
+        elif bitwise.has_interval(interval_structure, intervals.COMPOUND_DITONE):
 
 
         # Check implicit fifth.
-        if not has_interval(interval_structure, intervals.DIAPENTE):
+        if not bitwise.has_interval(interval_structure, intervals.DIAPENTE):
 
 
 
     # Check minor third
-    if has_interval(interval_structure, intervals.HEMIOLION):
+    if bitwise.has_interval(interval_structure, intervals.HEMIOLION):
 
 
         # Check 7
-        if has_interval(interval_structure, intervals.COMPOUND_HEMIOLION):
+        if bitwise.has_interval(interval_structure, intervals.COMPOUND_HEMIOLION):
 
 
         # Check implicit fifth.
-        if not has_interval(interval_structure, intervals.DIAPENTE):
+        if not bitwise.has_interval(interval_structure, intervals.DIAPENTE):
 
             
 
-
-
-
-
-
     
-        
+def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]) -> int:
+    '''
+    Generates a simplified skeleton of a full chord from a chord symbol.
 
+    Parameters
+    ----------
+    chord_symbol : str
+        Any regular chord symbol (not a slash chord or polychord).
 
+    Returns
+    -------
+    int
+        An integer representing an interval structure.
+
+    Notes
+    -----
+    A chord symbol frequently implies intervals, and the regular chord parser
+    always infers implied intervals. Jazz music generally limits the scope of
+    chord voicings to only the most important intervals. Intervals will be 
+    selectively removed from the structure until an ideal form with 2 to 4 
+    intervals can be found.
+
+    The function assembles a number of candidates and evaluateds them 
+    according to a hierarchy of constraints:
+
+    The highest interval of any chord will be ranked 1
+    Any altered fifth will be ranked 2
+    A major or minor 3rd will be ranked 3
+    A suspended 2 or 4 will be ranked 3 if there is no third, or 7 if there is a third
+    A major or b7 will be ranked 4
+    A secondary altered extension will be ranked 5
+    The root will be ranked 6
+    A secondary natural extension will be ranked 7
+    A perfect fifth will be ranked 7
+
+    Examples
+    --------
+
+    '''
     
 
 

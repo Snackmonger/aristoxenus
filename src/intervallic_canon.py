@@ -28,6 +28,9 @@ AUGMENTED_TRIAD = DITONE | COMPOUND_HEMITONE
 MAJOR_FLAT_5 = DITONE | TRITONE
 SUS = TONE | DIAPENTE
 
+primary_structure: dict[str, int] = {'major_triad': MAJOR_TRIAD,
+                                     'minor_triad': MINOR_TRIAD}
+
 # Common tetrads: structures that are compounds of 3 intervals, which can be
 # expressed as a triad and another interval, or as compounds of 2 triads.
 # Some of the named tetrads are actually inversions of the others (Am7 = C6,

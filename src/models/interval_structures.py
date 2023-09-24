@@ -1,8 +1,8 @@
 from typing import Literal
 
 from ..decorators import pos_only, check_oob
-from ..bitwise import previous_inversion, next_inversion
-from ..errors import IntervalOutOfBoundsError, HeptatonicScaleError
+from .. import bitwise
+from .. import errors
 
 
 OOB_OPTIONS = Literal['integrate', 'oct_integrate', 'error', 'ignore']
@@ -70,7 +70,7 @@ class LimitedIntervalStructure(IntervalStructure):
         if value.bit_length() <= bits:
             super().__init__(value)
         else:
-            raise IntervalOutOfBoundsError(bin(value), value.bit_length(), bits)
+            raise errors.IntervalOutOfBoundsError(bin(value), value.bit_length(), bits)
         self.__bits: int = bits
         self.oob: str = oob
 
@@ -110,12 +110,12 @@ class LimitedIntervalStructure(IntervalStructure):
 
     def next_inversion(self) -> None:
         '''Rotate the pitch collection left to begin with the next flipped bit.'''
-        self.value = previous_inversion(self.value, self.__bits)
+        self.value = bitwise.previous_inversion(self.value, self.__bits)
     
 
     def previous_inversion(self) -> None:
         '''Rotate the pitch collection right to begin with the previous flipped bit.'''
-        self.value = next_inversion(self.value, self.__bits)
+        self.value = bitwise.next_inversion(self.value, self.__bits)
 
 
 class Octave(LimitedIntervalStructure):
@@ -214,7 +214,7 @@ class HeptatonicScale(Scale):
     '''
     def __init__(self, value: int = 1) -> None:
         if value.bit_count() != 7:
-            raise HeptatonicScaleError(value.bit_count())
+            raise errors.HeptatonicScaleError(value.bit_count())
         super().__init__(value)
         self.tones = self.value.bit_count()
 

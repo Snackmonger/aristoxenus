@@ -1,11 +1,14 @@
 
 # Not all parts of the template are necessary, but this is the
-# general order of information. 
-# Sections marked <> do not have explicit headings.
+# general order of information. autodocstring will fill in the
+# basic parameters and return, but sometimes you want to add
+# other helpful information too.
 
-template = '''
-Short, 1-sentence description of what the function does (not HOW it does it),
-without using parameter names or function names.
+numpy_template: str = '''
+Short, 1-sentence description of WHAT the function does (not HOW it does it),
+without using parameter names or function names. (There is some discrepancy
+about whether the verb should be imperative or indicative. PEP257 says to use
+imperative, Google style says indicative. Whatever you do, be consistent.)
 
 .. deprecated:: 1.6.0
           `ndobj_old` will be removed in NumPy 2.0.0, it is replaced by

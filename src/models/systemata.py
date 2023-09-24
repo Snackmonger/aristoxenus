@@ -2,6 +2,7 @@
 
 class GreaterPerfectSystem:
 
+
     def __init__(self, mese_frequency: float, genus: str, chroa: str) -> None:
         self.mese_frequency: float = mese_frequency
         self.genus: str = genus

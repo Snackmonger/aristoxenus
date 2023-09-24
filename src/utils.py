@@ -1,6 +1,28 @@
 '''
 Miscellaneous functions.
 '''
+from typing import Any
+
+
+def shift_list(list_: list[Any], new_first_member: Any) -> list[Any]:
+    '''
+    Rotate the list so that the given item is first.
+
+    Parameters
+    ----------
+    list_ : list
+        Python list with any values.
+    
+    new_first_member : Any
+        The value that will start the new order.
+
+    Returns
+    -------
+    list of Any
+        A list rotated so that the given member is first.
+    '''
+    list_ = list_.copy()
+    return list_[list_.index(new_first_member[0]): ] + list_[ :list_.index(new_first_member[0])]
 
 
 def roman_numeral(indian_numeral: int) -> str:
@@ -31,3 +53,73 @@ def roman_numeral(indian_numeral: int) -> str:
                 roman_numeral_ = roman_numeral_.replace(error, correction)
 
     return roman_numeral_
+
+
+def number_string():
+    
+numberstrings = {
+    '1': {'cardinal': 'one',
+          'ordinal': 'first',
+          'ordinal_suffix': 'st',
+          'uple': 'single'},
+
+    '2': {'cardinal': 'two',
+          'ordinal': 'second',
+          'ordinal_suffix': 'nd',
+          'uple': 'double'},
+
+    '3': {'cardinal': 'three',
+          'ordinal': 'third',
+          'ordinal_suffix': 'rd',
+          'uple': 'triple'},
+
+    '4': {'cardinal': 'four',
+          'ordinal': 'fourth',
+          'ordinal_suffix': 'th',
+          'uple': 'quadruple'},
+
+    '5': {'cardinal': 'five',
+          'ordinal': 'fifth',
+          'ordinal_suffix': 'th',
+          'uple': 'quintuple'},
+
+    '6': {'cardinal': 'six',
+          'ordinal': 'sixth',
+          'ordinal_suffix': 'th',
+          'uple': 'sextuple'},
+
+    '7': {'cardinal': 'seven',
+          'ordinal': 'seventh',
+          'ordinal_suffix': 'th',
+          'uple': 'septuple'},
+
+    '8': {'cardinal': 'eight',
+          'ordinal': 'eighth',
+          'ordinal_suffix': 'th',
+          'uple': 'octuple'},
+
+    '9': {'cardinal': 'nine',
+          'ordinal': 'ninth',
+          'ordinal_suffix': 'th',
+          'uple': 'nonuple'},
+
+    '10': {'cardinal': 'ten',
+           'ordinal': 'tenth',
+           'ordinal_suffix': 'th'},
+
+    '11': {'cardinal': 'eleven',
+           'ordinal': 'eleventh',
+           'ordinal_suffix': 'th'},
+
+    '12': {'cardinal': 'twelve',
+           'ordinal': 'twelfth',
+           'ordinal_suffix': 'th'},
+
+    '13': {'cardinal': 'thirteen',
+           'ordinal': 'thirteenth',
+           'ordinal_suffix': 'th'},
+
+    '14': {'cardinal': 'fourteen',
+           'ordinal': 'fourteenth',
+           'ordinal_suffix': 'th'}
+}
