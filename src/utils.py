@@ -56,7 +56,7 @@ def roman_numeral(indian_numeral: int) -> str:
 
 
 def number_string():
-    
+    pass
 numberstrings = {
     '1': {'cardinal': 'one',
           'ordinal': 'first',

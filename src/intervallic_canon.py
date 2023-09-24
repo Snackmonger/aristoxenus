@@ -1,7 +1,7 @@
 '''
 The integer expressions of some of the most common intervallic structures.
 '''
-from .bitwise import transpose_interval
+from . import bitwise
 
 # Divisions of the single octave.
 # -------------------------------
@@ -99,13 +99,13 @@ HEP_DICT = {DIATONIC_SCALE: DIATONIC_LABEL,
 # -------------------------------
 
 # Western extensions
-FLAT_NINTH = transpose_interval(HEMITONE)
-NINTH = transpose_interval(TONE)
-SHARP_NINTH = transpose_interval(HEMIOLION)
-ELEVENTH = transpose_interval(DIATESSARON)
-SHARP_ELEVENTH = transpose_interval(TRITONE)
-THIRTEENTH = transpose_interval(COMPOUND_TONE)
-FLAT_THIRTEENTH = transpose_interval(COMPOUND_HEMITONE)
+FLAT_NINTH = bitwise.transpose_interval(HEMITONE)
+NINTH = bitwise.transpose_interval(TONE)
+SHARP_NINTH = bitwise.transpose_interval(HEMIOLION)
+ELEVENTH = bitwise.transpose_interval(DIATESSARON)
+SHARP_ELEVENTH = bitwise.transpose_interval(TRITONE)
+THIRTEENTH = bitwise.transpose_interval(COMPOUND_TONE)
+FLAT_THIRTEENTH = bitwise.transpose_interval(COMPOUND_HEMITONE)
 
 # Shortcuts to fill in the implicit extensions in
 # e.g. Am11 (has a 9) G13 (has a 9 and 11)

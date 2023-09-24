@@ -1,7 +1,7 @@
 '''
 Functions pertaining to making musical diagrams (aside from staff notation).
 '''
-from src.nomenclature import scientific, decode_scientific_enharmonic
+
 
 def guitar_tuning(strings: int = 6, 
                   tuning: str | list[str] = 'E2A2D3G3B3E4', 

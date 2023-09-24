@@ -194,19 +194,19 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
         A note name with 0 to 1 accidentals (binomials count as 1 accental).
 
     note_name : str    
-        One of the 7 natural notes
-
-    Notes
-    -----
-    This function prefers the enharmonic equivalent with the fewest 
-    accidentals. When shifting by tritone, the number of accidentals will be 
-    equal in both sharps and flats, so we arbitrarily default to sharps.
+        One of the 7 natural notes.
 
     Returns
     -------
     str
         A note with between 0 and 6 accidentals. No note name is more than six
         steps from any other name, depending on the direction.
+
+    Notes
+    -----
+    This function prefers the enharmonic equivalent with the fewest 
+    accidentals. When shifting by tritone, the number of accidentals will be 
+    equal in both sharps and flats, so we arbitrarily default to sharps.
 
     Examples
     --------
