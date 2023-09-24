@@ -78,5 +78,6 @@ the article below using the text [1]_, include it as in the list as follows:
 
 Examples
 --------
-
+Give some examples of the code in doctest format. This isn't required in
+every situation, but it can be useful.
 '''

@@ -1,7 +1,7 @@
 from typing import Literal
 
 from ..decorators import pos_only, check_oob
-from ..bitwise import next_mode, previous_mode
+from ..bitwise import previous_inversion, next_inversion
 from ..errors import IntervalOutOfBoundsError, HeptatonicScaleError
 
 
@@ -110,12 +110,12 @@ class LimitedIntervalStructure(IntervalStructure):
 
     def next_inversion(self) -> None:
         '''Rotate the pitch collection left to begin with the next flipped bit.'''
-        self.value = next_mode(self.value, self.__bits)
+        self.value = previous_inversion(self.value, self.__bits)
     
 
     def previous_inversion(self) -> None:
         '''Rotate the pitch collection right to begin with the previous flipped bit.'''
-        self.value = previous_mode(self.value, self.__bits)
+        self.value = next_inversion(self.value, self.__bits)
 
 
 class Octave(LimitedIntervalStructure):

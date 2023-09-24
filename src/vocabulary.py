@@ -130,12 +130,36 @@ basic_symbols = {interval.HEMITONE: [CHORD_FLAT_2],
                  transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
                  transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
                  transpose_interval(interval.DIAPASON): [CHORD_15],
-
                  }
 
 symbol_elements: dict[str, int] = {
     symbol: interval for interval, symbols in basic_symbols.items() for symbol in symbols}
 
+
+symbol_prescription: dict[int, str] = {interval.HEMITONE: CHORD_FLAT_2,
+                                       interval.TONE: CHORD_2,
+                                       interval.HEMIOLION: CHORD_MIN,
+                                       interval.DITONE: CHORD_MAJ,
+                                       interval.DIATESSARON: CHORD_4,
+                                       interval.TRITONE: CHORD_FLAT_5,
+                                       interval.DIAPENTE: CHORD_5,
+                                       interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
+                                       interval.COMPOUND_TONE: CHORD_6,
+                                       interval.COMPOUND_HEMIOLION: CHORD_7,
+                                       interval.COMPOUND_DITONE: CHORD_MAJ_7,
+                                       interval.DIAPASON: CHORD_8,
+                                       transpose_interval(interval.HEMITONE): CHORD_FLAT_9,
+                                       transpose_interval(interval.TONE): CHORD_9,
+                                       transpose_interval(interval.HEMIOLION): CHORD_SHARP_9,
+                                       transpose_interval(interval.DITONE): CHORD_10,
+                                       transpose_interval(interval.DIATESSARON): CHORD_11,
+                                       transpose_interval(interval.TRITONE): CHORD_SHARP_11,
+                                       transpose_interval(interval.DIAPENTE): CHORD_12,
+                                       transpose_interval(interval.COMPOUND_HEMITONE): CHORD_FLAT_13,
+                                       transpose_interval(interval.COMPOUND_TONE): CHORD_13,
+                                       transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
+                                       transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
+                                       transpose_interval(interval.DIAPASON): CHORD_15}
 
 numberstrings = {
     '1': {'cardinal': 'one',
