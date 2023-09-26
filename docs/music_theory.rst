@@ -61,8 +61,10 @@ Terminology
 
 Octave 
 ------
+
 .. sidebar:: 
     (Gk. *dià pasõn*, "though all (the notes)")
+
 An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
 A frequency that stands in a 1:2 relationship to another frequency can be said to be the 'octave' of that frequency, and vice-versa.
 - 440Hz is a lower 'octave' of 88Hz
