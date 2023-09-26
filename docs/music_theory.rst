@@ -7,15 +7,6 @@ ARISTOXENUS MUSIC THEORY REFERNCE GUIDE
 Abstract Concepts
 =================
 
-.. contents:: Table of Contents
-
-Abstract Concepts
-=================
-
-.. contents:: Table of Contents
-
-Abstract Concepts
------------------
 Pitch height
 ------------
 In English, and many other languages, the multiplication of a frequency is expressed in terms of height, and the division of frequency
