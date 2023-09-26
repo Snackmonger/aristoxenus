@@ -16,6 +16,8 @@ The philosopher and historian Plutarch of Chaeroneia (mid 1st- early 2nd century
     or, moreover, that the note *mese* sounds sharper than hypate and heavier than *nete*, in whatever position of the lyre someone 
     might place it, as long as the tuning is consistent? [#]_
 
+.. [#] Plut. *Platonicae Quaestiones*, 1008e.
+
 In more modern times, it has sometimes been assumed that the tendency to conceptualize pitch in terms of height is actually reflective
 of innate human perceptual associations. Since the 1970s, renewed scholarly interest in the question has cast doubts on some of those
 old assumptions, and scholars are increasingly finding that linguistics plays a crucial role in how and when humans adopt metaphors to
@@ -23,9 +25,13 @@ describe pitch relationships. Although the question of the innateness of pitch p
 increasingly clear that cultures that do not employ language relating to height have a strong tendency not to conceptualize pitch in terms of height, and may
 actually even adopt the contradictory orientation. [#]_
 
+.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
+
 The contradictory orientation, in which the high notes are characterized as low and vice-versa, is known in the Greek theorists as well, 
 for instance Nicomachus of Gerasa:
     An octave is a systema either above *mese* until *proslambanomenos*, or below *mese* until *nete hyperbolaion* in eight strings… [#]_
+
+.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
 
 The note name *proslambanomenos* means 'additional', and it was a note added beyond the *hypate hypaton*, which literally means 'highest of the highs'. For English speakers,
 however, this is the 'lowest' note of the system, which the author characterizes as being "above *mese*", (*mese* means the 'middle' note). By contrast,
@@ -45,6 +51,4 @@ Octave (Gk. *dià pasõn*, "though all (the notes)")
 When one note is an octave of another note, it carries the same alphabetic name.
 
 
-.. [#] Plut. *Platonicae Quaestiones*, 1008e.
-.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
-.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
+
