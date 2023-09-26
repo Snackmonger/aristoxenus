@@ -41,15 +41,18 @@ Now, in spite of the fact that the Greeks did call their notes after their heigh
 even though a note might be called 'high', they did not extend this description to other musical features. For instance, a melody that moves towards a note called
 'high' is never described as an 'ascent'. Similarly, a movement toward the note called 'low' is never described as a 'descent'. Terms for high and low, ascent and descent, do not apear consistently
 in Greek until around the 10th century (although they are rarely used in inconsistent ways before then). So, even while some terms relating to height were used by the Greeks in their note names, they do not seem to have
-extended this concept to other types of metaphorical language.
+extended this concept to other types of musical metaphorical language.
 
-Notes are typically characterized as 'sharp' and 'heavy' in the Greek system. The note called 'lowest' is the 'sharpest' in the Greek system, which we would call 'highest'. Conversely, the note
+Notes are characterized as 'sharp' and 'heavy' in the Greek system. The note called 'lowest' is the 'sharpest' in the Greek system, which we would call 'highest'. Conversely, the note
 called 'highest' is the 'heaviest' in the Greek system, which we would call 'lowest'. When the Greeks referred to changes of pitch, they did not call that 'ascent/descent' as we do, 
 but they also did not refer to it as 'sharpening/weighting' as the terms 'sharp' and 'heavy' might suggest. Instead, they refer to the increase of pitch as a 'tightening', and to the decrease
 of pitch as a 'loosening', again deriving the terminology from the strings of the lyre.
 
 .. [#] Plut. *Platonicae Quaestiones*, 1008e.
-.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
+
+.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, 
+Dolscheid 2017, Majid 2018, Dolscheid 2020.
+
 .. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
 
 Next Topic
