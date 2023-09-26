@@ -45,6 +45,6 @@ Octave (Gk. *dià pasõn*, "though all (the notes)")
 When one note is an octave of another note, it carries the same alphabetic name.
 
 
-.. [#] Plut. *Platonicae Quaestiones*, 1008e 
+.. [#] Plut. *Platonicae Quaestiones*, 1008e.
 .. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
-.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1
+.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
