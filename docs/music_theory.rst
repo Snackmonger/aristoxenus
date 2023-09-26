@@ -59,17 +59,19 @@ This is the beginning of the next topic. Does it get added under the previous on
 Terminology
 ===========
 
-Octave (Gk. *dià pasõn*, "though all (the notes)")
-    An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
-    A frequency that stands in a 1:2 relationship to another frequency can be said to be the 'octave' of that frequency, and vice-versa.
-    - 440Hz is a lower 'octave' of 88Hz
-    - 660Hz is a higher 'octave' of 330Hz
+Octave 
+------
+.. sidebar:: (Gk. *dià pasõn*, "though all (the notes)")
+An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
+A frequency that stands in a 1:2 relationship to another frequency can be said to be the 'octave' of that frequency, and vice-versa.
+- 440Hz is a lower 'octave' of 88Hz
+- 660Hz is a higher 'octave' of 330Hz
 
-    The term 'octave' is also used in a related sense to refer not to the notes that define the limits of the relationship,
-    but to the amount of distance between those limits.
-    - A major third is within the range of an 'octave' (i.e a pitch and its octave), but a major ninth is outside the range of an 'octave'
+The term 'octave' is also used in a related sense to refer not to the notes that define the limits of the relationship,
+but to the amount of distance between those limits.
+- A major third is within the range of an 'octave' (i.e a pitch and its octave), but a major ninth is outside the range of an 'octave'
 
-    When one note is an octave of another note, it carries the same alphabetic name.
+When one note is an octave of another note, it carries the same alphabetic name.
 
 
 
