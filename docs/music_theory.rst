@@ -23,7 +23,8 @@ describe pitch relationships. Although the question of the innateness of pitch p
 increasingly clear that cultures that do not employ language relating to height have a strong tendency not to conceptualize pitch in terms of height, and may
 actually even adopt the contradictory orientation. [#]_
 
-The contradictory orientation, in which the high notes are characterized as low and vice-versa, is known in the Greek theorists as well, for instance Nicomachus of Gerasa:
+The contradictory orientation, in which the high notes are characterized as low and vice-versa, is known in the Greek theorists as well, 
+for instance Nicomachus of Gerasa:
     An octave is a systema either above *mese* until *proslambanomenos*, or below *mese* until *nete hyperbolaion* in eight strings… [#]_
 
 The note name *proslambanomenos* means 'additional', and it was a note added beyond the *hypate hypaton*, which literally means 'highest of the highs'. For English speakers,
