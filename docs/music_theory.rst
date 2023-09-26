@@ -62,23 +62,6 @@ This is the beginning of the next topic. Does it get added under the previous on
 Terminology
 ===========
 
-Now, in spite of the fact that the Greeks did call their notes after their height and depth, they were inconsistent about applying these names to the abstract concept of pitch. This means that 
-even though a note might be called 'high', they did not extend this description to other musical features. For instance, a melody that moves towards a note called
-'high' is never described as an 'ascent'. Similarly, a movement toward the note called 'low' is never described as a 'descent'. Terms for high and low, ascent and descent, do not apear consistently
-in Greek until around the 10th century (although they are rarely used in inconsistent ways before then). So, even while some terms relating to height were used by the Greeks in their note names, they do not seem to have
-extended this concept to other types of metaphorical language.
-
-Notes are typically characterized as 'sharp' and 'heavy' in the Greek system. The note called 'lowest' is the 'sharpest' in the Greek system, which we would call 'highest'. Conversely, the note
-called 'highest' is the 'heaviest' in the Greek system, which we would call 'lowest'. When the Greeks referred to changes of pitch, they did not call that 'ascent/descent' as we do, 
-but they also did not refer to it as 'sharpening/weighting' as the terms 'sharp' and 'heavy' might suggest. Instead, they refer to the increase of pitch as a 'tightening', and to the decrease
-of pitch as a 'loosening', again deriving the terminology from the strings of the lyre.
-Next Topic
-----------
-This is the beginning of the next topic. Does it get added under the previous one in the table of contents?
-
-Terminology
------------
-
 Octave (Gk. *dià pasõn*, "though all (the notes)")
     An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
     A frequency that stands in a 1:2 relationship to another frequency can be said to be the 'octave' of that frequency, and vice-versa.
