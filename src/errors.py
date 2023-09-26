@@ -26,3 +26,9 @@ class ChordNameError(ValueError):
     Error indicating that the alphabetical note name in a chord is not one of 
     the note names in the list returned from `nomenclature.legal_chord_names`.
     '''
+
+class OctaveRotationError(ValueError):
+    '''
+    Error indicating that the requested rotation cannot be performed on 
+    structures exceeding the compass of one octave.
+    '''

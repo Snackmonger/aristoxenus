@@ -76,16 +76,24 @@ class LimitedIntervalStructure(IntervalStructure):
 
 
     @property
-    def inversions(self) -> tuple[int, ...]:
+    def inversions(self) -> list[int]:
         '''
-        Return a tuple containing the integer representations of all possible
+        A list containing the integer representations of all possible
         inversions of the current interval structure.
         '''
         rotations: list[int] = []
         for _ in range(self.value.bit_count()):
             self.next_inversion()
             rotations.append(int(self))
-        return tuple(rotations)
+        return rotations
+    
+    
+    @property
+    def intervals(self) -> list[int]:
+        '''
+        A list of the intervals in the current interval structure.
+        '''
+        return list(bitwise.iterate_intervals(int(self)))
 
 
     @property

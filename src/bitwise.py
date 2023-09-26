@@ -3,13 +3,14 @@ Miscellania pertaining to bitwise operations.
 
 Notes
 -----
-All intervals are, by definition, distances between pitches. The least 
-significant bit represents the lowest pitch of the strcuture. Since the 
-lowest pitch of the structure is the pitch from which other intervals are 
-calculated, every interval (and therefore every compound interval structure) 
-must be an odd number. 
+We treat musical relationships as intervals, not as notes. All intervals are 
+by definition distances between pitches. The least significant bit represents 
+the lowest pitch of the strcuture. Since the lowest pitch of the structure is 
+the pitch from which other intervals are calculated, every interval (and 
+therefore every compound interval structure) must be an odd number. 
     
 '''
+from typing import Generator
 import loguru
 logger = loguru.logger
 
@@ -78,14 +79,6 @@ def previous_inversion(interval_structure: int, max_bits: int) -> int:
     -------
     int
         An integer representing the inverted interval structure.
-
-    Notes
-    -----
-    We use the maximum number of bits to keep track of whether a certain 
-    number of 0s should implicitly be understood at the beginning of a
-    structure, so that they can be added to the end of the structure
-    as it rotates. If the rotation is an even number (i.e. ends in a binary
-    0), we know that we have not completed rotating to the next inversion.
     '''
     logger.debug(f'{interval_structure} : {bin(interval_structure)}')
     while interval_structure % 2 == 0:
@@ -108,16 +101,53 @@ def next_inversion(collection: int, max_bits: int) -> int:
     -------
     int
         An integer representing the inverted interval structure.
-
-    Notes
-    -----
-    We use the maximum number of bits to keep track of whether a certain 
-    number of 0s should implicitly be understood at the beginning of a
-    structure, so that they can be added to the end of the structure
-    as it rotates. If the rotation is an even number (i.e. ends in a binary
-    0), we know that we have not completed rotating to the next inversion.
     '''
     collection = rotate_left(collection, max_bits)
     while collection % 2 == 0:
         collection = rotate_left(collection, max_bits)
     return collection
+
+
+def iterate_bits(integer: int) -> Generator[int, None, None]:
+    '''
+    Return the individual flipped bits for a given integer.
+
+    Parameters
+    ----------
+    integer : int
+        An integer with n flipped bits.
+
+    Yields
+    ------
+    Generator[int, None, None]
+        A series of n integers representing the flipped bits of the input.    
+    '''
+    # The logic of the operation:
+    # x       = 01011000
+    # ~x      = 10100111
+    # ~x+1    = 10101000
+    # x&(~x+1)= 00001000
+    while integer != 0:
+        current_bit = integer & ( ~ integer + 1)
+        yield current_bit
+        integer ^= current_bit
+        
+
+def iterate_intervals(interval_structure: int) -> Generator[int, None, None]:
+    '''
+    Iterate the intervals of a given interval structure.
+
+    Parameters
+    ----------
+    interval_structure : int
+        The interval structure to iterate over.
+
+    Yields
+    ------
+    Generator[int, None, None]
+        A series of intervals, expressed as integers.
+    '''
+    for result in iterate_bits(interval_structure):
+        if result % 2 == 0:
+            yield result + 1
+        yield result

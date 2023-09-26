@@ -25,14 +25,11 @@ def pos_only(function: Callable[..., Any]):
     '''
     Make sure the interval is not a negative number.
     '''
-    def wrapper(self: 'IntervalStructure',
-                interval: 'int | IntervalStructure',
-                *args: tuple[Any, ...]
-                ):
-        interval = int(interval)
-        if interval < 0:
-            interval *= -1
-        return function(self, interval, *args)
+    def wrapper(*args: tuple[Any, ...], **kwargs: dict[Any, Any]):
+        for arg in args:
+            if isinstance(arg, int) and arg < 0:
+                arg *= -1
+        return function(*args, **kwargs)
     return wrapper
 
 
@@ -43,7 +40,8 @@ def check_oob(func: Callable[..., Any]):
     '''
     def wrapper(self: 'LimitedIntervalStructure',
                 interval: int,
-                *args: tuple[Any, ...]):
+                *args: tuple[Any, ...],
+                **kwargs: dict[Any, Any]):
         if interval.bit_length() > self.bits:
             match self.oob:
                 case OOBOptions.INTEGRATE:
@@ -56,7 +54,7 @@ def check_oob(func: Callable[..., Any]):
                     interval = 1
                 case _:
                     pass
-        return func(self, interval)
+        return func(self, interval, *args, **kwargs)
     return wrapper
 
 

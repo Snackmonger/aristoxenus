@@ -14,3 +14,12 @@ src/__pycache__/bit_manipulation.cpython-311.pyc
 src/__pycache__/base_structures.cpython-311.pyc
 tests/__pycache__/utils_tests.cpython-311.pyc
 src/__pycache__/utils.cpython-311.pyc
+docs/music_theory.rst
+src/__pycache__/bitwise.cpython-311.pyc
+src/__pycache__/decorators.cpython-311.pyc
+src/__pycache__/enums.cpython-311.pyc
+src/__pycache__/errors.cpython-311.pyc
+src/__pycache__/intervallic_canon.cpython-311.pyc
+src/models/__pycache__/__init__.cpython-311.pyc
+src/models/__pycache__/interval_structures.cpython-311.pyc
+tests/__pycache__/models_tests.cpython-311.pyc

@@ -377,7 +377,7 @@ def equal_temperament() -> list[float]:
     return frequencies
 
 
-def encode_frequency(frequency: float, accidental_notes: list[str]) -> str:
+def convert_frequecy_to_note(frequency: float, accidental_notes: list[str]) -> str:
     '''
     Return a scientific note name for a given frequency and accidental style.
 
@@ -409,7 +409,7 @@ def encode_frequency(frequency: float, accidental_notes: list[str]) -> str:
     raise ValueError(f'Invalid request {frequency} {accidental_notes}')
 
 
-def decode_frequency(note_name: str) -> float:
+def convert_note_to_frequency(note_name: str) -> float:
     '''
     Return a frequency for a given scientific note name of any accidental style.
 
@@ -566,7 +566,7 @@ def is_abcdefg(note_names: list[str]) -> bool:
     ABCDEFG nomenclature, in which each alphebetic name appears once and
     only once.
     '''
-    naturals_: list[str] = constants.NATURALS
+    naturals_: list[str] = constants.NATURALS.copy()
     approved_names: list[str] = []
     for note in note_names:
         if note in constants.BINOMIALS:
