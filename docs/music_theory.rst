@@ -61,9 +61,6 @@ Terminology
 
 Octave 
 ------
-
-.. sidebar:: 
-    
     (Gk. *dià pasõn*, "though all (the notes)")
 
 An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
