@@ -48,12 +48,12 @@ called 'highest' is the 'heaviest' in the Greek system, which we would call 'low
 but they also did not refer to it as 'sharpening/weighting' as the terms 'sharp' and 'heavy' might suggest. Instead, they refer to the increase of pitch as a 'tightening', and to the decrease
 of pitch as a 'loosening', again deriving the terminology from the strings of the lyre.
 
-.. [#] Plut. *Platonicae Quaestiones*, 1008e.
+.. [#]  Plut. *Platonicae Quaestiones*, 1008e.
 
-.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, 
+.. [#]  see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, 
     Dolscheid 2017, Majid 2018, Dolscheid 2020.
 
-.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
+.. [#]  Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
 
 Next Topic
 ----------
