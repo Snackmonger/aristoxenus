@@ -25,6 +25,9 @@ describe pitch relationships. Although the question of the innateness of pitch p
 increasingly clear that cultures that do not employ language relating to height have a strong tendency not to conceptualize pitch in terms of height, and may
 actually even adopt the contradictory orientation. [#]_
 
+.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
+
+
 The contradictory orientation, in which the high notes are characterized as low and vice-versa, is known in the Greek theorists as well, 
 for instance Nicomachus of Gerasa:
     An octave is a systema either above *mese* until *proslambanomenos*, or below *mese* until *nete hyperbolaion* in eight strings… [#]_
