@@ -24,16 +24,12 @@ increasingly clear that cultures that do not employ language relating to height 
 actually even adopt the contradictory orientation. [#]_
 
 The contradictory orientation, in which the high notes are characterized as low and vice-versa, is known in the Greek theorists as well, for instance Nicomachus of Gerasa:
-    An octave is a systema either above *mese* until *proslambanomenos*, or below *mese* until *nete hyperbolaion* in eight strings…” [#]_
+    An octave is a systema either above *mese* until *proslambanomenos*, or below *mese* until *nete hyperbolaion* in eight strings… [#]_
 
 The note name *proslambanomenos* means 'additional', and it was a note added beyond the *hypate hypaton*, which literally means 'highest of the highs'. For English speakers,
 however, this is the 'lowest' note of the system, which the author characterizes as being "above *mese*", (*mese* means the 'middle' note). By contrast,
 the note *nete hyperbolaion* literally means 'lowest of the excessive notes' (referring to the fact that this tetrachord was a late addition that exceeded the span of previous musical systems),
 but is what English speakers would characterize as the 'highest' note of the system.
-
-.. [#] Plut. *Platonicae Quaestiones*, 1008e 
-.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
-.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1
 
 Octave (Gk. *dià pasõn*, "though all (the notes)")
     An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
@@ -46,3 +42,8 @@ Octave (Gk. *dià pasõn*, "though all (the notes)")
 
 
 When one note is an octave of another note, it carries the same alphabetic name.
+
+
+.. [#] Plut. *Platonicae Quaestiones*, 1008e 
+.. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
+.. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1
