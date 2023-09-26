@@ -51,7 +51,7 @@ of pitch as a 'loosening', again deriving the terminology from the strings of th
 .. [#] Plut. *Platonicae Quaestiones*, 1008e.
 
 .. [#] see, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, 
-Dolscheid 2017, Majid 2018, Dolscheid 2020.
+    Dolscheid 2017, Majid 2018, Dolscheid 2020.
 
 .. [#] Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
 
