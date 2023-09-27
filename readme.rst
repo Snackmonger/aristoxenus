@@ -1,8 +1,8 @@
-===========
-ARISTOXENUS
-===========
+====================================
+ARISTOXENUS MUSIC MANIPULATION SUITE
+====================================
 
-Musical Manipulation Tool Changelog
+Changelog
 
     Version 0.11: 27/09/2023
     ------------------------

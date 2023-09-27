@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Self
 
 from .. import bitwise
 from .. import errors
@@ -39,12 +39,12 @@ class IntervalStructure():
         return (self.value ^ interval) + 1
 
     @pos_only
-    def __iadd__(self, interval: int) -> 'IntervalStructure':
+    def __iadd__(self, interval: int) -> Self:
         self.value |= interval
         return self
 
     @pos_only
-    def __isub__(self, interval: int) -> 'IntervalStructure':
+    def __isub__(self, interval: int) -> Self:
         self.value = (self.value ^ interval) + 1
         return self
 
@@ -59,7 +59,7 @@ class LimitedIntervalStructure(IntervalStructure):
     '''
     Representation of an interval structure that has a limit to its range.
 
-    If the class attempts to add notes that are out of bounds, we use the 'oob'
+    If the class attempts to add intervals that are out of bounds, we use the 'oob'
     attribute to define how it handles the conflict.
     '''
 
@@ -105,14 +105,14 @@ class LimitedIntervalStructure(IntervalStructure):
 
     @check_oob
     @pos_only
-    def __iadd__(self, interval: 'int | IntervalStructure') -> 'LimitedIntervalStructure':
+    def __iadd__(self, interval: 'int | IntervalStructure') -> Self:
         self.value |= int(interval)
         return self
 
 
     @check_oob
     @pos_only
-    def __isub__(self, interval: 'int | IntervalStructure') -> 'LimitedIntervalStructure':
+    def __isub__(self, interval: 'int | IntervalStructure') -> Self:
         self.value = (self.value ^ int(interval)) + 1
         return self
 

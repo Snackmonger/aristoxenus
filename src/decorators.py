@@ -1,8 +1,7 @@
 '''
 Decorators that are used in the program.
 '''
-
-from typing import Callable, Any, TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING, TypeVar, ParamSpec
 import loguru
 
 from .errors import IntervalOutOfBoundsError
@@ -11,6 +10,8 @@ from .enums import OOBOptions
 if TYPE_CHECKING:
     from .models.interval_structures import IntervalStructure, LimitedIntervalStructure
 
+T = TypeVar('T')
+P = ParamSpec('P')
 
 logger = loguru.logger
 
@@ -21,12 +22,11 @@ logger = loguru.logger
 
 # ----------------------- models.interval_structures ----------------------- #
 
-def pos_only(function: Callable[..., Any]):
+def pos_only(function: Callable[P, T]) -> Callable[P, T]:
     '''
     Make sure the interval is not a negative number.
     '''
-    def wrapper(*args: tuple[Any, ...], **kwargs: dict[Any, Any]):
-
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         for arg in args:
             if isinstance(arg, int) and arg < 0:
                 arg *= -1
@@ -34,16 +34,15 @@ def pos_only(function: Callable[..., Any]):
     return wrapper
 
 
-def check_oob(func: Callable[..., Any]):
+def check_oob(func: Callable[P, T]) -> Callable[P, T]:
     '''
     Check whether an interval is beyond the limit of the structure,
     and perform a designated action if so.
     '''
     def wrapper(self: 'LimitedIntervalStructure',
                 interval: int,
-                *args: tuple[Any, ...],
-                **kwargs: dict[Any, Any]):
-        
+                *args: P.args,
+                **kwargs: P.kwargs) -> T:
         if interval.bit_length() > self.bits:
             match self.oob:
                 case OOBOptions.INTEGRATE:
@@ -55,7 +54,7 @@ def check_oob(func: Callable[..., Any]):
                 case OOBOptions.IGNORE:
                     interval = 1
                 case _:
-                    pass
+                    interval = 1
         return func(self, interval, *args, **kwargs)
     return wrapper
 
