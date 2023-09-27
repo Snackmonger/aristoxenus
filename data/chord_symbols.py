@@ -2,9 +2,10 @@
 Collection of canonical strings used as decipherable chord symbols.
 '''
 
-from . import bitwise
-from . import intervallic_canon as interval
-from . import constants
+from data import intervallic_canon as interval
+from data import constants
+from src import bitwise
+
 
 # Chord sub-symbols.
 CHORD_DIM: str = 'dim'
@@ -103,15 +104,19 @@ basic_symbols: dict[int, list[str]] = {interval.HEMITONE: [CHORD_FLAT_2],
                  bitwise.transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
                  bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
                  }
+
 symbol_elements: dict[str, int] = {
     symbol: interval for interval, symbols in basic_symbols.items() for symbol in symbols}
+
 additive: dict[str, int] = {
     'add' + symbol: interval for symbol, interval in symbol_elements.items()}
+
 subtractive: dict[str, int] = {
     'no' + symbol: interval for symbol, interval in symbol_elements.items()}
 
 # The prescribed symbol for each interval, used by the parser
-# to generate a complete chord symbol
+# to generate a complete chord symbol. The parser does not necessarily
+# include every symbol (e.g. 5 is not normally included in the symbol)
 symbol_prescription: dict[int, str] = {interval.HEMITONE: CHORD_FLAT_2,
                                        interval.TONE: CHORD_2,
                                        interval.HEMIOLION: CHORD_MIN,

@@ -2,9 +2,9 @@
 Functions related to generating and processing musical nomenclatural material.
 '''
 from dataclasses import dataclass
-from . import utils
-from . import constants
-from . import rendering
+from data import constants
+from src import utils
+from src import rendering
 
 
 def chromatic(accidental_notes: list[str]) -> list[str]:
@@ -174,7 +174,8 @@ def decode_enharmonic(note_name: str) -> str:
     >>> decode_scientific_enharmonic('A######')
     'D#|Eb'
     '''
-    
+    if note_name.isalnum():
+        note_name = note_name[:-1]
     decoder: dict[str, str] = enharmonic_decoder()
     if note_name in chromatic(constants.BINOMIALS):
         return note_name
@@ -580,64 +581,3 @@ def is_abcdefg(note_names: list[str]) -> bool:
     enharmonic: set[str] = set(decode_enharmonic(note) for note in approved_names)
     return len(naturals_) == 0 and len(approved_names) == constants.NOTES and len(enharmonic) == constants.NOTES
 
-
-def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
-    '''
-    For a given heptatonic scale, return the Indian numerals describing
-    the pattern's relation to the major scale. 
-
-    Thus:       C D Eb Fb Gbb Ab Bb 
-             >> 1 2 b3 b4 bb5 b6 b7
-
-                C D#  E  F  G#  A# B 
-             >> 1 #2  3  4  #5  #6 7
-    '''
-    tonic: str = note_names[0]
-    binomial_names = [decode_enharmonic(note_name) for note_name in note_names]
-    if len(binomial_names) != constants.NOTES:
-        raise ValueError('Only works on heptatonic scales.')
-    chromatic_names: list[str] = utils.shift_list(chromatic(constants.BINOMIALS), tonic)
-    major_names: list[str] = rendering.render(2741, chromatic_names)
-    intervals: list[str] = []
-    for index in range(constants.NOTES):
-        expected_note: str = major_names[index]
-        given_note: str = binomial_names[index]
-        difference: int = chromatic_names.index(given_note) - chromatic_names.index(expected_note)
-        accidental: str = constants.SHARP_SYMBOL
-        if difference < 0:
-            accidental = constants.FLAT_SYMBOL
-            difference *= constants.FLAT_VALUE
-        intervals.append((accidental * difference) + str(index + 1))
-    return intervals
-
-
-def generate_interval_map(note_names: list[str]) -> int:
-    '''
-    Return an integer representing a given collection of note names.
-
-    Notes will be parsed into their simplest binomial form. The first 
-    note of the given list will serve as the tonic or root of the pitch 
-    map, and other notes will be considered sharper intervals from that 
-    note name. Unrecognizable note names will be ignored.
-
-    E.g.:   ['C', 'D###4', 'Db', 'Fbbb5', 'Mb', 'G###6', 'F#####9', 'F#|Gb', 'F#|Gb5']
-        >> 0b101010101011
-    '''
-    simplified_notes: list[str] = []
-    for note_name in note_names:
-        if note_name in constants.BINOMIALS:
-            simplified_notes.append(note_name)
-        elif not note_name.isalpha():
-            note_name = note_name.removesuffix(note_name[-1])
-        else:
-            try:
-                simplified_notes.append(decode_enharmonic(note_name))
-            except ValueError:
-                pass
-    tonic: str = simplified_notes[0]
-    chromatic_: list[str] = chromatic(constants.BINOMIALS)
-    chromatic_ = utils.shift_list(chromatic_, tonic)
-    interval_map: int = 0
-    for note_name in simplified_notes:
-        interval_map |= (1 << chromatic_.index(note_name))
-    return interval_map

@@ -1,7 +1,9 @@
 '''
 The integer expressions of some of the most common intervallic structures.
 '''
-from . import bitwise
+from data import keywords
+from src import bitwise
+
 
 # Divisions of the single octave.
 # -------------------------------
@@ -74,25 +76,17 @@ HEPTATONIC_ORDER = [DIATONIC_SCALE,
                     HARMONIC_SCALE,
                     BISEPTIMAL_SCALE]
 
-DIATONIC_LABEL = 'diatonic'
-ALTERED_LABEL = 'altered'
-HEMITONIC_LABEL = 'hemitonic'
-HEMIOLIC_LABEL = 'hemiolic'
-DIMINISHED_LABEL = 'diminished'
-AUGMENTED_LABEL = 'augmented'
-HARMONIC_LABEL = 'harmonic'
-BISEPTIMAL_LABEL = 'biseptimal'
-PALEOCHROMATIC_LABEL = 'paleochromatic'
 
-HEP_DICT = {DIATONIC_SCALE: DIATONIC_LABEL,
-            ALTERED_SCALE: ALTERED_LABEL,
-            HEMITONIC_SCALE: HEMITONIC_LABEL,
-            HEMIOLIC_SCALE: HEMIOLIC_LABEL,
-            DIMINISHED_SCALE: DIMINISHED_LABEL,
-            AUGMENTED_SCALE: AUGMENTED_LABEL,
-            HARMONIC_SCALE: HARMONIC_LABEL,
-            BISEPTIMAL_SCALE: BISEPTIMAL_LABEL,
-            PALEOCHROMATIC_SCALE: PALEOCHROMATIC_LABEL}
+
+HEP_DICT = {DIATONIC_SCALE: keywords.DIATONIC_LABEL,
+            ALTERED_SCALE: keywords.ALTERED_LABEL,
+            HEMITONIC_SCALE: keywords.HEMITONIC_LABEL,
+            HEMIOLIC_SCALE: keywords.HEMIOLIC_LABEL,
+            DIMINISHED_SCALE: keywords.DIMINISHED_LABEL,
+            AUGMENTED_SCALE: keywords.AUGMENTED_LABEL,
+            HARMONIC_SCALE: keywords.HARMONIC_LABEL,
+            BISEPTIMAL_SCALE: keywords.BISEPTIMAL_LABEL,
+            PALEOCHROMATIC_SCALE: keywords.PALEOCHROMATIC_LABEL}
 
 
 # Divisions of the double octave.

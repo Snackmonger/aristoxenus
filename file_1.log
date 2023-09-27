@@ -1,0 +1,4 @@
+2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b1
+2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b10001
+2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b10000001
+2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b100000000001

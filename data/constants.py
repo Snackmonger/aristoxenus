@@ -1,8 +1,6 @@
 '''
 Constants used in the program.
 '''
-
-
 NATURALS: list[str] = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
 HALFSTEPS: dict[str, str] = {'E': 'F', 'B': 'C'}
 TONES: int = 12

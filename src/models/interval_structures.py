@@ -1,8 +1,16 @@
 from typing import Literal
 
-from ..decorators import pos_only, check_oob
 from .. import bitwise
 from .. import errors
+from .. import parsing
+
+from ..decorators import pos_only, check_oob
+
+# TODO: Docstrings need to be filled out 
+
+# TODO: Decorator type hinting comes in conflict 
+# with subclasses of LimitedIntervalStructure...
+
 
 
 OOB_OPTIONS = Literal['integrate', 'oct_integrate', 'error', 'ignore']
@@ -37,7 +45,7 @@ class IntervalStructure():
 
     @pos_only
     def __isub__(self, interval: int) -> 'IntervalStructure':
-        self.value = (self.value ^ interval) +1
+        self.value = (self.value ^ interval) + 1
         return self
 
     def __len__(self) -> int:
@@ -45,14 +53,6 @@ class IntervalStructure():
 
     def __repr__(self):
         return str(f'{self.value} = {bin(self.value)} :: {self.value.bit_count()}/{len(self)} bits')
-    
-    def next_inversion(self) -> None:
-        '''Rotate the pitch collection left to begin with the next flipped bit.'''
-        
-    
-    def previous_inversion(self) -> None:
-        '''Rotate the pitch collection right to begin with the previous flipped bit.'''
-        
 
 
 class LimitedIntervalStructure(IntervalStructure):
@@ -62,7 +62,7 @@ class LimitedIntervalStructure(IntervalStructure):
     If the class attempts to add notes that are out of bounds, we use the 'oob'
     attribute to define how it handles the conflict.
     '''
-    
+
     def __init__(self,
                  bits: int,
                  value: int = 1,
@@ -70,13 +70,14 @@ class LimitedIntervalStructure(IntervalStructure):
         if value.bit_length() <= bits:
             super().__init__(value)
         else:
-            raise errors.IntervalOutOfBoundsError(bin(value), value.bit_length(), bits)
+            raise errors.IntervalOutOfBoundsError(
+                f'Max bits: {bits} Current bits: {value.bit_length()} (={bin(value)})')
         self.__bits: int = bits
         self.oob: str = oob
 
 
     @property
-    def inversions(self) -> list[int]:
+    def inversions(self) -> tuple[int, ...]:
         '''
         A list containing the integer representations of all possible
         inversions of the current interval structure.
@@ -85,20 +86,20 @@ class LimitedIntervalStructure(IntervalStructure):
         for _ in range(self.value.bit_count()):
             self.next_inversion()
             rotations.append(int(self))
-        return rotations
-    
-    
+        return tuple(rotations)
+
+
     @property
-    def intervals(self) -> list[int]:
+    def intervals(self) -> tuple[int, ...]:
         '''
         A list of the intervals in the current interval structure.
         '''
-        return list(bitwise.iterate_intervals(int(self)))
+        return tuple(bitwise.iterate_intervals(int(self)))
 
 
     @property
     def bits(self) -> int:
-        '''Public reference for private bit-limit.'''
+        '''An integer representing the maximum number of bits in the structure.'''
         return self.__bits
 
 
@@ -112,18 +113,18 @@ class LimitedIntervalStructure(IntervalStructure):
     @check_oob
     @pos_only
     def __isub__(self, interval: 'int | IntervalStructure') -> 'LimitedIntervalStructure':
-        self.value = (self.value ^ int(interval)) +1
+        self.value = (self.value ^ int(interval)) + 1
         return self
-    
+
 
     def next_inversion(self) -> None:
         '''Rotate the pitch collection left to begin with the next flipped bit.'''
-        self.value = bitwise.previous_inversion(self.value, self.__bits)
-    
+        self.value = bitwise.next_inversion(self.value, self.__bits)
+
 
     def previous_inversion(self) -> None:
         '''Rotate the pitch collection right to begin with the previous flipped bit.'''
-        self.value = bitwise.next_inversion(self.value, self.__bits)
+        self.value = bitwise.previous_inversion(self.value, self.__bits)
 
 
 class Octave(LimitedIntervalStructure):
@@ -136,6 +137,7 @@ class Octave(LimitedIntervalStructure):
     As with other intervallic schemata, the least significant bit is the 
     root/tonic of the structure.
     '''
+
     def __init__(self, value: int = 1):
         super().__init__(12, value)
 
@@ -143,7 +145,7 @@ class Octave(LimitedIntervalStructure):
 class DoubleOctave(LimitedIntervalStructure):
     '''
     Representation of the double octave as a 24-bit integer.
-    
+
     The double octave provides a structural paradigm in which the intervals
     between 1 and 2 are recognized as distinct (or partially distinct) from
     the intervals between 2 and 4.
@@ -158,7 +160,7 @@ class DoubleOctave(LimitedIntervalStructure):
     def bind_octaves(self, lower: int, higher: int) -> int:
         '''Take two 12-bit octaves and bind them into a 24-bit double octave.'''
         return (lower << int(self.bits/2)) | higher
-    
+
     def union(self) -> int:
         '''Return a 12-bit integer representing the interval overlap of the two octaves.'''
         return self.lower | self.upper
@@ -166,7 +168,7 @@ class DoubleOctave(LimitedIntervalStructure):
     @property
     def lower(self) -> int:
         '''Return the lower octave.'''
-        return (self.value >> int(self.bits/2))
+        return (self.value & int(self.bits/2) **2 -1)
 
     @lower.setter
     def lower(self, lower: int) -> None:
@@ -176,7 +178,7 @@ class DoubleOctave(LimitedIntervalStructure):
     @property
     def upper(self) -> int:
         '''Return the upper octave.'''
-        return self.value & (2 ** int(self.bits / 2) - 1)
+        return self.value & ((2 ** int(self.bits / 2) -1) << self.bits)
 
     @upper.setter
     def upper(self, upper: int) -> None:
@@ -193,11 +195,10 @@ class Scale(Octave):
         super().__init__(value)
         self.tones = self.value.bit_count()
 
-    
     def chords(self,
                key: str = 'C',
                structure: str = 'tertial',
-               extent: str|int = 'triad',
+               extent: str | int = 'triad',
                ) -> list[str]:
         '''
         Return a list of chords for this scale.
@@ -220,6 +221,7 @@ class HeptatonicScale(Scale):
     '''
     Abstraction of a heptatonic scale.
     '''
+
     def __init__(self, value: int = 1) -> None:
         if value.bit_count() != 7:
             raise errors.HeptatonicScaleError(value.bit_count())
@@ -234,6 +236,36 @@ class Chord(DoubleOctave):
 
     def __init__(self, value: int = 1):
         super().__init__(value)
+
+
+    @classmethod
+    def from_symbol(cls, chord_symbol: str) -> 'Chord':
+        '''
+        Return an instance of Chord from a chord symbol.
+
+        Parameters
+        ----------
+        chord_symbol : str
+            A symbolic representation of a chord. Most standard chord symbols
+            will be recognizable
+
+        Returns
+        -------
+        Chord
+            An instance of Chord with the structure indicated by the chord 
+            symbol.
+        '''
+        chord_structure: int = parsing.parse_chord_symbol(chord_symbol)
+        return cls(chord_structure)
+    
+    @classmethod
+    def from_structure(cls, interval_structure: int) -> 'Chord':
+        prototype: DoubleOctave = DoubleOctave()
+        if interval_structure.bit_length() <= prototype.bits:
+            return cls(interval_structure)
+        prototype += interval_structure
+        return cls(int(prototype))
+
 
 
 

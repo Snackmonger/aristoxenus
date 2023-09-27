@@ -15,3 +15,14 @@ MODAL_NAME: str = 'modal_name'
 RECOGNIZED_NAMES: str = 'recognized_names'
 CHORD_SYMBOL: str = 'chord_symbol'
 
+# Scale system
+DIATONIC_LABEL = 'diatonic'
+ALTERED_LABEL = 'altered'
+HEMITONIC_LABEL = 'hemitonic'
+HEMIOLIC_LABEL = 'hemiolic'
+DIMINISHED_LABEL = 'diminished'
+AUGMENTED_LABEL = 'augmented'
+HARMONIC_LABEL = 'harmonic'
+BISEPTIMAL_LABEL = 'biseptimal'
+PALEOCHROMATIC_LABEL = 'paleochromatic'
+

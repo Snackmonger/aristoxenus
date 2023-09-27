@@ -1,15 +1,17 @@
-import loguru
 import sys
+import loguru
 
-from . import chord_symbols
-from . import intervallic_canon as intervals
-from . import bitwise
-from . import errors
-from . import nomenclature
-from . import constants
-from . import utils
-from .models import interval_structures
 
+from data import (chord_symbols,
+                  intervallic_canon as intervals,
+                  constants)
+
+from src import (errors,
+                 nomenclature,
+                 utils,
+                 rendering)
+
+from src.models import interval_structures
 
 # ----------------------------------------------------------
 logger = loguru.logger
@@ -73,9 +75,9 @@ def parse_chord_symbol(chord_symbol: str) -> int:
         chord_symbol = chord_symbol.replace('6/9', '69')
 
     # Delegate special structures to auxiliary functions.
-    if chord_symbols.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
+    if constants.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
         return __parse_polychord(chord_symbol)
-    if chord_symbols.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
+    if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
         return __parse_slash_chord(chord_symbol)
 
     chord_symbol = __remove_chord_prefix(chord_symbol)[1]
@@ -139,7 +141,7 @@ def parse_chord_symbol(chord_symbol: str) -> int:
             # Check if a symbol overrides the implicit p5 of a chord.
             for symbol in ['dim', 'aug', '+', 'b5', '#5']:
                 if symbol in chord_symbol:
-                    structure ^= (intervals.DIAPENTE - 1)
+                    structure ^= (intervals.DIAPENTE - 1) # 1 = tonic
             chord_symbol = chord_symbol.replace(symbol_element, '')
             parsed_symbols.append(symbol_element)
 
@@ -199,12 +201,12 @@ def __parse_polychord(chord_symbol: str) -> int:
                     (C0 Eb0 E0 Gb0 G0 Bbb0 B0 Db1)
     '''
     compiled_structure: int = 1
+    subchord_structure: int = 1
+    current_bass: str = ''
     previous_bass: str = ''
     distance: int = 0
-    octave: list[str]
-    octaves: int
-    subchord_structure: int
-    current_bass: str
+    octaves: int = 0
+    octave: list[str] = []
     
     # Break up the symbol and parse each subchord. For every chord that isn't
     # the first chord, transpose the resulting structure into the range of the
@@ -214,27 +216,26 @@ def __parse_polychord(chord_symbol: str) -> int:
         # The polychord octave symbol means 'transpose the next chord up 1
         # octave'. The symbol can also be compounded to transpose multiple
         # octaves.
-        if chord_symbols.POLYCHORD_OCTAVE_SYMBOL in subchord_symbol:
-            octaves = subchord_symbol.count(chord_symbols.POLYCHORD_OCTAVE_SYMBOL)
+        if constants.POLYCHORD_OCTAVE_SYMBOL in subchord_symbol:
+            octaves = subchord_symbol.count(constants.POLYCHORD_OCTAVE_SYMBOL)
             distance += octaves * 12
-
 
         else:
             current_bass, chord_symbol = __remove_chord_prefix(subchord_symbol)
             subchord_structure = parse_chord_symbol(subchord_symbol)
-            if chord_symbols.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
+            if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
                 current_bass = chord_symbol.split(
-                    chord_symbols.SLASH_CHORD_DIVIDER_SYMBOL)[-1]
+                    constants.SLASH_CHORD_DIVIDER_SYMBOL)[-1]
                 
             # First symbol
             if previous_bass == '':
                 compiled_structure |= subchord_structure
-                previous_bass = decode_enharmonic(current_bass)
-
+                previous_bass = nomenclature.decode_enharmonic(current_bass)
+                
             else:
-                octave = nomenclature.shift_list(chromatic(), previous_bass)
-                distance += octave.index(decode_enharmonic(current_bass))
-                previous_bass = decode_enharmonic(current_bass)
+                octave = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), previous_bass)
+                distance += octave.index(nomenclature.decode_enharmonic(current_bass))
+                previous_bass = nomenclature.decode_enharmonic(current_bass)
                 compiled_structure |= (subchord_structure << distance)
 
     return compiled_structure
@@ -283,9 +284,11 @@ def parse_heptatonic_scale_structure(interval_structure:int):
     if found_parent is True:
         return (parent, mode)
         
-    # Find nearest comparison... starting from the diatonic, 
+    # Find nearest comparison... starting from the diatonic,
     # seek out scales that have same structure with X number
     # of mods, and return the scale with the fewest mods.
+
+    # we can use the 'get heptatonic intervals' function for this
 
 
 def identify_triad(interval_structure: int) -> dict[str, int|str]:
@@ -316,8 +319,7 @@ def identify_triad(interval_structure: int) -> dict[str, int|str]:
             identified during analysis. For the triad parser, this is limited
             to 'spread triad'.
     '''
-
-
+    return {'': 0}
 
 
 def generate_chord_symbol(interval_structure: int, bass_note: str) -> str:
@@ -353,41 +355,7 @@ def generate_chord_symbol(interval_structure: int, bass_note: str) -> str:
         Also parses interval structures, but also ensures that the given bass
         note will be considered the root, regardless of awkward nomenclature.
 
-    '''
-    # NOTE: this is the wrong approach. we should build a system to invert chords and 
-    # identify them against canonical types before writing this function...
-
-
-    symbols: list[str] = []
-
-    # Check major third
-    if bitwise.has_interval(interval_structure, intervals.DITONE):
-
-
-        # Check 7
-        if bitwise.has_interval(interval_structure, intervals.COMPOUND_HEMIOLION):
-
-        # Check maj7
-        elif bitwise.has_interval(interval_structure, intervals.COMPOUND_DITONE):
-
-
-        # Check implicit fifth.
-        if not bitwise.has_interval(interval_structure, intervals.DIAPENTE):
-
-
-
-    # Check minor third
-    if bitwise.has_interval(interval_structure, intervals.HEMIOLION):
-
-
-        # Check 7
-        if bitwise.has_interval(interval_structure, intervals.COMPOUND_HEMIOLION):
-
-
-        # Check implicit fifth.
-        if not bitwise.has_interval(interval_structure, intervals.DIAPENTE):
-
-            
+    ''' 
 
     
 def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]) -> int:
@@ -431,21 +399,79 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]
     '''
     
 
+def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
+    '''
+    For a given heptatonic scale, return the Indian numerals describing
+    the pattern's relation to the major scale. 
 
+    Parameters
+    ----------
+    note_names : list[str]
+        A list of exactly 7 note names, from the naturals, sharps, flats, or
+        binomials. 
+
+    Returns
+    -------
+    list[str]
+        _description_
+
+    Examples
+    --------
+    >>> name_heptatonic_intervals(['C', 'D', 'Eb', 'Fb', 'Gbb', 'Ab', 'Bb']) 
+    ['1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7']
+    >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
+    ['1', '#2', '3', '4', '#5', '#6', '7'] 
+    '''
+    tonic: str = note_names[0]
+    # binomial_names = [decode_enharmonic(note_name) for note_name in note_names]
+    binomial_names = list(map(nomenclature.decode_enharmonic, note_names))
+    if len(binomial_names) != constants.NOTES:
+        raise ValueError('Only works on heptatonic scales.')
     
+    chromatic_names: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), tonic)
+    major_names: list[str] = rendering.render(2741, chromatic_names)
+    intervals_: list[str] = []
+    for index in range(constants.NOTES):
+        expected_note: str = major_names[index]
+        given_note: str = binomial_names[index]
+        difference: int = chromatic_names.index(given_note) - chromatic_names.index(expected_note)
+        accidental: str = constants.SHARP_SYMBOL
+        if difference < 0:
+            accidental = constants.FLAT_SYMBOL
+            difference *= constants.FLAT_VALUE
 
-    
+        intervals_.append((accidental * difference) + str(index + 1))
+
+    return intervals_
 
 
-    
+def generate_interval_map(note_names: list[str]) -> int:
+    '''
+    Return an integer representing a given collection of note names.
 
-        
+    Notes will be parsed into their simplest binomial form. The first 
+    note of the given list will serve as the tonic or root of the pitch 
+    map, and other notes will be considered sharper intervals from that 
+    note name. Unrecognizable note names will be ignored.
 
-
-
-
-
-
-
-
-
+    E.g.:   ['C', 'D###4', 'Db', 'Fbbb5', 'Mb', 'G###6', 'F#####9', 'F#|Gb', 'F#|Gb5']
+        >> 0b101010101011
+    '''
+    simplified_notes: list[str] = []
+    for note_name in note_names:
+        if note_name in constants.BINOMIALS:
+            simplified_notes.append(note_name)
+        elif not note_name.isalpha():
+            note_name = note_name[:-1]
+        else:
+            try:
+                simplified_notes.append(nomenclature.decode_enharmonic(note_name))
+            except ValueError:
+                pass
+    tonic: str = simplified_notes[0]
+    chromatic_: list[str] = nomenclature.chromatic(constants.BINOMIALS)
+    chromatic_ = utils.shift_list(chromatic_, tonic)
+    interval_map: int = 0
+    for note_name in simplified_notes:
+        interval_map |= (1 << chromatic_.index(note_name))
+    return interval_map

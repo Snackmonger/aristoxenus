@@ -1,11 +1,17 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
+
+import loguru
+
 from .models.interval_structures import Scale
+from . import bitwise
 from .errors import OctaveRotationError
 
+logger = loguru.logger
 
-def triads(interval_structure: int, step: int=2) -> dict[str, int]:
+
+def triads(interval_structure: int, step: int=2) -> list[int]:
     '''
     Return a dict of triads for the given scale and structural principle.
 
@@ -21,12 +27,15 @@ def triads(interval_structure: int, step: int=2) -> dict[str, int]:
     dict[str, int]
         
     '''
-    if not interval_structure.bit_length() <= 12:
-        raise OctaveRotationError()
-    scale: Scale = Scale(interval_structure)
-    scale_modes: list[int] = scale.inversions
-    extra_octaves: int = steps * 12
-    chord_scale: list[int] = []
-    for mode in scale_modes:
-        ...
+    chord: list[int] = []
+    for interval in list(bitwise.iterate_intervals(interval_structure))[::step]:
+            logger.debug(bin(interval), interval)
+            chord.append(interval)
+    return chord[:3]
+
+    
+
+
+
+    
 

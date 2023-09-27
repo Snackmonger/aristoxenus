@@ -22,3 +22,10 @@ src/__pycache__/intervallic_canon.cpython-311.pyc
 src/models/__pycache__/__init__.cpython-311.pyc
 src/models/__pycache__/interval_structures.cpython-311.pyc
 tests/__pycache__/models_tests.cpython-311.pyc
+data/__pycache__/chord_symbols.cpython-311.pyc
+data/__pycache__/constants.cpython-311.pyc
+data/__pycache__/intervallic_canon.cpython-311.pyc
+data/__pycache__/keywords.cpython-311.pyc
+src/__pycache__/chord_symbols.cpython-311.pyc
+src/__pycache__/constants.cpython-311.pyc
+src/__pycache__/permutation.cpython-311.pyc

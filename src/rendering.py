@@ -1,6 +1,6 @@
 
-from . import constants
-from . import nomenclature
+from data import constants
+from src import nomenclature
 
 
 def render(interval_structure: int, 

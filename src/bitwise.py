@@ -11,8 +11,7 @@ therefore every compound interval structure) must be an odd number.
     
 '''
 from typing import Generator
-import loguru
-logger = loguru.logger
+
 
 
 def has_interval(interval_structure: int, interval: int) -> bool:
@@ -80,13 +79,13 @@ def previous_inversion(interval_structure: int, max_bits: int) -> int:
     int
         An integer representing the inverted interval structure.
     '''
-    logger.debug(f'{interval_structure} : {bin(interval_structure)}')
+    interval_structure = rotate_right(interval_structure, max_bits)
     while interval_structure % 2 == 0:
         interval_structure = rotate_right(interval_structure, max_bits)
     return interval_structure
 
 
-def next_inversion(collection: int, max_bits: int) -> int:
+def next_inversion(interval_structure: int, max_bits: int) -> int:
     '''
     Rotate the bit collection left to the next mode/inversion.
 
@@ -102,10 +101,10 @@ def next_inversion(collection: int, max_bits: int) -> int:
     int
         An integer representing the inverted interval structure.
     '''
-    collection = rotate_left(collection, max_bits)
-    while collection % 2 == 0:
-        collection = rotate_left(collection, max_bits)
-    return collection
+    interval_structure = rotate_left(interval_structure, max_bits)
+    while interval_structure % 2 == 0:
+        interval_structure = rotate_left(interval_structure, max_bits)
+    return interval_structure
 
 
 def iterate_bits(integer: int) -> Generator[int, None, None]:
@@ -137,6 +136,9 @@ def iterate_intervals(interval_structure: int) -> Generator[int, None, None]:
     '''
     Iterate the intervals of a given interval structure.
 
+    This function is identical to `iterate_bits`, except that it ensures that
+    the yielded number must be odd.
+
     Parameters
     ----------
     interval_structure : int
@@ -150,4 +152,5 @@ def iterate_intervals(interval_structure: int) -> Generator[int, None, None]:
     for result in iterate_bits(interval_structure):
         if result % 2 == 0:
             yield result + 1
-        yield result
+        else:
+            yield result

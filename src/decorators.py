@@ -26,6 +26,7 @@ def pos_only(function: Callable[..., Any]):
     Make sure the interval is not a negative number.
     '''
     def wrapper(*args: tuple[Any, ...], **kwargs: dict[Any, Any]):
+
         for arg in args:
             if isinstance(arg, int) and arg < 0:
                 arg *= -1
@@ -42,6 +43,7 @@ def check_oob(func: Callable[..., Any]):
                 interval: int,
                 *args: tuple[Any, ...],
                 **kwargs: dict[Any, Any]):
+        
         if interval.bit_length() > self.bits:
             match self.oob:
                 case OOBOptions.INTEGRATE:
@@ -49,7 +51,7 @@ def check_oob(func: Callable[..., Any]):
                 case OOBOptions.OCT_INTEGRATE:
                     interval >>= 12
                 case OOBOptions.ERROR:
-                    raise IntervalOutOfBoundsError(bin(interval))
+                    raise IntervalOutOfBoundsError(f'Max bits: {self.bits} Current bits: {interval.bit_length()} (={bin(interval)})')
                 case OOBOptions.IGNORE:
                     interval = 1
                 case _:
