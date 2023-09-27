@@ -4,7 +4,6 @@ The integer expressions of some of the most common intervallic structures.
 from data import keywords
 from src import bitwise
 
-
 # Divisions of the single octave.
 # -------------------------------
 

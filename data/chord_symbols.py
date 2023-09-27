@@ -109,10 +109,10 @@ symbol_elements: dict[str, int] = {
     symbol: interval for interval, symbols in basic_symbols.items() for symbol in symbols}
 
 additive: dict[str, int] = {
-    'add' + symbol: interval for symbol, interval in symbol_elements.items()}
+    CHORD_ADD + symbol: interval for symbol, interval in symbol_elements.items()}
 
 subtractive: dict[str, int] = {
-    'no' + symbol: interval for symbol, interval in symbol_elements.items()}
+    CHORD_NO + symbol: interval for symbol, interval in symbol_elements.items()}
 
 # The prescribed symbol for each interval, used by the parser
 # to generate a complete chord symbol. The parser does not necessarily
