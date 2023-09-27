@@ -4,8 +4,8 @@ ARISTOXENUS
 
 Musical Manipulation Tool Changelog
 
-    Version 0.11: 27/09/2023
-    ------------------------
+Version 0.11: 27/09/2023
+------------------------
 
     Added models for pitch structures with methods for rotation and easy collation of variants. 
 
@@ -20,8 +20,8 @@ Musical Manipulation Tool Changelog
     doesn't recognize which subclass of pitch structure has been returned. Still needs work._
 
 
-    Version 0.1: 14/09/2023
-    -----------------------
+Version 0.1: 14/09/2023
+-----------------------
 
     A few functions involved in the operation of the program so far:
 
