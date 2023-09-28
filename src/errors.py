@@ -27,6 +27,14 @@ class ChordNameError(ValueError):
     the note names in the list returned from `nomenclature.legal_chord_names`.
     '''
 
+
+class ChordSymbolError(ValueError):
+    ''' 
+    Error indicating that one or more of the suffixes of a chord symbol are 
+    incompatible with the parser.
+    '''
+
+
 class OctaveRotationError(ValueError):
     '''
     Error indicating that the requested rotation cannot be performed on 

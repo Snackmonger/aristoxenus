@@ -6,11 +6,7 @@ from .. import parsing
 
 from ..decorators import pos_only, check_oob
 
-# TODO: Docstrings need to be filled out 
-
-# TODO: Decorator type hinting comes in conflict 
-# with subclasses of LimitedIntervalStructure...
-
+# TODO: Docstrings need to be filled out
 
 
 OOB_OPTIONS = Literal['integrate', 'oct_integrate', 'error', 'ignore']
@@ -59,7 +55,7 @@ class LimitedIntervalStructure(IntervalStructure):
     '''
     Representation of an interval structure that has a limit to its range.
 
-    If the class attempts to add intervals that are out of bounds, we use the 'oob'
+    If the class attempts to add intervals that are out of bounds, we use the `oob`
     attribute to define how it handles the conflict.
     '''
 
@@ -195,26 +191,7 @@ class Scale(Octave):
         super().__init__(value)
         self.tones = self.value.bit_count()
 
-    def chords(self,
-               key: str = 'C',
-               structure: str = 'tertial',
-               extent: str | int = 'triad',
-               ) -> list[str]:
-        '''
-        Return a list of chords for this scale.
 
-        Params:
-                structure   ::  defines the pattern of how the chord is built
-                extent      ::  defines how many notes will be used in chord
-
-        Chord structure may be any of the values in the ChordStructure enum.
-        In this context, the values 'tertial', 'quartal', etc. mean 'take
-        every X note' rather than 'take a major/minor 3rd' or 'take a perfect 
-        or augmented fourth'.
-
-        Extent may either be a Greek name from the GreekNumberGroups enum, or
-        an integer between 1 and 7.
-        '''
 
 
 class HeptatonicScale(Scale):

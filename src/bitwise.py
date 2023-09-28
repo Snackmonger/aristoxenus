@@ -33,7 +33,7 @@ def has_interval(interval_structure: int, interval: int) -> bool:
     return interval & interval_structure == interval
 
 
-def transpose_interval(interval: int, octave: int = 1) -> int:
+def transpose_interval(interval: int, octave: int = 1, echo: bool = False) -> int:
     '''
     Return the equivalent of the given interval sharpened by the given number
     of octaves.
@@ -42,15 +42,40 @@ def transpose_interval(interval: int, octave: int = 1) -> int:
     ----------
     interval : int
         The interval to be transposed.
-    octave : int
+    octave : int, default=1
         The number of octaves you want to transpose the interval by.
+    echo : bool, default=False
+        True: the whole interval is transposed n octaves
+            0b101 -> 101000000000001 (ninth, octave, tonic)
+        False: the interval is replaced with a compound of n octaves
+            0b101 -> 100000000000001 (ninth, tonic)
 
     Returns
     -------
     int
         An integer representing the original interval shifted by 12 * n bits.
+
+    Notes
+    -----
+    The `echo` parameter should be set to True when you want to ensure that 
+    the upper octave(s) are exact copies of the interval or interval
+    structure. Use this when making compounds for iterating over larger 
+    chord/scale structures (e.g. 2-hand piano voicings).
+
+    The `echo` parameter should be set to False when you don't want the 
+    original root/tonic of an interval or interval structure to reappear 
+    as an octave. Use this when adding specific extensions (and only those
+    extensions) to the upper structure.
+
+    See Also
+    --------
+    permutation.extend_structure : The main reason for the `echo` option.
     '''
-    return ((interval - 1) << 12 * octave) + 1
+    modifier: int = 0
+    if echo is False:
+        modifier = -1
+    return ((interval + modifier) << 12 * octave) + 1
+
 
 
 def rotate_left(collection: int, max_bits: int) -> int:

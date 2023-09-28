@@ -1,7 +1,6 @@
 import sys
 import loguru
 
-
 from data import (chord_symbols,
                   intervallic_canon as intervals,
                   constants)
@@ -76,9 +75,9 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
     # Delegate special structures to auxiliary functions.
     if constants.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
-        return __parse_polychord(chord_symbol)
+        return parse_polychord_symbol(chord_symbol)
     if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
-        return __parse_slash_chord(chord_symbol)
+        return parse_slash_chord_symbol(chord_symbol)
 
     chord_symbol = __remove_chord_prefix(chord_symbol)[1]
 
@@ -155,7 +154,7 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     return structure
 
 
-def __parse_slash_chord(chord_symbol: str) -> int:
+def parse_slash_chord_symbol(chord_symbol: str) -> int:
     '''
     Parse a chord in 'slash' notation (e.g.: G/Bb, Cm7/Eb).   
 
@@ -169,9 +168,8 @@ def __parse_slash_chord(chord_symbol: str) -> int:
     int
         An integer representation of an interval map.
     '''
-    if chord_symbol.count('/') > 1:
-        raise ValueError(
-            f'Irregularly formatted chord structure: {chord_symbol}')
+    if chord_symbol.count('/') != 1:
+        raise errors.ChordSymbolError(chord_symbol)
 
     bass: str = chord_symbol.split('/')[1]
     root: str = nomenclature.decode_enharmonic(__remove_chord_prefix(chord_symbol)[0])
@@ -182,23 +180,45 @@ def __parse_slash_chord(chord_symbol: str) -> int:
     return (main_chord_structure << extra_semitones) + 1
 
 
-def __parse_polychord(chord_symbol: str) -> int:
+def parse_polychord_symbol(chord_symbol: str) -> int:
     '''
     Parse a chord in 'polychord' notation.
 
-    ...
+    Parameters
+    ----------
+    chord_symbol : str
+        A compound symbol consisting of two or more chord symbols separated 
+        by the '@' symbol. 
+
+    Returns
+    -------
+    int
+        An interval structure corresponding to the given polychord symbol.
 
     Notes
     -----
-    A polychord is entered as a sequence of chord symbols
-    separated by the @ symbol. Each successive chord symbol in 
-    the polychord will be understood as referring to the note
-    name in the previous symbol's first octave. 
+    A polychord is entered as a sequence of chord symbols separated by the '@' 
+    symbol. Each successive note name in the polychord will be understood as 
+    referring to the note name in the previous name's first octave. 
 
-    E.g. 
+    The '^' symbol can be substituted for a chord symbol in the polychord, 
+    indicating that the following chord is to be shifted an octave higher than
+    normal. The symbol can also be compounded to indicate a shift of multiple 
+    octaves (e.g. '^^^' means 'shift the next chord 3 octaves up').
 
-        Cmaj7@Ebm7b5    ->        0b10101011011001
-                    (C0 Eb0 E0 Gb0 G0 Bbb0 B0 Db1)
+    Examples
+    --------
+    >>> parse_polychord_symbol('Cmaj7@Ebm7b5')
+    0b10101011011001
+                
+    This translates to : C0 Eb0 E0 Gb0 G0 Bbb0 B0 Db1
+
+    This notation can be used as a shorthand for scale names:
+
+    >>> parse_polychord_symbol('Cmaj7@Dm')
+    0b101010110101
+
+    This translates to : C0 D0 E0 F0 G0 A0 B0
     '''
     compiled_structure: int = 1
     subchord_structure: int = 1
@@ -207,6 +227,8 @@ def __parse_polychord(chord_symbol: str) -> int:
     distance: int = 0
     octaves: int = 0
     octave: list[str] = []
+    if constants.POLYCHORD_DIVIDER_SYMBOL not in chord_symbol:
+        raise errors.ChordSymbolError(chord_symbol)
     
     # Break up the symbol and parse each subchord. For every chord that isn't
     # the first chord, transpose the resulting structure into the range of the
@@ -249,7 +271,7 @@ def parse_heptatonic_scale_structure(interval_structure:int):
     Parameters
     ----------
     scale_structure : int
-        _description_
+        An integer
 
     Returns
     -------
@@ -267,10 +289,10 @@ def parse_heptatonic_scale_structure(interval_structure:int):
     
     scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(interval_structure)
     inversions: tuple[int, ...] = scale.inversions
-
     parent: str = ''
     mode: int = 0
     found_parent: bool = False
+
     for heptatonic_supertype in intervals.HEPTATONIC_ORDER:
         supertype_scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(heptatonic_supertype)
         supertype_modes: tuple[int, ...] = supertype_scale.inversions
@@ -399,10 +421,10 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]
     '''
     
 
-def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
+def name_heptatonic_intervals(note_names: list[str], comparandum: int = intervals.DIATONIC_SCALE) -> list[str]:
     '''
-    For a given heptatonic scale, return the Indian numerals describing
-    the pattern's relation to the major scale. 
+    For a given collection of note names, return the Indian numerals describing
+    the pattern's relation to a given scale.
 
     Parameters
     ----------
@@ -410,15 +432,22 @@ def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
         A list of exactly 7 note names, from the naturals, sharps, flats, or
         binomials. 
 
+    comparandum: int, default=2741
+        A integer representing an interval structure to be used as a point 
+        of comparison for the given collection. The default value represents
+        a major scale.
+
     Returns
     -------
     list[str]
-        _description_
+        A list of numbers modified by the sharp or flat symbol according to
+        their relationship to the given scale. 
 
     Examples
     --------
     >>> name_heptatonic_intervals(['C', 'D', 'Eb', 'Fb', 'Gbb', 'Ab', 'Bb']) 
     ['1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7']
+
     >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
     ['1', '#2', '3', '4', '#5', '#6', '7'] 
     '''
@@ -429,7 +458,7 @@ def name_heptatonic_intervals(note_names: list[str]) -> list[str]:
         raise ValueError('Only works on heptatonic scales.')
     
     chromatic_names: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), tonic)
-    major_names: list[str] = rendering.render(2741, chromatic_names)
+    major_names: list[str] = rendering.render(comparandum, chromatic_names)
     intervals_: list[str] = []
     for index in range(constants.NOTES):
         expected_note: str = major_names[index]
@@ -449,13 +478,14 @@ def generate_interval_map(note_names: list[str]) -> int:
     '''
     Return an integer representing a given collection of note names.
 
-    Notes will be parsed into their simplest binomial form. The first 
-    note of the given list will serve as the tonic or root of the pitch 
-    map, and other notes will be considered sharper intervals from that 
-    note name. Unrecognizable note names will be ignored.
+    Notes will be parsed into their simplest binomial form. The first note of 
+    the given list will serve as the tonic or root of the pitch map, and other
+    notes will be considered sharper intervals from that note name. 
+    Unrecognizable note names will be ignored.
 
-    E.g.:   ['C', 'D###4', 'Db', 'Fbbb5', 'Mb', 'G###6', 'F#####9', 'F#|Gb', 'F#|Gb5']
-        >> 0b101010101011
+    E.g.:   
+    >>> generate_interval_map(['C', 'D###4', 'Db', 'Fbbb5', 'Mb', 'G###6', 'F#####9', 'F#|Gb', 'F#|Gb5'])
+    0b101010101011
     '''
     simplified_notes: list[str] = []
     for note_name in note_names:
@@ -475,3 +505,28 @@ def generate_interval_map(note_names: list[str]) -> int:
     for note_name in simplified_notes:
         interval_map |= (1 << chromatic_.index(note_name))
     return interval_map
+
+
+def chords(interval_structure: int,
+           structure: str = 'tertial',
+           extent: str | int = 'triad',
+           ) -> list[str]:
+    '''
+    Return a list of chords for this scale.
+
+    Parameters
+    ----------
+    structure : int
+        defines the pattern of how the chord is built
+    extent : int, str, optional
+        defines how many notes will be used in chord
+
+    Chord structure may be any of the values in the ChordStructure enum.
+    In this context, the values 'tertial', 'quartal', etc. mean 'take
+    every X note' rather than 'take a major/minor 3rd' or 'take a perfect 
+    or augmented fourth'.
+
+    Extent may either be a Greek name from the GreekNumberGroups enum, or
+    an integer between 1 and 7.
+    '''
+    return ['']

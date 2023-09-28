@@ -1,14 +1,16 @@
 '''
 Decorators that are used in the program.
 '''
-from typing import Callable, TYPE_CHECKING, TypeVar, ParamSpec
+from typing import Callable, TYPE_CHECKING, TypeVar, ParamSpec, Concatenate
 import loguru
 
-from .errors import IntervalOutOfBoundsError
-from .enums import OOBOptions
+from data import constants
+
+from src.errors import IntervalOutOfBoundsError
+from src.enums import OOBOptions
 
 if TYPE_CHECKING:
-    from .models.interval_structures import IntervalStructure, LimitedIntervalStructure
+    from .models.interval_structures import LimitedIntervalStructure
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -18,6 +20,10 @@ logger = loguru.logger
 # Note: decorators are basically magic to me, so I'm sure these
 # are absolutely terrible ways of achieving the desired goal,
 # but that's part of the learning process...
+
+# Second note: why in the efferucking heck do these dramn decorators
+# play so poorly with type hints? Ths seems to fix the errors in pylint,
+# bit it's kind of ugly...
 
 
 # ----------------------- models.interval_structures ----------------------- #
@@ -34,26 +40,26 @@ def pos_only(function: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
-def check_oob(func: Callable[P, T]) -> Callable[P, T]:
+def check_oob(func: Callable[Concatenate[..., int, P], T]) -> Callable[Concatenate[..., int, P], T]:
     '''
-    Check whether an interval is beyond the limit of the structure,
-    and perform a designated action if so.
+    Perform the action designated in the subclass' `oob` attribute if the given 
+    interval is out of bounds of the interval structure's limits.
     '''
     def wrapper(self: 'LimitedIntervalStructure',
                 interval: int,
                 *args: P.args,
                 **kwargs: P.kwargs) -> T:
+        if self.oob not in OOBOptions:
+            self.oob = OOBOptions.IGNORE
         if interval.bit_length() > self.bits:
             match self.oob:
-                case OOBOptions.INTEGRATE:
+                case OOBOptions.INTEGRATE_LOW:
                     interval >>= self.bits
-                case OOBOptions.OCT_INTEGRATE:
-                    interval >>= 12
+                case OOBOptions.INTEGRATE_HIGH:
+                    interval >>= constants.TONES
                 case OOBOptions.ERROR:
                     raise IntervalOutOfBoundsError(f'Max bits: {self.bits} Current bits: {interval.bit_length()} (={bin(interval)})')
                 case OOBOptions.IGNORE:
-                    interval = 1
-                case _:
                     interval = 1
         return func(self, interval, *args, **kwargs)
     return wrapper

@@ -1,17 +1,31 @@
+
 from src.models import interval_structures
-from src import intervallic_canon
+from data import intervallic_canon
 
 
-x = interval_structures.LimitedIntervalStructure(12)
+def test_double_octave():
+    x = interval_structures.DoubleOctave()
 
-x += intervallic_canon.DITONE
-x += intervallic_canon.DIAPENTE
-x += intervallic_canon.COMPOUND_DITONE
+    print(x, type(x))
+    x += intervallic_canon.DITONE
 
-print(x)
+    print(x, type(x))
+    x += intervallic_canon.DIAPENTE
 
-x.next_inversion()
+    print(x, type(x))
 
-print(x)
+    x.next_inversion()
 
-print(x.inversions)
+    print(x, type(x))
+
+    x.previous_inversion()
+
+    print(x, type(x))
+
+    print(x.intervals)
+
+    print(x.inversions)
+    
+    print(x.upper)
+
+    print(x.lower)

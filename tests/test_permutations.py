@@ -1,5 +1,25 @@
-from src.permutation import triads
+
+from src import permutation
+from src import rendering
+from src import nomenclature
+from data import constants
 
 
-for interval in triads(0b101010110101):
-    print(bin(interval))
+
+
+
+
+
+def generate_intmap():
+    x = permutation.extend_structure(0b101010110101)
+    y = nomenclature.scientific_range(constants.BINOMIALS)
+    z = rendering.render(x, y)
+    print(z)
+        
+
+def chordify():
+    print(permutation.chordify(0b101010110101))
+    print(permutation.chordify(0b101010110101, 4))
+    print(permutation.chordify(0b101010110101, 5))
+    print(permutation.chordify(0b101010110101, 6))
+    print(permutation.chordify(0b101010110101, 7))
