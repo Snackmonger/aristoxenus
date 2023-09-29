@@ -7,7 +7,7 @@ from data import (constants,
                   keywords)
 
 from src import (utils,
-                 rendering, 
+                 rendering,
                  errors)
 
 
@@ -82,8 +82,7 @@ def get_enharmonic_equivalents(note_name: str) -> list[str]:
     >>> __get_enharmonic_equivalents('E') 
     ['E', 'Fb', 'Gbbb', ..., 'D##', 'C####', ...]
     '''
-    decoder: dict[str, str] = enharmonic_decoder()
-    return [key for key, value in decoder.items() if value == note_name]
+    return [key for key, value in enharmonic_decoder().items() if value == note_name]
 
 
 def legal_chord_names() -> list[str]:
@@ -97,12 +96,7 @@ def legal_chord_names() -> list[str]:
         binomials.
     '''
     # Any natural or any natural + 1 accidental
-    enharmonic_: dict[str, str] = enharmonic_decoder()
-    legal_names_: list[str] = []
-    for key in enharmonic_:
-        if len(key) <= 2:
-            legal_names_.append(key)
-    return legal_names_
+    return [key for key in enharmonic_decoder() if len(key) <= 2]
 
 
 def __identity(note_name: str) -> str:

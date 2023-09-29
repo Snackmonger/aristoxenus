@@ -1,5 +1,7 @@
 from tests import test_nomenclature
 
 
-test_nomenclature.encode_enharmonic('B#', 'G')
+test_nomenclature.legal_chord_names()
 
+
+test_nomenclature.enharmonic_decoder()
