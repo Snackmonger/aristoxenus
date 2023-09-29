@@ -13,6 +13,61 @@ therefore every compound interval structure) must be an odd number.
 from typing import Generator
 
 
+def validate_interval(interval: int) -> bool:
+    '''
+    Checks whether an integer can be used as a valid interval.
+
+    This entails that there are exactly 2 flipped bits, and that the integer 
+    is an odd number.
+
+    Parameters
+    ----------
+    interval : int
+        An integer to be checked for valid interval status.
+
+    Returns
+    -------
+    bool
+        True, if the integer can be used as an interval.
+
+    Notes
+    -----
+    All intervals consist of two extremities and a certain amount of distance 
+    between them. This equates to a binary number beginning and ending with 1, 
+    and with an indeterminate number of 0s between them (e.g. 1000001, 101,
+    1000000000000001, etc.).
+    '''
+    return interval.bit_count() == 2 and interval % 2 == 1
+
+
+def validate_interval_structure(interval_structure: int, max_bits: int, flipped_bits: int=0) -> bool:
+    '''
+    Return True if the interval structure is within the maximum number of 
+    bits.
+
+    Parameters
+    ----------
+    interval_structure : int
+        An integer representing an interval structure.
+    max_bits : int
+        The maximum number of bits expected.
+    flipped_bits : int, default=0
+        The expected number of flipped bits. 0 means 'any number of flipped
+        bits'.
+
+    Returns
+    -------
+    bool
+        True, if the bit length of the given interval structure does
+        not exceed the maximum number of bits, and contains the expected
+        number of flipped bits.
+    '''
+    max_: bool = interval_structure.bit_length() <= max_bits
+    flip_: bool = interval_structure.bit_count() == flipped_bits
+    if flipped_bits == 0:
+        flip_ = True
+    return  max_ and flip_
+
 
 def has_interval(interval_structure: int, interval: int) -> bool:
     '''

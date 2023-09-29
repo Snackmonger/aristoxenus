@@ -30,3 +30,4 @@ src/__pycache__/chord_symbols.cpython-311.pyc
 src/__pycache__/constants.cpython-311.pyc
 src/__pycache__/permutation.cpython-311.pyc
 tests/__pycache__/test_permutations.cpython-311.pyc
+tests/__pycache__/test_nomenclature.cpython-311.pyc

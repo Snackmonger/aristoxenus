@@ -63,8 +63,8 @@ Octave
 ------
     (Gk. *dià pasõn*, "though all (the notes)")
 
-An octave is the name the 1:2 ratio between two frequencies, whether as a multiplication or division.
-A frequency that stands in a 1:2 relationship to another frequency can be said to be the 'octave' of that frequency, and vice-versa.
+An octave is the name the 1:2 ratio between two frequencies (or 2:1).
+A frequency that stands in this ratio to another frequency can be said to be the 'octave' of that frequency, and vice-versa.
 - 440Hz is a lower 'octave' of 88Hz
 - 660Hz is a higher 'octave' of 330Hz
 
@@ -73,6 +73,21 @@ but to the amount of distance between those limits.
 - A major third is within the range of an 'octave' (i.e a pitch and its octave), but a major ninth is outside the range of an 'octave'
 
 When one note is an octave of another note, it carries the same alphabetic name.
+
+
+Binomial
+--------
+
+This is the term used in the Aristoxenus library to refer to notes of the type 'G#|Ab', in which
+a note is simultaneously characterized by two names (hence 'binomial'). I don't think anyone else 
+refers to notes with this term, but it was convenient to have a simple, one-word descriptor for notes with
+absolute enharmonic value, in contradistinction to the sharps and flats. The program uses the binomial notes
+as a template for named alphabetic structures when considering abstract relationships, then renders those 
+structures more precisely into sharps and/or flats when requested. 
+
+When the 'imaginary' binomials are combined with scientific numerals, they exist in a 1:1 relationship with the frequencies
+of the 12-tone octave, since each frequency corresponds to one (and only one) symbol. The 'real' note names (i.e. sharps 
+and/or flats), on the other hand, exist in a 2:1 relationship, since each frequency corresponds to two different symbols.
 
 
 

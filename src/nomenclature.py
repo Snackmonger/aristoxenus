@@ -2,9 +2,13 @@
 Functions related to generating and processing musical nomenclatural material.
 '''
 from dataclasses import dataclass
-from data import constants
-from src import utils
-from src import rendering
+
+from data import (constants,
+                  keywords)
+
+from src import (utils,
+                 rendering, 
+                 errors)
 
 
 def chromatic(accidental_notes: list[str]) -> list[str]:
@@ -78,12 +82,8 @@ def get_enharmonic_equivalents(note_name: str) -> list[str]:
     >>> __get_enharmonic_equivalents('E') 
     ['E', 'Fb', 'Gbbb', ..., 'D##', 'C####', ...]
     '''
-    list_of_equivalents: list[str] = []
     decoder: dict[str, str] = enharmonic_decoder()
-    for key, value in decoder.items():
-        if value == note_name:
-            list_of_equivalents.append(key)
-    return list_of_equivalents
+    return [key for key, value in decoder.items() if value == note_name]
 
 
 def legal_chord_names() -> list[str]:
@@ -233,10 +233,7 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     
     note_value = decode_enharmonic(note_value)
     options: list[str] = get_enharmonic_equivalents(note_value)
-    homonymous_options: list[str] = []
-    for option in options:
-        if __is_homonymous(option, note_name):
-            homonymous_options.append(option)
+    homonymous_options: list[str] = [option for option in options if __is_homonymous(option, note_name)]
     return sorted(homonymous_options, key=len)[0]
 
 
@@ -581,3 +578,27 @@ def is_abcdefg(note_names: list[str]) -> bool:
     enharmonic: set[str] = set(decode_enharmonic(note) for note in approved_names)
     return len(naturals_) == 0 and len(approved_names) == constants.NOTES and len(enharmonic) == constants.NOTES
 
+
+def translate_numeric_keyword(term: str) -> int:
+    '''
+    Auxiliary function that converts certain terms into the numbers they 
+    represent.
+
+    Parameters
+    ----------
+    term : str
+        One of a limited number of structural terms
+
+    Returns
+    -------
+    int
+        The corresponding numerical meaning of the term.
+    '''
+    for number, tuple_ in enumerate(keywords.numeration):
+        if term in tuple_:
+            if term == tuple_[2]:
+                # Tertial, quartal, etc., but since we use this as a step in
+                # a list slice, -1 to compensate for 0 index.
+                return number - 1
+            return number
+    raise errors.UnknownKeywordError(term)

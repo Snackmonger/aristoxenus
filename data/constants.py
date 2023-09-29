@@ -31,7 +31,7 @@ POLYCHORD_DIVIDER_SYMBOL = '@'
 POLYCHORD_OCTAVE_SYMBOL = '^'
 ACCIDENTAL_SYMBOLS = [SHARP_SYMBOL, FLAT_SYMBOL]
 # Note: we want to use the real flat/sharp symbols, but
-# we want to keep being able to recognize pound and b...
+# we want to keep being able to recognize pound sign and lowercase b...
 
 
 SHARPS: list[str] = [note + SHARP_SYMBOL for note in NATURALS

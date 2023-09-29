@@ -6,13 +6,16 @@ class IntervalOutOfBoundsError(ValueError):
     parameter `oob` to 'error'.
     '''
 
-
 class MisconfiguredOOBError(ValueError):
     '''
     Error indicating that the LimitedIntervalStructure has parameter `oob` set
     to a value not present in the `OOBOptions` enum.
     '''
 
+class NoteNameError(ValueError):
+    ''' 
+    Error indicating that an unrecognized note name was passed.
+    '''
 
 class HeptatonicScaleError(ValueError):
     '''
@@ -33,10 +36,15 @@ class ChordSymbolError(ValueError):
     Error indicating that one or more of the suffixes of a chord symbol are 
     incompatible with the parser.
     '''
-
-
+    
 class OctaveRotationError(ValueError):
     '''
     Error indicating that the requested rotation cannot be performed on 
     structures exceeding the compass of one octave.
+    '''
+
+
+class UnknownKeywordError(ValueError):
+    ''' 
+    Error indicating that the passed keyword was not recognized in context.    
     '''

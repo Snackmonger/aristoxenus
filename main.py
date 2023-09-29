@@ -1,4 +1,5 @@
-from tests import test_permutations
+from tests import test_nomenclature
 
 
-test_permutations.chordify()
+test_nomenclature.encode_enharmonic('B#', 'G')
+

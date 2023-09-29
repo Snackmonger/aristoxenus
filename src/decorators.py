@@ -64,6 +64,3 @@ def check_oob(func: Callable[Concatenate[..., int, P], T]) -> Callable[Concatena
         return func(self, interval, *args, **kwargs)
     return wrapper
 
-
-
-

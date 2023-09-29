@@ -23,3 +23,9 @@ def chordify():
     print(permutation.chordify(0b101010110101, 5))
     print(permutation.chordify(0b101010110101, 6))
     print(permutation.chordify(0b101010110101, 7))
+
+
+
+def spread_triad():
+    x = permutation.spread_triad(0b10010001)
+    print(bin(x))
