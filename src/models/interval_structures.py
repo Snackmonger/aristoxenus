@@ -1,15 +1,15 @@
 from typing import Literal, Self
 
-from .. import bitwise
-from .. import errors
-from .. import parsing
+from src import bitwise
+from src import errors
+from src import parsing
 
-from ..decorators import pos_only, check_oob
+from src.decorators import pos_only, check_oob
 
 # TODO: Docstrings need to be filled out
 
 
-OOB_OPTIONS = Literal['integrate', 'oct_integrate', 'error', 'ignore']
+OOB_OPTIONS = Literal['integrate_low', 'integrate_high', 'error', 'ignore']
 
 
 class IntervalStructure():
@@ -62,7 +62,8 @@ class LimitedIntervalStructure(IntervalStructure):
     def __init__(self,
                  bits: int,
                  value: int = 1,
-                 oob: OOB_OPTIONS = 'integrate') -> None:
+                 oob: OOB_OPTIONS = 'integrate_low') -> None:
+        
         if value.bit_length() <= bits:
             super().__init__(value)
         else:
@@ -76,7 +77,11 @@ class LimitedIntervalStructure(IntervalStructure):
     def inversions(self) -> tuple[int, ...]:
         '''
         A list containing the integer representations of all possible
-        inversions of the current interval structure.
+        inversions of the current interval structure. 
+        
+        This is determined by
+        looking at the length of the whole structure, so multi-octave interval
+        structures rotate all their octaves as one long loop.
         '''
         rotations: list[int] = []
         for _ in range(self.value.bit_count()):
@@ -169,7 +174,8 @@ class DoubleOctave(LimitedIntervalStructure):
     @lower.setter
     def lower(self, lower: int) -> None:
         '''Set the value of the lower octave.'''
-        self.value = self.bind_octaves(lower, self.upper)
+        if bitwise.validate_interval_structure(lower, int(self.__bits/2)):
+            self.value = self.bind_octaves(lower, self.upper)
 
     @property
     def upper(self) -> int:
@@ -179,7 +185,8 @@ class DoubleOctave(LimitedIntervalStructure):
     @upper.setter
     def upper(self, upper: int) -> None:
         '''Set the value of the upper octave.'''
-        self.value = self.bind_octaves(self.lower, upper)
+        if bitwise.validate_interval_structure(upper, int(self.__bits/2)):
+            self.value = self.bind_octaves(self.lower, upper)
 
 
 class Scale(Octave):

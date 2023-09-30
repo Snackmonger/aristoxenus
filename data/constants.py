@@ -14,22 +14,25 @@ CENTRAL_REFERENCE_NOTE_NAME: str = 'A4'
 CENTRAL_REFERENCE_NOTE_FREQUENCY: int = 440
 
 # Qualities
-SHARP_LABEL = 'sharp'
-FLAT_LABEL = 'flat'
-MAJOR = 'major'
-MINOR = 'minor'
-DIMINISHED = 'diminished'
-AUGMENTED = 'augmented'
-PERFECT = 'perfect'
+SHARP_LABEL:str = 'sharp'
+FLAT_LABEL:str = 'flat'
+MAJOR:str = 'major'
+MINOR:str = 'minor'
+DIMINISHED:str = 'diminished'
+AUGMENTED:str = 'augmented'
+PERFECT:str = 'perfect'
+DROP_2: tuple[int] = (1,)
+DROP_3: tuple[int, int] = (1, 2)
+DROP_2_AND_4: tuple[int, int] = (1, 3)
 
 # Symbols
-SHARP_SYMBOL = '#'
-FLAT_SYMBOL = 'b'
-BINOMIAL_DIVIDER_SYMBOL = '|'
-SLASH_CHORD_DIVIDER_SYMBOL = '/'
-POLYCHORD_DIVIDER_SYMBOL = '@'
-POLYCHORD_OCTAVE_SYMBOL = '^'
-ACCIDENTAL_SYMBOLS = [SHARP_SYMBOL, FLAT_SYMBOL]
+SHARP_SYMBOL:str = '#'
+FLAT_SYMBOL:str = 'b'
+BINOMIAL_DIVIDER_SYMBOL:str = '|'
+SLASH_CHORD_DIVIDER_SYMBOL:str = '/'
+POLYCHORD_DIVIDER_SYMBOL:str = '@'
+POLYCHORD_OCTAVE_SYMBOL:str = '^'
+ACCIDENTAL_SYMBOLS: list[str] = [SHARP_SYMBOL, FLAT_SYMBOL]
 # Note: we want to use the real flat/sharp symbols, but
 # we want to keep being able to recognize pound sign and lowercase b...
 

@@ -11,6 +11,7 @@ therefore every compound interval structure) must be an odd number.
     
 '''
 from typing import Generator
+import functools
 
 
 def validate_interval(interval: int) -> bool:

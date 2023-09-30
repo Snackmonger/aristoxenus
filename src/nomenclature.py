@@ -11,7 +11,7 @@ from src import (utils,
                  errors)
 
 
-def chromatic(accidental_notes: list[str]) -> list[str]:
+def chromatic(accidental_notes: list[str]=constants.BINOMIALS) -> list[str]:
     '''
     Return a chromatic octave using the given accidentals.
 
@@ -168,7 +168,7 @@ def decode_enharmonic(note_name: str) -> str:
     >>> decode_scientific_enharmonic('A######')
     'D#|Eb'
     '''
-    if note_name.isalnum():
+    if note_name[-1].isnumeric():
         note_name = note_name[:-1]
     decoder: dict[str, str] = enharmonic_decoder()
     if note_name in chromatic(constants.BINOMIALS):
@@ -231,7 +231,7 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     return sorted(homonymous_options, key=len)[0]
 
 
-def scientific_octave(accidental_notes: list[str], octave: int) -> list[str]:
+def scientific_octave(accidental_notes: list[str]=constants.BINOMIALS, octave: int=0) -> list[str]:
     '''
     Return a scientific chromatic scale in the given style and octave.
 
@@ -311,7 +311,7 @@ def decode_scientific_enharmonic(note_name: str) -> str:
     return scientific_chromatic_binomials[index]
 
 
-def scientific_range(accidental_notes: list[str]) -> list[str]:
+def scientific_range(accidental_notes: list[str]=constants.BINOMIALS) -> list[str]:
     '''
     Return a full range (C0 - B8) of scientific notation for a given accidental.
 
@@ -369,7 +369,8 @@ def equal_temperament() -> list[float]:
     return frequencies
 
 
-def convert_frequecy_to_note(frequency: float, accidental_notes: list[str]) -> str:
+def convert_frequecy_to_note(frequency: float, 
+                             accidental_notes: list[str]=constants.BINOMIALS) -> str:
     '''
     Return a scientific note name for a given frequency and accidental style.
 

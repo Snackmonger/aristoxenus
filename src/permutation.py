@@ -7,11 +7,12 @@ from typing import Callable
 
 
 from data import constants
-from data import keywords
-from src import bitwise
-from src import errors
-from src import parsing
-from src import nomenclature
+from src import (bitwise,
+                 errors,
+                 nomenclature,
+                 rendering,
+                 parsing)
+
 from src.models.interval_structures import LimitedIntervalStructure, Octave
 
 
@@ -68,10 +69,10 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
 
     Notes
     -----
-    The function is robust enough to be able to create any type of simple 
-    chord pattern from a given scale, as long as it does not exceed the 
-    maximum range. This means that in addition to tertial & quartal triads 
-    and tetrads, we can also create septimal triads, undecimal tetrads, etc.
+    The function is able to create any type of simple chord pattern from a 
+    given scale, as long as it does not exceed the maximum range. This means
+    that in addition to tertial & quartal triads and tetrads, we can also 
+    create septimal triads, undecimal tetrads, and other unusual structures.
 
     Importantly, the number of steps refers to the notes in the scale, not to
     specific intervals, so 'tertial' means 'every third note,' not 
@@ -81,7 +82,7 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
 
     If the number of notes in the scale is fewer than the number of 
     requested notes in the chord, then the upper octaves of the returned 
-    structure will be mirrors of their lower counterparts. 
+    structure will be copies of their lower counterparts. 
     
     The maximum extent of an interval structure is 108 bits. If the requested 
     structure would exceed this limit (for instance, building a 12-note chord
@@ -89,8 +90,8 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     omit the excessive intervals and return an incomplete structure of 108
     bits or less (depending on the specific structure).
     '''
-    if interval_structure.bit_count() > constants.TONES:
-        raise errors.OctaveRotationError
+    if not bitwise.validate_interval_structure(interval_structure, 12):
+        raise ValueError
     
     # Convert keywords to ints
     if isinstance(notes, str):
@@ -139,7 +140,6 @@ def spread_triad(chord_structure: int) -> int:
     int
         A rearranged chord structure not exceeding 24 bits.
     '''
-    # clean this up later
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
         raise ValueError
     
@@ -149,3 +149,24 @@ def spread_triad(chord_structure: int) -> int:
     return functools.reduce(lambda a, b: a | b, intervals_)
 
 
+def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...]) -> int:
+    '''
+    Adjust the intervals in a given chord structure to produce a 'drop' voicing.
+
+    Parameters
+    ----------
+    chord_structure : int
+        An integer representing the structure of a chord.
+    drop_notes : tuple[int, ...]
+        The notes of the chord that will be shifted to produce the new voicing.
+
+    Returns
+    -------
+    int
+        The same chord, but with the given modifications to its intervals.
+    '''
+
+    intervals_ = list(bitwise.iterate_intervals(chord_structure))
+    for interval in drop_notes:
+        intervals_[interval] = bitwise.transpose_interval(intervals_[interval])
+    return functools.reduce(lambda a, b: a | b, intervals_)
