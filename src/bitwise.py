@@ -235,3 +235,52 @@ def iterate_intervals(interval_structure: int) -> Generator[int, None, None]:
             yield result + 1
         else:
             yield result
+
+
+def reduce_(intervals: list[int] | tuple[int, ...]) -> int:
+    '''
+    Syntactic shortcut for reduction by bitwise OR.
+
+    Parameters
+    ----------
+    intervals : list[int] | tuple[int, ...]
+        A collection of integers, each representing one interval in a larger
+        structure.
+
+    Returns
+    -------
+    int
+        A compound of all the intervals in the colection in a single integer.
+    '''
+    return functools.reduce(lambda a, b: a | b, intervals)
+
+
+def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
+    '''
+     
+    Return a list containing the integer representations of all possible
+    inversions of the current interval structure. 
+    
+    This is determined by looking at the expected length of the whole 
+    structure, so multi-octave interval structures rotate all their octaves 
+    as one long loop.
+
+    Parameters
+    ----------
+    interval_structure : int
+        An integer representing an interval structure.
+    max_bits : int
+        The maximum number of bits in the structure.
+
+    Returns
+    -------
+    tuple[int, ...]
+        A collection of integers, each representing one rotational 
+        transformation of the given interval structure.
+    '''
+    rotations: list[int] = []
+    mode: int
+    for _ in range(interval_structure.bit_count()):
+        mode = next_inversion(interval_structure, max_bits)
+        rotations.append(mode)
+    return tuple(rotations)

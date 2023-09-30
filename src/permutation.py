@@ -114,13 +114,14 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
 
         # Ensure that the requested number of notes does not exceed the
         # number of available notes.
-        clip = notes
-        if notes > len(all_intervals):
-            clip = len(all_intervals)
+        # clip = notes
+        # if notes > len(all_intervals):
+        #     clip = len(all_intervals)
+        clip = len(all_intervals) if notes > len(all_intervals) else notes
         chord_intervals = all_intervals[:clip]
 
         # Collapse recognized intervals into discrete chords
-        chord_scale.append(functools.reduce(lambda a, b: a | b, chord_intervals))
+        chord_scale.append(bitwise.reduce_(chord_intervals))
 
     return chord_scale
 
@@ -142,14 +143,10 @@ def spread_triad(chord_structure: int) -> int:
     '''
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
         raise ValueError
-    
-    octave: Octave = Octave(chord_structure)
-    intervals_: list[int] = list(octave.intervals)
-    intervals_[1] = bitwise.transpose_interval(intervals_[1])
-    return functools.reduce(lambda a, b: a | b, intervals_)
+    return drop_voicing(chord_structure, constants.DROP_2)
 
 
-def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...]) -> int:
+def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -> int:
     '''
     Adjust the intervals in a given chord structure to produce a 'drop' voicing.
 
@@ -157,16 +154,56 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...]) -> int:
     ----------
     chord_structure : int
         An integer representing the structure of a chord.
-    drop_notes : tuple[int, ...]
+    drop_notes : tuple[int, ...] or list[int]
         The notes of the chord that will be shifted to produce the new voicing.
+        Some common options are included in `data.constants` as `DROP_2`,
+        `DROP_2_AND_4`, and `DROP_3`.
 
     Returns
     -------
     int
         The same chord, but with the given modifications to its intervals.
-    '''
 
-    intervals_ = list(bitwise.iterate_intervals(chord_structure))
+    Notes
+    -----
+    Although called 'drop' chords, the method by which we produce the voicing
+    is actually the opposite of what the abstraction might suggest. The 'drop'
+    logic often produces a voicing in the wrong inversion:
+
+        C E G B -> G C E B (drop the G, results in a 2nd inversion major7)
+
+    We prefer to express drop chords in terms of *raised* intervals. We do 
+    this for two reasons:
+        1. The least significant bit represents the lowest pitch. Dropping
+        pitches below this requires a reconfiguration of the entire basic 
+        range for every pitch that gets moved.
+        2. The raised intervals still produce the correct drop voicing, but
+        they now retain the same bass note as their same-named inversion in
+        the parent form.
+
+        C E G B -> C E B G (raise the G, results in a root position major7)
+
+    This situation entails that a drop chord must **always** be generated from 
+    the corresponding inversion of a close-voiced chord, e.g. first inversion
+    close voice produces first inversion drop 2, drop 3, drop 2&4, etc.
+
+    IMPORTANT: Although drop chords are called 'inversions' based on their 
+    bass note, this is misleading. The actual rotational inversion of a drop 
+    chord will produce several distict drop voicings:
+
+        C E B G (starting point: 'root position' drop 2 Cmaj7)
+        E B G C (first rotation: a '1st inversion' drop 2&4 Cmaj7)
+        B G C E (second rotation: a '3rd inversion' drop 3 Cmaj7)
+        G C E B (third rotation: a '2nd inversion' drop 2 Cmaj7)
+
+    Therefore, if we want to make sure that a whole passage consists of 
+    similarly-voiced drop chords, we must apply the inversion to the close 
+    voicing and THEN apply the drop voicing modification.
+
+    Although drop chords are typically 4-note voicings, the function can 
+    accommodate larger structures as well. 
+    '''
+    intervals = list(bitwise.iterate_intervals(chord_structure))
     for interval in drop_notes:
-        intervals_[interval] = bitwise.transpose_interval(intervals_[interval])
-    return functools.reduce(lambda a, b: a | b, intervals_)
+        intervals[interval] = bitwise.transpose_interval(intervals[interval])
+    return bitwise.reduce_(intervals)

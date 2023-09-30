@@ -2,6 +2,7 @@
 from src import permutation
 from src import rendering
 from src import nomenclature
+from src import utils
 from data import constants
 from data import intervallic_canon
 
@@ -52,3 +53,12 @@ def drop_voicing():
     x =  permutation.drop_voicing(0b100010010001, constants.DROP_2_AND_4) 
     print(bin(x))
     print(rendering.render(x))
+
+
+    x =  permutation.drop_voicing(0b110001001, constants.DROP_2) 
+    print(bin(x))
+    print(rendering.render(x, utils.shift_list(nomenclature.chromatic(), 'E')))
+
+    x =  permutation.drop_voicing(0b1000110001, constants.DROP_2) 
+    print(bin(x))
+    print(rendering.render(x, utils.shift_list(nomenclature.chromatic(), 'G')))
