@@ -1,5 +1,18 @@
 '''
 Functions related to generating and processing musical nomenclatural material.
+
+In general, the Aristoxenus library prefers to treat musical phenomena in 
+mathematical terms using integers and bitwise operations. We defer assigning
+alphabetic nomenclature to the mathematics for as long as possible, since none
+of the mechanics of musical structure, transformation, permutation, harmony, 
+consonance, dissonance, etc. ever depend on the notes having names.
+
+The names are used as the basis from which to render staff notation, since the
+format demands that we refer to notes as sharp or flat in contradistinction to
+natural. Although the computer doesn't care about the names of the notes, most
+people tend to think of note names rather than mathematic intervallic 
+relationships, so the user interface (not yet implemented) will accept and 
+display note names for most functions.
 '''
 from dataclasses import dataclass
 

@@ -10,9 +10,10 @@ the pitch from which other intervals are calculated, every interval (and
 therefore every compound interval structure) must be an odd number. 
     
 '''
-from typing import Generator
 import functools
+from typing import Generator
 
+from data import constants
 
 def validate_interval(interval: int) -> bool:
     '''
@@ -37,14 +38,23 @@ def validate_interval(interval: int) -> bool:
     between them. This equates to a binary number beginning and ending with 1, 
     and with an indeterminate number of 0s between them (e.g. 1000001, 101,
     1000000000000001, etc.).
+
+    Examples
+    --------
+    >>> validate_interval(0b10110)
+    False
+    >>> validate_interval(0b100001)
+    True
     '''
     return interval.bit_count() == 2 and interval % 2 == 1
 
 
-def validate_interval_structure(interval_structure: int, max_bits: int, flipped_bits: int=0) -> bool:
+def validate_interval_structure(interval_structure: int,
+                                 max_bits: int, 
+                                 flipped_bits: int=0) -> bool:
     '''
-    Return True if the interval structure is within the maximum number of 
-    bits.
+    Return True if the interval structure is within the specified maximum 
+    number of bits.
 
     Parameters
     ----------
@@ -54,7 +64,7 @@ def validate_interval_structure(interval_structure: int, max_bits: int, flipped_
         The maximum number of bits expected.
     flipped_bits : int, default=0
         The expected number of flipped bits. 0 means 'any number of flipped
-        bits'.
+        bits is valid'.
 
     Returns
     -------
@@ -62,6 +72,21 @@ def validate_interval_structure(interval_structure: int, max_bits: int, flipped_
         True, if the bit length of the given interval structure does
         not exceed the maximum number of bits, and contains the expected
         number of flipped bits.
+
+    Examples
+    --------
+    >>> validate_interval_structure(0b100010000, 8, 2)
+    False
+    >>> validate_interval_structure(0b10010011, 8, 4)
+    True
+    >>> validate_interval_structure(0b10010011, 8)
+    True
+    >>> validate_interval_structure(0b1011, 8, 4)
+    False
+    >>> validate_interval_structure(0b1011, 8, 3)
+    True
+    >>> validate_interval_structure(0b1011, 8)
+    True
     '''
     max_: bool = interval_structure.bit_length() <= max_bits
     flip_: bool = interval_structure.bit_count() == flipped_bits
@@ -85,6 +110,13 @@ def has_interval(interval_structure: int, interval: int) -> bool:
     -------
     bool
         True, if the interval's bit is flipped in the interval structure.
+
+    Examples
+    --------
+    >>> has_interval(0b10110101, 0b10001)
+    True
+    >>> has_interval(0b10110101, 0b11)
+    False
     '''
     return interval & interval_structure == interval
 
@@ -126,11 +158,20 @@ def transpose_interval(interval: int, octave: int = 1, echo: bool = False) -> in
     See Also
     --------
     permutation.extend_structure : The main reason for the `echo` option.
+
+    Examples
+    --------
+    >>> transpose_interval(0b10001)
+    0b10000000000000001
+    >>> transpose_interval(0b10001, echo=True)
+    0b10001000000010001
+    >>> transpose_interval(0b10001, 2, echo=True)
+    0b10001000000010001000000010001
+    >>> transpose_interval(0b10001, 2, echo=False)
+    0b10000000000000000000000000001
     '''
-    modifier: int = 0
-    if echo is False:
-        modifier = -1
-    return ((interval + modifier) << 12 * octave) + 1
+    modifier: int = -1 if echo is False else 0
+    return ((interval + modifier) << constants.TONES * octave) + 1
 
 
 
@@ -284,3 +325,4 @@ def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
         mode = next_inversion(interval_structure, max_bits)
         rotations.append(mode)
     return tuple(rotations)
+

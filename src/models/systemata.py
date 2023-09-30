@@ -1,4 +1,9 @@
+'''
+Classes to represent different ancient musical systemata.
 
+
+
+'''
 
 class GreaterPerfectSystem:
 

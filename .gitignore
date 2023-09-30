@@ -31,3 +31,5 @@ src/__pycache__/constants.cpython-311.pyc
 src/__pycache__/permutation.cpython-311.pyc
 tests/__pycache__/test_permutations.cpython-311.pyc
 tests/__pycache__/test_nomenclature.cpython-311.pyc
+data/__pycache__/__init__.cpython-311.pyc
+src/__pycache__/types.cpython-311.pyc
