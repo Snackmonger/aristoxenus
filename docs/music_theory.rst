@@ -56,8 +56,8 @@ Next Topic
 ----------
 This is the beginning of the next topic. Does it get added under the previous one in the table of contents?
 
-Terminology
-===========
+Glossary
+========
 
 Octave 
 ------
@@ -72,7 +72,16 @@ The term 'octave' is also used in a related sense to refer not to the notes that
 but to the amount of distance between those limits.
 - A major third is within the range of an 'octave' (i.e a pitch and its octave), but a major ninth is outside the range of an 'octave'
 
-When one note is an octave of another note, it carries the same alphabetic name.
+When one note is an octave of another note, it carries the same alphabetic name. We can distinguish notes with the same name in different octaves
+by assigning a numeral to the name, thereby creating scientific notation (e.g. C2, A#5, D#|Eb3)
+
+Interval
+--------
+
+
+Interval Structure
+------------------
+Generic term used by the Aristoxenus library to refer to all types structures made up of more than one pitch, whether chords, chordioids, scales, intervals, sytemata, or chromatics.
 
 
 Binomial
@@ -91,3 +100,26 @@ and/or flats), on the other hand, exist in a 2:1 relationship, since each freque
 
 
 
+Tetrachord
+----------
+
+
+
+Genus
+-----
+
+
+Species
+-------
+
+
+Close Voicing
+-------------
+
+
+Spread Voicing
+--------------
+
+
+Drop Voicing
+------------

@@ -61,15 +61,13 @@ always natural intervals.
     - Cmaj13  -> C, E, G, B, D, F, A
     - Cm13    -> C, Eb, G, Bb, D, F, A
 
-As above, an altered 5th comes *after* the 
-numeral. E.g.:
+As above, an altered 5th comes *after* the numeral. E.g.:
 
     - Cm9b5   -> C, Eb, Gb, Bb, D
     - Cmaj7#5 -> C, E, G#, B
     - C7#5    -> C, E, G#, Bb
 
-However, since 'dim7' is a prescribed synbol, no altered 5th is
-necessary in, e.g.:
+However, since 'dim7' is a prescribed synbol, no altered 5th is necessary in, e.g.:
 
     - Cdim11  -> C, Eb, Gb, A, D, F
 
@@ -89,6 +87,14 @@ alteration is placed after the altered fifth. E.g.:
 The 'add' type prefixes indicate that the specified interval is 
 added to the structure of the preceding symbol, without including
 any other interval. 
+
+    - Cmaj7add13 -> C, E, G, B, A
+
+The 'no' type prefixes indicate that the specified interval is 
+removed from the structure of the preceding symbol, without removing
+any other interval.
+
+    - Cmaj13no11 -> C, E, G, B, D, A
 
 Polychords
 ----------

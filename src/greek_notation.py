@@ -2,6 +2,8 @@
 Functions relating to Ancient Greek musical notation. 
 '''
 
+# This will probably get moved to a different folder for all the greek related stuff
+
 
 
 ANCIENT_GREEK_MUSICAL_SYMBOLS: list[dict[str, int | str]] = [{'index': 1,
