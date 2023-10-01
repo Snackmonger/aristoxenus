@@ -99,8 +99,8 @@ any other interval.
 Polychords
 ----------
 
-When a chord contains more than 3 intervals that cannot easily be fit into one of the structures in the list of most common candidates,
-the program will attempt to assign a polychordal name to the interval structure. The prescription is to:
+When a chord contains more than n intervals that cannot easily be fit into one of the structures in the list of most common candidates,
+the program may attempt to assign a polychordal name to the interval structure (the tolerance can be set by the user). The prescription is to:
 
     - compare the intervals of the simple triads to establish the base type of the chord
     - once the base triad is found, superimpose the simple triads/tetrads/pentads, etc. and their inversions over each interval of the chromatic scale and compile a list of possible candidates
