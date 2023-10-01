@@ -38,6 +38,11 @@ def chromatic(accidental_notes: list[str]=constants.BINOMIALS) -> list[str]:
     -------
     list of str
         A list of 12 note names, in the given accidental style.
+
+    Examples
+    --------
+    >>> chromatic(constants.BINOMIALS)
+    ['C', 'C#|Db', 'D', 'D#|Eb', 'E', 'F', 'F#|Gb', 'G', 'G#|Ab', 'A', 'A#|Bb', 'B']
     '''
     new_scale: list[str] = []
     accidentals_in_scale: int = 0
@@ -92,8 +97,8 @@ def get_enharmonic_equivalents(note_name: str) -> list[str]:
 
     Examples
     --------
-    >>> __get_enharmonic_equivalents('E') 
-    ['E', 'Fb', 'Gbbb', ..., 'D##', 'C####', ...]
+    >>> get_enharmonic_equivalents('E') 
+    ['C####', 'D##', 'E', 'F###########', 'G#########', 'A#######', 'B#####', 'Cbbbbbbbb', 'Dbbbbbbbbbb', 'Fb', 'Gbbb', 'Abbbbb', 'Bbbbbbbb']
     '''
     return [key for key, value in enharmonic_decoder().items() if value == note_name]
 
@@ -176,9 +181,9 @@ def decode_enharmonic(note_name: str) -> str:
         
     Examples
     --------
-    >>> decode_scientific_enharmonic('B#')
+    >>> decode_enharmonic('B#')
     'C'
-    >>> decode_scientific_enharmonic('A######')
+    >>> decode_enharmonic('A######')
     'D#|Eb'
     '''
     if note_name[-1].isnumeric():
@@ -225,13 +230,13 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     >>> encode_enharmonic('Eb' , 'C')
     'C###'
     >>> encode_enharmonic('Eb' , 'D')
-    'D#' 
+    'D#'
     >>> encode_enharmonic('Eb' , 'E')
     'Eb'
     >>> encode_enharmonic('Eb' , 'F') 
     'Fbb'
     >>> encode_enharmonic('Eb' , 'G') 
-    'Gbbb'
+    'Gbbbb'
     >>> encode_enharmonic('Eb' , 'A') 
     'A######'
     '''
@@ -462,7 +467,7 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     Examples
     --------
     >>> force_heptatonic('B#', 0b101010110101)
-    B#, C##, D##, E#, F##, G##, A##, B#
+    ['B#', 'C##', 'D##', 'E#', 'F##', 'G##', 'A##']
 
     '''
     if note_name in constants.BINOMIALS:
@@ -471,13 +476,10 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     if interval_structure.bit_count() != constants.NOTES or interval_structure.bit_length() > constants.TONES:
         raise ValueError(
             'Operation can only be performed on heptatonic scales in 12 tone style.')
-    
     # Assemble basic alphabetic order to enforce.
     plain: list[str] = utils.shift_list(constants.NATURALS, __identity(note_name))
-
     # Create binomial version of requested scale pattern.
     binomial: list[str] = rendering.render(interval_structure, utils.shift_list(chromatic(constants.BINOMIALS), decode_enharmonic(note_name)))
-
     # Force each binomial note value to adopt the next alphabetic note name.
     return [encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES)]
 
@@ -508,16 +510,10 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     --------
 
     >>> best_heptatonic('A#|Bb', 0b101010110101)
-    Bb, C, D, Eb, F, G, Ab
-    
+    ['Bb', 'C', 'D', 'Eb', 'F', 'G', 'A']
     '''
     # Convert sharps and flats to binomials.
-    if note_name in constants.ACCIDENTAL_NOTES or enharmonic_decoder():
-        note_name = decode_enharmonic(note_name)
-    elif note_name in constants.BINOMIALS or constants.NATURALS:
-        pass
-    else:
-        raise ValueError(f'Unrecognized note name: {note_name}')
+    note_name = decode_enharmonic(note_name)
 
     # Naturals' default names will always be the best.
     if note_name in constants.NATURALS:
@@ -533,12 +529,10 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
 
     # Create two versions of the scale
     note_index: int = constants.BINOMIALS.index(note_name)
-    sharp_scale = ScaleSynopsis(0, 0, force_heptatonic(
-        constants.SHARPS[note_index], interval_structure), False)
-    flat_scale = ScaleSynopsis(0, 0, force_heptatonic(
-        constants.FLATS[note_index], interval_structure), False)
-    synopseis = [sharp_scale, flat_scale]
+    sharp_scale = ScaleSynopsis(0, 0, force_heptatonic(constants.SHARPS[note_index], interval_structure), False)
+    flat_scale = ScaleSynopsis(0, 0, force_heptatonic(constants.FLATS[note_index], interval_structure), False)
 
+    synopseis = [sharp_scale, flat_scale]
     # Count the accidentals in each version.
     for synopsis in synopseis:
         for note in synopsis.scale:

@@ -146,7 +146,7 @@ def transpose_interval(interval: int, octave: int = 1, echo: bool = False) -> in
     Notes
     -----
     The `echo` parameter should be set to True when you want to ensure that 
-    the upper octave(s) are exact copies of the interval or interval
+    the transposed structure are exact copies of the interval or interval
     structure. Use this when making compounds for iterating over larger 
     chord/scale structures (e.g. 2-hand piano voicings).
 
@@ -161,14 +161,14 @@ def transpose_interval(interval: int, octave: int = 1, echo: bool = False) -> in
 
     Examples
     --------
-    >>> transpose_interval(0b10001)
-    0b10000000000000001
-    >>> transpose_interval(0b10001, echo=True)
-    0b10001000000010001
-    >>> transpose_interval(0b10001, 2, echo=True)
-    0b10001000000010001000000010001
-    >>> transpose_interval(0b10001, 2, echo=False)
-    0b10000000000000000000000000001
+    >>> bin(transpose_interval(0b10001))
+    '0b10000000000000001'
+    >>> bin(transpose_interval(0b10001, echo=True))
+    '0b10001000000000001'
+    >>> bin(transpose_interval(0b10001, 2, echo=True))
+    '0b10001000000000000000000000001'
+    >>> bin(transpose_interval(0b10001, 2, echo=False))
+    '0b10000000000000000000000000001'
     '''
     modifier: int = -1 if echo is False else 0
     return ((interval + modifier) << constants.TONES * octave) + 1
@@ -200,6 +200,13 @@ def previous_inversion(interval_structure: int, max_bits: int) -> int:
     -------
     int
         An integer representing the inverted interval structure.
+
+    Examples
+    --------
+    >>> bin(previous_inversion(0b101010110101, 12))
+    '0b11010101101'
+    >>> bin(previous_inversion(0b11010101101, 12))
+    '0b10110101011'
     '''
     interval_structure = rotate_right(interval_structure, max_bits)
     while interval_structure % 2 == 0:
@@ -222,6 +229,13 @@ def next_inversion(interval_structure: int, max_bits: int) -> int:
     -------
     int
         An integer representing the inverted interval structure.
+
+    Examples
+    --------
+    >>> bin(next_inversion(0b101010110101, 12))
+    '0b10101101011'
+    >>> bin(next_inversion(0b10101101011, 12))
+    '0b10110101101'
     '''
     interval_structure = rotate_left(interval_structure, max_bits)
     while interval_structure % 2 == 0:
@@ -241,7 +255,15 @@ def iterate_bits(integer: int) -> Generator[int, None, None]:
     Yields
     ------
     Generator[int, None, None]
-        A series of n integers representing the flipped bits of the input.    
+        A series of n integers representing the flipped bits of the input.
+
+    Examples
+    --------
+    >>> x = list(iterate_bits(0b101010110101))
+    >>> bin(x[1])
+    '0b100'
+    >>> bin(x[2])
+    '0b10000'
     '''
     # The logic of the operation:
     # x       = 01011000
@@ -270,6 +292,14 @@ def iterate_intervals(interval_structure: int) -> Generator[int, None, None]:
     ------
     Generator[int, None, None]
         A series of intervals, expressed as integers.
+
+     Examples
+    --------
+    >>> x = list(iterate_intervals(0b101010110101))
+    >>> bin(x[1])
+    '0b101'
+    >>> bin(x[2])
+    '0b10001'
     '''
     for result in iterate_bits(interval_structure):
         if result % 2 == 0:
@@ -292,6 +322,11 @@ def reduce_(intervals: list[int] | tuple[int, ...]) -> int:
     -------
     int
         A compound of all the intervals in the colection in a single integer.
+
+    Examples
+    --------
+    >>> bin(reduce_([0b101, 0b10001, 0b10000001]))
+    '0b10010101'
     '''
     return functools.reduce(lambda a, b: a | b, intervals)
 
@@ -318,11 +353,15 @@ def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
     tuple[int, ...]
         A collection of integers, each representing one rotational 
         transformation of the given interval structure.
+
+    Examples
+    --------
+    >>> inversions(0b101010110101, 12)
+    (2741, 1387, 1453, 1717, 2773, 1451, 1709)
     '''
     rotations: list[int] = []
-    mode: int
     for _ in range(interval_structure.bit_count()):
-        mode = next_inversion(interval_structure, max_bits)
-        rotations.append(mode)
+        rotations.append(interval_structure)
+        interval_structure = next_inversion(interval_structure, max_bits)
     return tuple(rotations)
 

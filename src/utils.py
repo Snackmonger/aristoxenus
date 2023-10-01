@@ -22,7 +22,7 @@ def shift_list(list_: list[Any], new_first_member: Any) -> list[Any]:
         A list rotated so that the given member is first.
     '''
     list_ = list_.copy()
-    return list_[list_.index(new_first_member[0]): ] + list_[ :list_.index(new_first_member[0])]
+    return list_[list_.index(new_first_member): ] + list_[ :list_.index(new_first_member)]
 
 
 def roman_numeral(indian_numeral: int) -> str:
