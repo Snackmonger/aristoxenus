@@ -356,7 +356,7 @@ def parse_heptatonic_scale_structure(interval_structure:int):
         for inversion in inversions:
             if inversion in supertype_modes:
                 found_parent = True
-                parent = intervals.HEP_DICT[heptatonic_supertype]
+                parent = intervals.HEPTATONIC_SYSTEM[heptatonic_supertype]
                 mode = supertype_modes.index(inversion)
 
     if found_parent is True:

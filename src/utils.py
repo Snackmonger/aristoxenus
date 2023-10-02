@@ -4,24 +4,27 @@ Miscellaneous functions.
 from typing import Any
 
 
-def shift_list(list_: list[Any], new_first_member: Any) -> list[Any]:
+def shift_list(list_: list[Any] | tuple[Any, ...],
+               new_first_member: Any
+               ) -> list[Any]:
     '''
-    Rotate the list so that the given item is first.
+    Rotate the given array so that the given item is first.
 
     Parameters
     ----------
-    list_ : list
-        Python list with any values.
+    list_ : list | tuple
+        Python list or tuple with any values.
     
     new_first_member : Any
         The value that will start the new order.
 
     Returns
     -------
-    list of Any
-        A list rotated so that the given member is first.
+    list
+        A list rotated so that the given member is first. Naturally, if the 
+        array contains a duplicate value, the shift won't work right.
     '''
-    list_ = list_.copy()
+    list_ = list(list_)
     return list_[list_.index(new_first_member): ] + list_[ :list_.index(new_first_member)]
 
 

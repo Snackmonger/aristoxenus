@@ -1,5 +1,6 @@
 '''Strings used as dictionary keywords in the program.'''
 
+# Basic interface terms
 NOTE_NAME: str = 'note_name'
 FREQUENCY: str = 'frequency'
 ACCIDENTAL_NOTES: str = 'accidental_notes'
@@ -11,6 +12,23 @@ PREFERRED_NAME: str = 'preferred_name'
 MODAL_NAME: str = 'modal_name'
 RECOGNIZED_NAMES: str = 'recognized_names'
 CHORD_SYMBOL: str = 'chord_symbol'
+
+# Modal names
+IONIAN: str = 'ionian'
+DORIAN: str = 'dorian'
+PHRYGIAN: str = 'phrygian'
+LYDIAN: str = 'lydian'
+MIXOLYDIAN: str = 'mixolydian'
+AEOLIAN: str = 'aeolian'
+LOCRIAN: str = 'locrian'
+
+MODAL_NAME_SERIES: tuple[str, ...] = (IONIAN,
+                                DORIAN,
+                                PHRYGIAN,
+                                LYDIAN,
+                                MIXOLYDIAN,
+                                AEOLIAN,
+                                LOCRIAN)
 
 # Polyads
 MONAD: str = 'monad'
@@ -65,7 +83,18 @@ HARMONIC_LABEL = 'harmonic'
 BISEPTIMAL_LABEL = 'biseptimal'
 PALEOCHROMATIC_LABEL = 'paleochromatic'
 
-numeration: tuple[tuple[str, str, str], ...] = (
+# Groups of above
+HEPTATONIC_ORDER: tuple[str, ...] = (DIATONIC_LABEL,
+                                      ALTERED_LABEL,
+                                      HEMITONIC_LABEL,
+                                      HEMIOLIC_LABEL,
+                                      DIMINISHED_LABEL,
+                                      AUGMENTED_LABEL,
+                                      HARMONIC_LABEL,
+                                      BISEPTIMAL_LABEL,
+                                      PALEOCHROMATIC_LABEL)
+
+NUMERATION: tuple[tuple[str, str, str], ...] = (
     (MONAD, MONOTONIC, PRIMAL),
     (DYAD, DITONIC, SECUNDAL),
     (TRIAD, TRITONIC, TERTIAL),

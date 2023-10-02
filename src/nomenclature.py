@@ -24,7 +24,7 @@ from src import (utils,
                  errors)
 
 
-def chromatic(accidental_notes: list[str]=constants.BINOMIALS) -> list[str]:
+def chromatic(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS) -> list[str]:
     '''
     Return a chromatic octave using the given accidentals.
 
@@ -249,7 +249,7 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     return sorted(homonymous_options, key=len)[0]
 
 
-def scientific_octave(accidental_notes: list[str]=constants.BINOMIALS, octave: int=0) -> list[str]:
+def scientific_octave(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS, octave: int=0) -> list[str]:
     '''
     Return a scientific chromatic scale in the given style and octave.
 
@@ -329,7 +329,7 @@ def decode_scientific_enharmonic(note_name: str) -> str:
     return scientific_chromatic_binomials[index]
 
 
-def scientific_range(accidental_notes: list[str]=constants.BINOMIALS) -> list[str]:
+def scientific_range(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS) -> list[str]:
     '''
     Return a full range (C0 - B8) of scientific notation for a given accidental.
 
@@ -361,6 +361,11 @@ def equal_temperament() -> list[float]:
     list of float
         A list of 108 frequencies, rounded to three decimal places.
     '''
+
+    # NOTE: equal_temperament should be part of a module called
+    # temperament, then change the frequency conversions to
+    # take a temperament function as an argument, which then
+    # generates the necessary range.
     centre_name: str = constants.CENTRAL_REFERENCE_NOTE_NAME
     centre_freq: int = constants.CENTRAL_REFERENCE_NOTE_FREQUENCY
     limit: int = constants.FREQUENCY_DECIMAL_LIMIT
@@ -388,7 +393,8 @@ def equal_temperament() -> list[float]:
 
 
 def convert_frequecy_to_note(frequency: float, 
-                             accidental_notes: list[str]=constants.BINOMIALS) -> str:
+                             accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS
+                             ) -> str:
     '''
     Return a scientific note name for a given frequency and accidental style.
 
@@ -411,7 +417,6 @@ def convert_frequecy_to_note(frequency: float,
     -----
     This is designed to be used internally, so the given frequency will not
     be recognized if it has been rounded to fewer than 3 decimal places.
-
     '''
     frequency = round(frequency, constants.FREQUENCY_DECIMAL_LIMIT)
     frequencies: list[float] = equal_temperament()
@@ -589,7 +594,7 @@ def is_abcdefg(note_names: list[str]) -> bool:
     >>> is_abcdefg(['C', 'Db', 'E#', 'F', 'G', 'A', 'B'])
     False
     '''
-    naturals_: list[str] = constants.NATURALS.copy()
+    naturals_: list[str] = list(constants.NATURALS)
     approved_names: set[str] = set()
     for note in note_names:
         if note in constants.BINOMIALS:
@@ -624,7 +629,7 @@ def translate_numeric_keyword(term: str) -> int:
     >>> translate_numeric_keyword('triad')
     3
     '''
-    for number, tuple_ in enumerate(keywords.numeration):
+    for number, tuple_ in enumerate(keywords.NUMERATION):
         if term in tuple_:
             if term == tuple_[2]:
                 # tertial, quartal, etc. (tertial = 2 steps)

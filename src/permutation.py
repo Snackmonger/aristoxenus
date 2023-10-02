@@ -8,7 +8,8 @@ from src import (bitwise,
 
 
 def extend_structure(interval_structure: int,
-                     extensions: int = constants.NUMBER_OF_OCTAVES) -> int:
+                     extensions: int = constants.NUMBER_OF_OCTAVES
+                     ) -> int:
     '''
     Extend a 12-bit interval structure to the range of n identical octaves.
 
@@ -42,7 +43,10 @@ def extend_structure(interval_structure: int,
     return compound_structure
 
 
-def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2) -> list[int]:
+def chordify(interval_structure: int,
+             notes: int | str = 3,
+             step: int | str = 2
+             ) -> list[int]:
     '''
     Return a dict of chords for the given scale and structural principles.
 
@@ -64,24 +68,15 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     -------
     list[int]
         A list of chords built from each degree of the scale, according to the
-        given structural principles. 
+        given structural principles, expressed as integers.
 
     Notes
     -----
-    The function is able to create any type of simple chord pattern from a 
-    given scale, as long as it does not exceed the maximum range. This means
-    that in addition to tertial & quartal triads and tetrads, we can also 
-    create septimal triads, undecimal tetrads, and other unusual structures.
-
     Importantly, the number of steps refers to the notes in the scale, not to
     specific intervals, so 'tertial' means 'every third note,' not 
     specifically 'major/minor thirds only.' This means that a 'tertial' chord 
     might be made up of 'major seconds' or 'perfect fourths' depending on 
     the actual interval structure that is given.
-
-    If the number of notes in the scale is fewer than the number of 
-    requested notes in the chord, then the upper octaves of the returned 
-    structure will be copies of their lower counterparts. 
     
     The maximum extent of an interval structure is 108 bits. If the requested 
     structure would exceed this limit (for instance, building a 12-note chord
@@ -93,6 +88,8 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     --------
     >>> chordify(0b101010110101)
     [73, 137, 145, 145, 137, 137, 145]
+
+    This translates to (dim, min, maj, maj, min, min, maj)
     >>> chordify(0b101010110101, 4, 3)
     [33825, 33825, 66593, 67649, 33825, 33825, 67617]
     >>> chordify(0b101010110101, 'tetrad', 'quartal')

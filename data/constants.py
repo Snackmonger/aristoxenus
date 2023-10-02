@@ -1,7 +1,7 @@
 '''
 Constants used in the program.
 '''
-NATURALS: list[str] = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+NATURALS: tuple[str, ...] = ('C', 'D', 'E', 'F', 'G', 'A', 'B')
 HALFSTEPS: dict[str, str] = {'E': 'F', 'B': 'C'}
 TONES: int = 12
 NOTES: int = 7
@@ -37,14 +37,14 @@ ACCIDENTAL_SYMBOLS: list[str] = [SHARP_SYMBOL, FLAT_SYMBOL]
 # we want to keep being able to recognize pound sign and lowercase b...
 
 
-SHARPS: list[str] = [note + SHARP_SYMBOL for note in NATURALS
-                       if note not in HALFSTEPS]
+SHARPS: tuple[str, ...] = tuple(note + SHARP_SYMBOL for note in NATURALS
+                       if note not in HALFSTEPS)
 
-FLATS: list[str] = [note + FLAT_SYMBOL for note in NATURALS
-                      if note not in HALFSTEPS.values()]
+FLATS: tuple[str, ...] = tuple(note + FLAT_SYMBOL for note in NATURALS
+                      if note not in HALFSTEPS.values())
 
-BINOMIALS: list[str] = [sharp + BINOMIAL_DIVIDER_SYMBOL + flat
+BINOMIALS: tuple[str, ...] = tuple(sharp + BINOMIAL_DIVIDER_SYMBOL + flat
                           for flat in FLATS for sharp in SHARPS
-                          if FLATS.index(flat) == SHARPS.index(sharp)]
+                          if FLATS.index(flat) == SHARPS.index(sharp))
 
-ACCIDENTAL_NOTES: list[str] = SHARPS + FLATS
+ACCIDENTAL_NOTES: tuple[str, ...] = tuple(SHARPS + FLATS)
