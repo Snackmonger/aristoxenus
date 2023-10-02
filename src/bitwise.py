@@ -357,11 +357,11 @@ def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
     Examples
     --------
     >>> inversions(0b101010110101, 12)
-    (2741, 1387, 1453, 1717, 2773, 1451, 1709)
+    (1387, 1453, 1717, 2773, 1451, 1709, 2741)
     '''
     rotations: list[int] = []
     for _ in range(interval_structure.bit_count()):
-        rotations.append(interval_structure)
         interval_structure = next_inversion(interval_structure, max_bits)
+        rotations.append(interval_structure)
     return tuple(rotations)
 

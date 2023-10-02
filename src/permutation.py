@@ -1,22 +1,10 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-import functools
-import loguru
-from typing import Callable
-
-
 from data import constants
 from src import (bitwise,
                  errors,
-                 nomenclature,
-                 rendering,
-                 parsing)
-
-from src.models.interval_structures import LimitedIntervalStructure, Octave
-
-
-logger = loguru.logger
+                 nomenclature)
 
 
 def extend_structure(interval_structure: int,
@@ -36,7 +24,17 @@ def extend_structure(interval_structure: int,
     int
         An n*12-bit interval structure, with the original 12-bit structure 
         repeating every 12 bits.
+    
+    Examples
+    --------
+    >>> bin(extend_structure(0b101010110101, 2))
+    '0b101010110101101010110101'
+    >>> bin(extend_structure(0b101010110101, 3))
+    '0b101010110101101010110101101010110101'
     '''
+    if not bitwise.validate_interval_structure(interval_structure, 12):
+        raise errors.IntervalOutOfBoundsError
+    
     compound_structure: int = interval_structure
     for transposed_octave in range(1, extensions):
         compound_structure |= bitwise.transpose_interval(
@@ -59,12 +57,13 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     step : int or str, default=2
         The number of structural steps between chord intervals, or a special
         term denoting the number of steps between notes in the structure,
-        (e.g. 'tertial'). The step works like a list slice, starting on 0.
+        (e.g. 'tertial'). The step works like a list slice, starting on 0, so
+        tertial is 2, quartal is 3, etc.
 
     Returns
     -------
     list[int]
-        A list of chords build from each degree of the scale, according to the
+        A list of chords built from each degree of the scale, according to the
         given structural principles. 
 
     Notes
@@ -89,34 +88,38 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     out of octave intervals would yield a 144-bit structure) then we simply 
     omit the excessive intervals and return an incomplete structure of 108
     bits or less (depending on the specific structure).
+
+    Examples
+    --------
+    >>> chordify(0b101010110101)
+    [73, 137, 145, 145, 137, 137, 145]
+    >>> chordify(0b101010110101, 4, 3)
+    [33825, 33825, 66593, 67649, 33825, 33825, 67617]
+    >>> chordify(0b101010110101, 'tetrad', 'quartal')
+    [33825, 33825, 66593, 67649, 33825, 33825, 67617]
     '''
     if not bitwise.validate_interval_structure(interval_structure, 12):
-        raise ValueError
+        raise errors.IntervalOutOfBoundsError
     
     # Convert keywords to ints
     if isinstance(notes, str):
         notes = nomenclature.translate_numeric_keyword(notes)
     if isinstance(step, str):
-        step = nomenclature.translate_numeric_keyword(step) - 1
+        step = nomenclature.translate_numeric_keyword(step)
 
     chord_scale: list[int] = []
     chord_intervals: list[int] = []
+    all_intervals: list
     full_range: int
     clip: int
-    extended_mode: LimitedIntervalStructure
-
-    octave: Octave = Octave(interval_structure)
-    for inversion in octave.inversions:
+    
+    # Grab the intervals for each mode and use them to derive chords
+    for inversion in bitwise.inversions(interval_structure, 12):
         full_range = extend_structure(inversion)
-        extended_mode = LimitedIntervalStructure(
-            full_range.bit_length(), full_range)
-        all_intervals =list(extended_mode.intervals[::step])
+        all_intervals = list(bitwise.iterate_intervals(full_range))[::step]
 
-        # Ensure that the requested number of notes does not exceed the
-        # number of available notes.
-        # clip = notes
-        # if notes > len(all_intervals):
-        #     clip = len(all_intervals)
+        # Ensure that the requested number of notes in the chord
+        # does not exceed the number of available notes.
         clip = len(all_intervals) if notes > len(all_intervals) else notes
         chord_intervals = all_intervals[:clip]
 
@@ -140,9 +143,15 @@ def spread_triad(chord_structure: int) -> int:
     -------
     int
         A rearranged chord structure not exceeding 24 bits.
+
+    Examples
+    --------
+    >>> bin(spread_triad(0b10010001))
+    '0b10000000010000001'
     '''
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
-        raise ValueError
+        raise errors.IntervalOutOfBoundsError
+    
     return drop_voicing(chord_structure, constants.DROP_2)
 
 
@@ -202,6 +211,15 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
 
     Although drop chords are typically 4-note voicings, the function can 
     accommodate larger structures as well. 
+
+    Examples
+    --------
+    >>> bin(drop_voicing(0b100010010001, constants.DROP_2))
+    '0b10000100010000001'
+    >>> bin(drop_voicing(0b100010010001, constants.DROP_3))
+    '0b10010000100000000001'
+    >>> bin(drop_voicing(0b100010010001, constants.DROP_2_AND_4))
+    '0b100000010000000010000001'
     '''
     intervals = list(bitwise.iterate_intervals(chord_structure))
     for interval in drop_notes:

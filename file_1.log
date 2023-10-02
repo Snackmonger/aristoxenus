@@ -1,8 +1,239 @@
-2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b1
-2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b10001
-2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b10000001
-2023-09-26 23:29:36.961 | DEBUG    | src.permutation:triads:32 - 0b100000000001
-2023-09-27 20:58:18.615 | DEBUG    | src.permutation:triads:32 - 0b1
-2023-09-27 20:58:18.621 | DEBUG    | src.permutation:triads:32 - 0b10001
-2023-09-27 20:58:18.621 | DEBUG    | src.permutation:triads:32 - 0b10000001
-2023-09-27 20:58:18.621 | DEBUG    | src.permutation:triads:32 - 0b100000000001
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj7
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension maj7
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:169 - found major + extension maj7
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord M7
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension M7
+2023-10-01 21:36:17.525 | DEBUG    | src.parsing:parse_chord_symbol:169 - found major + extension M7
+2023-10-01 21:36:17.541 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.541 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.541 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord Δ7
+2023-10-01 21:36:17.541 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension Δ7
+2023-10-01 21:36:17.541 | DEBUG    | src.parsing:parse_chord_symbol:169 - found major + extension Δ7
+2023-10-01 21:36:17.541 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.545 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.545 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj#5
+2023-10-01 21:36:17.545 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: maj#5
+2023-10-01 21:36:17.545 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.545 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord aug
+2023-10-01 21:36:17.545 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: aug
+2023-10-01 21:36:17.548 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.549 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord +
+2023-10-01 21:36:17.549 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: +
+2023-10-01 21:36:17.549 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.549 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m7b5
+2023-10-01 21:36:17.549 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension m7
+2023-10-01 21:36:17.549 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: m7b5
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord min7b5
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension min7
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: min7b5
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord -7b5
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension -7
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: -7b5
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord dimb7
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: dimb7
+2023-10-01 21:36:17.552 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.565 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord 69
+2023-10-01 21:36:17.565 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 69
+2023-10-01 21:36:17.565 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.565 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord dim7
+2023-10-01 21:36:17.565 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension dim7
+2023-10-01 21:36:17.565 | DEBUG    | src.parsing:parse_chord_symbol:178 - found diminished + extension dim7
+2023-10-01 21:36:17.573 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.573 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.573 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m13
+2023-10-01 21:36:17.573 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension m13
+2023-10-01 21:36:17.573 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: m13
+2023-10-01 21:36:17.573 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.579 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord sus2
+2023-10-01 21:36:17.579 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: sus2
+2023-10-01 21:36:17.582 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.582 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj13
+2023-10-01 21:36:17.582 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension maj13
+2023-10-01 21:36:17.582 | DEBUG    | src.parsing:parse_chord_symbol:169 - found major + extension maj13
+2023-10-01 21:36:17.582 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.582 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord 7b9
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:185 - found dominant 7
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: b9
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj7
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension maj7
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:169 - found major + extension maj7
+2023-10-01 21:36:17.590 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.598 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.598 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m7b5
+2023-10-01 21:36:17.598 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension m7
+2023-10-01 21:36:17.598 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: m7b5
+2023-10-01 21:36:17.598 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.598 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj7
+2023-10-01 21:36:17.605 | DEBUG    | src.parsing:parse_chord_symbol:163 - found symbol + extension maj7
+2023-10-01 21:36:17.605 | DEBUG    | src.parsing:parse_chord_symbol:169 - found major + extension maj7
+2023-10-01 21:36:17.607 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: 
+2023-10-01 21:36:17.607 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:36:17.607 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m
+2023-10-01 21:36:17.607 | DEBUG    | src.parsing:parse_chord_symbol:195 - current symbol: m
+2023-10-01 21:36:17.607 | DEBUG    | src.parsing:parse_chord_symbol:220 - unrecognized symbols: 
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj7
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord M7
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.078 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord Δ7
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj#5
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: maj#5
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord aug
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: aug
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord +
+2023-10-01 21:46:45.084 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: +
+2023-10-01 21:46:45.092 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.092 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m7b5
+2023-10-01 21:46:45.092 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: m7b5
+2023-10-01 21:46:45.095 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.095 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord min7b5
+2023-10-01 21:46:45.095 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: min7b5
+2023-10-01 21:46:45.095 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.100 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord -7b5
+2023-10-01 21:46:45.100 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: -7b5
+2023-10-01 21:46:45.100 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.100 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord dimb7
+2023-10-01 21:46:45.100 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: dimb7
+2023-10-01 21:46:45.100 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.108 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord 69
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 69
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord dim7
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m13
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: m13
+2023-10-01 21:46:45.112 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord sus2
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: sus2
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj13
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord 7b9
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: b9
+2023-10-01 21:46:45.127 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.140 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj7
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m7b5
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: m7b5
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord maj7
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: 
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:147 - checking chord m
+2023-10-01 21:46:45.143 | DEBUG    | src.parsing:parse_chord_symbol:192 - current symbol: m
+2023-10-01 21:46:45.156 | DEBUG    | src.parsing:parse_chord_symbol:218 - unrecognized symbols: 
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Cmaj7
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for CM7
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for CΔ7
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Cmaj#5
+2023-10-01 21:48:10.295 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Caug
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for C+
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Ebm7b5
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Ebmin7b5
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.304 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Eb-7b5
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Ebdimb7
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for C6/9
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for F#dim7
+2023-10-01 21:48:10.311 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Gm13
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Asus2add11
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Fmaj13no11
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for G7b9
+2023-10-01 21:48:10.320 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.328 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Cmaj7
+2023-10-01 21:48:10.331 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.331 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Ebm7b5
+2023-10-01 21:48:10.333 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.337 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Cmaj7
+2023-10-01 21:48:10.338 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:48:10.338 | DEBUG    | src.parsing:parse_chord_symbol:108 - Begin chord parse for Dm
+2023-10-01 21:48:10.338 | DEBUG    | src.parsing:parse_chord_symbol:213 - Unrecognizable symbols: 
+2023-10-01 21:52:59.366 | DEBUG    | src.parsing:parse_chord_symbol:202 - bing
+2023-10-01 21:52:59.366 | DEBUG    | src.parsing:parse_chord_symbol:202 - bing
+2023-10-01 21:52:59.366 | DEBUG    | src.parsing:parse_chord_symbol:202 - bing
+2023-10-01 21:52:59.366 | DEBUG    | src.parsing:parse_chord_symbol:202 - bing
+2023-10-01 21:54:56.996 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth, trying to remove.
+2023-10-01 21:54:56.996 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b100010001
+2023-10-01 21:54:56.996 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth, trying to remove.
+2023-10-01 21:54:56.996 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b100010001
+2023-10-01 21:54:57.002 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth, trying to remove.
+2023-10-01 21:54:57.002 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b10001001001
+2023-10-01 21:54:57.004 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth, trying to remove.
+2023-10-01 21:54:57.004 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b1001001001
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth aug, trying to remove.
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b100010001
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth +, trying to remove.
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b100010001
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth dim, trying to remove.
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b10001001001
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:202 - Found altered fifth dim, trying to remove.
+2023-10-01 21:56:35.386 | DEBUG    | src.parsing:parse_chord_symbol:204 - Structure is 0b1001001001
+2023-10-01 21:57:44.984 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['aug']
+2023-10-01 21:57:44.984 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth aug, trying to remove.
+2023-10-01 21:57:44.986 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b100010001
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['+']
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth +, trying to remove.
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b100010001
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['dim', 'b7']
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth dim, trying to remove.
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b10001001001
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['1', 'dim', 'bb7', 'bb7', 'dim']
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth dim, trying to remove.
+2023-10-01 21:57:44.988 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b1001001001
+2023-10-01 22:01:11.341 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['maj', '#5']
+2023-10-01 22:01:11.341 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth #5, trying to remove.
+2023-10-01 22:01:11.341 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b100010001
+2023-10-01 22:01:11.341 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['aug']
+2023-10-01 22:01:11.355 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth aug, trying to remove.
+2023-10-01 22:01:11.355 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b100010001
+2023-10-01 22:01:11.355 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['+']
+2023-10-01 22:01:11.355 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth +, trying to remove.
+2023-10-01 22:01:11.355 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b100010001
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['1', 'b7', 'b5', 'b7', 'm', '7']
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth b5, trying to remove.
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b10001001001
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['1', 'b7', 'min', 'b5', 'b7', '7']
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth b5, trying to remove.
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b10001001001
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['1', 'b7', 'b5', 'b7', '-', '7']
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth b5, trying to remove.
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b10001001001
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['dim', 'b7']
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth dim, trying to remove.
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b10001001001
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['1', 'dim', 'bb7', 'bb7', 'dim']
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth dim, trying to remove.
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b1001001001
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:202 - Parsed symbols: ['1', 'b7', 'b5', 'b7', 'm', '7']
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:203 - Found altered fifth b5, trying to remove.
+2023-10-01 22:01:11.358 | DEBUG    | src.parsing:parse_chord_symbol:205 - Structure is 0b10001001001

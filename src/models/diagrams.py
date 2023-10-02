@@ -2,6 +2,9 @@
 Functions pertaining to making musical diagrams (aside from staff notation).
 '''
 
+import dataclasses
+
+from data import chord_symbols
 
 def guitar_tuning(strings: int = 6, 
                   tuning: str | list[str] = 'E2A2D3G3B3E4', 
@@ -27,5 +30,33 @@ def guitar_tuning(strings: int = 6,
     --------
 
     '''
+
+
+
+@dataclasses.dataclass
+class ChordSymbol:
+
+    initial_symbol: str
+    parsing_symbol: str = ''
+    recognized_sub_symbols: list[str] = dataclasses.field(default_factory=list)
+    unrecognized_sub_symbols: list[str] = dataclasses.field(default_factory=list)
+    interval_structure: int = 1
+
+    def __post_init__(self):
+        self.parsing_symbol = self.initial_symbol
+
+    def recognize(self, symbol):
+        self.recognized_sub_symbols.append(symbol)
+        self.parsing_symbol = self.parsing_symbol.replace(symbol, '')
+
+    def ignore(self, symbol):
+        self.unrecognized_sub_symbols.append(symbol)
+        self.parsing_symbol = self.parsing_symbol.replace(symbol, '')
+
+    def add(self, interval):
+        self.interval_structure |= interval
+
+    def subtract(self, interval):
+        self.interval_structure ^= (interval -1)
 
 

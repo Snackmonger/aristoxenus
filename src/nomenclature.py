@@ -511,6 +511,8 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
 
     >>> best_heptatonic('A#|Bb', 0b101010110101)
     ['Bb', 'C', 'D', 'Eb', 'F', 'G', 'A']
+    >>> best_heptatonic('E#', 0b101010110101)
+    ['F', 'G', 'A', 'Bb', 'C', 'D', 'E']
     '''
     # Convert sharps and flats to binomials.
     note_name = decode_enharmonic(note_name)
@@ -527,7 +529,6 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
         scale: list[str]
         mixed: bool
 
-    # Create two versions of the scale
     note_index: int = constants.BINOMIALS.index(note_name)
     sharp_scale = ScaleSynopsis(0, 0, force_heptatonic(constants.SHARPS[note_index], interval_structure), False)
     flat_scale = ScaleSynopsis(0, 0, force_heptatonic(constants.FLATS[note_index], interval_structure), False)
@@ -565,20 +566,40 @@ def is_abcdefg(note_names: list[str]) -> bool:
     Check if a given collection of note names adheres to the heptatonic 
     ABCDEFG nomenclature, in which each alphebetic name appears once and
     only once.
+
+    Parameters
+    ----------
+    note_names : list[str]
+        A list of alphabetic note names from the naturals, sharps, or flats.
+
+    Returns
+    -------
+    bool
+        True, if each of ABCDEFG appears exactly once.
+
+    Raises
+    ------
+    NoteNameError
+        Raised if a binomial is passed.
+
+    Examples
+    --------
+    >>> is_abcdefg(['C', 'Db', 'E#', 'F#', 'G', 'A', 'B'])
+    True
+    >>> is_abcdefg(['C', 'Db', 'E#', 'F', 'G', 'A', 'B'])
+    False
     '''
     naturals_: list[str] = constants.NATURALS.copy()
-    approved_names: list[str] = []
+    approved_names: set[str] = set()
     for note in note_names:
         if note in constants.BINOMIALS:
-            raise ValueError(f'Notes must use mononomial form: {note}')
+            raise errors.NoteNameError(note)
+        
         if __identity(note) in naturals_:
             naturals_.pop(naturals_.index(__identity(note)))
-            approved_names.append(note)
+            approved_names.add(decode_enharmonic(note))
 
-    # Check that an enharmonic equivalent is not masking the number of notes
-    # in the collection (e.g. A# and Bb should count as 1, not 2).
-    enharmonic: set[str] = set(decode_enharmonic(note) for note in approved_names)
-    return len(naturals_) == 0 and len(approved_names) == constants.NOTES and len(enharmonic) == constants.NOTES
+    return len(naturals_) == 0 and len(approved_names) == constants.NOTES
 
 
 def translate_numeric_keyword(term: str) -> int:
@@ -595,12 +616,19 @@ def translate_numeric_keyword(term: str) -> int:
     -------
     int
         The corresponding numerical meaning of the term.
+
+    Examples
+    --------
+    >>> translate_numeric_keyword('tertial')
+    2
+    >>> translate_numeric_keyword('triad')
+    3
     '''
     for number, tuple_ in enumerate(keywords.numeration):
         if term in tuple_:
             if term == tuple_[2]:
-                # Tertial, quartal, etc., but since we use this as a step in
-                # a list slice, -1 to compensate for 0 index.
-                return number - 1
-            return number
+                # tertial, quartal, etc. (tertial = 2 steps)
+                return number
+            # triad, tetrad, etc. (triad = 2 + 1 notes)
+            return number + 1
     raise errors.UnknownKeywordError(term)

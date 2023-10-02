@@ -22,7 +22,7 @@ logger.add("file_1.log", rotation="10 MB")
 def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
     root: str
-    for note in nomenclature.legal_chord_names():
+    for note in sorted(nomenclature.legal_chord_names(), key=lambda x: len(x), reverse=True):
         if note in chord_symbol:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)
@@ -65,6 +65,41 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
         Em7add9 -> (int) ->  E, G, B, D, F#
         Em7maj9nob3 -> (int) -> E, G#, B, D, F#
+
+    Examples
+    --------
+    >>> bin(parse_chord_symbol('Cmaj7'))
+    '0b100010010001'
+    >>> bin(parse_chord_symbol('CM7'))
+    '0b100010010001'
+    >>> bin(parse_chord_symbol('CΔ7'))
+    '0b100010010001'
+    >>> bin(parse_chord_symbol('Cmaj#5'))
+    '0b100010001'
+    >>> bin(parse_chord_symbol('Caug'))
+    '0b100010001'
+    >>> bin(parse_chord_symbol('C+'))
+    '0b100010001'
+    >>> bin(parse_chord_symbol('Ebm7b5'))
+    '0b10001001001'
+    >>> bin(parse_chord_symbol('Ebmin7b5'))
+    '0b10001001001'
+    >>> bin(parse_chord_symbol('Eb-7b5'))
+    '0b10001001001'
+    >>> bin(parse_chord_symbol('Ebdimb7'))
+    '0b10001001001'
+    >>> bin(parse_chord_symbol('C6/9'))
+    '0b100001010010001'
+    >>> bin(parse_chord_symbol('F#dim7'))
+    '0b1001001001'
+    >>> bin(parse_chord_symbol('Gm13'))
+    '0b1000100100010010001001'
+    >>> bin(parse_chord_symbol('Asus2add11'))
+    '0b100000000010000101'
+    >>> bin(parse_chord_symbol('Fmaj13no11'))
+    '0b1000000100100010010001'
+    >>> bin(parse_chord_symbol('G7b9'))
+    '0b10010010010001'
     '''
     structure: int = intervals.DIAPENTE
 
@@ -79,6 +114,7 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
         return parse_slash_chord_symbol(chord_symbol)
 
+    # Root note is not needed beyond this point.
     chord_symbol = __remove_chord_prefix(chord_symbol)[1]
 
     # Remove all 'add'/'no' modifiers
@@ -102,47 +138,64 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     if chord_symbol == chord_symbols.CHORD_5:
         return structure | intervals.DIAPASON
 
-    # First element is a prototypical prefix (maj11,
-    # min9, 13, etc.) implying intervening intervals.
-    for extension, extended_structure in {chord_symbols.CHORD_9: intervals.NINTH_CHORD_EXTENSIONS,
-                                          chord_symbols.CHORD_11: intervals.ELEVENTH_CHORD_EXTENSIONS,
-                                          chord_symbols.CHORD_13: intervals.THIRTEENTH_CHORD_EXTENSIONS}.items():
-        for symbol in chord_symbols.CHORD_SYMBOL_LIST:
+    parsed_symbols: list[str] = []
 
+    # Parse prototypical prefix, e.g. maj11, min9, 13, etc., and create an
+    # explicit list of implicit intervals. Most symbols correspond directly
+    # to specific intervals, so it is only necessary to remove those symbols
+    # that have contextual meanings that get lost in the 1:1 parser below.
+    for extension, extended_structure in {chord_symbols.CHORD_7: ['1'], #handle 7 idiomatically
+                                          chord_symbols.CHORD_9: ['9'],
+                                          chord_symbols.CHORD_11: ['9', '11'],
+                                          chord_symbols.CHORD_13: ['9', '11', '13']}.items():
+        
+        for symbol in chord_symbols.CHORD_SYMBOL_LIST:
             # maj7, m7, dim9, aug11, etc.
             if chord_symbol.startswith(symbol+extension):
-                structure |= extended_structure
+                parsed_symbols += extended_structure
 
                 # maj7 implies natural 7, unless it's the
                 # first symbol, which means also add3
                 if symbol in chord_symbols.CHORD_MAJOR_SYMBOL_LIST:
-                    structure |= intervals.DITONE
+                    chord_symbol = chord_symbol.removeprefix(symbol+extension)
+                    parsed_symbols += [chord_symbols.CHORD_MAJ, chord_symbols.CHORD_MAJ_7]
+
+                # dim7, dim11, etc. implies bb7 with a dim triad
+                if symbol == chord_symbols.CHORD_DIM:
+                    chord_symbol = chord_symbol.removeprefix(symbol+extension)
+                    parsed_symbols += [chord_symbols.CHORD_DIM, chord_symbols.CHORD_DOUBLE_FLAT_7]
+
+                # m9, m11, m13, implies b7
+                if symbol in chord_symbols.CHORD_MINOR_SYMBOL_LIST:
+                    parsed_symbols += [chord_symbols.CHORD_FLAT_7]
 
         # C7, D7, F#7, etc. implies b7 and 3
         if chord_symbol.startswith(extension):
-            structure |= intervals.DITONE | extended_structure
+            parsed_symbols += extended_structure + [chord_symbols.CHORD_FLAT_7, chord_symbols.CHORD_MAJ]
+            chord_symbol = chord_symbol.removeprefix(extension)
 
     # First element is another number: C2, C4, C6, etc.
     # (implies major triad)
     for symbol in [chord_symbols.CHORD_6, chord_symbols.CHORD_2, chord_symbols.CHORD_4]:
         if chord_symbol.startswith(symbol):
-            structure |= intervals.DITONE
+            parsed_symbols.append(chord_symbols.CHORD_MAJ)
 
-    # Process all remaining recognisable elements
-    parsed_symbols: list[str] = []
+    # By now, we should have an explicit list of all previously implicit
+    # intervals, plus any explicit intervals remaining in the chord symbol.
     for symbol_element, interval in sorted(chord_symbols.symbol_elements.items(),
                                            key=lambda key: len(key[0]),
                                            reverse=True):
         # Add intervals to structure
-        if symbol_element in chord_symbol:
+        if symbol_element in chord_symbol or symbol_element in parsed_symbols:
             structure |= interval
-
-            # Check if a symbol overrides the implicit p5 of a chord.
-            for symbol in ['dim', 'aug', '+', 'b5', '#5']:
-                if symbol in chord_symbol:
-                    structure ^= (intervals.DIAPENTE - 1) # 1 = tonic
             chord_symbol = chord_symbol.replace(symbol_element, '')
-            parsed_symbols.append(symbol_element)
+            if symbol_element not in parsed_symbols:
+                parsed_symbols.append(symbol_element)
+
+    # Check if a symbol overrides the implicit p5 of a chord.
+    for symbol in chord_symbols.CHORD_ALTERED_FIFTH_SYMBOL_LIST:
+        if symbol in parsed_symbols:
+            structure ^= (intervals.DIAPENTE - 1) # 1 = tonic
 
     # Handle add/no notation
     for symbol in add_drop:
@@ -151,6 +204,9 @@ def parse_chord_symbol(chord_symbol: str) -> int:
         elif symbol in chord_symbols.subtractive:
             structure ^= (chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
 
+    if chord_symbol != '':
+        logger.debug(f'Parsed: {parsed_symbols}, Unparsed: {chord_symbol}')
+        
     return structure
 
 
@@ -208,14 +264,14 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
 
     Examples
     --------
-    >>> parse_polychord_symbol('Cmaj7@Ebm7b5')
+    >>> bin(parse_polychord_symbol('Cmaj7@Ebm7b5'))
     0b10101011011001
                 
     This translates to : C0 Eb0 E0 Gb0 G0 Bbb0 B0 Db1
 
     This notation can be used as a shorthand for scale names:
 
-    >>> parse_polychord_symbol('Cmaj7@Dm')
+    >>> bin(parse_polychord_symbol('Cmaj7@Dm'))
     0b101010110101
 
     This translates to : C0 D0 E0 F0 G0 A0 B0
@@ -449,7 +505,7 @@ def name_heptatonic_intervals(note_names: list[str], comparandum: int = interval
     ['1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7']
 
     >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
-    ['1', '#2', '3', '4', '#5', '#6', '7'] 
+    ['1', '#2', '3', '4', '#5', '#6', '7']
     '''
     tonic: str = note_names[0]
     # binomial_names = [decode_enharmonic(note_name) for note_name in note_names]
@@ -513,26 +569,25 @@ def condense_note_names(note_names: list[str]) -> int:
 
     Examples
     --------
-    >>> condense_note_names(['C', 'D###4', 'Db', 'Fbbb5', 'Mb', 'G###6', 'F#####9', 'F#|Gb', 'F#|Gb5'])
-    0b101010101011
+    >>> bin(condense_note_names(['C', 'D###4', 'Db', 'Fbbb5', 'Mb', 'G###6', 'F#####9', 'F#|Gb', 'F#|Gb5']))
+    '0b10001100111'
     '''
     
     simplified_notes: list[str] = []
     for note_name in note_names:
         if note_name in nomenclature.chromatic():
-            simplified_notes.append(note_name)
+            pass
         elif not note_name.isalpha():
             note_name = note_name[:-1]
-        else:
-            try:
-                simplified_notes.append(nomenclature.decode_enharmonic(note_name))
-            except ValueError:
-                pass
+        try:
+            simplified_notes.append(nomenclature.decode_enharmonic(note_name))
+        except ValueError:
+            pass
     
     tonic: str = simplified_notes[0]
     chromatic_: list[str] = nomenclature.chromatic(constants.BINOMIALS)
     chromatic_ = utils.shift_list(chromatic_, tonic)
-    interval_map: int = 0
+    interval_map: int = 1
     for note_name in simplified_notes:
         interval_map |= (1 << chromatic_.index(note_name))
     return interval_map

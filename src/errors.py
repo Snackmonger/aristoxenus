@@ -1,9 +1,6 @@
 class IntervalOutOfBoundsError(ValueError):
     '''
     Error indicating that the interval is not within the legal limits.
-
-    The error is only emitted if the user has set the LimitedIntervalStructure
-    parameter `oob` to 'error'.
     '''
 
 class MisconfiguredOOBError(ValueError):

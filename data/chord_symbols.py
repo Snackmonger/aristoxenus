@@ -53,6 +53,7 @@ CHORD_FLAT_6: str = constants.FLAT_SYMBOL + CHORD_6
 CHORD_SHARP_6: str = constants.SHARP_SYMBOL + CHORD_6
 CHORD_FLAT_7: str = constants.FLAT_SYMBOL + CHORD_7
 CHORD_MAJ_7: str = CHORD_MAJ + CHORD_7
+CHORD_DIM_7: str = CHORD_DIM + CHORD_7
 CHORD_M7_UPPER: str = CHORD_M_UPPER + CHORD_7
 CHORD_MAJ_DELTA7: str = CHORD_MAJ_DELTA + CHORD_7
 CHORD_DOUBLE_FLAT_7: str = constants.FLAT_SYMBOL*2 + CHORD_7
@@ -73,20 +74,23 @@ CHORD_FLAT_14: str = constants.FLAT_SYMBOL + CHORD_14
 # The resulting chords have nonexplicit structures (e.g. 13 implies 9 and 11)
 CHORD_MAJOR_SYMBOL_LIST: list[str] = [CHORD_MAJ, CHORD_MAJ_DELTA, CHORD_M_UPPER]
 CHORD_MINOR_SYMBOL_LIST: list[str] = [CHORD_MIN, CHORD_M_LOWER, CHORD_MINUS]
-CHORD_AUGMENTED_SYMBOL_LIST: list[str] = [CHORD_AUG, CHORD_PLUS]
-CHORD_DIMINISHED_SYMBOL_LIST: list[str] = [CHORD_DIM]
+CHORD_AUGMENTED_SYMBOL_LIST: list[str] = [CHORD_AUG, CHORD_PLUS, CHORD_AUG_5]
+CHORD_DIMINISHED_SYMBOL_LIST: list[str] = [CHORD_DIM, CHORD_DIM_5]
 CHORD_SYMBOL_LIST: list[str] = CHORD_MAJOR_SYMBOL_LIST + CHORD_MINOR_SYMBOL_LIST + \
     CHORD_AUGMENTED_SYMBOL_LIST + CHORD_DIMINISHED_SYMBOL_LIST
+
+# Chord symbols for which we normally expect NOT to have a p5
+CHORD_ALTERED_FIFTH_SYMBOL_LIST = CHORD_AUGMENTED_SYMBOL_LIST + CHORD_DIMINISHED_SYMBOL_LIST + [CHORD_FLAT_5, CHORD_SHARP_5]
 
 # Symbols that correspond explicitly to given intervals.
 basic_symbols: dict[int, list[str]] = {interval.HEMITONE: [CHORD_FLAT_2],
                  interval.TONE: [CHORD_2, CHORD_SUS_2],
-                 interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3, CHORD_MINUS, CHORD_M_LOWER, CHORD_MIN],
-                 interval.DITONE: [CHORD_3, CHORD_FLAT_4, CHORD_MAJ, CHORD_M_UPPER, CHORD_MAJ_DELTA],
+                 interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3] + CHORD_MINOR_SYMBOL_LIST,
+                 interval.DITONE: [CHORD_3, CHORD_FLAT_4] + CHORD_MAJOR_SYMBOL_LIST,
                  interval.DIATESSARON: [CHORD_SUS_4, CHORD_4, CHORD_SHARP_3],
                  interval.TRITONE: [CHORD_SHARP_4, CHORD_FLAT_5],
                  interval.DIAPENTE: [CHORD_5],
-                 interval.COMPOUND_HEMITONE: [CHORD_AUG, CHORD_AUG_5, CHORD_SHARP_5, CHORD_FLAT_6, CHORD_PLUS],
+                 interval.COMPOUND_HEMITONE: [CHORD_SHARP_5, CHORD_FLAT_6],
                  interval.COMPOUND_TONE: [CHORD_6, CHORD_DOUBLE_FLAT_7],
                  interval.COMPOUND_HEMIOLION: [CHORD_7, CHORD_FLAT_7, CHORD_SHARP_6],
                  interval.COMPOUND_DITONE: [CHORD_MAJ_7, CHORD_M7_UPPER, CHORD_MAJ_DELTA7],
@@ -103,6 +107,8 @@ basic_symbols: dict[int, list[str]] = {interval.HEMITONE: [CHORD_FLAT_2],
                  bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
                  bitwise.transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
                  bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
+                 interval.AUGMENTED_TRIAD: CHORD_AUGMENTED_SYMBOL_LIST,
+                 interval.DIMINISHED_TRIAD: CHORD_DIMINISHED_SYMBOL_LIST,
                  }
 
 symbol_elements: dict[str, int] = {
@@ -140,4 +146,5 @@ symbol_prescription: dict[int, str] = {interval.HEMITONE: CHORD_FLAT_2,
                                        bitwise.transpose_interval(interval.COMPOUND_TONE): CHORD_13,
                                        bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
                                        bitwise.transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
-                                       bitwise.transpose_interval(interval.DIAPASON): CHORD_15}
+                                       bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
+                                       }
