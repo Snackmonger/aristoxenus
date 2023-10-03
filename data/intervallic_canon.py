@@ -24,28 +24,40 @@ DIAPASON: int = 0b1000000000001
 # Common triads: structures that are compounds of 2 intervals.
 MAJOR_TRIAD: int = DITONE | DIAPENTE
 MINOR_TRIAD: int = HEMIOLION | DIAPENTE
-DIMINISHED_TRIAD: int = HEMIOLION | TRITONE
-AUGMENTED_TRIAD: int = DITONE | COMPOUND_HEMITONE
+MINOR_FLAT_5: int = HEMIOLION | TRITONE
+MAJOR_SHARP_5: int = DITONE | COMPOUND_HEMITONE
+# minor # 5 is an inversion of major triad
 MAJOR_FLAT_5: int = DITONE | TRITONE
-SUS: int = TONE | DIAPENTE
+SUS_TRIAD: int = TONE | DIAPENTE
+# sus2 and sus4 are inversions of each other
 
-primary_structure: dict[str, int] = {'major_triad': MAJOR_TRIAD,
-                                     'minor_triad': MINOR_TRIAD}
+triads: dict[str, int] = {'major_triad': MAJOR_TRIAD,
+                          'minor_triad': MINOR_TRIAD,
+                          'minor_flat_5_triad': MINOR_FLAT_5,
+                          'major_flat_5_triad': MAJOR_FLAT_5,
+                          'major_sharp_5_triad': MAJOR_SHARP_5,
+                          'sus_triad': SUS_TRIAD
+                          }
 
 # Common tetrads: structures that are compounds of 3 intervals, which can be
 # expressed as a triad and another interval, or as compounds of 2 triads.
 # Some of the named tetrads are actually inversions of the others (Am7 = C6,
 # etc.), but it's often nomenclaturally conventient to treat them separately.
-MAJOR_SIXTH: int = MAJOR_TRIAD | COMPOUND_TONE                       # Cmaj@Amin
-MINOR_SIXTH: int = MINOR_TRIAD | COMPOUND_TONE                       # Cmin@Adim
-MAJOR_SEVENTH: int = MAJOR_TRIAD | COMPOUND_DITONE                   # Cmaj@Emin
-MINOR_SEVENTH: int = MINOR_TRIAD | COMPOUND_HEMIOLION                # Cmin@Ebmaj
-DOMINANT_SEVENTH: int = MAJOR_TRIAD | COMPOUND_HEMIOLION             # Cmaj@Edim
-MINOR_SEVEN_FLAT_FIVE: int = DIMINISHED_TRIAD | COMPOUND_HEMIOLION   # Cdim@Ebmin
-DIMINISHED_SEVENTH: int = DIMINISHED_TRIAD | COMPOUND_TONE           # Cdim@Ebdim
-AUGMENTED_SEVENTH: int = AUGMENTED_TRIAD | COMPOUND_HEMIOLION        # Caug@Emajb5
-AUGMENTED_MAJOR_SEVENTH: int = AUGMENTED_TRIAD | COMPOUND_DITONE     # Caug@Emaj
-DOMINANT_SEVENTH_FLAT_FIVE: int = MAJOR_FLAT_5 | COMPOUND_HEMIOLION  # Cmajb5@Gbmajb5
+
+# should we have the one as the canonical form? how do we indicate that there
+# might be a different tonal centre
+
+# augmented triad + major 6 is an inversion of minmaj7
+MAJOR_SEVENTH: int = MAJOR_TRIAD | COMPOUND_DITONE                          # Cmaj@Emin
+MINOR_SEVENTH: int = MINOR_TRIAD | COMPOUND_HEMIOLION                       # Cmin@Ebmaj
+DOMINANT_SEVENTH: int = MAJOR_TRIAD | COMPOUND_HEMIOLION                    # Cmaj@Edim
+MINOR_SEVEN_FLAT_FIVE: int = MINOR_FLAT_5 | COMPOUND_HEMIOLION              # Cdim@Ebmin
+DIMINISHED_SEVENTH: int = MINOR_FLAT_5 | COMPOUND_TONE                      # Cdim@Ebdim
+AUGMENTED_SEVENTH: int = MAJOR_SHARP_5 | COMPOUND_HEMIOLION                 # Caug@Emajb5
+AUGMENTED_MAJOR_SEVENTH: int = MAJOR_SHARP_5 | COMPOUND_DITONE              # Caug@Emaj
+DOMINANT_SEVENTH_FLAT_FIVE: int = MAJOR_FLAT_5 | COMPOUND_HEMIOLION         # Cmajb5@Gbmajb5
+
+tetrads: dict[str, int] 
 
 # Heptatonic scale forms: these serve as the canonical interval structures that
 # heptatonic modes will be considered to be inversions of. Heptatonic scales can be

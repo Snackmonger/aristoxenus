@@ -3,7 +3,6 @@ import pandas as pd
 from data import intervallic_canon, keywords
 from src import bitwise
 
-
 x = intervallic_canon.HEPTATONIC_SYSTEM
 
 data = {}
@@ -19,4 +18,17 @@ locate = dataframe.loc['lydian']
 print(locate)
 
 print(bin(int(locate['harmonic'])))
+'
 
+# Tonal matrix
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# '

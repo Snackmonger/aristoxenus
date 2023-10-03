@@ -11,33 +11,28 @@ listicle = Optional[list[Any] | tuple[Any, ...]]
 class Node:
 
     def __init__(self,
-                 parent_node: 'Node | Tree',
-                 child_nodes: listicle = None
+                 parent_node: 'Node | Tree'
                  ) -> None:
         
         self.parent: 'Node | Tree' = parent_node
+        parent_node.attach(self)
+        self.root = 
         self.children: list['Node'] = []
 
 
-    def steps_to_root(self, counter: int) -> int:
-        '''
-        _summary_
+    def fetch_root(self) -> Tree:
+        
 
-        Parameters
-        ----------
-        counter : int
-            _description_
-
-        Returns
-        -------
-        int
-            _description_
-        '''
-        counter += 1
+    def nodes_to_root(self, node_list: list['Node'] | None = None) -> list['Node']:
+        if node_list is None:
+            node_list = []
+        node_list.append(self)
         if isinstance(self.parent, Tree):
-            return counter
+            return node_list
         else:
-            return self.parent.steps_to_root(counter)
+            return self.parent.nodes_to_root(node_list)
+        
+    
 
 
     def detach(self, child: 'Node') -> None:
@@ -80,15 +75,19 @@ class Tree:
         self.next_nodes: list[Node]
 
 
-    def remove_node(self, node: Node, sever: bool = False) -> None:
-        if sever == True:
-            if node in self.nodes:
-                self.nodes.remove(node)
-        else:
-            for child in node.children:
-                child.parent = node.parent
-                if not isinstance(node.parent, Tree):
-                    node.parent.attach(child)
+    def attach(self, node: Node) -> None:
+        if node not in self.nodes:
+            self.nodes.append(node)
+
+
+    def detach(self, node: Node, sever: bool = False) -> None:
+        if sever is False:
+            for ch_node in self.nodes:
+                if ch_node.parent == node:
+                    ch_node.parent = node.parent
+                    if not isinstance(node.parent, Tree):
+                        node.parent.attach(ch_node)
+        self.nodes.remove(node)
 
     
 
@@ -97,4 +96,3 @@ class Tree:
 
     
     
-

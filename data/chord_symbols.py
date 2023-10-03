@@ -108,8 +108,8 @@ basic_symbols: dict[int, list[str]] = {interval.HEMITONE: [CHORD_FLAT_2],
                                        bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
                                        bitwise.transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
                                        bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
-                                       interval.AUGMENTED_TRIAD: CHORD_AUGMENTED_SYMBOL_LIST,
-                                       interval.DIMINISHED_TRIAD: CHORD_DIMINISHED_SYMBOL_LIST,
+                                       interval.MAJOR_SHARP_5: CHORD_AUGMENTED_SYMBOL_LIST,
+                                       interval.MINOR_FLAT_5: CHORD_DIMINISHED_SYMBOL_LIST,
                                        }
 
 symbol_elements: dict[str, int] = {
