@@ -34,10 +34,11 @@ def render_plain(interval_structure: int,
 
     Examples
     --------
+    >>>
+    
     '''
     if chromatic_scale is None:
         chromatic_scale = nomenclature.chromatic(constants.BINOMIALS)
-
     if interval_structure.bit_length() > len(chromatic_scale):
         chromatic_scale *= 8
 
@@ -84,15 +85,13 @@ def render_scientific(interval_structure: int,
         -If the accidentals are not sharps, flats, or binomials.
         -If the starting note is not a legal scientific note name for the
         requested accidental type.
+
+    Examples
+    --------
+    >>>
+
     '''
-    if accidental_notes not in constants.ACCIDENTAL_TYPES:
-        raise ValueError
-
     scientific_range: list[str] = nomenclature.scientific_range(accidental_notes)
-
-    if starting_note not in scientific_range:
-        raise ValueError
-    
     scientific_range = utils.shift_list(scientific_range, starting_note)
 
     rendering: list[str] = []
