@@ -48,3 +48,6 @@ BINOMIALS: tuple[str, ...] = tuple(sharp + BINOMIAL_DIVIDER_SYMBOL + flat
                           if FLATS.index(flat) == SHARPS.index(sharp))
 
 ACCIDENTAL_NOTES: tuple[str, ...] = tuple(SHARPS + FLATS)
+
+
+ACCIDENTAL_TYPES: list[tuple[str, ...]] = [SHARPS, FLATS, BINOMIALS]

@@ -1,6 +1,6 @@
 from src.nomenclature import chromatic, ch_flats, ch_sharps, scientific, sci_sharps, sci_flats
 from src.nomenclature import force_heptatonic, best_heptatonic, name_heptatonic_intervals
-from src.rendering import render
+from src.rendering import render_plain
 from src.parsing import parse_chord_symbol
 from src.utils import roman_numeral
 
@@ -37,7 +37,7 @@ def test_rendering():
     and render a major scale for each.'''
     ch = chromatic()
     for _ in range(12):
-        print(render(2773, ch))
+        print(render_plain(2773, ch))
         ch = ch[1:] + ch[:1]
 
 def test_interval_recognition(heptatonic_scale: list[str]):

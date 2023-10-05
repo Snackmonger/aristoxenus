@@ -484,7 +484,7 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     # Assemble basic alphabetic order to enforce.
     plain: list[str] = utils.shift_list(constants.NATURALS, __identity(note_name))
     # Create binomial version of requested scale pattern.
-    binomial: list[str] = rendering.render(interval_structure, utils.shift_list(chromatic(constants.BINOMIALS), decode_enharmonic(note_name)))
+    binomial: list[str] = rendering.render_plain(interval_structure, utils.shift_list(chromatic(constants.BINOMIALS), decode_enharmonic(note_name)))
     # Force each binomial note value to adopt the next alphabetic note name.
     return [encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES)]
 

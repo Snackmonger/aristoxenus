@@ -514,7 +514,7 @@ def name_heptatonic_intervals(note_names: list[str], comparandum: int = interval
         raise ValueError('Only works on heptatonic scales.')
     
     chromatic_names: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), tonic)
-    major_names: list[str] = rendering.render(comparandum, chromatic_names)
+    major_names: list[str] = rendering.render_plain(comparandum, chromatic_names)
     intervals_: list[str] = []
     for index in range(constants.NOTES):
         expected_note: str = major_names[index]

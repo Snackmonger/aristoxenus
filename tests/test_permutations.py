@@ -15,7 +15,7 @@ from data import intervallic_canon
 def generate_intmap():
     x = permutation.extend_structure(0b101010110101)
     y = nomenclature.scientific_range(constants.BINOMIALS)
-    z = rendering.render(x, y)
+    z = rendering.render_plain(x, y)
     print(z)
         
 
@@ -40,25 +40,25 @@ from src import rendering
 
 def drop_voicing():
     print(bin(0b100010010001))
-    print(rendering.render(0b100010010001))
+    print(rendering.render_plain(0b100010010001))
 
     x =  permutation.drop_voicing(0b100010010001, constants.DROP_2) 
     print(bin(x))
-    print(rendering.render(x))
+    print(rendering.render_plain(x))
 
     x =  permutation.drop_voicing(0b100010010001, constants.DROP_3) 
     print(bin(x))
-    print(rendering.render(x))
+    print(rendering.render_plain(x))
 
     x =  permutation.drop_voicing(0b100010010001, constants.DROP_2_AND_4) 
     print(bin(x))
-    print(rendering.render(x))
+    print(rendering.render_plain(x))
 
 
     x =  permutation.drop_voicing(0b110001001, constants.DROP_2) 
     print(bin(x))
-    print(rendering.render(x, utils.shift_list(nomenclature.chromatic(), 'E')))
+    print(rendering.render_plain(x, utils.shift_list(nomenclature.chromatic(), 'E')))
 
     x =  permutation.drop_voicing(0b1000110001, constants.DROP_2) 
     print(bin(x))
-    print(rendering.render(x, utils.shift_list(nomenclature.chromatic(), 'G')))
+    print(rendering.render_plain(x, utils.shift_list(nomenclature.chromatic(), 'G')))
