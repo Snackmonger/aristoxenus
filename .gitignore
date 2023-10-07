@@ -35,3 +35,4 @@ data/__pycache__/__init__.cpython-311.pyc
 src/__pycache__/types.cpython-311.pyc
 console_ui/__pycache__/__init__.cpython-311.pyc
 console_ui/__pycache__/menu.cpython-311.pyc
+src/models/__pycache__/diagrams.cpython-311.pyc
