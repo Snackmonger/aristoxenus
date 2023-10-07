@@ -34,7 +34,12 @@ def render_plain(interval_structure: int,
 
     Examples
     --------
-    >>>
+    >>> render_plain(0b101010110101, nomenclature.chromatic())
+    ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+    >>> render_plain(0b10000100010000001, nomenclature.chromatic())
+    ['C', 'G', 'B', 'E']
+    >>> render_plain(0b10000000010000001, utils.shift_list(nomenclature.chromatic(), 'D#|Eb'))
+    ['D#|Eb', 'G#|Ab', ]
     
     '''
     if chromatic_scale is None:
@@ -99,7 +104,6 @@ def render_scientific(interval_structure: int,
         binary_column: int = 1 << interval
         if (interval_structure & binary_column) == binary_column:
             rendering.append(scientific_range[interval])
-
     return rendering
 
 

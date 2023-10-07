@@ -18,17 +18,7 @@ locate = dataframe.loc['lydian']
 print(locate)
 
 print(bin(int(locate['harmonic'])))
-'
 
-# Tonal matrix
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# '
+at = dataframe.at['lydian', 'harmonic']
+
+print(dataframe.columns)

@@ -4,11 +4,19 @@ Functions pertaining to making musical diagrams (aside from staff notation).
 
 import dataclasses
 
-from data import chord_symbols
+from data import (chord_symbols, 
+                  constants,
+                  keywords)
 
-def guitar_tuning(strings: int = 6, 
-                  tuning: str | list[str] = 'E2A2D3G3B3E4', 
-                  frets: int = 22
+from src import nomenclature
+
+
+GUITAR_STANDARD_TUNING = ['E2', 'A3', 'D3', 'G3', 'B3', 'E4']
+
+def guitar_tuning(strings: int = 6,
+                  tuning: list[str] | tuple[str, ...] = GUITAR_STANDARD_TUNING,
+                  frets: int = 15,
+                  format_: str = keywords.SCIENTIFIC
                   ) -> tuple[tuple[str, ...], ...]:
     '''
     Return a nested tuple representing a given number of strings and a given tuning.
@@ -24,12 +32,36 @@ def guitar_tuning(strings: int = 6,
     Returns
     -------
     tuple of tuple of str
-        An array representing the notes of a guitar in the given formatting.
-
-    Examples
-    --------
+        A table representing the notes on the strings of a guitar in the 
+        given formatting.
 
     '''
+    diagram = []
+    frets += 1
+    if format_ == keywords.SCIENTIFIC:
+        all_notes = nomenclature.scientific_range()
+        # Ensure that we use binomials in the output
+        tuning =  list(map(nomenclature.decode_scientific_enharmonic, tuning))
+
+    elif format_ == keywords.PLAIN:
+        all_notes = nomenclature.chromatic() * (1 + (frets // 12))
+        # Again binomials, but this function also
+        # filters out scientific note names
+        tuning = list(map(nomenclature.decode_enharmonic, tuning))
+
+    else:
+        raise ValueError(format_)
+
+    for string in range(strings):
+
+        starting_note = all_notes.index(tuning[string])
+        ending_note = starting_note + frets
+        string_notes = all_notes[starting_note : ending_note]
+        diagram.append(tuple(string_notes))
+
+    diagram.reverse()
+    return tuple(diagram)
+    
 
 
 
