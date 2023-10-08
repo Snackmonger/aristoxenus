@@ -110,3 +110,11 @@ NUMERATION: tuple[tuple[str, str, str], ...] = (
     (HENDECAD, HENDECATONIC, UNDECIMAL),
     (DUODECAD, DUODECATONIC, DUODECIMAL)
 )
+
+
+# Guitar Tunings
+STANDARD: str = 'standard'
+DROP_D: str = 'drop_d'
+STANDARD_7_STRING: str = 'standard_7_string'
+OPEN_D: str
+OPEN_G: str 
