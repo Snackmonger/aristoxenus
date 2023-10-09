@@ -1,7 +1,7 @@
 from typing import Literal, Self
 
 from src import bitwise
-from src import errors
+from data import errors
 from src import parsing
 
 from src.decorators import pos_only, check_oob

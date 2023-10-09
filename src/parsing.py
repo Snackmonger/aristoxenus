@@ -265,16 +265,16 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
     Examples
     --------
     >>> bin(parse_polychord_symbol('Cmaj7@Ebm7b5'))
-    0b10101011011001
+    '0b10101011011001'
                 
     This translates to : C0 Eb0 E0 Gb0 G0 Bbb0 B0 Db1
 
-    This notation can be used as a shorthand for scale names:
+    This notation can also be used as a shorthand for scale names:
 
     >>> bin(parse_polychord_symbol('Cmaj7@Dm'))
-    0b101010110101
+    '0b101010110101'
 
-    This translates to : C0 D0 E0 F0 G0 A0 B0
+    This translates to : C0 D0 E0 F0 G0 A0 B0 (C major scale)
     '''
     compiled_structure: int = 1
     subchord_structure: int = 1
