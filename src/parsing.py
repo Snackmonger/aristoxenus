@@ -3,10 +3,10 @@ import loguru
 
 from data import (chord_symbols,
                   intervallic_canon as intervals,
-                  constants)
+                  constants,
+                  errors)
 
-from src import (errors,
-                 nomenclature,
+from src import (nomenclature,
                  utils,
                  rendering)
 

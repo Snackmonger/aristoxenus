@@ -6,8 +6,8 @@ import loguru
 
 from data import constants
 
-from src.errors import IntervalOutOfBoundsError
-from src.enums import OOBOptions
+from data.errors import IntervalOutOfBoundsError
+from data.enums import OOBOptions
 
 if TYPE_CHECKING:
     from .models.interval_structures import LimitedIntervalStructure

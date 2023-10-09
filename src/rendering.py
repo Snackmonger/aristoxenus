@@ -106,4 +106,3 @@ def render_scientific(interval_structure: int,
             rendering.append(scientific_range[interval])
     return rendering
 
-

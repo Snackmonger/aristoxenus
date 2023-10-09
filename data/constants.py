@@ -13,14 +13,7 @@ FREQUENCY_DECIMAL_LIMIT: int = 3
 CENTRAL_REFERENCE_NOTE_NAME: str = 'A4'
 CENTRAL_REFERENCE_NOTE_FREQUENCY: int = 440
 
-# Qualities
-SHARP_LABEL:str = 'sharp'
-FLAT_LABEL:str = 'flat'
-MAJOR:str = 'major'
-MINOR:str = 'minor'
-DIMINISHED:str = 'diminished'
-AUGMENTED:str = 'augmented'
-PERFECT:str = 'perfect'
+# Chord voicings
 DROP_2: tuple[int] = (1,)
 DROP_3: tuple[int, int] = (1, 2)
 DROP_2_AND_4: tuple[int, int] = (1, 3)

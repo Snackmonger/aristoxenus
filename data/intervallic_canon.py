@@ -2,7 +2,6 @@
 The integer expressions of some of the most common intervallic structures.
 '''
 from data import keywords
-from src import bitwise
 
 # Divisions of the single octave.
 # -------------------------------
@@ -31,12 +30,12 @@ MAJOR_FLAT_5: int = DITONE | TRITONE
 SUS_TRIAD: int = TONE | DIAPENTE
 # sus2 and sus4 are inversions of each other
 
-triads: dict[str, int] = {'major_triad': MAJOR_TRIAD,
-                          'minor_triad': MINOR_TRIAD,
-                          'minor_flat_5_triad': MINOR_FLAT_5,
-                          'major_flat_5_triad': MAJOR_FLAT_5,
-                          'major_sharp_5_triad': MAJOR_SHARP_5,
-                          'sus_triad': SUS_TRIAD
+triads: dict[str, int] = {keywords.MAJOR_TRIAD: MAJOR_TRIAD,
+                          keywords.MINOR_TRIAD: MINOR_TRIAD,
+                          keywords.MINOR_FLAT_5: MINOR_FLAT_5,
+                          keywords.MAJOR_FLAT_5: MAJOR_FLAT_5,
+                          keywords.MAJOR_SHARP_5: MAJOR_SHARP_5,
+                          keywords.SUS_TRIAD: SUS_TRIAD
                           }
 
 # Common tetrads: structures that are compounds of 3 intervals, which can be
@@ -50,9 +49,10 @@ triads: dict[str, int] = {'major_triad': MAJOR_TRIAD,
 # augmented triad + major 6 is an inversion of minmaj7
 MAJOR_SEVENTH: int = MAJOR_TRIAD | COMPOUND_DITONE                          # Cmaj@Emin
 MINOR_SEVENTH: int = MINOR_TRIAD | COMPOUND_HEMIOLION                       # Cmin@Ebmaj
-DOMINANT_SEVENTH: int = MAJOR_TRIAD | COMPOUND_HEMIOLION                    # Cmaj@Edim
+MINOR_MAJOR_SEVENTH: int = MINOR_TRIAD | COMPOUND_DITONE                    # Cmin@Ebmaj#5
+DOMINANT_SEVENTH: int = MAJOR_TRIAD | COMPOUND_HEMIOLION                    # Cmaj@Emb5
 MINOR_SEVEN_FLAT_FIVE: int = MINOR_FLAT_5 | COMPOUND_HEMIOLION              # Cdim@Ebmin
-DIMINISHED_SEVENTH: int = MINOR_FLAT_5 | COMPOUND_TONE                      # Cdim@Ebdim
+DIMINISHED_SEVENTH: int = MINOR_FLAT_5 | COMPOUND_TONE                      # Cdim@Ebmb5
 AUGMENTED_SEVENTH: int = MAJOR_SHARP_5 | COMPOUND_HEMIOLION                 # Caug@Emajb5
 AUGMENTED_MAJOR_SEVENTH: int = MAJOR_SHARP_5 | COMPOUND_DITONE              # Caug@Emaj
 DOMINANT_SEVENTH_FLAT_FIVE: int = MAJOR_FLAT_5 | COMPOUND_HEMIOLION         # Cmajb5@Gbmajb5
@@ -90,22 +90,3 @@ HEPTATONIC_ORDER: tuple[int, ...] = (DIATONIC_SCALE,
 
 HEPTATONIC_SYSTEM: dict[int, str] = dict(
     zip(HEPTATONIC_ORDER, keywords.HEPTATONIC_ORDER))
-
-
-# Divisions of the double octave.
-# -------------------------------
-
-# Western extensions
-# FLAT_NINTH: int = bitwise.transpose_interval(HEMITONE)
-# NINTH: int = bitwise.transpose_interval(TONE)
-# SHARP_NINTH: int = bitwise.transpose_interval(HEMIOLION)
-# ELEVENTH: int = bitwise.transpose_interval(DIATESSARON)
-# SHARP_ELEVENTH: int = bitwise.transpose_interval(TRITONE)
-# THIRTEENTH: int = bitwise.transpose_interval(COMPOUND_TONE)
-# FLAT_THIRTEENTH: int = bitwise.transpose_interval(COMPOUND_HEMITONE)
-
-# # Shortcuts to fill in the implicit extensions in
-# # e.g. Am11 (has a 9) G13 (has a 9 and 11)
-# NINTH_CHORD_EXTENSIONS: int = NINTH
-# ELEVENTH_CHORD_EXTENSIONS: int = NINTH | ELEVENTH
-# THIRTEENTH_CHORD_EXTENSIONS: int = NINTH | ELEVENTH | THIRTEENTH

@@ -17,11 +17,11 @@ display note names for most functions.
 from dataclasses import dataclass
 
 from data import (constants,
-                  keywords)
+                  keywords,
+                  errors)
 
 from src import (utils,
-                 rendering,
-                 errors)
+                 rendering)
 
 
 def chromatic(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS) -> list[str]:

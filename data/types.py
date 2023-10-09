@@ -1,0 +1,3 @@
+
+
+GuitarFingering = tuple[tuple[str, ...], ...]

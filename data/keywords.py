@@ -14,6 +14,15 @@ PREFERRED_NAME: str = 'preferred_name'
 MODAL_NAME: str = 'modal_name'
 RECOGNIZED_NAMES: str = 'recognized_names'
 CHORD_SYMBOL: str = 'chord_symbol'
+SHARP: str = 'sharp'
+FLAT: str = 'flat'
+
+# Interval qualities
+MAJOR: str = 'major'
+MINOR: str = 'minor'
+DIMINISHED: str = 'diminished'
+AUGMENTED: str = 'augmented'
+PERFECT: str = 'perfect'
 
 # Modal names
 IONIAN: str = 'ionian'
@@ -24,13 +33,15 @@ MIXOLYDIAN: str = 'mixolydian'
 AEOLIAN: str = 'aeolian'
 LOCRIAN: str = 'locrian'
 
+# We use modal names as a fixed series, not
+# as representative of any specific structures
 MODAL_NAME_SERIES: tuple[str, ...] = (IONIAN,
-                                DORIAN,
-                                PHRYGIAN,
-                                LYDIAN,
-                                MIXOLYDIAN,
-                                AEOLIAN,
-                                LOCRIAN)
+                                      DORIAN,
+                                      PHRYGIAN,
+                                      LYDIAN,
+                                      MIXOLYDIAN,
+                                      AEOLIAN,
+                                      LOCRIAN)
 
 # Polyads
 MONAD: str = 'monad'
@@ -75,27 +86,28 @@ UNDECIMAL: str = 'undecimal'
 DUODECIMAL: str = 'duodecimal'
 
 # Scale identifiers
-DIATONIC_LABEL: str = 'diatonic'
-ALTERED_LABEL: str = 'altered'
-HEMITONIC_LABEL: str = 'hemitonic'
-HEMIOLIC_LABEL: str = 'hemiolic'
-DIMINISHED_LABEL: str = 'diminished'
-AUGMENTED_LABEL: str = 'augmented'
-HARMONIC_LABEL: str = 'harmonic'
-BISEPTIMAL_LABEL: str = 'biseptimal'
-PALEOCHROMATIC_LABEL: str = 'paleochromatic'
+DIATONIC: str = 'diatonic'
+ALTERED: str = 'altered'
+HEMITONIC: str = 'hemitonic'
+HEMIOLIC: str = 'hemiolic'
+# diminished
+# augmented
+HARMONIC: str = 'harmonic'
+BISEPTIMAL: str = 'biseptimal'
+PALEOCHROMATIC: str = 'paleochromatic'
 
-# Groups of above
-HEPTATONIC_ORDER: tuple[str, ...] = (DIATONIC_LABEL,
-                                      ALTERED_LABEL,
-                                      HEMITONIC_LABEL,
-                                      HEMIOLIC_LABEL,
-                                      DIMINISHED_LABEL,
-                                      AUGMENTED_LABEL,
-                                      HARMONIC_LABEL,
-                                      BISEPTIMAL_LABEL,
-                                      PALEOCHROMATIC_LABEL)
+# Groups of scales
+HEPTATONIC_ORDER: tuple[str, ...] = (DIATONIC,
+                                     ALTERED,
+                                     HEMITONIC,
+                                     HEMIOLIC,
+                                     DIMINISHED,
+                                     AUGMENTED,
+                                     HARMONIC,
+                                     BISEPTIMAL,
+                                     PALEOCHROMATIC)
 
+# Groups of number words
 NUMERATION: tuple[tuple[str, str, str], ...] = (
     (MONAD, MONOTONIC, PRIMAL),
     (DYAD, DITONIC, SECUNDAL),
@@ -111,10 +123,17 @@ NUMERATION: tuple[tuple[str, str, str], ...] = (
     (DUODECAD, DUODECATONIC, DUODECIMAL)
 )
 
+# Chord Names
+MAJOR_TRIAD: str = 'major_triad'
+MINOR_TRIAD: str = 'minor_triad'
+MINOR_FLAT_5: str = 'minor_flat_5_triad'
+MAJOR_FLAT_5: str = 'major_flat_5_triad'
+MAJOR_SHARP_5: str = 'major_sharp_5_triad'
+SUS_TRIAD: str = 'sus_triad'
 
 # Guitar Tunings
 STANDARD: str = 'standard'
 DROP_D: str = 'drop_d'
 STANDARD_7_STRING: str = 'standard_7_string'
 OPEN_D: str
-OPEN_G: str 
+OPEN_G: str

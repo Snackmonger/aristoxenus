@@ -4,16 +4,14 @@ Functions pertaining to making musical diagrams (aside from staff notation).
 
 import dataclasses
 
+from src import nomenclature
 from data import (chord_symbols,
                   constants,
                   keywords)
 
-from src import nomenclature
+from data.types import GuitarFingering
+from data.instrument_config import GUITAR_STANDARD_TUNING
 
-
-GUITAR_STANDARD_TUNING: tuple[str, ...] = ('E2', 'A3', 'D3', 'G3', 'B3', 'E4')
-
-GuitarFingering = tuple[tuple[str, ...], ...]
 
 def guitar_fretboard(strings: int = 6,
                      tuning: list[str] | tuple[str, ...] = GUITAR_STANDARD_TUNING,
@@ -21,7 +19,8 @@ def guitar_fretboard(strings: int = 6,
                      format_: str = keywords.SCIENTIFIC
                      ) -> GuitarFingering:
     '''
-    Return a nested tuple representing a given number of strings and a given tuning.
+    Return a nested tuple representing a given number of strings and a given 
+    tuning.
 
     Parameters
     ----------
@@ -37,17 +36,19 @@ def guitar_fretboard(strings: int = 6,
         A table representing the notes on the strings of a guitar in the 
         given formatting.
 
+    Notes
+    -----
+    A tuning in scientific notation will be converted to plain, but a tuning
+    in plain cannot be converted to scientific.
     '''
     diagram: list[tuple[str, ...]] = []
     frets += 1
     if format_ == keywords.SCIENTIFIC:
         all_notes = nomenclature.scientific_range()
-        # Ensure that we use binomials in the output
         tuning = list(map(nomenclature.decode_scientific_enharmonic, tuning))
 
     elif format_ == keywords.PLAIN:
         all_notes = nomenclature.chromatic() * constants.TONES
-        # Again binomials, but also filter out scientific note names
         tuning = list(map(nomenclature.decode_enharmonic, tuning))
 
     else:
@@ -126,14 +127,12 @@ def get_positional_fingering(guitar_fingering: GuitarFingering,
     -----
     Apply the fretboard filter AFTER getting the positional fingering.
     '''
-
     diagram: list[tuple[str, ...]] = []
     for string in guitar_fingering:
         diagram.append(tuple(note for index, note in enumerate(
             string) if index in range(starting_column, starting_column+span)))
 
     return tuple(diagram)
-
 
 
 

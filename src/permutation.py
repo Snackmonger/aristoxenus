@@ -1,9 +1,8 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from data import constants
+from data import constants, errors
 from src import (bitwise,
-                 errors,
                  nomenclature)
 
 
