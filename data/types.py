@@ -1,3 +1,3 @@
 
 
-GuitarFingering = tuple[tuple[str, ...], ...]
+GuitarFretboard = tuple[tuple[str, ...], ...]

@@ -121,31 +121,49 @@ additive: dict[str, int] = {
 subtractive: dict[str, int] = {
     CHORD_NO + symbol: interval for symbol, interval in symbol_elements.items()}
 
-# The prescribed symbol for each interval, used by the parser
+# The prescribed symbol for each interval in a chord, used by the parser
 # to generate a complete chord symbol. The parser does not necessarily
 # include every symbol (e.g. 5 is not normally included in the symbol)
-symbol_prescription: dict[int, str] = {interval.HEMITONE: CHORD_FLAT_2,
-                                       interval.TONE: CHORD_2,
-                                       interval.HEMIOLION: CHORD_MIN,
-                                       interval.DITONE: CHORD_MAJ,
-                                       interval.DIATESSARON: CHORD_4,
-                                       interval.TRITONE: CHORD_FLAT_5,
-                                       interval.DIAPENTE: CHORD_5,
-                                       interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
-                                       interval.COMPOUND_TONE: CHORD_6,
-                                       interval.COMPOUND_HEMIOLION: CHORD_7,
-                                       interval.COMPOUND_DITONE: CHORD_MAJ_7,
-                                       interval.DIAPASON: CHORD_8,
-                                       bitwise.transpose_interval(interval.HEMITONE): CHORD_FLAT_9,
-                                       bitwise.transpose_interval(interval.TONE): CHORD_9,
-                                       bitwise.transpose_interval(interval.HEMIOLION): CHORD_SHARP_9,
-                                       bitwise.transpose_interval(interval.DITONE): CHORD_10,
-                                       bitwise.transpose_interval(interval.DIATESSARON): CHORD_11,
-                                       bitwise.transpose_interval(interval.TRITONE): CHORD_SHARP_11,
-                                       bitwise.transpose_interval(interval.DIAPENTE): CHORD_12,
-                                       bitwise.transpose_interval(interval.COMPOUND_HEMITONE): CHORD_FLAT_13,
-                                       bitwise.transpose_interval(interval.COMPOUND_TONE): CHORD_13,
-                                       bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
-                                       bitwise.transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
-                                       bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
-                                       }
+chord_symbol_prescription: dict[int, str] = {interval.HEMITONE: CHORD_FLAT_2,
+                                             interval.TONE: CHORD_2,
+                                             interval.HEMIOLION: CHORD_MIN,
+                                             interval.DITONE: CHORD_MAJ,
+                                             interval.DIATESSARON: CHORD_4,
+                                             interval.TRITONE: CHORD_FLAT_5,
+                                             interval.DIAPENTE: CHORD_5,
+                                             interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
+                                             interval.COMPOUND_TONE: CHORD_6,
+                                             interval.COMPOUND_HEMIOLION: CHORD_7,
+                                             interval.COMPOUND_DITONE: CHORD_MAJ_7,
+                                             interval.DIAPASON: CHORD_8,
+                                             bitwise.transpose_interval(interval.HEMITONE): CHORD_FLAT_9,
+                                             bitwise.transpose_interval(interval.TONE): CHORD_9,
+                                             bitwise.transpose_interval(interval.HEMIOLION): CHORD_SHARP_9,
+                                             bitwise.transpose_interval(interval.DITONE): CHORD_10,
+                                             bitwise.transpose_interval(interval.DIATESSARON): CHORD_11,
+                                             bitwise.transpose_interval(interval.TRITONE): CHORD_SHARP_11,
+                                             bitwise.transpose_interval(interval.DIAPENTE): CHORD_12,
+                                             bitwise.transpose_interval(interval.COMPOUND_HEMITONE): CHORD_FLAT_13,
+                                             bitwise.transpose_interval(interval.COMPOUND_TONE): CHORD_13,
+                                             bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
+                                             bitwise.transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
+                                             bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
+                                             }
+
+
+# The prescribed symbol for each interval in absolute contexts.
+# We use this when we need to describe structures with other than 7 notes, or
+# if we're in a context where we don't know which notes might be relevant.
+interval_symbol_prescription: dict[int, str] = {interval.UNISON: '1',
+                                                interval.HEMITONE: CHORD_FLAT_2,
+                                                interval.TONE: CHORD_2,
+                                                interval.HEMIOLION: CHORD_FLAT_3,
+                                                interval.DITONE: CHORD_3,
+                                                interval.DIATESSARON: CHORD_4,
+                                                interval.TRITONE: CHORD_FLAT_5,
+                                                interval.DIAPENTE: CHORD_5,
+                                                interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
+                                                interval.COMPOUND_TONE: CHORD_6,
+                                                interval.COMPOUND_HEMIOLION: CHORD_FLAT_7,
+                                                interval.COMPOUND_DITONE: CHORD_7
+                                                }

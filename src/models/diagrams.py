@@ -4,12 +4,12 @@ Functions pertaining to making musical diagrams (aside from staff notation).
 
 import dataclasses
 
-from src import nomenclature
+from src import nomenclature, utils
 from data import (chord_symbols,
                   constants,
                   keywords)
 
-from data.types import GuitarFingering
+from data.types import GuitarFretboard
 from data.instrument_config import GUITAR_STANDARD_TUNING
 
 
@@ -17,7 +17,7 @@ def guitar_fretboard(strings: int = 6,
                      tuning: list[str] | tuple[str, ...] = GUITAR_STANDARD_TUNING,
                      frets: int = 22,
                      format_: str = keywords.SCIENTIFIC
-                     ) -> GuitarFingering:
+                     ) -> GuitarFretboard:
     '''
     Return a nested tuple representing a given number of strings and a given 
     tuning.
@@ -64,9 +64,32 @@ def guitar_fretboard(strings: int = 6,
     return tuple(diagram)
 
 
-def filter_guitar_fretboard(guitar_tuning: GuitarFingering,
+def simplify_guitar_fretboard(diagram: GuitarFretboard) -> GuitarFretboard:
+    '''
+    Make sure a guitar fretboard diagram is using plain binomial notation
+    and not scientific notation.
+
+    Parameters
+    ----------
+    diagram : GuitarFretboard
+        A guitar fretboard in scientific notation.
+
+    Returns
+    -------
+    GuitarFretboard
+        A guitar fretboard in plain binomial notation.
+    '''
+
+    new_diagram: list[tuple[str, ...]] = []
+    for string in diagram:
+        new_diagram.append(tuple(map(nomenclature.decode_enharmonic, string)))
+    return tuple(new_diagram)
+
+
+
+def filter_guitar_fretboard(guitar_tuning: GuitarFretboard,
                             note_list: tuple[str, ...] | list[str]
-                            ) -> GuitarFingering:
+                            ) -> GuitarFretboard:
     '''
     Filter a given guitar fretboard diagram so that it only displays the given
     notes and the '-' symbol.
@@ -101,10 +124,10 @@ def filter_guitar_fretboard(guitar_tuning: GuitarFingering,
     return tuple(diagram)
 
 
-def get_positional_fingering(guitar_fingering: GuitarFingering,
+def get_positional_fingering(guitar_fingering: GuitarFretboard,
                              starting_column: int,
                              span: int
-                             ) -> GuitarFingering:
+                             ) -> GuitarFretboard:
     '''
     Return a slice of the columns of a guitar fretboard, representing a 
     positional fingering.
@@ -136,8 +159,38 @@ def get_positional_fingering(guitar_fingering: GuitarFingering,
 
 
 
+def convert_fretboard_to_relative(diagram: GuitarFretboard, 
+                                  tonal_centre: str
+                                  ) -> GuitarFretboard:
+    '''
+    Convert a fretboard diagram to use interval symbols instead of note names.
 
+    Parameters
+    ----------
+    diagram : GuitarFretboard
+        A fretboard diagram with note names.
+    tonal_centre : str
+        The note that will serve as the tonic/root
 
+    Returns
+    -------
+    GuitarFretboard
+        A new fretboard with the interval symbols relative to the given tonic
+    '''
+
+    diagram = simplify_guitar_fretboard(diagram)
+    interval_symbols = [symbol for symbol in chord_symbols.interval_symbol_prescription.values()]
+    chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
+    conversion: dict[str, str] = dict(zip(chromatic_, interval_symbols))
+
+    new_diagram: list[tuple[str, ...]] = []
+    for string in diagram:
+        new_string = []
+        for note in string:
+            new_string.append(conversion[note])
+        new_diagram.append(tuple(new_string))
+
+    return tuple(new_diagram)
 
 
 
