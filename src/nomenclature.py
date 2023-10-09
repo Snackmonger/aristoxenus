@@ -637,3 +637,46 @@ def translate_numeric_keyword(term: str) -> int:
             # triad, tetrad, etc. (triad = 2 + 1 notes)
             return number + 1
     raise errors.UnknownKeywordError(term)
+
+
+def is_scientific(note_name: str) -> bool:
+    '''
+    Return true if the given note name uses scientific notation.
+
+    Parameters
+    ----------
+    note_name : str
+        A note name you want to test.
+
+    Returns
+    -------
+    bool
+        True, if the note name ends with a scientific numeral.
+    '''
+    return note_name[-1].isnumeric()
+
+
+def get_accidentals(note_name: str
+                    ) -> tuple[str, ...]:
+    '''
+    Tries to identify which accidental group the given note name belongs to.
+
+    Parameters
+    ----------
+    note_name : str
+        A note name you want to test
+
+    Returns
+    -------
+    tuple[str, ...]
+        The accidentals for this type, or binomials, if it is a natural note.
+    '''
+
+    if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
+        return constants.BINOMIALS
+    elif constants.SHARP_SYMBOL in note_name:
+        return constants.SHARPS
+    elif constants.FLAT_SYMBOL in note_name:
+        return constants.FLATS
+    else:
+        return constants.BINOMIALS

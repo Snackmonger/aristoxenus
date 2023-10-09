@@ -3,9 +3,6 @@ The integer expressions of some of the most common intervallic structures.
 '''
 from data import keywords
 
-# Divisions of the single octave.
-# -------------------------------
-
 # Intervals of the 12 tone octave.
 UNISON: int =0b1
 HEMITONE: int = 0b11
@@ -43,9 +40,6 @@ triads: dict[str, int] = {keywords.MAJOR_TRIAD: MAJOR_TRIAD,
 # expressed as a triad and another interval, or as compounds of 2 triads.
 # Some of the named tetrads are actually inversions of the others (Am7 = C6,
 # etc.), but it's often nomenclaturally conventient to treat them separately.
-
-# should we have the one as the canonical form? how do we indicate that there
-# might be a different tonal centre
 
 # augmented triad + major 6 is an inversion of minmaj7
 MAJOR_SEVENTH: int = MAJOR_TRIAD | COMPOUND_DITONE                          # Cmaj@Emin

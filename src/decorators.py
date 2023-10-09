@@ -2,10 +2,8 @@
 Decorators that are used in the program.
 '''
 from typing import Callable, TYPE_CHECKING, TypeVar, ParamSpec, Concatenate
-import loguru
 
 from data import constants
-
 from data.errors import IntervalOutOfBoundsError
 from data.enums import OOBOptions
 
@@ -14,8 +12,6 @@ if TYPE_CHECKING:
 
 T = TypeVar('T')
 P = ParamSpec('P')
-
-logger = loguru.logger
 
 # Note: decorators are basically magic to me, so I'm sure these
 # are absolutely terrible ways of achieving the desired goal,

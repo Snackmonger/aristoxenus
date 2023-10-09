@@ -52,11 +52,12 @@ def chordify(interval_structure: int,
     Parameters
     ----------
     interval_structure : int
-        A 12-bit representation of a scale-like interval structure.
+        An integer not exceeding 12 bits representing the interval structure 
+        to be treated as the 'parent' scale. 
     notes : int or str, default=3
-        The number of notes to include each chord's structure, or a special 
-        term denoting the number of notes in a structure (e.g. 'triad'). N.B.
-        that the number of notes is the number of intervals + 1.
+        The number of notes to include in each chord's structure, or a special
+        term denoting the number of notes in a structure (e.g. 'triad'). 
+        N.B. that the number of notes is the number of intervals + 1.
     step : int or str, default=2
         The number of structural steps between chord intervals, or a special
         term denoting the number of steps between notes in the structure,
@@ -75,24 +76,28 @@ def chordify(interval_structure: int,
     specific intervals, so 'tertial' means 'every third note,' not 
     specifically 'major/minor thirds only.' This means that a 'tertial' chord 
     might be made up of 'major seconds' or 'perfect fourths' depending on 
-    the actual interval structure that is given.
+    the actual interval structure of the parent scale.
     
     The maximum extent of an interval structure is 108 bits. If the requested 
     structure would exceed this limit (for instance, building a 12-note chord
     out of octave intervals would yield a 144-bit structure) then we simply 
     omit the excessive intervals and return an incomplete structure of 108
-    bits or less (depending on the specific structure).
+    bits or fewer (depending on the specific structure).
 
     Examples
     --------
     >>> chordify(0b101010110101)
     [73, 137, 145, 145, 137, 137, 145]
 
-    This translates to (dim, min, maj, maj, min, min, maj)
+    This translates to the diatonic triads
+    (dim, min, maj, maj, min, min, maj)
+
     >>> chordify(0b101010110101, 4, 3)
     [33825, 33825, 66593, 67649, 33825, 33825, 67617]
     >>> chordify(0b101010110101, 'tetrad', 'quartal')
     [33825, 33825, 66593, 67649, 33825, 33825, 67617]
+
+    This translates to quartal voicings of the diatonic tetrads.
     '''
     if not bitwise.validate_interval_structure(interval_structure, 12):
         raise errors.IntervalOutOfBoundsError
@@ -119,7 +124,7 @@ def chordify(interval_structure: int,
         clip = len(all_intervals) if notes > len(all_intervals) else notes
         chord_intervals = all_intervals[:clip]
 
-        # Collapse recognized intervals into discrete chords
+        # Reduce recognized intervals into discrete chords
         chord_scale.append(bitwise.reduce_(chord_intervals))
 
     return chord_scale
@@ -153,14 +158,16 @@ def spread_triad(chord_structure: int) -> int:
 
 def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -> int:
     '''
-    Adjust the intervals in a given chord structure to produce a 'drop' voicing.
+    Adjust the intervals in a given chord structure to produce a 'drop' 
+    voicing.
 
     Parameters
     ----------
     chord_structure : int
         An integer representing the structure of a chord.
     drop_notes : tuple[int, ...] or list[int]
-        The notes of the chord that will be shifted to produce the new voicing.
+        The notes of the chord that will be shifted to produce the new 
+        voicing.
         Some common options are included in `data.constants` as `DROP_2`,
         `DROP_2_AND_4`, and `DROP_3`.
 
@@ -188,7 +195,7 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
 
         C E G B -> C E B G (raise the G, results in a root position major7)
 
-    This situation entails that a drop chord must **always** be generated from 
+    This situation entails that a drop chord must **always** be generated from
     the corresponding inversion of a close-voiced chord, e.g. first inversion
     close voice produces first inversion drop 2, drop 3, drop 2&4, etc.
 
@@ -221,3 +228,5 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
     for interval in drop_notes:
         intervals[interval] = bitwise.transpose_interval(intervals[interval])
     return bitwise.reduce_(intervals)
+
+

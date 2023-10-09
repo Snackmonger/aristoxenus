@@ -59,7 +59,7 @@ def render_plain(interval_structure: int,
 
 
 def render_scientific(interval_structure: int,
-           accidental_notes: list[str],
+           accidental_notes: list[str] | tuple[str, ...],
            starting_note: str
            ) -> list[str]:
     '''
