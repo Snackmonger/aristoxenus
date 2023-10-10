@@ -4,7 +4,7 @@ The integer expressions of some of the most common intervallic structures.
 from data import keywords
 
 # Intervals of the 12 tone octave.
-UNISON: int =0b1
+UNISON: int = 0b1
 HEMITONE: int = 0b11
 TONE: int = 0b101
 HEMIOLION: int = 0b1001

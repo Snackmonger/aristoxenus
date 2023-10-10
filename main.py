@@ -1,22 +1,10 @@
-import pandas
-
-from src.models import diagrams
+from gui import classes
 
 
+app = classes.Application()
+app.mainloop()
+# from src import interface
+# data = interface.render_heptatonic_form('altered', 'dorian', 'D#')
 
-
-diagr = diagrams.guitar_fretboard(format_='plain')
-
-#diagr = diagrams.filter_guitar_fretboard(diagr, ['C', 'E', 'G', 'B'])
-
-data = pandas.DataFrame(diagr)
-
-print(data)
-
-ff = diagrams.get_positional_fingering(diagr, 5, 5)
-
-gg = diagrams.filter_guitar_fretboard(ff, ['A', 'C#|Db', 'E', 'G'])
-
-data = pandas.DataFrame(gg)
-
-print(data)
+# for datum in data: 
+#     print ( datum, ':', data[datum] )

@@ -38,3 +38,7 @@ console_ui/__pycache__/menu.cpython-311.pyc
 src/models/__pycache__/diagrams.cpython-311.pyc
 data/__pycache__/enums.cpython-311.pyc
 data/__pycache__/errors.cpython-311.pyc
+gui/__pycache__/__init__.cpython-311.pyc
+gui/__pycache__/callbacks.cpython-311.pyc
+gui/__pycache__/classes.cpython-311.pyc
+src/__pycache__/interface.cpython-311.pyc

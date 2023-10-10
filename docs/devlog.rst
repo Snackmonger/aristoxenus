@@ -4,6 +4,50 @@ Aristoxenus Library DevLog
 
 .. contents:: Table of Contents
 
+10/10/2023
+==========
+    Sequences
+    ---------
+    I began to work on the sequences module. Basically this allows us to refer to notes within an interval structure as ordered items in a list,
+    which can repeat or be omitted, and can come in any order. The permutation module is meant to expose the various forms that an interval structure can
+    express, then the sequence module assigns an order to the notes in a given form. Eventually, I will write a system for incorporating rhythm and dynamics,
+    so that the sequence of notes can also express things like downbeats and tied notes, which the improvisation module will use to decide whether a particular
+    expression suits a given context.
+
+    GUI
+    ---
+    I am terribly clumsy with tkinter and django, which is a good sign that I need to work on those things a lot more. So, I started building a basic GUI
+    to expose some of the more interesting functions in the program. This is a very ugly, spaghettiform, and temporary hackjob, but it's a necessary step in 
+    learning how *not* to write a GUI.
+
+    Diagrams
+    --------
+    I have worked out a few basic functions for displaying guitar fingerboard diagrams. These are just arrays of notes representing strings. It's easy to
+    write a function to filter the fretboard so as to show only the given notes of a chord/scale. We can also take a slice of the frets (i.e. columns) to get
+    something resembling a fingering diagram. Just using pandas to display digrams for now. Eventually I want to be able to put a fretboard position and a chord 
+    and generate a fingering chart like this::
+
+            i - - - e       C - - - E
+            - - - - e       - - - - B
+            - i - - e       - E - - G
+            - i m - -       - B C - -
+            - - m - -       - - G - -
+            i - - - e       C - - - E
+
+    And then use that as a basis to generate an image or pdf or something a little bit more human-usable. The system should also be able to generate alternate
+    fingerings for a given position, like this::
+
+            i - - - e       C - - - E
+            i - - - e       G - - - B
+            - m - - -       - E - - -
+            - m a - -       - B C - -
+            - - a - -       - - G - -
+            i - - - e       C - - - E
+
+    I can hard-code this kind of variation, but I would like to find a way to teach the computer how to recognize valid fingerings in 4 or 5 fret spans. For scales outside
+    the diatonic, some kind of shift is often required, and this is also true of the 'three-note-per-string' fingerings, so I also want to find a way to create those kinds of
+    diagrams as well.
+
 27/09/2023
 ==========
     Added models for pitch structures with methods for rotation and easy collation of variants. I have taken a mostly functional-style
@@ -14,7 +58,7 @@ Aristoxenus Library DevLog
 
     The classes gave me an opportunity to learn a little bit about decorators. I am still pretty unconfident with decorator syntax, especially
     understanding how the nested structure affects type hinting, and how we can keep similarly-named parameters from becomming confused. I'm sure 
-    I will completely re-write these at some point in the future, especially since Python 3.12 is adding some new type-hintning support for generics.
+    I will completely re-write these at some point in the future.
     Eventually the classes will be useful for encapsulating more complex data (for which the functions don't yet exist), so I'll avoid scrapping them,
     hideous though they are.
 
@@ -37,7 +81,7 @@ Aristoxenus Library DevLog
     Begin replacing docstrings with something more consistent. They take up a lot of space, but, if nothing else, they have already proven
     valueable since I keep forgetting what I was thinking when I wrote the functions in the first place. Doctests are super helpful too!
 
-    Reorganized the filestructure a bit. I'm not super happy with it, but the program keeps growing and apparent needs keep changing, so it's 
+    Reorganized the filestructure a bit. I'm not super happy with it, but the program keeps growing and its apparent needs keep changing, so it's 
     hard to anticipate what I'll want even a week from now. Some of the code is hard to place, since it relies on multiple modules, but doesn't
     quite fit the mold of this module or that.
 
@@ -70,7 +114,7 @@ Aristoxenus Library DevLog
     `equal_temperament`
         Creates a range of frequencies corresponding to the range of the scientific note names (108 frequencies).
     `convert_note_to_frequency`
-        Translate scientific notes (e.g. A4) of any accidental type (#, b, #/b) to frequencies (e.g. 440 hz) 
+        Translate scientific notes (e.g. A4) of any accidental type (#, b, #|b) to frequencies (e.g. 440 hz).
     `convert_frequency_to_note`
         Translate a frequency to a scientific note name, in any of the three accidental styles from `chromatic`.
     `force_heptatonic_scale`
@@ -91,13 +135,14 @@ Aristoxenus Library DevLog
 
     This naturally entailed writing some bitwise operation functions to help process interval structures as integers, which was the beginning of the `bitwise` module.
     I have seen some other programs use bits to represent a scale, but they seem to use the most significant bit as the lowest pitch, wheras I use the least significant bit. 
-    The advantages of their way is that it's easy to create modal rotations, since the bit-length is always consistent. The disadvantage is that intervallic structures larger
+    The advantages of their way is that it's easy to create modal rotations, since the bit-length (and the number of leading zeroes) is always consistent. The disadvantage is that intervallic structures larger
     than 12 bits must be dealt with as separate structures, so the 12-bit framework really works best for scales and chords that fit within an octave.
 
-    In my way (which I'm sure is not really "my" way), the advantage is that we can always keep adding more intervals to the structure, and it can theoretically grow to any size. This means that 
-    we can represent the whole compass of a given instrument without needing to adopt a different system of tracking pitch relationships. A piano is treated
-    in fundamentally the same way as a triad, and many functions in the program do not need to distinguish between them based on size (although some certainly do). The disadvantage of my way is
-    that every interval structure needs to track its expected number of bits, because we will inevitably lose intervals to leading zeroes if we try to rotate
-    the structure. A second disadvantage is that our theoretical structure might exceed the 108-note-name limit (artificially) imposed by the `nomenclature` module.
-    All in all, these seem like pretty minor concessions for what is otherwise a pretty straightforward and robust way of handling pitch relationships.
+    In my way (which I'm sure is not really "my" way at all, *nihil novum sub sole*), the advantage is that we can always keep adding more intervals to the structure, 
+    and it can theoretically grow to any size. This means that we can represent the whole compass of a given instrument without needing to adopt a different system of 
+    tracking pitch relationships. A piano is treated in fundamentally the same way as a triad, and many functions in the program do not need to distinguish between them 
+    based on size (although some certainly do). The disadvantage of my way is that every interval structure needs to track its individual expected number of bits, because we will 
+    inevitably lose intervals to leading zeroes if we try to rotate the structure without knowing. A second disadvantage is that our theoretical structure might exceed the 108-note-name 
+    limit (artificially) imposed by the `nomenclature` module. All in all, these seem like pretty minor concessions for what is otherwise a pretty straightforward and 
+    robust way of handling pitch relationships.
 

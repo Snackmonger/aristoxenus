@@ -1,6 +1,11 @@
 
-from data import constants
-from src import nomenclature, utils
+from data import (constants, 
+                  keywords, 
+                  intervallic_canon)
+
+from src import (nomenclature, 
+                 utils,
+                 bitwise)
 
 
 def render_plain(interval_structure: int, 
@@ -56,8 +61,6 @@ def render_plain(interval_structure: int,
     return rendering
 
 
-
-
 def render_scientific(interval_structure: int,
            accidental_notes: list[str] | tuple[str, ...],
            starting_note: str
@@ -105,4 +108,6 @@ def render_scientific(interval_structure: int,
         if (interval_structure & binary_column) == binary_column:
             rendering.append(scientific_range[interval])
     return rendering
+
+
 
