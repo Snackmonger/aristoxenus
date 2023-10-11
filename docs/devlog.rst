@@ -6,26 +6,26 @@ Aristoxenus Library DevLog
 
 10/10/2023
 ==========
-    Sequences
-    ---------
-    I began to work on the sequences module. Basically this allows us to refer to notes within an interval structure as ordered items in a list,
-    which can repeat or be omitted, and can come in any order. The permutation module is meant to expose the various forms that an interval structure can
-    express, then the sequence module assigns an order to the notes in a given form. Eventually, I will write a system for incorporating rhythm and dynamics,
-    so that the sequence of notes can also express things like downbeats and tied notes, which the improvisation module will use to decide whether a particular
-    expression suits a given context.
+Sequences
+---------
+I began to work on the sequences module. Basically this allows us to refer to notes within an interval structure as ordered items in a list,
+which can repeat or be omitted, and can come in any order. The permutation module is meant to expose the various forms that an interval structure can
+express, then the sequence module assigns an order to the notes in a given form. Eventually, I will write a system for incorporating rhythm and dynamics,
+so that the sequence of notes can also express things like downbeats and tied notes, which the improvisation module will use to decide whether a particular
+expression suits a given context.
 
-    GUI
-    ---
-    I am terribly clumsy with tkinter and django, which is a good sign that I need to work on those things a lot more. So, I started building a basic GUI
-    to expose some of the more interesting functions in the program. This is a very ugly, spaghettiform, and temporary hackjob, but it's a necessary step in 
-    learning how *not* to write a GUI.
+GUI
+---
+I am terribly clumsy with tkinter and django, which is a good sign that I need to work on those things a lot more. So, I started building a basic GUI
+to expose some of the more interesting functions in the program. This is a very ugly, spaghettiform, and temporary hackjob, but it's a necessary step in 
+learning how *not* to write a GUI.
 
-    Diagrams
-    --------
-    I have worked out a few basic functions for displaying guitar fingerboard diagrams. These are just arrays of notes representing strings. It's easy to
-    write a function to filter the fretboard so as to show only the given notes of a chord/scale. We can also take a slice of the frets (i.e. columns) to get
-    something resembling a fingering diagram. Just using pandas to display digrams for now. Eventually I want to be able to put a fretboard position and a chord 
-    and generate a fingering chart like this::
+Diagrams
+--------
+I have worked out a few basic functions for displaying guitar fingerboard diagrams. These are just arrays of notes representing strings. It's easy to
+write a function to filter the fretboard so as to show only the given notes of a chord/scale. We can also take a slice of the frets (i.e. columns) to get
+something resembling a fingering diagram. Just using pandas to display digrams for now. Eventually I want to be able to put a fretboard position and a chord 
+and generate a fingering chart like this::
 
             i - - - e       C - - - E
             - - - - e       - - - - B
@@ -34,8 +34,8 @@ Aristoxenus Library DevLog
             - - m - -       - - G - -
             i - - - e       C - - - E
 
-    And then use that as a basis to generate an image or pdf or something a little bit more human-usable. The system should also be able to generate alternate
-    fingerings for a given position, like this::
+And then use that as a basis to generate an image or pdf or something a little bit more human-usable. The system should also be able to generate alternate
+fingerings for a given position, like this::
 
             i - - - e       C - - - E
             i - - - e       G - - - B
@@ -44,9 +44,9 @@ Aristoxenus Library DevLog
             - - a - -       - - G - -
             i - - - e       C - - - E
 
-    I can hard-code this kind of variation, but I would like to find a way to teach the computer how to recognize valid fingerings in 4 or 5 fret spans. For scales outside
-    the diatonic, some kind of shift is often required, and this is also true of the 'three-note-per-string' fingerings, so I also want to find a way to create those kinds of
-    diagrams as well.
+I can hard-code this kind of variation, but I would like to find a way to teach the computer how to recognize valid fingerings in 4 or 5 fret spans. For scales outside
+the diatonic, some kind of shift is often required, and this is also true of the 'three-note-per-string' fingerings, so I also want to find a way to create those kinds of
+diagrams as well.
 
 27/09/2023
 ==========
