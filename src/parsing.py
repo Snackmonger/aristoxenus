@@ -477,16 +477,17 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]
     '''
     
 
-def name_heptatonic_intervals(note_names: list[str], comparandum: int = intervals.DIATONIC_SCALE) -> list[str]:
+def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = intervals.DIATONIC_SCALE) -> list[str]:
     '''
     For a given collection of note names, return the Indian numerals describing
     the pattern's relation to a given scale.
 
     Parameters
     ----------
-    note_names : list[str]
+    note_names : list[str] | int
         A list of exactly 7 note names, from the naturals, sharps, flats, or
-        binomials. 
+        binomials; or an integer representing an interval structure not 
+        exceeding 12 bits.
 
     comparandum: int, default=2741
         A integer representing an interval structure to be used as a point 
@@ -507,8 +508,10 @@ def name_heptatonic_intervals(note_names: list[str], comparandum: int = interval
     >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
     ['1', '#2', '3', '4', '#5', '#6', '7']
     '''
+    if isinstance(note_names, int):
+        note_names = rendering.render_plain(note_names)
+
     tonic: str = note_names[0]
-    # binomial_names = [decode_enharmonic(note_name) for note_name in note_names]
     binomial_names = list(map(nomenclature.decode_enharmonic, note_names))
     if len(binomial_names) != constants.NOTES:
         raise ValueError('Only works on heptatonic scales.')
