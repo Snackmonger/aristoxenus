@@ -63,6 +63,7 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
 
     return {keywords.SCALE_NAME: scale_name,
             keywords.MODAL_NAME: modal_name,
+            keywords.INTERVAL_STRUCTURE: base_scale,
             keywords.INTERVAL_SCALE: numeric_rendering,
             keywords.KEYNOTE: keynote,
             keywords.CHROMATIC_RENDERING: chromatic_rendering,
