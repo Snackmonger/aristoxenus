@@ -1,3 +1,4 @@
+# pylint:disable=trailing-whitespace, trailing-newlines
 '''
 Functions related to generating and processing musical nomenclatural material.
 
@@ -15,16 +16,18 @@ relationships, so the user interface (not yet implemented) will accept and
 display note names for most functions.
 '''
 import sys
-import loguru
+from typing import Callable
 from dataclasses import dataclass
+import loguru
+
 
 from data import (constants,
                   keywords,
                   errors)
 
 from src import (utils,
-                 rendering)
-
+                 rendering, 
+                 temperament)
 
 # ----------------------------------------------------------
 logger = loguru.logger
@@ -259,7 +262,9 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     return sorted(homonymous_options, key=len)[0]
 
 
-def scientific_octave(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS, octave: int=0) -> list[str]:
+def scientific_octave(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS, 
+                      octave: int=0
+                      ) -> list[str]:
     '''
     Return a scientific chromatic scale in the given style and octave.
 
@@ -281,7 +286,11 @@ def scientific_octave(accidental_notes: list[str] | tuple[str, ...]=constants.BI
     return [note + str(octave) for note in chromatic(accidental_notes)]
 
 
-def encode_scientific_enharmonic(note_value:str, note_name: str, position: str) -> str:
+
+def encode_scientific_enharmonic(note_value:str, 
+                                 note_name: str, 
+                                 position: str
+                                 ) -> str:
     '''
     Return a note name that represents the given note name from the perspective of a
     higher or lower note name.
@@ -318,7 +327,14 @@ def encode_scientific_enharmonic(note_value:str, note_name: str, position: str) 
     >>> encode_scientific_enharmonic('A4', 'G', 'above')
     'Gbbbbbbbbbb5'
     '''
-    i = equal_temperament().index(convert_note_to_frequency(note_value))
+    if note_value in scientific_range(constants.SHARPS):
+        a = constants.SHARPS
+    elif note_value in scientific_range(constants.FLATS):
+        a = constants.FLATS
+    else:
+        raise ValueError
+
+    i = scientific_range(a).index(note_value)
     octave: list[str] = []
     symbol: str = ''
 
@@ -404,7 +420,7 @@ def scientific_range(accidental_notes: list[str] | tuple[str, ...]=constants.BIN
     Parameters
     ----------
     accidental_notes : list of str
-        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
+        A list of 5 strings, one of BINOMIALS, SHARPS, FLATS. This
         defines the type of accidentals that the result will use.
 
     Returns
@@ -419,49 +435,9 @@ def scientific_range(accidental_notes: list[str] | tuple[str, ...]=constants.BIN
     return full_range
 
 
-def equal_temperament() -> list[float]:
-    '''
-    Return a list of frequencies corresponding to the range of the scientific 
-    chromatic scales (C0 - B8).
-
-    Returns
-    -------
-    list of float
-        A list of 108 frequencies, rounded to three decimal places.
-    '''
-
-    # NOTE: equal_temperament should be part of a module called
-    # temperament, then change the frequency conversions to
-    # take a temperament function as an argument, which then
-    # generates the necessary range.
-    centre_name: str = constants.CENTRAL_REFERENCE_NOTE_NAME
-    centre_freq: int = constants.CENTRAL_REFERENCE_NOTE_FREQUENCY
-    limit: int = constants.FREQUENCY_DECIMAL_LIMIT
-    equiv: int = constants.OCTAVE_EQUIVALENCE_FACTOR
-    frequencies: list[float] = []
-    frequency: float
-    direction: int
-    semitones: int
-    
-    full_range: list[str] = scientific_range(constants.BINOMIALS)
-    for note in full_range:
-        if full_range.index(note) < full_range.index(centre_name):
-            direction = constants.FLAT_VALUE
-            semitones = full_range.index(centre_name) - full_range.index(note)
-        else:
-            direction = constants.SHARP_VALUE
-            semitones = full_range.index(note) - full_range.index(centre_name)
-
-        # 12 TET : next note = previous note * 2 ** (+ , -) 1/12
-        frequency = centre_freq * equiv ** (direction * semitones / constants.TONES)
-        if frequency not in frequencies:
-            frequencies.append(round(frequency, limit))
-
-    return frequencies
-
-
 def convert_frequency_to_note(frequency: float, 
-                             accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS
+                             accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS,
+                             temperament_: Callable[..., tuple[float, ...]]=temperament.equal_temperament
                              ) -> str:
     '''
     Return a scientific note name for a given frequency and accidental style.
@@ -471,10 +447,10 @@ def convert_frequency_to_note(frequency: float,
     frequency : float 
         A frequency in 12-TET @ A4 = 440Hz
 
-    accidental_notes : list of str
-        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
+    accidental_notes : list or tuple of str
+        A list of 5 strings, one of BINOMIALS, SHARPS, FLATS. This
         defines the type of accidentals that the result will use, if it 
-        is not a natural note.
+        is not a natural note. Default is binomials
 
     Returns
     -------
@@ -486,11 +462,12 @@ def convert_frequency_to_note(frequency: float,
     -----
     If the frequency is not among the ones generated by the program,
     the function attempts to round the frequency to different decimal
-    places to see if the given frequency might be close.
+    places to see if the given frequency might be close. Python's rounding
+    sometimes means values are missed.
 
     Examples 
     --------
-    >>> convert_frequency_to_note(440.0, constants.BINOMIALS)
+    >>> convert_frequency_to_note(440.0)
     'A4'
     >>> convert_frequency_to_note(138.591, constants.SHARPS)
     'C#3'
@@ -500,7 +477,7 @@ def convert_frequency_to_note(frequency: float,
     'C#3'
     '''
     frequency = round(frequency, constants.FREQUENCY_DECIMAL_LIMIT)
-    frequencies: list[float] = list(equal_temperament())
+    frequencies: list[float] = list(temperament_())
     for num in [2, 1, 0]:
         if frequency in frequencies:
             return scientific_range(accidental_notes)[frequencies.index(frequency)]
@@ -509,7 +486,9 @@ def convert_frequency_to_note(frequency: float,
     raise ValueError(frequency)
 
 
-def convert_note_to_frequency(note_name: str) -> float:
+def convert_note_to_frequency(note_name: str,
+                              temperament_: Callable[..., tuple[float, ...]]=temperament.equal_temperament
+                              ) -> float:
     '''
     Return a frequency for a given scientific note name of any accidental style.
 
@@ -536,7 +515,7 @@ def convert_note_to_frequency(note_name: str) -> float:
     except Exception as ex:
         raise ValueError(note_name) from ex
     
-    return dict(zip(scientific_range(constants.BINOMIALS), equal_temperament()))[note_name]
+    return dict(zip(scientific_range(constants.BINOMIALS), temperament_()))[note_name]
    
 
 def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:

@@ -178,7 +178,7 @@ HEPTATONIC_ORDER: tuple[str, ...] = (DIATONIC,
                                      PALEOCHROMATIC)
 
 # Groups of number words
-# polyad, tonal, basal
+# polyad, tonal, basal, cardinal, ordinal, -uple
 NUMERATION: tuple[tuple[str|None, ...], ...] = (
     (MONAD, MONOTONIC, PRIMAL, ONE, FIRST, SINGLE),
     (DYAD, DITONIC, SECUNDAL, TWO, SECOND, DOUBLE),

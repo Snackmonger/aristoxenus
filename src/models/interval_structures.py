@@ -6,7 +6,7 @@ from src import parsing
 
 from src.decorators import pos_only, check_oob
 
-# TODO: Docstrings need to be filled out
+# Sketches of some classes. They don't figure into anything right now, but I'll work them out later.
 
 
 OOB_OPTIONS = Literal['integrate_low', 'integrate_high', 'error', 'ignore']

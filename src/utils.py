@@ -31,9 +31,25 @@ def shift_list(list_: list[Any] | tuple[Any, ...],
 def roman_numeral(indian_numeral: int) -> str:
     '''
     Convert an Indian numeral between 1 and 3,999 to a Roman numeral.
+
+    Parameters
+    ----------
+    indian_numeral : int
+        A number in Indian notation
+
+    Returns
+    -------
+    str
+        A number in Roman notation.
+
+    Raises
+    ------
+    ValueError
+        If the number exceeds 3,999 in the Indian form.
     '''
+
     if indian_numeral not in range(1, 4000):
-        raise ValueError(f'Numeral {indian_numeral} is out of range.')
+        raise ValueError(indian_numeral)
     roman_numeral_: str = ''
     numerals: tuple[tuple[str, int], ...] = (('M', 1000),
                                              ('D', 500),
@@ -56,73 +72,3 @@ def roman_numeral(indian_numeral: int) -> str:
                 roman_numeral_ = roman_numeral_.replace(error, correction)
 
     return roman_numeral_
-
-
-def number_string():
-    pass
-numberstrings = {
-    '1': {'cardinal': 'one',
-          'ordinal': 'first',
-          'ordinal_suffix': 'st',
-          'uple': 'single'},
-
-    '2': {'cardinal': 'two',
-          'ordinal': 'second',
-          'ordinal_suffix': 'nd',
-          'uple': 'double'},
-
-    '3': {'cardinal': 'three',
-          'ordinal': 'third',
-          'ordinal_suffix': 'rd',
-          'uple': 'triple'},
-
-    '4': {'cardinal': 'four',
-          'ordinal': 'fourth',
-          'ordinal_suffix': 'th',
-          'uple': 'quadruple'},
-
-    '5': {'cardinal': 'five',
-          'ordinal': 'fifth',
-          'ordinal_suffix': 'th',
-          'uple': 'quintuple'},
-
-    '6': {'cardinal': 'six',
-          'ordinal': 'sixth',
-          'ordinal_suffix': 'th',
-          'uple': 'sextuple'},
-
-    '7': {'cardinal': 'seven',
-          'ordinal': 'seventh',
-          'ordinal_suffix': 'th',
-          'uple': 'septuple'},
-
-    '8': {'cardinal': 'eight',
-          'ordinal': 'eighth',
-          'ordinal_suffix': 'th',
-          'uple': 'octuple'},
-
-    '9': {'cardinal': 'nine',
-          'ordinal': 'ninth',
-          'ordinal_suffix': 'th',
-          'uple': 'nonuple'},
-
-    '10': {'cardinal': 'ten',
-           'ordinal': 'tenth',
-           'ordinal_suffix': 'th'},
-
-    '11': {'cardinal': 'eleven',
-           'ordinal': 'eleventh',
-           'ordinal_suffix': 'th'},
-
-    '12': {'cardinal': 'twelve',
-           'ordinal': 'twelfth',
-           'ordinal_suffix': 'th'},
-
-    '13': {'cardinal': 'thirteen',
-           'ordinal': 'thirteenth',
-           'ordinal_suffix': 'th'},
-
-    '14': {'cardinal': 'fourteen',
-           'ordinal': 'fourteenth',
-           'ordinal_suffix': 'th'}
-}
