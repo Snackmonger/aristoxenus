@@ -596,7 +596,7 @@ def condense_note_names(note_names: list[str]) -> int:
     return interval_map
 
 
-def parse_literal_sequence(note_names: list[str]) -> int:
+def parse_literal_sequence(note_names: list[str] | tuple[str, ...]) -> int:
     '''
     Return an integer interval structure based on the specific sequence of notes.
 

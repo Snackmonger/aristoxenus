@@ -1,9 +1,11 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
+from typing import overload
 from data import constants, errors
 from src import (bitwise,
-                 nomenclature)
+                 nomenclature,
+                 utils)
 
 
 def extend_structure(interval_structure: int,
@@ -99,14 +101,14 @@ def chordify(interval_structure: int,
 
     This translates to quartal voicings of the diatonic tetrads.
     '''
-    if not bitwise.validate_interval_structure(interval_structure, 12):
-        raise errors.IntervalOutOfBoundsError
-    
     # Convert keywords to ints
     if isinstance(notes, str):
-        notes = nomenclature.translate_numeric_keyword(notes)
+        notes = nomenclature.decode_numeric_keyword(notes)
     if isinstance(step, str):
-        step = nomenclature.translate_numeric_keyword(step)
+        step = nomenclature.decode_numeric_keyword(step) - 1
+
+    if not bitwise.validate_interval_structure(interval_structure, 12):
+        raise errors.IntervalOutOfBoundsError
 
     chord_scale: list[int] = []
     chord_intervals: list[int] = []
@@ -126,6 +128,52 @@ def chordify(interval_structure: int,
 
         # Reduce recognized intervals into discrete chords
         chord_scale.append(bitwise.reduce_(chord_intervals))
+
+    return chord_scale
+
+
+def chordify_note_names(note_names: list[str] | tuple[str, ...],
+             notes: int | str = 3,
+             step: int | str = 2
+             ) -> dict[str, tuple[str, ...]]:
+    '''
+    Return a dict of chords for the given scale and structural principles.
+
+    Parameters
+    ----------
+    note_names : list[str] | tuple[str, ...]
+        _description_
+    notes : int | str, optional
+        _description_, by default 3
+    step : int | str, optional
+        _description_, by default 2
+
+    Returns
+    -------
+    dict[str, tuple[str, ...]]
+        _description_
+    '''
+    
+    # Convert keywords to ints
+    if isinstance(notes, str):
+        notes = nomenclature.decode_numeric_keyword(notes)
+    if isinstance(step, str):
+        step = nomenclature.decode_numeric_keyword(step) - 1
+    
+    chord_scale: dict[str, tuple[str, ...]] = {}
+    full_range: list[str]
+    clip: int
+
+    # Need a second version of this to handle scientific notation
+    for index, note_name in enumerate(note_names):
+        base = utils.shift_list(note_names, note_name)
+        full_range = base * constants.NUMBER_OF_OCTAVES
+        chord_form = full_range[::step]
+        degree = utils.roman_numeral(index+1)
+        clip = len(chord_form) if notes > len(chord_form) else notes
+        chord_intervals = chord_form[:clip]
+
+        chord_scale.update({degree: tuple(chord_intervals)})
 
     return chord_scale
 

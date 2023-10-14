@@ -2,19 +2,21 @@
 I don't really know how to build an interface, so I'm sticking these 
 interface-y functions here until I figure out how to do this properly.
 '''
+from typing import Any
 
 from src import (nomenclature,
                  rendering,
                  bitwise,
                  parsing,
-                 utils)
+                 utils,
+                 permutation)
 
 from data import (constants,
                   keywords,
                   intervallic_canon)
 
 
-def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> dict[str, str|tuple[str, ...]|list[str]]:
+def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> dict[str, Any]:
     '''
     Render the given heptatonic scale according to the given modal name and keynote.
 
@@ -70,3 +72,21 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
             keywords.ALPHABETIC_RENDERING: forced_rendering,
             keywords.OPTIMAL_KEYNOTE: best_rendering[0],
             keywords.OPTIMAL_RENDERING: best_rendering}
+
+
+
+def render_heptatonic_chord_scale(optimal_rendering: tuple[str, ...], 
+                       notes: str|int):
+    
+    # Because the optimal form might use a mix of accidentals
+    # in order to maintain alphabetic order, we can't generate
+    # chords from the integer interval maps...
+    
+    
+    base_form = parsing.parse_literal_sequence(optimal_rendering)
+    chords = permutation.chordify(base_form, notes)
+
+    
+
+    series = [utils.roman_numeral(i+1).upper() for i in range(len(keywords.MODAL_NAME_SERIES))]
+

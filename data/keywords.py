@@ -24,6 +24,8 @@ SCALE_NAME: str = 'scale_name'
 RECOGNIZED_NAMES: str = 'recognized_names'
 CHORD_SYMBOL: str = 'chord_symbol'
 CHORD_NAME: str = 'chord_name'
+ABOVE: str = 'above'
+BELOW: str = 'below'
 
 # Interval qualities
 MAJOR: str = 'major'
@@ -51,6 +53,65 @@ MODAL_NAME_SERIES: tuple[str, ...] = (IONIAN,
                                       AEOLIAN,
                                       LOCRIAN)
 
+# Numeration 
+CARDINAL: str = 'cardinal'
+ORDINAL: str = 'ordinal'
+UPLE: str = 'uple'
+POLYAD: str = 'polyad'
+TONAL: str = 'tonal'
+BASAL: str = 'basal'
+
+# Cardinal
+ONE: str = 'one'
+TWO: str = 'two'
+THREE: str = 'three'
+FOUR: str = 'four'
+FIVE: str = 'five'
+SIX: str = 'six'
+SEVEN: str = 'seven'
+EIGHT: str = 'eight'
+NINE: str = 'nine'
+TEN: str = 'ten'
+ELEVEN: str = 'eleven'
+TWELVE: str = 'twelve'
+THIRTEEN: str = 'thirteen'
+FOURTEEN: str = 'fourteen'
+FIFTEEN: str = 'fifteen'
+
+# Ordinal
+FIRST: str = 'first'
+SECOND: str = 'second'
+THIRD: str = 'third'
+FOURTH: str = 'fourth'
+FIFTH: str = 'fifth'
+SIXTH: str = 'sixth'
+SEVENTH: str = 'seventh'
+EIGHTH: str = 'eighth'
+NINTH: str = 'ninth'
+TENTH: str = 'tenth'
+ELEVENTH: str = 'eleventh'
+TWELFTH: str = 'twelfth'
+THIRTEENTH: str = 'thirteenth'
+FOURTEENTH: str = 'fourteenth'
+FIFTEENTH: str = 'fifteenth'
+
+# Uples
+SINGLE: str = 'single'
+DOUBLE: str = 'double'
+TRIPLE: str = 'triple'
+QUADRUPLE: str = 'quadruple'
+QUINTUPLE: str = 'quintuple'
+SEXTUPLE: str = 'sextuple'
+SEPTUPLE: str = 'septuple'
+OCTUPLE: str = 'octuple'
+NONUPLE: str = 'nonuple'
+DECUPLE: str = 'decuple'
+UNDECUPLE: str = 'undecuple'
+DUODECUPLE: str = 'duopdecuple'
+TREDECUPLE: str = 'tredecuple'
+QUATTUORDECUPLE: str = 'quattuordecuple'
+QUINDECUPLE: str = 'quindecuple'
+
 # Polyads
 MONAD: str = 'monad'
 DYAD: str = 'dyad'
@@ -65,7 +126,7 @@ DECAD: str = 'decad'
 HENDECAD: str = 'undecad'
 DUODECAD: str = 'duodecad'
 
-# Scale structures
+# Tonal numbers
 MONOTONIC: str = 'monotonic'
 DITONIC: str = 'ditonic'
 TRITONIC: str = 'tritonic'
@@ -79,7 +140,7 @@ DECATONIC: str = 'decatonic'
 HENDECATONIC: str = 'hendecatonic'
 DUODECATONIC: str = 'duodecatonic'
 
-# Chord structures
+# Basal structures
 PRIMAL: str = 'primal'
 SECUNDAL: str = 'secundal'
 TERTIAL: str = 'tertial'
@@ -92,6 +153,7 @@ NONAL: str = 'nonal'
 DECIMAL: str = 'decimal'
 UNDECIMAL: str = 'undecimal'
 DUODECIMAL: str = 'duodecimal'
+
 
 # Scale identifiers
 DIATONIC: str = 'diatonic'
@@ -116,20 +178,26 @@ HEPTATONIC_ORDER: tuple[str, ...] = (DIATONIC,
                                      PALEOCHROMATIC)
 
 # Groups of number words
-NUMERATION: tuple[tuple[str, str, str], ...] = (
-    (MONAD, MONOTONIC, PRIMAL),
-    (DYAD, DITONIC, SECUNDAL),
-    (TRIAD, TRITONIC, TERTIAL),
-    (TETRAD, TETRATONIC, QUARTAL),
-    (PENTAD, PENTATONIC, QUINTAL),
-    (HEXAD, HEXATONIC, SEXTAL),
-    (HEPTAD, HEPTATONIC, SEPTIMAL),
-    (OCTAD, OCTATONIC, OCTONAL),
-    (ENNEAD, ENNEATONIC, NONAL),
-    (DECAD, DECATONIC, DECIMAL),
-    (HENDECAD, HENDECATONIC, UNDECIMAL),
-    (DUODECAD, DUODECATONIC, DUODECIMAL)
+# polyad, tonal, basal
+NUMERATION: tuple[tuple[str|None, ...], ...] = (
+    (MONAD, MONOTONIC, PRIMAL, ONE, FIRST, SINGLE),
+    (DYAD, DITONIC, SECUNDAL, TWO, SECOND, DOUBLE),
+    (TRIAD, TRITONIC, TERTIAL, THREE, THIRD, TRIPLE),
+    (TETRAD, TETRATONIC, QUARTAL, FOUR, FOURTH, QUADRUPLE),
+    (PENTAD, PENTATONIC, QUINTAL, FIVE, FIFTH, QUINTUPLE),
+    (HEXAD, HEXATONIC, SEXTAL, SIX, SIXTH, SEXTUPLE),
+    (HEPTAD, HEPTATONIC, SEPTIMAL, SEVEN, SEVENTH, SEPTUPLE),
+    (OCTAD, OCTATONIC, OCTONAL, EIGHT, EIGHTH, OCTUPLE),
+    (ENNEAD, ENNEATONIC, NONAL, NINE, NINTH, NONUPLE),
+    (DECAD, DECATONIC, DECIMAL, TEN, TENTH, DECUPLE),
+    (HENDECAD, HENDECATONIC, UNDECIMAL, ELEVEN, ELEVENTH, UNDECUPLE),
+    (DUODECAD, DUODECATONIC, DUODECIMAL, TWELVE, TWELFTH, DUODECUPLE),
+    (None, None, None, THIRTEEN, THIRTEENTH, TREDECUPLE),
+    (None, None, None, FOURTEEN, FOURTEENTH, QUATTUORDECUPLE),
+    (None, None, None, FIFTEEN, FIFTEENTH, QUINDECUPLE)
 )
+
+NUMERATION_INDICES: tuple[str, ...] = (POLYAD, TONAL, BASAL, CARDINAL, ORDINAL, UPLE)
 
 # Chord Names
 MAJOR_TRIAD: str = 'major_triad'
@@ -145,3 +213,4 @@ DROP_D: str = 'drop_d'
 STANDARD_7_STRING: str = 'standard_7_string'
 OPEN_D: str
 OPEN_G: str
+
