@@ -14,6 +14,8 @@ INTERVAL_STRUCTURE: str = 'interval_structure'
 INTERVAL_SCALE: str = 'interval_scale'
 INTERVAL: str = 'interval'
 PREFERRED_NAME: str = 'preferred_name'
+CANONICAL_NAME: str = 'canonical_name'
+CANONICAL_FORM: str = 'canonical_form'
 CHROMATIC_RENDERING: str = 'chromatic_rendering'
 KEYNOTE: str = 'keynote'
 ALPHABETIC_RENDERING: str = 'alphabetic_rendering'
@@ -26,6 +28,11 @@ CHORD_SYMBOL: str = 'chord_symbol'
 CHORD_NAME: str = 'chord_name'
 ABOVE: str = 'above'
 BELOW: str = 'below'
+ROOT: str = 'root'
+POSITION: str = 'position'
+INVERSION: str = 'inversion'
+OPEN: str = 'open'
+CLOSE: str = 'close'
 
 # Interval qualities
 MAJOR: str = 'major'
@@ -33,6 +40,11 @@ MINOR: str = 'minor'
 DIMINISHED: str = 'diminished'
 AUGMENTED: str = 'augmented'
 PERFECT: str = 'perfect'
+
+# Chord Voicings
+DROP_2: str = 'drop_2'
+DROP_3: str = 'drop_3'
+DROP_2_and_4: str = 'drop_2_and_4'
 
 # Modal names
 IONIAN: str = 'ionian'
@@ -199,13 +211,31 @@ NUMERATION: tuple[tuple[str|None, ...], ...] = (
 
 NUMERATION_INDICES: tuple[str, ...] = (POLYAD, TONAL, BASAL, CARDINAL, ORDINAL, UPLE)
 
+numbered_inversions: tuple[str, ...] = tuple([ROOT+'_'+POSITION] + [NUMERATION[
+    x][4]+'_'+INVERSION for x in range(11)])
+
+
 # Chord Names
+# Triads
 MAJOR_TRIAD: str = 'major_triad'
 MINOR_TRIAD: str = 'minor_triad'
 MINOR_FLAT_5: str = 'minor_flat_5_triad'
 MAJOR_FLAT_5: str = 'major_flat_5_triad'
 MAJOR_SHARP_5: str = 'major_sharp_5_triad'
-SUS_TRIAD: str = 'sus_triad'
+SUS2_TRIAD: str = 'sus2_triad'
+SUS4_TRIAD: str = 'sus4_triad'
+# Tetrads
+MAJOR_SEVENTH: str = 'major_7'
+MINOR_SEVENTH: str = 'minor_7'
+MAJOR_SIXTH: str = 'major_6'
+MINOR_SIXTH: str = 'minor_6'           
+MINOR_MAJOR_SEVENTH: str = 'minor_major_7'
+DOMINANT_SEVENTH:str = 'dominant_7'
+MINOR_SEVEN_FLAT_FIVE: str = 'minor_7_flat_5'
+DIMINISHED_SEVENTH: str = 'diminished_7'
+AUGMENTED_SEVENTH: str = 'augmented_7'
+AUGMENTED_MAJOR_SEVENTH: str = 'augmented_major_7'
+DOMINANT_SEVENTH_FLAT_FIVE: str = 'dominant_7_flat_5'
 
 # Guitar Tunings
 STANDARD: str = 'standard'

@@ -19,7 +19,7 @@ def guitar_fretboard(strings: int = 6,
                      format_: str = keywords.SCIENTIFIC
                      ) -> GuitarFretboard:
     '''
-    Return a nested tuple representing a given number of strings and a given 
+    Return a nested tuple representing a given number of strings in a given 
     tuning.
 
     Parameters
@@ -72,17 +72,17 @@ def simplify_guitar_fretboard(diagram: GuitarFretboard) -> GuitarFretboard:
     Parameters
     ----------
     diagram : GuitarFretboard
-        A guitar fretboard in scientific notation.
+        A guitar fretboard in scientific (or plain binomial) notation.
 
     Returns
     -------
     GuitarFretboard
         A guitar fretboard in plain binomial notation.
     '''
-
     new_diagram: list[tuple[str, ...]] = []
     for string in diagram:
         new_diagram.append(tuple(map(nomenclature.decode_enharmonic, string)))
+        
     return tuple(new_diagram)
 
 

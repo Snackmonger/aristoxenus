@@ -8,7 +8,8 @@ from data import (chord_symbols,
 
 from src import (nomenclature,
                  utils,
-                 rendering)
+                 rendering,
+                 bitwise)
 
 from src.models import interval_structures
 
@@ -223,14 +224,26 @@ def parse_slash_chord_symbol(chord_symbol: str) -> int:
     -------
     int
         An integer representation of an interval map.
+
+    Examples
+    --------
+    >>> bin(parse_slash_chord_symbol('G/Bb'))
     '''
     if chord_symbol.count('/') != 1:
         raise errors.ChordSymbolError(chord_symbol)
 
-    bass: str = chord_symbol.split('/')[1]
+    # TODO: This is broken... Needs fix... you fix now?
+
+    bass: str = nomenclature.decode_enharmonic(chord_symbol.split('/')[1])
     root: str = nomenclature.decode_enharmonic(__remove_chord_prefix(chord_symbol)[0])
-    octave_from_bass: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), bass)
+    octave_from_bass: list[str] = utils.shift_list(nomenclature.chromatic(), bass)
+    octave_from_root: list[str] = utils.shift_list(nomenclature.chromatic(), root)
     main_chord_structure: int = parse_chord_symbol(chord_symbol.split('/')[0])
+    chord = rendering.render_plain(main_chord_structure, octave_from_root)
+    if bass in chord:
+        bass_i = octave_from_root.index(bass) + 1
+        main_chord_structure ^= (1 << bass_i)
+
     extra_semitones: int = octave_from_bass.index(root)
 
     return (main_chord_structure << extra_semitones) + 1
@@ -369,7 +382,12 @@ def parse_heptatonic_scale_structure(interval_structure:int):
     # we can use the 'get heptatonic intervals' function for this
 
 
-def identify_triad(interval_structure: int) -> dict[str, int|str]:
+def identify_polyad():
+    ...
+
+
+def identify_triad(interval_structure: int
+                   ) -> dict[str, int | str]:
     '''
     Return the canonical identity of a given triadic interval structure.
 
@@ -397,10 +415,26 @@ def identify_triad(interval_structure: int) -> dict[str, int|str]:
             identified during analysis. For the triad parser, this is limited
             to 'spread triad'.
     '''
-    return {'': 0}
+    if interval_structure.bit_length() > (constants.TONES * 2):
+        raise ValueError(interval_structure)
+    # notes: int = interval_structure.bit_count()
+    # if notes != 3:
+    #     return identify_polyad(interval_structure)
+    
+    single: bool = interval_structure.bit_length() <= constants.TONES
+    double: bool = constants.TONES < interval_structure.bit_length() <= (constants.TONES * 2)
+    name: str
+
+    if single: # close triad or close triad inversion
+        ...            
+
+    if double: # open triad or open triad inversion
+        ...
 
 
-def generate_chord_symbol(interval_structure: int, bass_note: str) -> str:
+def generate_chord_symbol(interval_structure: int,
+                          bass_note: str
+                          ) -> str:
     '''
     Return a chord symbol for a given interval structure.
 
@@ -475,6 +509,7 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]
     --------
 
     '''
+    return 0
     
 
 def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = intervals.DIATONIC_SCALE) -> list[str]:

@@ -75,29 +75,50 @@ but to the amount of distance between those limits.
 When one note is an octave of another note, it carries the same alphabetic name. We can distinguish notes with the same name in different octaves
 by assigning a numeral to the name, thereby creating scientific notation (e.g. C2, A#5, D#|Eb3)
 
+
 Interval
 --------
+
+An interval is the name we give to the magnitude of difference between two frequencies. The perfect intervals of an octave can be expressed as simple
+fractions (1/1, 2/1, 4/3, 3/2), in which the numerator represents the lower frequency and the denominator represents the higher. In 12-tone equal temperament, 
+most intervals will not correspond exactly to their ideal fractional representation; the octave, diatessaron, and diapente are fairly close to their ideal mathematical forms,
+the ditone and hemiolion are quite far from their ideal mathematical forms.
+
+In the Aristoxenus library, the nomenclature module is designed specifically to accommodate systems of twelve named notes, but the specific temperament and intonation
+of those notes is not inherently tied to 12-tone equal tempered frequencies. So, an interval described as a 'ditone' might be assigned a frequency value closer or further from 
+that of a true ditone (depending on the system of temperament) even though its alphabetic representation remains the same.
 
 
 Interval Structure
 ------------------
 Generic term used by the Aristoxenus library to refer to all types structures made up of more than one pitch, whether chords, chordioids, scales, intervals, sytemata, or chromatics.
 
+Interval structures are stored simply as integers; their binary representation serves as a map of their structures, in which the least significant bit serves as the lowest
+note of the structure, and all other flipped bits are contextualized as intervals above that bass. Since all intervals and interval structures use the least significant bit
+as the basis for the rest of the structure, all simple intervals and compound interval structures used by the library will be odd numbers.
+
 
 Binomial
 --------
 
 This is the term used in the Aristoxenus library to refer to notes of the type 'G#|Ab', in which
-a note is simultaneously characterized by two names (hence 'binomial'). I don't think anyone else 
-refers to notes with this term, but it was convenient to have a simple, one-word descriptor for notes with
-absolute enharmonic value, in contradistinction to the sharps and flats. The program uses the binomial notes
+a note is simultaneously characterized by two names (hence 'binomial'), separated by the '|' bar character. I don't think anyone else 
+refers to notes with the term 'binomial', but it was convenient to have a simple, one-word descriptor for notes as
+absolute enharmonic values, in contradistinction to the sharps and flats (which have relative enharmonic values). The program uses the binomial notes
 as a template for named alphabetic structures when considering abstract relationships, then renders those 
-structures more precisely into sharps and/or flats when requested. 
+structures more precisely into sharps and/or flats when requested.
 
 When the 'imaginary' binomials are combined with scientific numerals, they exist in a 1:1 relationship with the frequencies
 of the 12-tone octave, since each frequency corresponds to one (and only one) symbol. The 'real' note names (i.e. sharps 
 and/or flats), on the other hand, exist in a 2:1 relationship, since each frequency corresponds to two different symbols.
 
+
+Plain / Scientific
+------------------
+
+The Aristoxenus library refers to note names in two ways: notes that carry a numeral representing their octave are referred to
+as 'scientific', and notes that do not are referred to as 'plain'. Thus, notes can be a combination of sharp, flat, or binomial
+on the one hand, and plain or scientific on the other, and any combination of the two (e.g. 'plain sharps', 'scientific flats', 'plain binomials', 'scientific binomials').
 
 
 Tetrachord

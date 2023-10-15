@@ -1,8 +1,7 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from typing import overload
-from data import constants, errors
+from data import constants, errors, intervallic_canon, keywords
 from src import (bitwise,
                  nomenclature,
                  utils)
@@ -26,7 +25,7 @@ def extend_structure(interval_structure: int,
     int
         An n*12-bit interval structure, with the original 12-bit structure 
         repeating every 12 bits.
-    
+
     Examples
     --------
     >>> bin(extend_structure(0b101010110101, 2))
@@ -36,7 +35,7 @@ def extend_structure(interval_structure: int,
     '''
     if not bitwise.validate_interval_structure(interval_structure, 12):
         raise errors.IntervalOutOfBoundsError
-    
+
     compound_structure: int = interval_structure
     for transposed_octave in range(1, extensions):
         compound_structure |= bitwise.transpose_interval(
@@ -79,7 +78,7 @@ def chordify(interval_structure: int,
     specifically 'major/minor thirds only.' This means that a 'tertial' chord 
     might be made up of 'major seconds' or 'perfect fourths' depending on 
     the actual interval structure of the parent scale.
-    
+
     The maximum extent of an interval structure is 108 bits. If the requested 
     structure would exceed this limit (for instance, building a 12-note chord
     out of octave intervals would yield a 144-bit structure) then we simply 
@@ -115,7 +114,7 @@ def chordify(interval_structure: int,
     all_intervals: list
     full_range: int
     clip: int
-    
+
     # Grab the intervals for each mode and use them to derive chords
     for inversion in bitwise.inversions(interval_structure, 12):
         full_range = extend_structure(inversion)
@@ -133,47 +132,49 @@ def chordify(interval_structure: int,
 
 
 def chordify_note_names(note_names: list[str] | tuple[str, ...],
-             notes: int | str = 3,
-             step: int | str = 2
-             ) -> dict[str, tuple[str, ...]]:
+                        notes: int | str = 3,
+                        step: int | str = 2
+                        ) -> dict[str, tuple[str, ...]]:
     '''
     Return a dict of chords for the given scale and structural principles.
 
     Parameters
     ----------
     note_names : list[str] | tuple[str, ...]
-        _description_
+        A set of plain note names in any style to serve as the parent scale.
     notes : int | str, optional
-        _description_, by default 3
+        The number of notes that each chord will have; default=3
     step : int | str, optional
-        _description_, by default 2
+        The number of notes to skip when constructing the chord; default=2
 
     Returns
     -------
     dict[str, tuple[str, ...]]
-        _description_
+        A collection of chords organized by scale degree.
+
+    Notes
+    -----
+    In order to accommodate the chordification of scales with both sharps
+    and flats, this function does not attempt to validate that the notes are
+    legal. Technically, 
     '''
-    
+
     # Convert keywords to ints
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
     if isinstance(step, str):
         step = nomenclature.decode_numeric_keyword(step) - 1
-    
+
     chord_scale: dict[str, tuple[str, ...]] = {}
-    full_range: list[str]
-    clip: int
-
-    # Need a second version of this to handle scientific notation
     for index, note_name in enumerate(note_names):
-        base = utils.shift_list(note_names, note_name)
-        full_range = base * constants.NUMBER_OF_OCTAVES
-        chord_form = full_range[::step]
-        degree = utils.roman_numeral(index+1)
-        clip = len(chord_form) if notes > len(chord_form) else notes
-        chord_intervals = chord_form[:clip]
+        base: list[str] = utils.shift_list(note_names, note_name)
+        full_range: list[str] = base * constants.NUMBER_OF_OCTAVES
+        chord_form: list[str] = full_range[::step]
+        degree: str = utils.roman_numeral(index+1)
+        clip: int = len(chord_form) if notes > len(chord_form) else notes
+        chord_form = chord_form[:clip]
 
-        chord_scale.update({degree: tuple(chord_intervals)})
+        chord_scale.update({degree: tuple(chord_form)})
 
     return chord_scale
 
@@ -200,11 +201,13 @@ def spread_triad(chord_structure: int) -> int:
     '''
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
         raise errors.IntervalOutOfBoundsError
-    
+
     return drop_voicing(chord_structure, constants.DROP_2)
 
 
-def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -> int:
+def drop_voicing(chord_structure: int, 
+                 drop_notes: tuple[int, ...] | list[int]
+                 ) -> int:
     '''
     Adjust the intervals in a given chord structure to produce a 'drop' 
     voicing.
@@ -215,7 +218,8 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
         An integer representing the structure of a chord.
     drop_notes : tuple[int, ...] or list[int]
         The notes of the chord that will be shifted to produce the new 
-        voicing.
+        voicing. These represent the flipped bits in the chord structure,
+        so that index 0 is the least significant bit.
         Some common options are included in `data.constants` as `DROP_2`,
         `DROP_2_AND_4`, and `DROP_3`.
 
@@ -228,18 +232,11 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
     -----
     Although called 'drop' chords, the method by which we produce the voicing
     is actually the opposite of what the abstraction might suggest. The 'drop'
-    logic often produces a voicing in the wrong inversion:
+    logic produces a voicing in a different inversion from the starting chord:
 
         C E G B -> G C E B (drop the G, results in a 2nd inversion major7)
 
-    We prefer to express drop chords in terms of *raised* intervals. We do 
-    this for two reasons:
-        1. The least significant bit represents the lowest pitch. Dropping
-        pitches below this requires a reconfiguration of the entire basic 
-        range for every pitch that gets moved.
-        2. The raised intervals still produce the correct drop voicing, but
-        they now retain the same bass note as their same-named inversion in
-        the parent form.
+    We prefer to express drop chords in terms of *raised* intervals:
 
         C E G B -> C E B G (raise the G, results in a root position major7)
 
@@ -258,10 +255,11 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
 
     Therefore, if we want to make sure that a whole passage consists of 
     similarly-voiced drop chords, we must apply the inversion to the close 
-    voicing and THEN apply the drop voicing modification.
+    voicing and THEN apply the drop voicing modification. 
 
     Although drop chords are typically 4-note voicings, the function can 
-    accommodate larger structures as well. 
+    accommodate larger structures as well, as long as the indices are
+    present in the given interval structure (0 is the lowest note).
 
     Examples
     --------
@@ -278,3 +276,89 @@ def drop_voicing(chord_structure:int, drop_notes: tuple[int, ...] | list[int]) -
     return bitwise.reduce_(intervals)
 
 
+def triad_variants(triads: dict[str, int] | None = None
+                   ) -> tuple[dict[str, str | int | dict[str, int]], ...]:
+    '''
+    Return a tuple containing all known triads and their voicing variants.
+
+    Returns
+    -------
+    tuple[dict[str, str | int | dict[str, int]], ...]
+        A tuple of dictionaries, each dictionary containing:
+            canonical_name: str
+            canonical_form: int
+            close: dict{
+                root_position: int
+                first_inversion: int
+                second_inversion: int}
+            open: dict{ same as above }
+    '''
+    if triads is None:
+        triads = intervallic_canon.triads
+
+    variants: list[dict[str, str | int | dict[str, int]]] = []
+    for name, triad in triads.items():
+        open_triad = spread_triad(triad)
+        close_inversions = bitwise.inversions(triad, constants.TONES)
+        open_inversions = bitwise.inversions(open_triad, constants.TONES*2)
+        inversion_names = [keywords.numbered_inversions[x] for x in range(3)]
+        variants.append({keywords.CANONICAL_NAME: name,
+                         keywords.CANONICAL_FORM: triad,
+                         keywords.CLOSE: dict(zip(inversion_names, close_inversions)),
+                         keywords.OPEN: dict(
+                             zip(inversion_names, open_inversions))
+                         })
+
+    return tuple(variants)
+
+
+def tetrad_variants(tetrads: dict[str, int] | None = None
+                    ) -> tuple[dict[str, str | int | dict[str, int]], ...]:
+    '''
+    Return a tuple containing all known tetrads and their voicing variants.
+
+    Returns
+    -------
+    tuple[dict[str, str | int | dict[str, int]], ...]
+        A tuple of dictionaries, each dictionary containing:
+            canonical_name: str
+            canonical_form: int
+            close: dict{
+                root_position: int
+                first_inversion: int
+                second_inversion: int
+                third_inversion: int}
+            drop_2: dict{ same as above }
+            drop_3: dict{ same as above }
+            drop_2_and_4: dict{ same as above }
+    '''
+    if tetrads is None:
+        tetrads = intervallic_canon.tetrads
+
+    variants: list[dict[str, str | int | dict[str, int]]] = []
+    inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
+    for name, tetrad in tetrads.items():
+        inversions = bitwise.inversions(tetrad, constants.TONES)
+        innerdict = {keywords.CANONICAL_NAME: name,
+                     keywords.CANONICAL_FORM: tetrad,
+                     keywords.CLOSE: {},
+                     keywords.DROP_2: {},
+                     keywords.DROP_3: {},
+                     keywords.DROP_2_and_4: {}}
+
+        for i, inversion in enumerate(inversions):
+            # We iterate the inversions THEN generate the drop voicings.
+            # See: `permutation.drop_voicing`
+            inversion_name = inversion_names[i]
+            drop2 = drop_voicing(inversion, constants.DROP_2)
+            drop3 = drop_voicing(inversion, constants.DROP_3)
+            drop24 = drop_voicing(inversion, constants.DROP_2_AND_4)
+
+            innerdict[keywords.CLOSE].update({inversion_name: inversion})
+            innerdict[keywords.DROP_2].update({inversion_name: drop2})
+            innerdict[keywords.DROP_3].update({inversion_name: drop3})
+            innerdict[keywords.DROP_2_and_4].update({inversion_name: drop24})
+
+        variants.append(innerdict)
+
+    return tuple(variants)

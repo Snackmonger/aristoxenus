@@ -25,15 +25,19 @@ MINOR_FLAT_5: int = HEMIOLION | TRITONE
 MAJOR_SHARP_5: int = DITONE | COMPOUND_HEMITONE
 # minor # 5 is an inversion of major triad
 MAJOR_FLAT_5: int = DITONE | TRITONE
-SUS_TRIAD: int = TONE | DIAPENTE
-# sus2 and sus4 are inversions of each other
+SUS2_TRIAD: int = TONE | DIAPENTE
+# sus2 and sus4 are inversions of each other,
+# but we want to try to recognize them as separate chords,
+# depending on the bass.
+SUS4_TRIAD: int = DIATESSARON | DIAPENTE
 
 triads: dict[str, int] = {keywords.MAJOR_TRIAD: MAJOR_TRIAD,
                           keywords.MINOR_TRIAD: MINOR_TRIAD,
                           keywords.MINOR_FLAT_5: MINOR_FLAT_5,
                           keywords.MAJOR_FLAT_5: MAJOR_FLAT_5,
                           keywords.MAJOR_SHARP_5: MAJOR_SHARP_5,
-                          keywords.SUS_TRIAD: SUS_TRIAD
+                          keywords.SUS2_TRIAD: SUS2_TRIAD,
+                          keywords.SUS4_TRIAD: SUS4_TRIAD
                           }
 
 # Common tetrads: structures that are compounds of 3 intervals, which can be
@@ -44,6 +48,8 @@ triads: dict[str, int] = {keywords.MAJOR_TRIAD: MAJOR_TRIAD,
 # augmented triad + major 6 is an inversion of minmaj7
 MAJOR_SEVENTH: int = MAJOR_TRIAD | COMPOUND_DITONE                          # Cmaj@Emin
 MINOR_SEVENTH: int = MINOR_TRIAD | COMPOUND_HEMIOLION                       # Cmin@Ebmaj
+MAJOR_SIXTH: int = MAJOR_TRIAD | COMPOUND_TONE                              # Cmaj@Am
+MINOR_SIXTH: int = MINOR_TRIAD | COMPOUND_TONE                              # Cm@Amb5
 MINOR_MAJOR_SEVENTH: int = MINOR_TRIAD | COMPOUND_DITONE                    # Cmin@Ebmaj#5
 DOMINANT_SEVENTH: int = MAJOR_TRIAD | COMPOUND_HEMIOLION                    # Cmaj@Emb5
 MINOR_SEVEN_FLAT_FIVE: int = MINOR_FLAT_5 | COMPOUND_HEMIOLION              # Cdim@Ebmin
@@ -52,7 +58,18 @@ AUGMENTED_SEVENTH: int = MAJOR_SHARP_5 | COMPOUND_HEMIOLION                 # Ca
 AUGMENTED_MAJOR_SEVENTH: int = MAJOR_SHARP_5 | COMPOUND_DITONE              # Caug@Emaj
 DOMINANT_SEVENTH_FLAT_FIVE: int = MAJOR_FLAT_5 | COMPOUND_HEMIOLION         # Cmajb5@Gbmajb5
 
-tetrads: dict[str, int] 
+tetrads: dict[str, int] = {keywords.MAJOR_SEVENTH: MAJOR_SEVENTH,
+                           keywords.MINOR_SEVENTH: MINOR_SEVENTH,
+                           keywords.MAJOR_SIXTH: MAJOR_SIXTH,
+                           keywords.MINOR_SIXTH: MINOR_SIXTH,
+                           keywords.MINOR_MAJOR_SEVENTH: MINOR_MAJOR_SEVENTH,
+                           keywords.DOMINANT_SEVENTH: DOMINANT_SEVENTH,
+                           keywords.DOMINANT_SEVENTH_FLAT_FIVE: DOMINANT_SEVENTH_FLAT_FIVE,
+                           keywords.DIMINISHED_SEVENTH: DIMINISHED_SEVENTH,
+                           keywords.AUGMENTED_MAJOR_SEVENTH: AUGMENTED_MAJOR_SEVENTH,
+                           keywords.AUGMENTED_SEVENTH: AUGMENTED_SEVENTH,
+                           keywords.MINOR_SEVEN_FLAT_FIVE: MINOR_SEVEN_FLAT_FIVE
+                           }
 
 # Heptatonic scale forms: these serve as the canonical interval structures that
 # heptatonic modes will be considered to be inversions of. Heptatonic scales can be
