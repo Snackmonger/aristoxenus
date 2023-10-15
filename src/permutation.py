@@ -331,6 +331,14 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
             drop_2: dict{ same as above }
             drop_3: dict{ same as above }
             drop_2_and_4: dict{ same as above }
+
+    Examples
+    --------
+    >>> x = tetrad_variants()
+    >>> bin(x[3]['close']['second_inversion'])
+    '0b1001010001'
+    >>> bin(x[3]['drop_2']['third_inversion'])
+    '0b1000001010000001'
     '''
     if tetrads is None:
         tetrads = intervallic_canon.tetrads
