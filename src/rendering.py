@@ -108,6 +108,3 @@ def render_scientific(interval_structure: int,
         if (interval_structure & binary_column) == binary_column:
             rendering.append(scientific_range[interval])
     return rendering
-
-
-

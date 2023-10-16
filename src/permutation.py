@@ -1,7 +1,12 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from data import constants, errors, intervallic_canon, keywords
+from data import (constants,
+                  errors,
+                  intervallic_canon,
+                  keywords,
+                  types)
+
 from src import (bitwise,
                  nomenclature,
                  utils)
@@ -205,7 +210,7 @@ def spread_triad(chord_structure: int) -> int:
     return drop_voicing(chord_structure, constants.DROP_2)
 
 
-def drop_voicing(chord_structure: int, 
+def drop_voicing(chord_structure: int,
                  drop_notes: tuple[int, ...] | list[int]
                  ) -> int:
     '''
@@ -277,7 +282,7 @@ def drop_voicing(chord_structure: int,
 
 
 def triad_variants(triads: dict[str, int] | None = None
-                   ) -> tuple[dict[str, str | int | dict[str, int]], ...]:
+                   ) -> types.InventoryConspectus:
     '''
     Return a tuple containing all known triads and their voicing variants.
 
@@ -296,24 +301,25 @@ def triad_variants(triads: dict[str, int] | None = None
     if triads is None:
         triads = intervallic_canon.triads
 
-    variants: list[dict[str, str | int | dict[str, int]]] = []
+    variants: list[types.ChordConspectus] = []
     for name, triad in triads.items():
         open_triad = spread_triad(triad)
         close_inversions = bitwise.inversions(triad, constants.TONES)
         open_inversions = bitwise.inversions(open_triad, constants.TONES*2)
         inversion_names = [keywords.numbered_inversions[x] for x in range(3)]
-        variants.append({keywords.CANONICAL_NAME: name,
-                         keywords.CANONICAL_FORM: triad,
-                         keywords.CLOSE: dict(zip(inversion_names, close_inversions)),
-                         keywords.OPEN: dict(
-                             zip(inversion_names, open_inversions))
-                         })
+        inversion_names.reverse()
+
+        variants.append(types.ChordConspectus(canonical_name=name,
+                                              canonical_form=triad,
+                                              close=dict(
+                                                  zip(inversion_names, close_inversions)),
+                                              open=dict(zip(inversion_names, open_inversions))))
 
     return tuple(variants)
 
 
 def tetrad_variants(tetrads: dict[str, int] | None = None
-                    ) -> tuple[dict[str, str | int | dict[str, int]], ...]:
+                    ) -> types.InventoryConspectus:
     '''
     Return a tuple containing all known tetrads and their voicing variants.
 
@@ -343,20 +349,21 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
     if tetrads is None:
         tetrads = intervallic_canon.tetrads
 
-    variants: list[dict[str, str | int | dict[str, int]]] = []
+    variants: list[types.ChordConspectus] = []
     inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
     for name, tetrad in tetrads.items():
-        inversions = bitwise.inversions(tetrad, constants.TONES)
-        innerdict = {keywords.CANONICAL_NAME: name,
-                     keywords.CANONICAL_FORM: tetrad,
-                     keywords.CLOSE: {},
-                     keywords.DROP_2: {},
-                     keywords.DROP_3: {},
-                     keywords.DROP_2_and_4: {}}
+        inversions: tuple[int, ...] = bitwise.inversions(
+            tetrad, constants.TONES)
+        innerdict: types.ChordConspectus = types.ChordConspectus(canonical_name=name,
+                                                                 canonical_form=tetrad,
+                                                                 close={},
+                                                                 drop_2={},
+                                                                 drop_3={},
+                                                                 drop_2_and_4={})
 
         for i, inversion in enumerate(inversions):
             # We iterate the inversions THEN generate the drop voicings.
-            # See: `permutation.drop_voicing`
+            # See `permutation.drop_voicing` for info.
             inversion_name = inversion_names[i]
             drop2 = drop_voicing(inversion, constants.DROP_2)
             drop3 = drop_voicing(inversion, constants.DROP_3)

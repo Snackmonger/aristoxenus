@@ -33,6 +33,7 @@ POSITION: str = 'position'
 INVERSION: str = 'inversion'
 OPEN: str = 'open'
 CLOSE: str = 'close'
+STRUCTURE: str = 'structure'
 
 # Interval qualities
 MAJOR: str = 'major'

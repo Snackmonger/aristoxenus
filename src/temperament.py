@@ -1,5 +1,17 @@
+'''The temperament module supplies the ranges of frequencies that 
+correspond to the ranges of the 12-tone alphabetic scales.
+
+For now, we really only deal with equal temperament, but eventually this will
+allow us to change the temperament entirely, and to 'borrow' frequencies from differing
+temperaments so as to create different sorts of interval feelings within a single scale.
+'''
+
+
 from data import (constants)
 from src import (nomenclature)
+
+
+
 
 def equal_temperament() -> tuple[float, ...]:
     '''

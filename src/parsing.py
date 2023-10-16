@@ -4,13 +4,15 @@ import loguru
 from data import (chord_symbols,
                   intervallic_canon as intervals,
                   constants,
-                  errors)
+                  errors,
+                  keywords)
 
 from src import (nomenclature,
                  utils,
                  rendering,
-                 bitwise)
+                 permutation)
 
+from data.types import InventoryConspectus
 from src.models import interval_structures
 
 # ----------------------------------------------------------
@@ -44,14 +46,15 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     Returns
     -------
     int
-        An integer representation of an interval map.
+        An integer representation of an interval structure derived from the 
+        chord name.
 
     Raises
     ------
     ChordNameError
         Raised when the alphabetic chord name is not found in the list defined
-        by `nomenclature.legal_chord_names`. This error is actually generated
-        by the auxiliary function `parsing.__remove_chord_prefix`.
+        by `nomenclature.legal_chord_names`. (This error is actually generated
+        by the auxiliary function `parsing.__remove_chord_prefix`).
 
     Notes
     -----
@@ -144,45 +147,48 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     # Parse prototypical prefix, e.g. maj11, min9, 13, etc., and create an
     # explicit list of implicit intervals. Most symbols correspond directly
     # to specific intervals, so it is only necessary to remove those symbols
-    # that have contextual meanings that get lost in the 1:1 parser below.
-    for extension, extended_structure in {chord_symbols.CHORD_7: ['1'], #handle 7 idiomatically
-                                          chord_symbols.CHORD_9: ['9'],
-                                          chord_symbols.CHORD_11: ['9', '11'],
-                                          chord_symbols.CHORD_13: ['9', '11', '13']}.items():
-        
+    # that have positional meanings that get lost in the 1:1 parser below.
+    for extension, extended_structure in {chord_symbols.CHORD_7: ['1'], # dummy value: 7 is idiomatic
+                                          chord_symbols.CHORD_9: [chord_symbols.CHORD_9],
+
+                                          chord_symbols.CHORD_11: [chord_symbols.CHORD_9,
+                                                                   chord_symbols.CHORD_11],
+
+                                          chord_symbols.CHORD_13: [chord_symbols.CHORD_9,
+                                                                   chord_symbols.CHORD_11,
+                                                                   chord_symbols.CHORD_13]}.items():
         for symbol in chord_symbols.CHORD_SYMBOL_LIST:
-            # maj7, m7, dim9, aug11, etc.
             if chord_symbol.startswith(symbol+extension):
                 parsed_symbols += extended_structure
 
-                # maj7 implies natural 7, unless it's the
-                # first symbol, which means also add3
+                # maj7 (or variant) -> maj, maj7, plus extensions
                 if symbol in chord_symbols.CHORD_MAJOR_SYMBOL_LIST:
                     chord_symbol = chord_symbol.removeprefix(symbol+extension)
                     parsed_symbols += [chord_symbols.CHORD_MAJ, chord_symbols.CHORD_MAJ_7]
 
-                # dim7, dim11, etc. implies bb7 with a dim triad
+                # dim7 (or variant) -> dim, bb7, plus extensions
                 if symbol == chord_symbols.CHORD_DIM:
                     chord_symbol = chord_symbol.removeprefix(symbol+extension)
                     parsed_symbols += [chord_symbols.CHORD_DIM, chord_symbols.CHORD_DOUBLE_FLAT_7]
 
-                # m9, m11, m13, implies b7
+                # m7 (or variant): ensure that b7 is present if not explicit (e.g. Em11)
                 if symbol in chord_symbols.CHORD_MINOR_SYMBOL_LIST:
                     parsed_symbols += [chord_symbols.CHORD_FLAT_7]
 
-        # C7, D7, F#7, etc. implies b7 and 3
+        # 7 (or variant) -> maj, b7, plus extensions
         if chord_symbol.startswith(extension):
             parsed_symbols += extended_structure + [chord_symbols.CHORD_FLAT_7, chord_symbols.CHORD_MAJ]
             chord_symbol = chord_symbol.removeprefix(extension)
 
     # First element is another number: C2, C4, C6, etc.
-    # (implies major triad)
+    # implies major triad plus colour tone (different from sus2, sus4, which have no 3rd)
     for symbol in [chord_symbols.CHORD_6, chord_symbols.CHORD_2, chord_symbols.CHORD_4]:
         if chord_symbol.startswith(symbol):
             parsed_symbols.append(chord_symbols.CHORD_MAJ)
 
     # By now, we should have an explicit list of all previously implicit
     # intervals, plus any explicit intervals remaining in the chord symbol.
+    # (start with longest values to avoid misparsing a subsymbol)
     for symbol_element, interval in sorted(chord_symbols.symbol_elements.items(),
                                            key=lambda key: len(key[0]),
                                            reverse=True):
@@ -202,11 +208,12 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     for symbol in add_drop:
         if symbol in chord_symbols.additive:
             structure |= chord_symbols.additive[symbol]
+
         elif symbol in chord_symbols.subtractive:
             structure ^= (chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
 
     if chord_symbol != '':
-        logger.debug(f'Parsed: {parsed_symbols}, Unparsed: {chord_symbol}')
+        logger.info(f'Parsed: {parsed_symbols}, Unparsed: {chord_symbol}')
         
     return structure
 
@@ -233,6 +240,9 @@ def parse_slash_chord_symbol(chord_symbol: str) -> int:
         raise errors.ChordSymbolError(chord_symbol)
 
     # TODO: This is broken... Needs fix... you fix now?
+    # We want to ensure that, if the bass note is a chord tone, we are using
+    # the normal inversion of the chord, rather than transposing with an extra
+    # bass note.
 
     bass: str = nomenclature.decode_enharmonic(chord_symbol.split('/')[1])
     root: str = nomenclature.decode_enharmonic(__remove_chord_prefix(chord_symbol)[0])
@@ -374,12 +384,16 @@ def parse_heptatonic_scale_structure(interval_structure:int):
 
     if found_parent is True:
         return (parent, mode)
-        
+    
+    # TODO: keep working here after you write the permutation
+    # module to get all variants of a scale form.
+
     # Find nearest comparison... starting from the diatonic,
     # seek out scales that have same structure with X number
     # of mods, and return the scale with the fewest mods.
 
-    # we can use the 'get heptatonic intervals' function for this
+    # we can use the 'get heptatonic intervals' function to create 
+    # names like 'aeolian nat3 b5' if the scale is not a known form.
 
 
 def identify_polyad():
@@ -387,12 +401,9 @@ def identify_polyad():
 
 
 def identify_triad(interval_structure: int
-                   ) -> dict[str, int | str]:
+                   ) -> dict[str, str | dict[str, str]]:
     '''
     Return the canonical identity of a given triadic interval structure.
-
-    The function searches through the canonical triads and permutes their
-    inversions and spread forms to seek a match for the given structure. 
 
     Parameters
     ----------
@@ -403,33 +414,45 @@ def identify_triad(interval_structure: int
     Returns
     -------
     dict 
-        chord_identity : str
-            The canonical name of the chord structure.
-        inversion : int
-            The number of rotations the given structure is from the canonical
-            structure.
-        canonical_form : int
-            An integer representing the canonical form that was found.
-        structural_mods : list of str
-            A list containing any structural modifications that the parser
-            identified during analysis. For the triad parser, this is limited
-            to 'spread triad'.
+        result : str or dict
+            The result will either be 'no_match' or a dictionary with the
+            following keys:
+
+            chord_identity : str
+                The canonical name of the chord structure.
+            inversion : str
+                The name of the inversion, or root position.
+            structure : str
+                A description of the chord's structural makeup.
+
+    Examples
+    --------
+    >>> identify_triad(0b10000000010000001)
+    {'result': {'canonical_name': 'major_triad', 'inversion': 'root_position', 'structure': 'open'}}
+    >>> identify_triad(0b100001001)
+    {'result': {'canonical_name': 'major_triad', 'inversion': 'first_inversion', 'structure': 'close'}} 
+    >>> identify_triad(0b10001001)
+    {'result': {'canonical_name': 'minor_triad', 'inversion': 'root_position', 'structure': 'close'}}  
     '''
     if interval_structure.bit_length() > (constants.TONES * 2):
         raise ValueError(interval_structure)
-    # notes: int = interval_structure.bit_count()
-    # if notes != 3:
-    #     return identify_polyad(interval_structure)
-    
-    single: bool = interval_structure.bit_length() <= constants.TONES
-    double: bool = constants.TONES < interval_structure.bit_length() <= (constants.TONES * 2)
-    name: str
+    triads: InventoryConspectus  = permutation.triad_variants()
 
-    if single: # close triad or close triad inversion
-        ...            
+    for triad in triads:
+        for kind in [keywords.CLOSE, keywords.OPEN]:
+            for inversion, int_structure in triad[kind].items():
+                if int_structure == interval_structure:
+                    identity = triad[keywords.CANONICAL_NAME]
+                    result = {keywords.CANONICAL_NAME: identity,
+                              keywords.INVERSION: inversion,
+                              keywords.STRUCTURE: kind}
+                    return {'result': result}
+                
+    return {'result': 'no_match'}
 
-    if double: # open triad or open triad inversion
-        ...
+
+
+
 
 
 def generate_chord_symbol(interval_structure: int,
