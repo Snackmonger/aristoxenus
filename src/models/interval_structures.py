@@ -199,8 +199,6 @@ class Scale(Octave):
         self.tones = self.value.bit_count()
 
 
-
-
 class HeptatonicScale(Scale):
     '''
     Abstraction of a heptatonic scale.
@@ -249,8 +247,6 @@ class Chord(DoubleOctave):
             return cls(interval_structure)
         prototype += interval_structure
         return cls(int(prototype))
-
-
 
 
 class SATBChord(Chord):

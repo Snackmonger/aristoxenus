@@ -13,11 +13,6 @@ FREQUENCY_DECIMAL_LIMIT: int = 3
 CENTRAL_REFERENCE_NOTE_NAME: str = 'A4'
 CENTRAL_REFERENCE_NOTE_FREQUENCY: int = 440
 
-# Chord voicings
-DROP_2: tuple[int] = (1,) # c e g b -> c g b e 
-DROP_3: tuple[int, int] = (1, 2) # c e g b -> c b e g
-DROP_2_AND_4: tuple[int, int] = (1, 3) # c e g b -> c g e b 
-
 # Symbols
 SHARP_SYMBOL:str = '#'
 FLAT_SYMBOL:str = 'b'
@@ -44,3 +39,8 @@ ACCIDENTAL_NOTES: tuple[str, ...] = tuple(SHARPS + FLATS)
 
 
 ACCIDENTAL_TYPES: list[tuple[str, ...]] = [SHARPS, FLATS, BINOMIALS]
+
+# Chord voicings
+DROP_2: tuple[int] = (1,) # c e g b -> c g b e 
+DROP_3: tuple[int, int] = (1, 2) # c e g b -> c b e g
+DROP_2_AND_4: tuple[int, int] = (1, 3) # c e g b -> c g e b 
