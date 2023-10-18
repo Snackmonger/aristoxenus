@@ -8,7 +8,7 @@ from src.decorators import pos_only, check_oob
 
 # Sketches of some classes. They don't figure into anything right now, but I'll work them out later.
 
-
+# note to self: pos_only decorator can just be abs()
 OOB_OPTIONS = Literal['integrate_low', 'integrate_high', 'error', 'ignore']
 
 
