@@ -81,6 +81,9 @@ def render_heptatonic_chord_scale(optimal_rendering: tuple[str, ...],
     # Because the optimal form might use a mix of accidentals
     # in order to maintain alphabetic order, we can't generate
     # chords from the integer interval maps...
+
+    # EDIT: actually, it might be easier just to render the scale as
+    # if it were pure, then write a function to mask a specific spelling.
     
     
     base_form = parsing.parse_literal_sequence(optimal_rendering)
