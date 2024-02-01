@@ -281,7 +281,7 @@ def drop_voicing(chord_structure: int,
 
 
 def triad_variants(triads: dict[str, int] | None = None
-                   ) -> annotations.InventoryConspectus:
+                   ) -> annotations.ChordConspectus:
     '''
     Return a tuple containing all known triads and their voicing variants.
 
@@ -318,7 +318,7 @@ def triad_variants(triads: dict[str, int] | None = None
 
 
 def tetrad_variants(tetrads: dict[str, int] | None = None
-                    ) -> annotations.InventoryConspectus:
+                    ) -> annotations.ChordConspectus:
     '''
     Return a tuple containing all known tetrads and their voicing variants.
 

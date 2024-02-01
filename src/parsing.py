@@ -12,8 +12,8 @@ from src import (nomenclature,
                  rendering,
                  permutation)
 
-from data.annotations import InventoryConspectus
-from src.models import interval_structures
+from data.annotations import ChordConspectus
+
 
 # ----------------------------------------------------------
 logger = loguru.logger
@@ -342,48 +342,48 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
     return compiled_structure
 
 
-def parse_heptatonic_scale_structure(interval_structure:int):
-    '''
-    Take an integer of no more than 12 bits, of which exactly 7 are flipped,
-    and attempt to assign a name to it.
+# def parse_heptatonic_scale_structure(interval_structure:int):
+#     '''
+#     Take an integer of no more than 12 bits, of which exactly 7 are flipped,
+#     and attempt to assign a name to it.
 
-    Parameters
-    ----------
-    scale_structure : int
-        An integer
+#     Parameters
+#     ----------
+#     scale_structure : int
+#         An integer
 
-    Returns
-    -------
-    _type_
-        _description_
+#     Returns
+#     -------
+#     _type_
+#         _description_
 
-    Raises
-    ------
-    HeptatonicScaleError
-        _description_
-    '''
+#     Raises
+#     ------
+#     HeptatonicScaleError
+#         _description_
+#     '''
     
-    if interval_structure.bit_length() > 12 or interval_structure.bit_count() != 7:
-        raise errors.HeptatonicScaleError
+#     if interval_structure.bit_length() > 12 or interval_structure.bit_count() != 7:
+#         raise errors.HeptatonicScaleError
     
-    scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(interval_structure)
-    inversions: tuple[int, ...] = scale.inversions
-    parent: str = ''
-    mode: int = 0
-    found_parent: bool = False
+#     scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(interval_structure)
+#     inversions: tuple[int, ...] = scale.inversions
+#     parent: str = ''
+#     mode: int = 0
+#     found_parent: bool = False
 
-    for heptatonic_supertype in intervals.HEPTATONIC_ORDER:
-        supertype_scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(heptatonic_supertype)
-        supertype_modes: tuple[int, ...] = supertype_scale.inversions
+#     for heptatonic_supertype in intervals.HEPTATONIC_ORDER:
+#         supertype_scale: interval_structures.HeptatonicScale = interval_structures.HeptatonicScale(heptatonic_supertype)
+#         supertype_modes: tuple[int, ...] = supertype_scale.inversions
 
-        for inversion in inversions:
-            if inversion in supertype_modes:
-                found_parent = True
-                parent = intervals.HEPTATONIC_SYSTEM[heptatonic_supertype]
-                mode = supertype_modes.index(inversion)
+#         for inversion in inversions:
+#             if inversion in supertype_modes:
+#                 found_parent = True
+#                 parent = intervals.HEPTATONIC_SYSTEM[heptatonic_supertype]
+#                 mode = supertype_modes.index(inversion)
 
-    if found_parent is True:
-        return (parent, mode)
+#     if found_parent is True:
+#         return (parent, mode)
     
     # TODO: keep working here after you write the permutation
     # module to get all variants of a scale form.

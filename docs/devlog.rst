@@ -4,6 +4,20 @@ Aristoxenus Library DevLog
 
 .. contents:: Table of Contents
 
+01/02/2024
+==========
+Wow! In a couple weeks it will be one year of learning programming with python. How far I've come, and yet how much there still is to learn! I have been distracted
+with some other projects for the last couple months, but I've learned a bit more about working with tkinter, so I'll be able to make the GUI a little better soon.
+I've also gained some valuable experience working with separation of responsibilities, so I can start thinking a bit more about how the various parts of the program
+that already exist can work together best. 
+
+I started working out some of the details of the diagram classes for guitar fingerings, and I'm pleased that they already makes working with diagrams easier. Soon I'd like
+to make tkinter display some fancier-looking diagrams using these classes; their nodes should be able to highlight in different colours, and we should be able to show arpeggios with the 
+related scale notes greyed-out (but still visible) or completely invisible.
+
+I'd still like to write something that can automatically rank fingerings for 'awkwardness', but I'm still working out how exactly to do that.
+
+
 10/10/2023
 ==========
 Sequences

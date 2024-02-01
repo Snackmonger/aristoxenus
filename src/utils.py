@@ -2,7 +2,7 @@
 Miscellaneous functions.
 '''
 
-from typing import Any, Literal
+from typing import Any
 
 
 
