@@ -1,28 +1,14 @@
+from src.models.diagrams import FingeringRepr, FingeringType, FingeringWidth, GuitarFingering, simplify_guitar_fretboard, guitar_fretboard, convert_fretboard_to_relative
 
+f = simplify_guitar_fretboard(guitar_fretboard())
 
-# from src import nomenclature
+f = convert_fretboard_to_relative(f, "A")
 
+x = GuitarFingering(5, f, FingeringWidth.OPEN, FingeringType.PINKY)
+x.apply_fingering()
 
-# app = classes.Application()
-# app.mainloop()
-
-
-# # from src import interface
-# # data = interface.render_heptatonic_form('altered', 'dorian', 'D#')
-
-# # for datum in data: 
-# #     print ( datum, ':', data[datum] )
-
-# x = nomenclature.encode_scientific_enharmonic('A4', 'G', 'below')
-# print(x)
-
-# print(nomenclature.decode_scientific_enharmonic(x))
-
-# from src import permutation
-# from data import constants
-
-# y = permutation.tetrad_variants()
-
-# for x in y:
-#     for k, v in x.items():
-#         print(k, v)
+for y in x.grid:
+    for a in y:
+        a.flip()
+        a.repr_mode = FingeringRepr.FINGER
+    print (y)

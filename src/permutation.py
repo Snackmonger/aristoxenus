@@ -1,11 +1,10 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from data import (constants,
+from data import (annotations, constants,
                   errors,
                   intervallic_canon,
-                  keywords,
-                  types)
+                  keywords)
 
 from src import (bitwise,
                  nomenclature,
@@ -282,7 +281,7 @@ def drop_voicing(chord_structure: int,
 
 
 def triad_variants(triads: dict[str, int] | None = None
-                   ) -> types.InventoryConspectus:
+                   ) -> annotations.InventoryConspectus:
     '''
     Return a tuple containing all known triads and their voicing variants.
 
@@ -301,7 +300,7 @@ def triad_variants(triads: dict[str, int] | None = None
     if triads is None:
         triads = intervallic_canon.triads
 
-    variants: list[types.ChordConspectus] = []
+    variants: list[annotations.ChordConspectus] = []
     for name, triad in triads.items():
         open_triad = spread_triad(triad)
         close_inversions = bitwise.inversions(triad, constants.TONES)
@@ -309,7 +308,7 @@ def triad_variants(triads: dict[str, int] | None = None
         inversion_names = [keywords.numbered_inversions[x] for x in range(3)]
         inversion_names.reverse()
 
-        variants.append(types.ChordConspectus(canonical_name=name,
+        variants.append(annotations.ChordConspectus(canonical_name=name,
                                               canonical_form=triad,
                                               close=dict(
                                                   zip(inversion_names, close_inversions)),
@@ -319,7 +318,7 @@ def triad_variants(triads: dict[str, int] | None = None
 
 
 def tetrad_variants(tetrads: dict[str, int] | None = None
-                    ) -> types.InventoryConspectus:
+                    ) -> annotations.InventoryConspectus:
     '''
     Return a tuple containing all known tetrads and their voicing variants.
 
@@ -349,12 +348,12 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
     if tetrads is None:
         tetrads = intervallic_canon.tetrads
 
-    variants: list[types.ChordConspectus] = []
+    variants: list[annotations.ChordConspectus] = []
     inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
     for name, tetrad in tetrads.items():
         inversions: tuple[int, ...] = bitwise.inversions(
             tetrad, constants.TONES)
-        innerdict: types.ChordConspectus = types.ChordConspectus(canonical_name=name,
+        innerdict: annotations.ChordConspectus = annotations.ChordConspectus(canonical_name=name,
                                                                  canonical_form=tetrad,
                                                                  close={},
                                                                  drop_2={},

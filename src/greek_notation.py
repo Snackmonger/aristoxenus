@@ -2,7 +2,7 @@
 Functions relating to Ancient Greek musical notation. 
 '''
 
-# This will probably get moved to a different folder for all the greek related stuff
+# This could be json or csv instead
 
 
 

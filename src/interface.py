@@ -1,7 +1,6 @@
-'''
-I don't really know how to build an interface, so I'm sticking these 
-interface-y functions here until I figure out how to do this properly.
-'''
+"""Functions that process and supply the larger chunks of data requested by the API."""
+
+
 from typing import Any
 
 from src import (nomenclature,

@@ -45,3 +45,6 @@ src/__pycache__/interface.cpython-311.pyc
 gui/__pycache__/scale_info_panel.cpython-311.pyc
 src/__pycache__/temperament.cpython-311.pyc
 data/__pycache__/types.cpython-311.pyc
+data/__pycache__/annotations.cpython-311.pyc
+data/__pycache__/instrument_config.cpython-311.pyc
+.gitignore

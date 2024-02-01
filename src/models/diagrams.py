@@ -3,19 +3,24 @@ Functions pertaining to making musical diagrams (aside from staff notation).
 '''
 
 import dataclasses
+from enum import Enum, IntEnum
+from typing import Any
 
 from src import nomenclature, utils
 from data import (chord_symbols,
                   constants,
                   keywords)
 
-from data.types import GuitarFretboard
+from data.annotations import GuitarFretboard
 from data.instrument_config import GUITAR_STANDARD_TUNING
+
+def val(enum: Enum) -> Any:
+    return enum.value
 
 
 def guitar_fretboard(strings: int = 6,
                      tuning: list[str] | tuple[str, ...] = GUITAR_STANDARD_TUNING,
-                     frets: int = 22,
+                     frets: int = 24,
                      format_: str = keywords.SCIENTIFIC
                      ) -> GuitarFretboard:
     '''
@@ -85,6 +90,11 @@ def simplify_guitar_fretboard(diagram: GuitarFretboard) -> GuitarFretboard:
         
     return tuple(new_diagram)
 
+
+def standard_fretboard() -> GuitarFretboard:
+    """Shortcut to get a fretboard in standard 6 string tuning with 
+    24 frets."""
+    return simplify_guitar_fretboard(guitar_fretboard())
 
 
 def filter_guitar_fretboard(guitar_tuning: GuitarFretboard,
@@ -158,7 +168,6 @@ def get_positional_fingering(guitar_fingering: GuitarFretboard,
     return tuple(diagram)
 
 
-
 def convert_fretboard_to_relative(diagram: GuitarFretboard, 
                                   tonal_centre: str
                                   ) -> GuitarFretboard:
@@ -193,12 +202,6 @@ def convert_fretboard_to_relative(diagram: GuitarFretboard,
     return tuple(new_diagram)
 
 
-
-
-
-
-
-
 @dataclasses.dataclass
 class ChordSymbol:
 
@@ -225,3 +228,156 @@ class ChordSymbol:
 
     def subtract(self, interval):
         self.interval_structure ^= (interval - 1)
+
+
+class FingeringType(Enum):
+    """Enum to describe which finger must cover two frets in an open fingering."""
+    INDEX = "index"
+    PINKY = "pinky"
+    MIXED = "mixed"
+
+
+class FingeringWidth(IntEnum):
+    """Enum to describe the fret-span of the fingerings."""
+    CLOSE = 4
+    OPEN = 5
+
+
+class FingeringRepr(Enum):
+    """Enum to describe how a fingering node (or nodes) should be drawn."""
+    NOTE_NAME = "note_name"
+    SCALE_DEGREE = "scale_degree"
+    FINGER = "finger"
+    FRET = "fret"
+
+
+@dataclasses.dataclass
+class FingeringNode:
+    """Representation of a position in a fingering diagram, that can indicate
+    a scale degree, finger, or musical note."""
+
+
+    def __init__(self, 
+                 string: int, 
+                 fret: int, 
+                 finger: str | None = None, 
+                 note_name: str | None = None,
+                 scale_degree: str | None = None,
+                 is_active: bool = False, 
+                 repr_mode: FingeringRepr = FingeringRepr.FRET
+                 ) -> None:
+        
+        self.string: int = string
+        self.fret: int = fret
+        self.finger: str | None =  finger
+        self.note_name: str | None = note_name
+        self.scale_degree: str | None = scale_degree
+        self.is_active: bool = is_active
+        self.repr_mode: FingeringRepr = repr_mode
+
+
+    def __repr__(self) -> str:
+        if not self.is_active:
+            return str()
+        
+        if self.repr_mode is FingeringRepr.FRET:
+            return str(self.fret)
+
+        match self.repr_mode:
+            case FingeringRepr.FINGER:
+                if self.finger is not None:
+                    return self.finger
+            case FingeringRepr.NOTE_NAME:
+                if self.note_name is not None:
+                    return self.note_name
+            case FingeringRepr.SCALE_DEGREE:
+                if self.scale_degree is not None:
+                    return self.scale_degree
+            case _:
+                raise ValueError(f"Unrecognized rendering mode: {self.repr_mode}")
+        return str()
+
+
+    def flip(self) -> None:
+        self.is_active = not self.is_active
+
+
+class GuitarFingering:
+    """Representation of a 4- or 5-fret fingering diagram in standard tuning, 
+    that can display its nodes as names, intervals, or fingers, and that can
+    turn nodes on and off in order to show arpeggios nested within scale 
+    forms.
+    
+    The fingering diagrams assume that we are using standard tuning, and are
+    mostly intended for use with the diatonic scale and those scales that are
+    related by 1 transformation but that do not contain a hemiolion."""
+    def __init__(self, 
+                 position: int, 
+                 fretboard: GuitarFretboard,
+                 width: FingeringWidth, 
+                 stretch: FingeringType | None = None
+                 ) -> None:
+        
+        self.position: int = position
+        self.fretboard: GuitarFretboard = fretboard 
+        self.width: FingeringWidth = width
+        self.stretch: FingeringType | None = stretch
+        self.grid: list[list[FingeringNode]] = [[FingeringNode(string, position + n, note_name=fretboard[string][position + n]) for n in range(width.value)] for string in range(len(fretboard))]
+        self.override: list[list[str]] | None = None
+        
+
+    def clear_diagram(self) -> None:
+        """Set all nodes in the diagram to OFF."""
+        for string in self.grid:
+            for note in string:
+                note.is_active = False
+
+
+    def flash_diagram(self) -> None:
+        """Set all nodes in the diagram to ON."""
+        for string in self.grid:
+            for note in string:
+                note.is_active = True
+
+
+    def mask_intervals(self, interval_diagram: GuitarFretboard) -> None:
+        """Mask the fingering diagram with the intervals in the given fretboard diagram."""
+        if self.position + self.width > len(interval_diagram):
+            raise ValueError(f"Fingering is not compatible with the given diagram. Position={self.position}, diagram length={len(interval_diagram)}")
+        diagram = interval_diagram[self.position: self.position + self.width]
+
+        for i, string in enumerate(diagram):
+            for j, note in enumerate(string):
+                self.grid[i][j].scale_degree = note
+                
+
+    def apply_fingering(self) -> None:
+        """Take the rules defined in width and stretch attributes and make a 
+        fingering pattern."""
+        if self.override:
+            for i, string in enumerate(self.grid):
+                for j, note in enumerate(string):
+                    note.finger = self.override[i][j]
+            return
+        
+        fingers: list[str]
+        if self.width == FingeringWidth.CLOSE:
+            fingers = ["i", "m", "a", "e"]
+        elif self.stretch == FingeringType.INDEX:
+            fingers = ["i", "i", "m", "a", "e"]
+        elif self.stretch == FingeringType.PINKY:
+            fingers = ["i", "m", "a", "e", "e"]
+
+        for string in self.grid:
+            for j, note in enumerate(string):
+                note.finger = fingers[j]
+        
+
+
+
+
+
+    
+
+
+    

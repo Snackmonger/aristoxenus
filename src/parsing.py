@@ -12,7 +12,7 @@ from src import (nomenclature,
                  rendering,
                  permutation)
 
-from data.types import InventoryConspectus
+from data.annotations import InventoryConspectus
 from src.models import interval_structures
 
 # ----------------------------------------------------------

@@ -1,7 +1,10 @@
 '''
 Miscellaneous functions.
 '''
-from typing import Any
+
+from typing import Any, Literal
+
+
 
 
 def shift_list(list_: list[Any] | tuple[Any, ...],

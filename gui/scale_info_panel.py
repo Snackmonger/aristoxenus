@@ -8,6 +8,7 @@ from src import (interface)
 
 
 class ScaleInfoPanel(ttk.Frame):
+    
 
     def __init__(self, master):
         ttk.Frame.__init__(self, master)
