@@ -518,15 +518,15 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]
     The function assembles a number of candidates and evaluateds them 
     according to a hierarchy of constraints:
 
-    The highest interval of any chord will be ranked 1
-    Any altered fifth will be ranked 2
-    A major or minor 3rd will be ranked 3
-    A suspended 2 or 4 will be ranked 3 if there is no third, or 7 if there is a third
-    A major or b7 will be ranked 4
-    A secondary altered extension will be ranked 5
-    The root will be ranked 6
-    A secondary natural extension will be ranked 7
-    A perfect fifth will be ranked 7
+    The highest interval of any chord will be ranked 1 (PRESERVE MELODY)
+    Any altered fifth will be ranked 2 (EXPRESS ALTERATION)
+    A major or minor 3rd will be ranked 3 (DEFINE CHORD TYPE)
+    A suspended 2 or 4 will be ranked 3 if there is no third, or 7 if there is a third (DEFINE CHORD TYPE)
+    A major 7 or b7 will be ranked 4 (BRIDGE OCTAVE)
+    A secondary altered extension will be ranked 5 (EXPRESS ALTERED COLOUR)
+    The root will be ranked 6 (NAME CHORD)
+    A secondary natural extension will be ranked 7 (EXPRESS NATURAL COLOUR)
+    A perfect fifth will be ranked 7 (ANCHOR CHORD)
 
     Examples
     --------
