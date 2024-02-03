@@ -118,6 +118,14 @@ def convert_fretboard_to_relative(diagram: GuitarFretboard,
     return tuple(new_diagram)
 
 
+def get_interval_map(tonal_centre: str) -> dict[str, str]:
+    """Get a dictionary mapping note names to interval names for a given 
+    tonic note name."""
+    interval_symbols = list(chord_symbols.interval_symbol_prescription.values())
+    chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
+    return dict(zip(chromatic_, interval_symbols))
+
+
 @dataclasses.dataclass
 class FingeringNode:
     """Representation of a position in a fingering diagram, that can indicate
@@ -140,7 +148,7 @@ class FingeringNode:
         self.note_name: str | None = note_name
         self.scale_degree: str | None = scale_degree
         self.is_active: bool = is_active
-        self.repr_mode: str = repr_mode
+        self.repr_style: str = repr_mode
 
 
         # Graphics display options
@@ -152,10 +160,10 @@ class FingeringNode:
         if not self.is_active:
             return str()
         
-        if self.repr_mode is keywords.FRET:
+        if self.repr_style is keywords.FRET:
             return str(self.fret)
 
-        match self.repr_mode:
+        match self.repr_style:
             case keywords.FINGER:
                 if self.finger is not None:
                     return self.finger
@@ -166,7 +174,7 @@ class FingeringNode:
                 if self.scale_degree is not None:
                     return self.scale_degree
             case _:
-                raise ValueError(f"Unrecognized rendering mode: {self.repr_mode}")
+                raise ValueError(f"Unrecognized rendering mode: {self.repr_style}")
         return str()
 
 
@@ -221,18 +229,15 @@ class GuitarFingering:
                     note.is_active = False
 
 
-    def define_intervals(self, interval_diagram: GuitarFretboard) -> None:
+    def define_intervals(self, interval_map: dict[str, str]) -> None:
         """Add intervals to the fretboard diagram. This entails defining a key
         note and generating a layout relative to that note; see the function
         ``convert_fretboard_to_relative`` to do this."""
-        if self.position + self.width > len(interval_diagram):
-            raise ValueError(f"Fingering is not compatible with the given diagram. Position={self.position}, diagram length={len(interval_diagram)}")
-        diagram = interval_diagram[self.position: self.position + self.width]
+        for string in self.grid:
+            for note in string:
+                if note.note_name:
+                    note.scale_degree = interval_map[note.note_name]
 
-        for i, string in enumerate(diagram):
-            for j, note in enumerate(string):
-                self.grid[i][j].scale_degree = note
-                
 
     def apply_fingering(self) -> None:
         """Take the rules defined in width and stretch attributes and make a 

@@ -22,6 +22,6 @@ x.apply_fingering()
 for y in x.grid:
     for a in y:
         a.flip()
-        a.repr_mode = FingeringRepr.FINGER
+        a.repr_style = FingeringRepr.FINGER
 
     print (y)
