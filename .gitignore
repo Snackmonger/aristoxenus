@@ -48,3 +48,5 @@ data/__pycache__/types.cpython-311.pyc
 data/__pycache__/annotations.cpython-311.pyc
 data/__pycache__/instrument_config.cpython-311.pyc
 .gitignore
+gui/__pycache__/guitar_diagram_widget.cpython-311.pyc
+.gitignore

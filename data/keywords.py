@@ -1,4 +1,4 @@
-'''Strings used as dictionary keywords in the program.'''
+'''Strings used as dictionary or interface keywords in the program.'''
 
 # Basic interface terms
 NOTE_NAME: str = 'note_name'
@@ -33,7 +33,15 @@ POSITION: str = 'position'
 INVERSION: str = 'inversion'
 OPEN: str = 'open'
 CLOSE: str = 'close'
+INDEX: str = "index"
+MIDDLE: str = "middle"
+RING: str = "ring"
+PINKY: str = "pinky"
+MIXED: str = "mixed"
 STRUCTURE: str = 'structure'
+SCALE_DEGREE: str = "scale_degree"
+FINGER: str = "finger"
+FRET: str = "fret"
 
 # Interval qualities
 MAJOR: str = 'major'
@@ -167,7 +175,6 @@ DECIMAL: str = 'decimal'
 UNDECIMAL: str = 'undecimal'
 DUODECIMAL: str = 'duodecimal'
 
-
 # Scale identifiers
 DIATONIC: str = 'diatonic'
 ALTERED: str = 'altered'
@@ -244,4 +251,6 @@ DROP_D: str = 'drop_d'
 STANDARD_7_STRING: str = 'standard_7_string'
 OPEN_D: str
 OPEN_G: str
+
+
 

@@ -41,17 +41,6 @@ def chromatic(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS)
     '''
     Return a chromatic octave using the given accidentals.
 
-    Parameters
-    ----------
-    accidental_notes : list of str
-        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
-        defines the type of accidentals that the octave will use.
-
-    Returns
-    -------
-    list of str
-        A list of 12 note names, in the given accidental style.
-
     Examples
     --------
     >>> chromatic(constants.BINOMIALS)
@@ -119,12 +108,6 @@ def get_enharmonic_equivalents(note_name: str) -> list[str]:
 def legal_chord_names() -> list[str]:
     '''
     Return a list of note names that can function as legal chord root symbols. 
-
-    Returns
-    -------
-    list of str
-        A list of all notes with between 0 and 1 accidentals, excluding the
-        binomials.
     '''
     # Any natural or any natural + 1 accidental
     return [key for key in enharmonic_decoder() if len(key) <= 2]
@@ -133,16 +116,6 @@ def legal_chord_names() -> list[str]:
 def __identity(note_name: str) -> str:
     '''
     Return the alphabetic name of an accidental note.
-
-    Parameters
-    ----------
-    note_name : str
-        An alphabetic note name with any number of accidentals.
-
-    Returns
-    -------
-    str
-        A natural note name.
 
     Examples
     --------
@@ -158,16 +131,6 @@ def __is_homonymous(note_one: str, note_two: str) -> bool:
     '''
     Check whether two notes are variants of the same alphabetic name.
 
-    Parameters
-    ----------
-    note_one, note_two : str
-        An alphabetic note name with any number of accidentals.
-
-    Returns
-    -------
-    bool
-        True if the two notes have the same alphabetic letter name.
-
     Examples
     --------
     >>> __is_homonymous('B###', 'Bb') 
@@ -181,16 +144,6 @@ def __is_homonymous(note_one: str, note_two: str) -> bool:
 def decode_enharmonic(note_name: str) -> str:
     '''
     Return the binomial form of a given note name with up to 12 accidentals.
-
-    Parameters
-    ----------
-    note_name : str
-        A note name with 0 to 12 accidentals.
-
-    Returns
-    -------
-    str
-        A binomial note name enharmonically equivalent to the given note name
         
     Examples
     --------
@@ -213,20 +166,6 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     '''
     Return a note with the same enharmonic value as the given note,
     but under the given alphabetic name.
-
-    Parameters
-    ----------
-    note_value : str
-        A note name with 0 to 1 accidentals (binomials count as 1 accental).
-
-    note_name : str    
-        One of the 7 natural notes.
-
-    Returns
-    -------
-    str
-        A note with between 0 and 6 accidentals. No note name is more than six
-        steps from any other name, depending on the direction.
 
     Notes
     -----
@@ -266,22 +205,7 @@ def scientific_octave(accidental_notes: list[str] | tuple[str, ...]=constants.BI
                       octave: int=0
                       ) -> list[str]:
     '''
-    Return a scientific chromatic scale in the given style and octave.
-
-    Parameters
-    ----------
-    accidental_notes : list[str]
-        A list of 5 strings, one of __BINOMIALS, __SHARPS, __FLATS. This
-        defines the type of accidentals that the result will use.
-
-    octave : int
-        The range number appended to the note name.
-
-    Returns
-    -------
-    str
-        A binomial note name enharmonically equivalent to the given note name
-        
+    Return a scientific chromatic scale in the given style and octave.        
     '''
     return [note + str(octave) for note in chromatic(accidental_notes)]
 
@@ -297,23 +221,6 @@ def encode_scientific_enharmonic(note_value:str,
 
     This function allows you to rephrase a scientific note name as an accidental with
     up to 11 sharps or flats, with the correct scientific numeral.
-
-    Parameters
-    ----------
-    note_value : str
-        The scientific note you want to mask; a sharp, flat, natural, or binomial.
-    note_name : str
-        A note name from the naturals that will serve as the mask.
-    position : str
-        A description of whether the target name is to be treated as 
-        being the note above the given source name or below.
-
-    Returns
-    -------
-    str
-        A new note name with the same enharmonic value as the given note name, 
-        but with the new alphabetic name, a certain number of sharps or flats,
-        and the proper numeral for its alphabetic perspective.
 
     Raises
     ------
@@ -361,16 +268,6 @@ def encode_scientific_enharmonic(note_value:str,
 def decode_scientific_enharmonic(note_name: str) -> str:
     '''
     Return the scientific binomial for a given scientific multi-accidental or halfstep.
-
-    Parameters
-    ----------
-    note_name : str
-        A note name with 1 or more accidentals and a numeral
-
-    Returns
-    -------
-    str
-        A binomial note name enharmonically equivalent to the given note name
         
     Examples
     --------
@@ -416,17 +313,6 @@ def decode_scientific_enharmonic(note_name: str) -> str:
 def scientific_range(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS) -> list[str]:
     '''
     Return a full range (C0 - B8) of scientific notation for a given accidental.
-
-    Parameters
-    ----------
-    accidental_notes : list of str
-        A list of 5 strings, one of BINOMIALS, SHARPS, FLATS. This
-        defines the type of accidentals that the result will use.
-
-    Returns
-    -------
-    list of str
-        A list of 108 note names in the given accidental style.
     '''
     full_range: list[str] = []
     for octave in range(constants.NUMBER_OF_OCTAVES):
@@ -441,22 +327,6 @@ def convert_frequency_to_note(frequency: float,
                              ) -> str:
     '''
     Return a scientific note name for a given frequency and accidental style.
-
-    Parameters
-    ----------
-    frequency : float 
-        A frequency in 12-TET @ A4 = 440Hz
-
-    accidental_notes : list or tuple of str
-        A list of 5 strings, one of BINOMIALS, SHARPS, FLATS. This
-        defines the type of accidentals that the result will use, if it 
-        is not a natural note. Default is binomials
-
-    Returns
-    -------
-    str
-        A note name with 0 to 1 accidentals plus a numeral representing
-        the octave. 
 
     Notes
     -----
@@ -492,17 +362,6 @@ def convert_note_to_frequency(note_name: str,
     '''
     Return a frequency for a given scientific note name of any accidental style.
 
-    Parameters
-    ----------
-    note_name : str
-        A note name with 0 to 1 accidentals plus a numeral representing
-        the octave.
-
-    Returns
-    -------
-    float
-        A frequency corresponding to the given note name.
-
     Examples
     --------
     >>> convert_note_to_frequency('A4')
@@ -525,19 +384,6 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     For a given note name and scale pattern, return an alphabetic spelling in
     which each of ABCDEFG (or a variant) appears exactly once. The scale 
     pattern must have exactly 7 flipped bits in this type of nomenclature.
-
-    Parameters
-    ----------
-    note_name : str 
-        A real note name: a natural, sharp, or flat, but not a binomial.
-    
-    interval_structure : int
-        An integer of no more than 12 bits with exactly 7 flipped bits.
-
-    Returns
-    -------
-    list of str
-        A list of 7 str, representing 1 each of ABCDEFG, plus accidentals.
 
     Examples
     --------
@@ -566,24 +412,9 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     Given a note name and a scale pattern, return the better spelling of the 
     two accidental types (fewest total accidentals). Accepts naturals, sharps, 
     flats, and binomials.
-
-    Parameters
-    ----------
-    note_name : str 
-        Any note name.
-    
-    interval_structure : int
-        An integer of no more than 12 bits with exactly 7 flipped bits.
-
-    Returns
-    -------
-    list of str
-        A list of 7 str, representing 1 each of ABCDEFG, plus accidentals.
-
-    
+   
     Examples
     --------
-
     >>> best_heptatonic('A#|Bb', 0b101010110101)
     ['Bb', 'C', 'D', 'Eb', 'F', 'G', 'A']
     >>> best_heptatonic('E#', 0b101010110101)
@@ -642,16 +473,6 @@ def is_abcdefg(note_names: list[str]) -> bool:
     ABCDEFG nomenclature, in which each alphebetic name appears once and
     only once.
 
-    Parameters
-    ----------
-    note_names : list[str]
-        A list of alphabetic note names from the naturals, sharps, or flats.
-
-    Returns
-    -------
-    bool
-        True, if each of ABCDEFG appears exactly once.
-
     Raises
     ------
     NoteNameError
@@ -682,16 +503,6 @@ def decode_numeric_keyword(term: str) -> int:
     Auxiliary function that converts certain terms into the numbers they 
     represent.
 
-    Parameters
-    ----------
-    term : str
-        One of a limited number of structural terms
-
-    Returns
-    -------
-    int
-        The corresponding numerical meaning of the term.
-
     Examples
     --------
     >>> decode_numeric_keyword('tertial')
@@ -710,18 +521,6 @@ def decode_numeric_keyword(term: str) -> int:
 def encode_numeric_keyword(number: int, keyword_type: str) -> str|None:
     '''
     Return a keyword for a given numeral and keyword type.
-
-    Parameters
-    ----------
-    number : int
-        The number that will be encoded into a keyword.
-    keyword_type : str {'polyad', 'tonal', 'basal'}
-        The type of number word being requested
-
-    Returns
-    -------
-    str
-        A numeric keyword representing the given number and keyword type.
 
     Examples
     --------
@@ -742,16 +541,6 @@ def is_scientific(note_name: str) -> bool:
     '''
     Return true if the given note name uses scientific notation.
 
-    Parameters
-    ----------
-    note_name : str
-        A note name you want to test.
-
-    Returns
-    -------
-    bool
-        True, if the note name ends with a scientific numeral.
-
     Examples
     --------
     >>> is_scientific('C##')
@@ -766,16 +555,6 @@ def get_accidentals(note_name: str
                     ) -> tuple[str, ...]:
     '''
     Tries to identify which accidental group the given note name belongs to.
-
-    Parameters
-    ----------
-    note_name : str
-        A note name you want to test
-
-    Returns
-    -------
-    tuple[str, ...]
-        The accidentals for this type, or binomials, if it is a natural note.
     '''
 
     if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
