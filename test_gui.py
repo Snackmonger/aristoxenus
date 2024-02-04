@@ -6,6 +6,6 @@ from gui import scale_info_panel, guitar_diagram_widget
 # app.mainloop()
 
 
-app = guitar_diagram_widget.DiagramWidget()
+app = guitar_diagram_widget.FretboardDiagramWidget()
 
 app.mainloop()
