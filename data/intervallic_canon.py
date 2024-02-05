@@ -100,5 +100,8 @@ HEPTATONIC_ORDER: tuple[int, ...] = (DIATONIC_SCALE,
                                      PALEOCHROMATIC_SCALE)
 
 
-HEPTATONIC_SYSTEM: dict[int, str] = dict(
+HEPTATONIC_SYSTEM_BY_NUMBER: dict[int, str] = dict(
     zip(HEPTATONIC_ORDER, keywords.HEPTATONIC_ORDER))
+
+HEPTATONIC_SYSTEM_BY_NAME: dict[str, int] = dict(
+    zip(keywords.HEPTATONIC_ORDER, HEPTATONIC_ORDER))

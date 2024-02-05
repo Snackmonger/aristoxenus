@@ -45,13 +45,13 @@ def guitar_fretboard(strings: int = 6,
     return tuple(diagram)
 
 
-def simplify_guitar_fretboard(diagram: GuitarFretboard) -> GuitarFretboard:
+def simplify_guitar_fretboard(fretboard: GuitarFretboard) -> GuitarFretboard:
     '''
     Take an array representing a guitar fretboard and make sure that all note
     names are in plain (not scientific) notation.
     '''
     new_diagram: list[tuple[str, ...]] = []
-    for string in diagram:
+    for string in fretboard:
         new_diagram.append(tuple(map(nomenclature.decode_enharmonic, string)))
 
     return tuple(new_diagram)
@@ -63,7 +63,7 @@ def standard_fretboard() -> GuitarFretboard:
     return simplify_guitar_fretboard(guitar_fretboard())
 
 
-def filter_guitar_fretboard(guitar_tuning: GuitarFretboard,
+def filter_guitar_fretboard(fretboard: GuitarFretboard,
                             note_list: tuple[str, ...] | list[str]
                             ) -> GuitarFretboard:
     '''
@@ -72,7 +72,7 @@ def filter_guitar_fretboard(guitar_tuning: GuitarFretboard,
     '''
     diagram: list[tuple[str, ...]] = []
     new_string: list
-    for string in guitar_tuning:
+    for string in fretboard:
         new_string = []
         for note in string:
             new_string.append(note if note in note_list else "-")
@@ -81,7 +81,7 @@ def filter_guitar_fretboard(guitar_tuning: GuitarFretboard,
     return tuple(diagram)
 
 
-def get_positional_fingering(guitar_fingering: GuitarFretboard,
+def get_positional_fingering(fretboard: GuitarFretboard,
                              starting_column: int,
                              span: int
                              ) -> GuitarFretboard:
@@ -90,11 +90,48 @@ def get_positional_fingering(guitar_fingering: GuitarFretboard,
     of a positional fingering.
     '''
     diagram: list[tuple[str, ...]] = []
-    for string in guitar_fingering:
+    for string in fretboard:
         diagram.append(tuple(note for index, note in enumerate(
             string) if index in range(starting_column, starting_column+span)))
 
     return tuple(diagram)
+
+
+def check_fingering(scale: list[str], fretboard_slice: GuitarFretboard) -> bool:
+    """Check that the given slice of a fretboard is large enough to contain all
+    the notes of the scale making up a double octave plus a third.
+    
+    This function is intended to evaluate the fingerings in standard 
+    tuning only."""
+
+    fretboard_slice = filter_guitar_fretboard(fretboard_slice, scale)
+
+    # If the lowest note is not in the scale, we are in the wrong position.
+    if fretboard_slice[0][0] not in scale:
+        return False
+    
+    triples = [x for x in fretboard_slice[0] if x != "-"] + [fretboard_slice[1][2]]
+    doubles = [x for x in scale if x not in triples]
+    flatten = [x for y in fretboard_slice for x in y]
+
+    # We expect a double octave + a third, thus 7 + 7 + 3, 
+    # but a perfect fifth may also be doubled.
+    if 17 > len(flatten) > 18:
+        return False
+    
+    # If the diagram passed the previous test, it should
+    # be valid, but let's check the expected proportions
+    # just to be sure.
+    for double in doubles:
+        if flatten.count(double) != 2:
+            return False
+    for triple in triples:
+        if flatten.count(triple) != 3:
+            return False
+    return True
+
+
+    
 
 
 def convert_fretboard_to_relative(diagram: GuitarFretboard,
@@ -233,6 +270,12 @@ class GuitarFingering:
                 string.append(FingeringNode(i, fret, note_name=name))
             grid.append(string)
         return grid
+    
+
+    def lowest_note(self) -> bool:
+        """Indicate whether the current diagram is set so that the
+        lowest note of the diagram is occupied by an active node."""
+        return self.grid[0][0].is_active
 
 
     def clear_diagram(self) -> None:

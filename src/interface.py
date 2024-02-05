@@ -43,7 +43,7 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
         - optimal_keynote
     '''
     
-    base_scale: int = {value: key for key, value in intervallic_canon.HEPTATONIC_SYSTEM.items()}[scale_name]
+    base_scale: int = {value: key for key, value in intervallic_canon.HEPTATONIC_SYSTEM_BY_NUMBER.items()}[scale_name]
     modal_rotations: int = keywords.MODAL_NAME_SERIES.index(modal_name)
     for _ in range(modal_rotations):
         base_scale = bitwise.previous_inversion(base_scale, 12)

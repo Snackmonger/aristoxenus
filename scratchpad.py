@@ -3,7 +3,7 @@ import pandas as pd
 from data import intervallic_canon, keywords
 from src import bitwise
 
-x = intervallic_canon.HEPTATONIC_SYSTEM
+x = intervallic_canon.HEPTATONIC_SYSTEM_BY_NUMBER
 
 data = {}
 for scale, name in x.items():

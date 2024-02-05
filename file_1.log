@@ -1,0 +1,134 @@
+2024-02-04 23:26:35.407 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:26:35.407 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:26:41.397 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 1371
+2024-02-04 23:26:41.397 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 1371
+2024-02-04 23:26:41.399 | DEBUG    | gui.guitar_diagram_widget:change_scale:126 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-04 23:26:41.399 | DEBUG    | gui.guitar_diagram_widget:change_scale:126 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-04 23:26:41.399 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 1371
+2024-02-04 23:26:41.399 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 1371
+2024-02-04 23:28:49.708 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:28:49.708 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:31:05.624 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:31:05.624 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:31:18.419 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:31:18.419 | DEBUG    | gui.guitar_diagram_widget:__get_scale:115 - get scale: 2741
+2024-02-04 23:31:52.480 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2741
+2024-02-04 23:31:52.480 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2741
+2024-02-04 23:31:56.382 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:31:56.382 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:31:56.383 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-04 23:31:56.383 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-04 23:31:56.383 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:31:56.383 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:32:03.051 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:32:03.051 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:32:03.051 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'E', 'F', 'G', 'A', 'B']
+2024-02-04 23:32:03.051 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'E', 'F', 'G', 'A', 'B']
+2024-02-04 23:32:03.053 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:32:03.053 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:32:09.486 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2745
+2024-02-04 23:32:09.486 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2745
+2024-02-04 23:32:09.487 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D#|Eb', 'E', 'F', 'G', 'A', 'B']
+2024-02-04 23:32:09.487 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D#|Eb', 'E', 'F', 'G', 'A', 'B']
+2024-02-04 23:32:09.488 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2745
+2024-02-04 23:32:09.488 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2745
+2024-02-04 23:32:19.036 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2677
+2024-02-04 23:32:19.036 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2677
+2024-02-04 23:32:19.037 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'F#|Gb', 'A', 'B']
+2024-02-04 23:32:19.037 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'F#|Gb', 'A', 'B']
+2024-02-04 23:32:19.039 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2677
+2024-02-04 23:32:19.039 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2677
+2024-02-04 23:32:40.810 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2869
+2024-02-04 23:32:40.810 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2869
+2024-02-04 23:32:40.811 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'G#|Ab', 'A', 'B']
+2024-02-04 23:32:40.811 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'G#|Ab', 'A', 'B']
+2024-02-04 23:32:40.841 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2869
+2024-02-04 23:32:40.841 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2869
+2024-02-04 23:32:43.913 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2485
+2024-02-04 23:32:43.913 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2485
+2024-02-04 23:32:43.916 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'G', 'G#|Ab', 'B']
+2024-02-04 23:32:43.916 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'G', 'G#|Ab', 'B']
+2024-02-04 23:32:43.916 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2485
+2024-02-04 23:32:43.916 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2485
+2024-02-04 23:32:50.710 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 3253
+2024-02-04 23:32:50.710 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 3253
+2024-02-04 23:32:50.710 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'G', 'A#|Bb', 'B']
+2024-02-04 23:32:50.710 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'D', 'E', 'F', 'G', 'A#|Bb', 'B']
+2024-02-04 23:32:50.716 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 3253
+2024-02-04 23:32:50.716 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 3253
+2024-02-04 23:33:08.453 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:33:08.453 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:33:08.454 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-04 23:33:08.454 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-04 23:33:08.456 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:33:08.456 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 1371
+2024-02-04 23:33:17.474 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:33:17.474 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:33:17.474 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'E', 'F', 'G', 'A', 'B']
+2024-02-04 23:33:17.474 | DEBUG    | gui.guitar_diagram_widget:change_scale:127 - try to change scale ['C', 'C#|Db', 'E', 'F', 'G', 'A', 'B']
+2024-02-04 23:33:17.474 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-04 23:33:17.474 | DEBUG    | gui.guitar_diagram_widget:__get_scale:116 - get scale: 2739
+2024-02-05 00:15:47.422 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2741
+2024-02-05 00:15:47.422 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2741
+2024-02-05 00:15:51.227 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:15:51.227 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:15:51.227 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-05 00:15:51.227 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-05 00:15:51.227 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:15:51.227 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:16:05.042 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2741
+2024-02-05 00:16:05.042 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2741
+2024-02-05 00:16:32.160 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:32.160 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:32.160 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D#|Eb', 'E', 'F', 'G', 'A', 'B']
+2024-02-05 00:16:32.160 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D#|Eb', 'E', 'F', 'G', 'A', 'B']
+2024-02-05 00:16:32.160 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:32.160 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:34.822 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2675
+2024-02-05 00:16:34.822 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2675
+2024-02-05 00:16:34.822 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'E', 'F', 'F#|Gb', 'A', 'B']
+2024-02-05 00:16:34.822 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'E', 'F', 'F#|Gb', 'A', 'B']
+2024-02-05 00:16:34.823 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2675
+2024-02-05 00:16:34.823 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2675
+2024-02-05 00:16:37.936 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 3253
+2024-02-05 00:16:37.936 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 3253
+2024-02-05 00:16:37.937 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'G', 'A#|Bb', 'B']
+2024-02-05 00:16:37.937 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'G', 'A#|Bb', 'B']
+2024-02-05 00:16:37.937 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 3253
+2024-02-05 00:16:37.937 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 3253
+2024-02-05 00:16:40.696 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2485
+2024-02-05 00:16:40.696 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2485
+2024-02-05 00:16:40.696 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'G', 'G#|Ab', 'B']
+2024-02-05 00:16:40.696 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'G', 'G#|Ab', 'B']
+2024-02-05 00:16:40.696 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2485
+2024-02-05 00:16:40.696 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2485
+2024-02-05 00:16:43.529 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2869
+2024-02-05 00:16:43.529 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2869
+2024-02-05 00:16:43.529 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'G#|Ab', 'A', 'B']
+2024-02-05 00:16:43.529 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'G#|Ab', 'A', 'B']
+2024-02-05 00:16:43.529 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2869
+2024-02-05 00:16:43.529 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2869
+2024-02-05 00:16:45.659 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2677
+2024-02-05 00:16:45.659 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2677
+2024-02-05 00:16:45.661 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'F#|Gb', 'A', 'B']
+2024-02-05 00:16:45.661 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D', 'E', 'F', 'F#|Gb', 'A', 'B']
+2024-02-05 00:16:45.661 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2677
+2024-02-05 00:16:45.661 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2677
+2024-02-05 00:16:49.053 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:49.053 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:49.055 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D#|Eb', 'E', 'F', 'G', 'A', 'B']
+2024-02-05 00:16:49.055 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'D#|Eb', 'E', 'F', 'G', 'A', 'B']
+2024-02-05 00:16:49.055 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:16:49.055 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2745
+2024-02-05 00:17:12.270 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2739
+2024-02-05 00:17:12.270 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2739
+2024-02-05 00:17:12.271 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'E', 'F', 'G', 'A', 'B']
+2024-02-05 00:17:12.271 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'E', 'F', 'G', 'A', 'B']
+2024-02-05 00:17:12.271 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2739
+2024-02-05 00:17:12.271 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 2739
+2024-02-05 00:17:23.721 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:17:23.721 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:17:23.721 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-05 00:17:23.721 | DEBUG    | gui.guitar_diagram_widget:change_scale:139 - try to change scale ['C', 'C#|Db', 'D#|Eb', 'E', 'F#|Gb', 'G#|Ab', 'A#|Bb']
+2024-02-05 00:17:23.721 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
+2024-02-05 00:17:23.721 | DEBUG    | gui.guitar_diagram_widget:__get_scale:114 - get scale: 1371
