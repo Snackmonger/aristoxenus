@@ -4,6 +4,7 @@ Aristoxenus Library DevLog
 
 .. contents:: Table of Contents
 
+
 01/02/2024
 ==========
 Wow! In a couple weeks it will be one year of learning programming with python. How far I've come, and yet how much there still is to learn! I have been distracted

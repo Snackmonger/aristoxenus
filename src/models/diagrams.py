@@ -8,7 +8,6 @@ from src import nomenclature, utils
 from data import (chord_symbols,
                   constants,
                   keywords)
-
 from data.annotations import GuitarFretboard
 from data.instrument_config import GUITAR_STANDARD_TUNING
 
@@ -97,43 +96,6 @@ def get_positional_fingering(fretboard: GuitarFretboard,
     return tuple(diagram)
 
 
-def check_fingering(scale: list[str], fretboard_slice: GuitarFretboard) -> bool:
-    """Check that the given slice of a fretboard is large enough to contain all
-    the notes of the scale making up a double octave plus a third.
-    
-    This function is intended to evaluate the fingerings in standard 
-    tuning only."""
-
-    fretboard_slice = filter_guitar_fretboard(fretboard_slice, scale)
-
-    # If the lowest note is not in the scale, we are in the wrong position.
-    if fretboard_slice[0][0] not in scale:
-        return False
-    
-    triples = [x for x in fretboard_slice[0] if x != "-"] + [fretboard_slice[1][2]]
-    doubles = [x for x in scale if x not in triples]
-    flatten = [x for y in fretboard_slice for x in y]
-
-    # We expect a double octave + a third, thus 7 + 7 + 3, 
-    # but a perfect fifth may also be doubled.
-    if 17 > len(flatten) > 18:
-        return False
-    
-    # If the diagram passed the previous test, it should
-    # be valid, but let's check the expected proportions
-    # just to be sure.
-    for double in doubles:
-        if flatten.count(double) != 2:
-            return False
-    for triple in triples:
-        if flatten.count(triple) != 3:
-            return False
-    return True
-
-
-    
-
-
 def convert_fretboard_to_relative(diagram: GuitarFretboard,
                                   tonal_centre: str
                                   ) -> GuitarFretboard:
@@ -181,6 +143,12 @@ class FingeringNode:
                  note_name: str | None = None,
                  scale_degree: str | None = None,
                  is_active: bool = False,
+                 is_scale_tone: bool = False,
+                 is_chord_tone: bool = False,
+                 is_chromatic_tone: bool = False,
+                 shape: str = "circle",
+                 shape_colour: str = "black",
+                 text_colour: str = "white",
                  rendering_mode: str = keywords.FRET
                  ) -> None:
 
@@ -194,12 +162,12 @@ class FingeringNode:
         self.scale_degree: str | None = scale_degree
         self.rendering_mode: str = rendering_mode
         self.is_active: bool = is_active
-        self.is_scale_tone: bool = False
-        self.is_chord_tone: bool = False
-        self.is_chromatic_tone: bool = False
-        self.shape: str = "triangle"
-        self.shape_colour: str = "black"
-        self.text_colour: str = "white"
+        self.is_scale_tone: bool = is_scale_tone
+        self.is_chord_tone: bool = is_chord_tone
+        self.is_chromatic_tone: bool = is_chromatic_tone
+        self.shape: str = shape
+        self.shape_colour: str = shape_colour
+        self.text_colour: str = text_colour
 
 
     def __repr__(self) -> str:
@@ -229,11 +197,7 @@ class GuitarFingering:
     """Representation of a 4- or 5-fret fingering diagram in standard tuning, 
     that can display its nodes as names, intervals, or fingers, and that can
     turn nodes on and off in order to show arpeggios nested within scale 
-    forms.
-
-    The fingering diagrams assume that we are using standard tuning, and are
-    mostly intended for use with the diatonic scale and those scales that are
-    related by 1 transformation but that do not contain a hemiolion."""
+    forms."""
 
     def __init__(self,
                  position: int,
@@ -255,10 +219,10 @@ class GuitarFingering:
         # Override the default fingering diagram, if not None
         self.override: list[list[str]] | None = None
 
-        self.grid: list[list[FingeringNode]] = self.__set_up_grid()
+        self.grid: list[list[FingeringNode]] = self.refresh_grid()
         
 
-    def __set_up_grid(self) -> list[list[FingeringNode]]:
+    def refresh_grid(self) -> list[list[FingeringNode]]:
         """Create an array of FingeringNodes based on the information in the 
         ``fretboard`` and ``position`` and ``width`` attributes."""
         grid: list[list[FingeringNode]] = []
@@ -272,6 +236,7 @@ class GuitarFingering:
         return grid
     
 
+    @property
     def lowest_note(self) -> bool:
         """Indicate whether the current diagram is set so that the
         lowest note of the diagram is occupied by an active node."""
@@ -293,21 +258,52 @@ class GuitarFingering:
 
 
     def mask_note_names(self, note_names: list[str]) -> None:
-        """Switch OFF any node that does not have a note named in the given 
-        list."""
+        """Switch ON any node that contains one of the given note names, 
+        and switch OFF any node that doesn't."""
         for string in self.grid:
             for note in string:
                 note.is_active = note.note_name in note_names
 
 
+    def define_scale(self, note_names: list[str]) -> None:
+        """Raise the scale flag for any node that contains a scale tone, and
+        conversely, raise the chromatic flag for any node that does not 
+        contain a scale tone."""
+        for string in self.grid:
+            for note in string:
+                note.is_scale_tone = note.note_name in note_names
+                note.is_chromatic_tone = note.note_name not in note_names
+
+
+    def define_chord(self, note_names: list[str]) -> None:
+        """Raise the chord flag for any node that contains a chord tone."""
+        for string in self.grid:
+            for note in string:
+                note.is_chord_tone = note.note_name in note_names
+
+
     def define_intervals(self, interval_map: dict[str, str]) -> None:
         """Add intervals to the fretboard diagram. This entails defining a key
         note and generating a map of note names to intervals, relative to that
-        key note (use the ``get_interval_map`` function to do this)"""
+        key note (use the ``get_interval_map`` function to do this).
+        
+        The intervals will exist for the whole fretboard; it is not necessary
+        to redefine intervals for a different position or scale, but a new key
+        does require new intervals."""
         for string in self.grid:
             for note in string:
                 if note.note_name:
                     note.scale_degree = interval_map[note.note_name]
+
+
+    def fade_scale(self, colour: str = "gray") -> None:
+        """Recolour any node that contains a scale tone but does not contain 
+        a chord tone. This allows us to show arpeggios in full-colour against
+        their parent scale forms in faded colour."""
+        for string in self.grid:
+            for note in string:
+                if note.is_scale_tone and not note.is_chord_tone:
+                    note.shape_colour = colour
                     
 
     def apply_fingering(self) -> None:

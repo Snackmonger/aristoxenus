@@ -30,16 +30,18 @@ Idea: what if we display a transparency of a hand over the fretboard instead of
 displaying finger names in the nodes?
 """
 
-from random import random
+from random import choice
 from tkinter import *
 from tkinter.ttk import *
+
+from loguru import logger
 
 from data.intervallic_canon import DIATONIC_SCALE, HEPTATONIC_SYSTEM_BY_NAME, HEPTATONIC_SYSTEM_BY_NUMBER
 
 from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
-from src.models.diagrams import (GuitarFingering, check_fingering,
+from src.models.diagrams import (GuitarFingering, check_position,
                                  get_interval_map, get_positional_fingering,
                                  standard_fretboard)
 from data.keywords import (OPEN, 
@@ -66,21 +68,18 @@ class FretboardDiagramWidget(Tk):
 
         # Pre-set values for testing. This initializer will have to change
         # for the real version of the widget.
-        self.node_repr_style: str = NOTE_NAME
         self.diagram: GuitarFingering = GuitarFingering(5, standard_fretboard(), 5, INDEX)
-
-        self.stretch: str = INDEX
-        self.rows: int = len(self.diagram.grid)
-        self.columns: int = len(self.diagram.grid[0])
-        self.diagram.flash_diagram()
 
         self.current_scale: str = "diatonic"
         self.current_key: str = "C"
         self.current_position: int = 5
+        self.current_width: int = 5
+        self.current_rendering_style: str = "note_name"
+        self.current_stretch: str = "index"
         
         self.diagram.define_intervals(get_interval_map("C"))
         self.diagram.apply_fingering()
-        self.change_rendering_style("note_name")
+
 
 
         # Set up tkinter frames.
@@ -91,79 +90,112 @@ class FretboardDiagramWidget(Tk):
         self.canvas.grid()
         self.canvas.update()
         self.draw_grid()
-        self.display_active_nodes()
+        self.draw_active_nodes()
         self.display_frame.grid(column=0, row=0)
 
         # Right: Controls
         self.control_frame: Frame = Frame(self)
         self.scale_selection = StringVar(self)
+        self.position_selection = IntVar(self)
+        self.stretch_selection = StringVar(self)
+        self.render_selection = StringVar(self)
 
-        # Control 1: Scales dropdown menu
+        # Scales dropdown menu
         scales =  HEPTATONIC_ORDER
         self.scale_selection.set(scales[0])
         scales_ = OptionMenu(self.control_frame, self.scale_selection, scales[0], *scales, command=self.change_scale)
         scales_.grid(column=0, row=0)
         scales_.config(width=15)
 
+        # Position dropdown menu
+        self.position_selection.set(self.positions[0])
+        self.positions_ = OptionMenu(self.control_frame, self.position_selection, str(self.positions[0]), *[str(x) for x in self.positions], command=self.change_position)
+        self.positions_.grid(column=0, row=1)
+        self.positions_.config(width=15)
+
+        # Stretch dropdown menu
+        stretches = ["index", "pinky"]
+        self.stretch_selection.set(str(stretches[0]))
+        stretches_ = OptionMenu(self.control_frame, self.stretch_selection, str(stretches[0]), *stretches, command=self.change_stretch)
+        stretches_.grid(column=0, row=2)
+        stretches_.config(width=15)
+
+
 
         self.control_frame.grid(column=1, row=0)
-        self.mask_note_names(self.__get_scale(self.current_scale))
+        self.mask_note_names(self.scale_notes)
 
-    def __get_scale(self, scale_name: str) -> list[str]:        
-        scale: int = HEPTATONIC_SYSTEM_BY_NAME[scale_name]
+    @property
+    def positions(self) -> list[int]:
+        return [i for i, note in enumerate(self.diagram.fretboard[0]) if note in self.scale_notes and 0 < i < 16]
+
+
+    @property
+    def rows(self) -> int:
+        return len(self.diagram.grid)
+        
+    @property
+    def columns(self) -> int:
+        return len(self.diagram.grid[0])
+
+    @property
+    def scale_notes(self) -> list[str]:        
+        scale: int = HEPTATONIC_SYSTEM_BY_NAME[self.current_scale]
         return render_plain(scale, shift_list(chromatic(), self.current_key))
     
 
-    def refresh_diagram(self, position: int, width: int, stretch: str) -> None:
-        self.diagram = GuitarFingering(position, standard_fretboard(), width, stretch)
+    def update_diagram(self) -> None:
+        self.diagram = GuitarFingering(self.current_position, standard_fretboard(), self.current_width, self.current_stretch)
+        self.diagram.define_intervals(get_interval_map(self.current_key))
+
+        # if displaytype = scale, draw all active nodes
+
+        self.canvas.delete("all")
+        self.draw_grid()
+        self.draw_active_nodes()
 
 
-    def change_position(self, position: int) -> None:
+        
+
+
+    def change_position(self, *args) -> None:
         """Adjust the diagram to display a different position of the 
         fretboard."""
-        width = 4 if check_fingering(
-            self.__get_scale(self.current_scale), 
-            get_positional_fingering(
-                self.diagram.fretboard, position, 4)) else 5
-        
-        self.diagram = GuitarFingering(position, 
-                                       standard_fretboard(),
-                                       width, 
-                                       self.stretch)
+        self.current_position = self.position_selection.get()
+        self.update_diagram()
+        self.draw_grid()
+        self.draw_active_nodes()
+        self.mask_note_names(self.scale_notes)
 
 
     def change_scale(self, *args) -> None:
         """Change the scale that underlies the diagram."""
         self.current_scale = self.scale_selection.get()
-        self.mask_note_names(self.__get_scale(self.current_scale))
-        if not self.diagram.lowest_note:
-            adjustment = random.choice(1, -1)
-            self.change_position(self.current_position + adjustment)
-            return self.change_scale()
-        
-        
-
+        self.mask_note_names(self.scale_notes)
+            
 
     def change_stretch(self, *args) -> None:
         """Change which finger stretches in the diagram."""
-        # self.stretch = self.stretch_selection.get()
+        self.current_stretch = self.stretch_selection.get()
+        self.diagram.stretch = self.current_stretch
+        self.diagram.apply_fingering()
+
 
     def change_key(self, *args) -> None:
         # self.current_key = self.key_selection.get()
         ...
 
 
-    def change_rendering_style(self, style: str) -> None:
+    def change_rendering_style(self, *args) -> None:
         """Indicate a new rendering style.."""
-        for string in self.diagram.grid:
-            for note in string:
-                note.rendering_mode = style
+        self.current_rendering_style = self.render_selection.get()
+        self.update_diagram()
 
 
     def mask_note_names(self, scale: list[str]) -> None:
         """Set the diagram to display only note names in the given list."""
         self.diagram.mask_note_names(scale)
-        self.display_active_nodes()
+        self.draw_active_nodes()
 
 
     # Mask the scale so that only scale tones are allowed to show.
@@ -179,7 +211,7 @@ class FretboardDiagramWidget(Tk):
         """Draw the grid based on the dimensions of the diagram object."""
         width: int = self.canvas.winfo_width()
         height: int = self.canvas.winfo_height()
-        self.canvas.delete("grid_line")
+        self.canvas.delete("all")
 
         for i in range(0, width, width//self.columns):
             self.canvas.create_line([(i, 0), (i, height)], tags="grid_line")
@@ -189,7 +221,7 @@ class FretboardDiagramWidget(Tk):
         self.canvas.grid()
 
 
-    def display_active_nodes(self) -> None:
+    def draw_active_nodes(self) -> None:
         """Reload the display to show only the diagram's active nodes."""
 
         self.canvas.delete("node_shape")
@@ -238,7 +270,7 @@ class FretboardDiagramWidget(Tk):
                                             centre[1],
                                             text=repr(note),
                                             fill=note.text_colour,
-                                            font=("Times", "16", "bold"),
+                                            font=("Times", "12", "bold"),
                                             tags="node_text"
                                             )
 

@@ -8,4 +8,5 @@ from gui import scale_info_panel, guitar_diagram_widget
 
 app = guitar_diagram_widget.FretboardDiagramWidget()
 
+
 app.mainloop()
