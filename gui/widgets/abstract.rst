@@ -2,8 +2,11 @@ WIDGET ABSTRACTS
 ================
 
 
-FRETBOARD SLICE DIAGRAM WIDGET
-++++++++++++++++++++++++++++++
+FINGERING DIAGRAM WIDGET
+++++++++++++++++++++++++
+
+The fingering diagram widget displays a grid representing the frets on a section of a guitar fretboard. In its default form, it allows the user to 
+choose various options for displaying scale and arpeggio forms in positional fingerings of 4 or 5 fret spans in standard tuning. 
 
 STRING FINGERING PANEL:
     For each STRING in the diagram, we have an option to define FINGER STRETCH, so that the user 
@@ -41,10 +44,15 @@ NODE OPTIONS:
             combobox widget
 
 ARPEGGIO MODE:
-    Arpeggio mode allows the user to see how arpeggios fit into positional fingerings. It does this by
-    making scale notes look like grey circles, but chord tones still have the same node options available as in
-    scale mode. The current chord is chosen from a dropdown menu of all scale degrees. Arpeggio mode also has a 
-    dropdown menu to choose the basic composition of the chord: tertial, quartal, triad, tetrad, pentad, hexad.
+    Arpeggio mode allows the user to see how arpeggios fit into positional fingerings. 
+    
+    It does this by making scale notes look like grey circles, but chord tones still have the same node options available as in
+    scale mode. 
+    
+    The current chord is chosen from a dropdown menu of all scale degrees. 
+    
+    Arpeggio mode also has a dropdown menu to choose the basic composition of the chord: tertial, quartal, triad, tetrad, pentad, hexad.
+    
     Arpeggio mode also has a toggle to decide whether the intervals are represented from the tonic of the parent 
     scale, or from the root of the current chord.
 

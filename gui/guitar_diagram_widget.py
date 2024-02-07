@@ -41,8 +41,8 @@ from data.intervallic_canon import DIATONIC_SCALE, HEPTATONIC_SYSTEM_BY_NAME, HE
 from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
-from src.models.diagrams import (GuitarFingering, check_position,
-                                 get_interval_map, get_positional_fingering,
+from src.models.diagrams import (GuitarFingering, 
+                                 get_interval_map, 
                                  standard_fretboard)
 from data.keywords import (OPEN, 
                            CLOSE, 
@@ -75,7 +75,7 @@ class FretboardDiagramWidget(Tk):
         self.current_position: int = 5
         self.current_width: int = 5
         self.current_rendering_style: str = "note_name"
-        self.current_stretch: str = "index"
+        self.current_fingering_type: str = "index"
         
         self.diagram.define_intervals(get_interval_map("C"))
         self.diagram.apply_fingering()
@@ -145,7 +145,7 @@ class FretboardDiagramWidget(Tk):
     
 
     def update_diagram(self) -> None:
-        self.diagram = GuitarFingering(self.current_position, standard_fretboard(), self.current_width, self.current_stretch)
+        self.diagram = GuitarFingering(self.current_position, standard_fretboard(), self.current_width, self.current_fingering_type)
         self.diagram.define_intervals(get_interval_map(self.current_key))
 
         # if displaytype = scale, draw all active nodes
@@ -176,8 +176,8 @@ class FretboardDiagramWidget(Tk):
 
     def change_stretch(self, *args) -> None:
         """Change which finger stretches in the diagram."""
-        self.current_stretch = self.stretch_selection.get()
-        self.diagram.stretch = self.current_stretch
+        self.current_fingering_type = self.stretch_selection.get()
+        self.diagram.stretch = self.current_fingering_type
         self.diagram.apply_fingering()
 
 

@@ -203,7 +203,7 @@ class GuitarFingering:
                  position: int,
                  fretboard: GuitarFretboard,
                  width: int,
-                 stretch: str | None = None
+                 fingering_type: str | None = None
                  ) -> None:
         
         # The fretboard is an absolute reference
@@ -214,7 +214,7 @@ class GuitarFingering:
         # Width defines how many frets are covered in the fingering (4 or 5)
         self.width: int = width
         # Stretch defines which finger must cover two frets if width == 5.
-        self.stretch: str | None = stretch
+        self.stretch: str | None = fingering_type
 
         # Override the default fingering diagram, if not None
         self.override: list[list[str]] | None = None
