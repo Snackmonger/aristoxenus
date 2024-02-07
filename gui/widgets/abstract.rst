@@ -11,12 +11,16 @@ STRING FINGERING PANEL:
 
 SCALE FORM PANEL:
     Allows the user to set the basic parameters of the diagram.
-        KEYNOTE :: dropdown menu, always in binomial form.
-        SCALE ::   dropdown menu, derived from the heptatonic transformations.
-        POSITION :: dropdown menu, with values derived from the scale's notes on the lowest string.
-                    Position options need to be reloaded each time the scale is changed, therefore, 
-                    we should always force the position dropdown menu to one of the available options,
-                    so it can't accidentally remain set on a position that's no longer legal.
+
+        KEYNOTE
+            dropdown menu, always in binomial form.
+        SCALE
+            dropdown menu, derived from the heptatonic transformations.
+        POSITION 
+            dropdown menu, with values derived from the scale's notes on the lowest string.
+            Position options need to be reloaded each time the scale is changed, therefore, 
+            we should always force the position dropdown menu to one of the available options,
+            so it can't accidentally remain set on a position that's no longer legal.
 
 MAIN PANEL:
     The main panel will be different depending on which mode the program is in.
@@ -26,10 +30,15 @@ SCALE MODE:
 
 NODE OPTIONS:
     Nodes in the diagrams will have some options so the user can control how the diagram looks.
-        SHAPE :: MenuOption(circle, triangle, inverse triangle, square, diamond)
-        COLOUR :: this could be a colour picker widget? boxes? radial dial?
-        TEXTCOLOUR :: same
-        TEXTSIZE :: combobox widget
+        
+        SHAPE
+            MenuOption(circle, triangle, inverse triangle, square, diamond)
+        COLOUR 
+            this could be a colour picker widget? boxes? radial dial?
+        TEXTCOLOUR 
+            same
+        TEXTSIZE 
+            combobox widget
 
 ARPEGGIO MODE:
     Arpeggio mode allows the user to see how arpeggios fit into positional fingerings. It does this by
