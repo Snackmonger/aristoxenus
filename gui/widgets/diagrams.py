@@ -19,28 +19,27 @@ class DiagramView(Frame):
         self.master = master
         self.callbacks: dict[str, Callable[..., Any]]
 
-        # Frame 1: Diagram
+        # Frame 1: Fingering Diagram (LEFT, PERMANENT)
         self.canvas: Canvas
 
-
-        # Frame 2: Fingering
-        self.fingering_panel: Frame 
+        # Frame 2: String-Fingering Controls (RIGHT, PERMANENT)
+        self.fingering_panel: Frame
         # for string in diagram, a button toggle i or e
         
-        # Frame 3: Scale selector
+        # Frame 3: Scale selector (RIGHT, PERMANENT)
         self.scale_selection: OptionMenu
         self.key_selection: OptionMenu
         self.position_selection: OptionMenu
 
-        # Frame 4: Main Option Panel
+        # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
         self.mode_toggle: Button # change state
         self.current_main_panel: Frame
 
-        # Frame 4a: Scale Mode Panel
+        # Frame 4a: Scale Mode Panel (RIGHT, STATE)
         self.scale_panel: Frame
         # for interval in scale, a subpanel of frame 5
 
-        # Frame 4b: Arpeggio Mode Panel
+        # Frame 4b: Arpeggio Mode Panel (RIGHT, STATE)
         self.arpeggio_panel: Frame
 
         # Frame 5: Node Options Subpanel
