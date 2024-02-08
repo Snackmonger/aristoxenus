@@ -173,5 +173,9 @@ tracking pitch relationships. A piano is treated in fundamentally the same way a
 based on size (although some certainly do). The disadvantage of my way is that every interval structure needs to track its individual expected number of bits, because we will 
 inevitably lose intervals to leading zeroes if we try to rotate the structure without knowing. A second disadvantage is that our theoretical structure might exceed the 108-note-name 
 limit (artificially) imposed by the `nomenclature` module. All in all, these seem like pretty minor concessions for what is otherwise a pretty straightforward and 
-robust way of handling pitch relationships.
+robust way of handling pitch relationships. 
+(Edit: 08/02/2024 -- after writing the Java version of the bitwise module, I came to realize that Python treats me with kid gloves in this respect. In Java (and, I gather, most 'serious' languages), you deal with integer
+types that have specific limits based on the number of bits (long, short, etc.), and we cannot simply keep left shifting numbers *ad infinitum*. Fortunately the Java BigInteger class helps to smooth
+out the edges (in the same way that python's integers automatically change size when needed), but really this is like training wheels preventing me from actually having to deal 
+with the underlying limitations of the numerical data types, which would have been a valuable learning experience)
 
