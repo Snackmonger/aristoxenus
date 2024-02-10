@@ -69,101 +69,115 @@ CHORD_FLAT_13: str = constants.FLAT_SYMBOL + CHORD_13
 CHORD_SHARP_14: str = constants.SHARP_SYMBOL + CHORD_14
 CHORD_FLAT_14: str = constants.FLAT_SYMBOL + CHORD_14
 
-# Symbols we use to build extension formats maj9, dim11, etc.
-# The resulting chords have nonexplicit structures (e.g. 13 implies 9 and 11)
-CHORD_MAJOR_SYMBOL_LIST: list[str] = [
-    CHORD_MAJ, CHORD_MAJ_DELTA, CHORD_M_UPPER]
-CHORD_MINOR_SYMBOL_LIST: list[str] = [CHORD_MIN, CHORD_M_LOWER, CHORD_MINUS]
-CHORD_AUGMENTED_SYMBOL_LIST: list[str] = [CHORD_AUG, CHORD_PLUS, CHORD_AUG_5]
+# Groups of chord symbols that serve as bases for extended chords (maj9,
+# dim11, etc.) that have nonexplicit structures (e.g. maj13 also implies
+# 9 and 11)
+CHORD_MAJOR_SYMBOL_LIST: list[str] = [CHORD_MAJ,
+                                      CHORD_MAJ_DELTA,
+                                      CHORD_M_UPPER]
+CHORD_MINOR_SYMBOL_LIST: list[str] = [CHORD_MIN,
+                                      CHORD_M_LOWER,
+                                      CHORD_MINUS]
+CHORD_AUGMENTED_SYMBOL_LIST: list[str] = [CHORD_AUG,
+                                          CHORD_PLUS,
+                                          CHORD_AUG_5]
 CHORD_DIMINISHED_SYMBOL_LIST: list[str] = [CHORD_DIM, CHORD_DIM_5]
-CHORD_SYMBOL_LIST: list[str] = CHORD_MAJOR_SYMBOL_LIST + CHORD_MINOR_SYMBOL_LIST + \
-    CHORD_AUGMENTED_SYMBOL_LIST + CHORD_DIMINISHED_SYMBOL_LIST
+
+CHORD_SYMBOL_LIST: list[str] = CHORD_MAJOR_SYMBOL_LIST + \
+    CHORD_MINOR_SYMBOL_LIST + \
+    CHORD_AUGMENTED_SYMBOL_LIST + \
+    CHORD_DIMINISHED_SYMBOL_LIST
 
 # Chord symbols for which we normally expect NOT to have a p5
 CHORD_ALTERED_FIFTH_SYMBOL_LIST = CHORD_AUGMENTED_SYMBOL_LIST + \
-    CHORD_DIMINISHED_SYMBOL_LIST + [CHORD_FLAT_5, CHORD_SHARP_5]
+    CHORD_DIMINISHED_SYMBOL_LIST + \
+    [CHORD_FLAT_5, CHORD_SHARP_5]
 
-# Symbols that correspond explicitly to given intervals.
-basic_symbols: dict[int, list[str]] = {interval.HEMITONE: [CHORD_FLAT_2],
-                                       interval.TONE: [CHORD_2, CHORD_SUS_2],
-                                       interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3] + CHORD_MINOR_SYMBOL_LIST,
-                                       interval.DITONE: [CHORD_3, CHORD_FLAT_4] + CHORD_MAJOR_SYMBOL_LIST,
-                                       interval.DIATESSARON: [CHORD_SUS_4, CHORD_4, CHORD_SHARP_3],
-                                       interval.TRITONE: [CHORD_SHARP_4, CHORD_FLAT_5],
-                                       interval.DIAPENTE: [CHORD_5],
-                                       interval.COMPOUND_HEMITONE: [CHORD_SHARP_5, CHORD_FLAT_6],
-                                       interval.COMPOUND_TONE: [CHORD_6, CHORD_DOUBLE_FLAT_7],
-                                       interval.COMPOUND_HEMIOLION: [CHORD_7, CHORD_FLAT_7, CHORD_SHARP_6],
-                                       interval.COMPOUND_DITONE: [CHORD_MAJ_7, CHORD_M7_UPPER, CHORD_MAJ_DELTA7],
-                                       interval.DIAPASON: [CHORD_8],
-                                       bitwise.transpose_interval(interval.HEMITONE): [CHORD_FLAT_9],
-                                       bitwise.transpose_interval(interval.TONE): [CHORD_9],
-                                       bitwise.transpose_interval(interval.HEMIOLION): [CHORD_SHARP_9, CHORD_FLAT_10],
-                                       bitwise.transpose_interval(interval.DITONE): [CHORD_10, CHORD_FLAT_11],
-                                       bitwise.transpose_interval(interval.DIATESSARON): [CHORD_11, CHORD_SHARP_10],
-                                       bitwise.transpose_interval(interval.TRITONE): [CHORD_SHARP_11, CHORD_FLAT_12],
-                                       bitwise.transpose_interval(interval.DIAPENTE): [CHORD_12],
-                                       bitwise.transpose_interval(interval.COMPOUND_HEMITONE): [CHORD_FLAT_13, CHORD_SHARP_12],
-                                       bitwise.transpose_interval(interval.COMPOUND_TONE): [CHORD_13],
-                                       bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
-                                       bitwise.transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
-                                       bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
-                                       interval.MAJOR_SHARP_5: CHORD_AUGMENTED_SYMBOL_LIST,
-                                       interval.MINOR_FLAT_5: CHORD_DIMINISHED_SYMBOL_LIST,
-                                       }
+# Mapping of interval values to interval names.
+basic_symbols: dict[int, list[str]] = {
+    interval.HEMITONE: [CHORD_FLAT_2],
+    interval.TONE: [CHORD_2, CHORD_SUS_2],
+    interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3] + CHORD_MINOR_SYMBOL_LIST,
+    interval.DITONE: [CHORD_3, CHORD_FLAT_4] + CHORD_MAJOR_SYMBOL_LIST,
+    interval.DIATESSARON: [CHORD_SUS_4, CHORD_4, CHORD_SHARP_3],
+    interval.TRITONE: [CHORD_SHARP_4, CHORD_FLAT_5],
+    interval.DIAPENTE: [CHORD_5],
+    interval.COMPOUND_HEMITONE: [CHORD_SHARP_5, CHORD_FLAT_6],
+    interval.COMPOUND_TONE: [CHORD_6, CHORD_DOUBLE_FLAT_7],
+    interval.COMPOUND_HEMIOLION: [CHORD_7, CHORD_FLAT_7, CHORD_SHARP_6],
+    interval.COMPOUND_DITONE: [CHORD_MAJ_7, CHORD_M7_UPPER, CHORD_MAJ_DELTA7],
+    interval.DIAPASON: [CHORD_8],
+    bitwise.transpose_interval(interval.HEMITONE): [CHORD_FLAT_9],
+    bitwise.transpose_interval(interval.TONE): [CHORD_9],
+    bitwise.transpose_interval(interval.HEMIOLION): [CHORD_SHARP_9, CHORD_FLAT_10],
+    bitwise.transpose_interval(interval.DITONE): [CHORD_10, CHORD_FLAT_11],
+    bitwise.transpose_interval(interval.DIATESSARON): [CHORD_11, CHORD_SHARP_10],
+    bitwise.transpose_interval(interval.TRITONE): [CHORD_SHARP_11, CHORD_FLAT_12],
+    bitwise.transpose_interval(interval.DIAPENTE): [CHORD_12],
+    bitwise.transpose_interval(interval.COMPOUND_HEMITONE): [CHORD_FLAT_13, CHORD_SHARP_12],
+    bitwise.transpose_interval(interval.COMPOUND_TONE): [CHORD_13],
+    bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
+    bitwise.transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
+    bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
+    interval.MAJOR_SHARP_5: CHORD_AUGMENTED_SYMBOL_LIST,
+    interval.MINOR_FLAT_5: CHORD_DIMINISHED_SYMBOL_LIST,
+    }
 
+# Mapping of interval names to interval values.
 symbol_elements: dict[str, int] = {
     symbol: interval for interval, symbols in basic_symbols.items() for symbol in symbols}
 
+# Mapping of add2, add11, etc. to the indicated interval value.
 additive: dict[str, int] = {
     CHORD_ADD + symbol: interval for symbol, interval in symbol_elements.items()}
 
+# mapping of no3, no5, etc. to the indicated interval value.
 subtractive: dict[str, int] = {
     CHORD_NO + symbol: interval for symbol, interval in symbol_elements.items()}
 
-# The prescribed symbol for each interval in a chord, used by the parser
-# to generate a complete chord symbol. The parser does not necessarily
-# include every symbol (e.g. 5 is not normally included in the symbol)
-chord_symbol_prescription: dict[int, str] = {interval.HEMITONE: CHORD_FLAT_2,
-                                             interval.TONE: CHORD_2,
-                                             interval.HEMIOLION: CHORD_MIN,
-                                             interval.DITONE: CHORD_MAJ,
-                                             interval.DIATESSARON: CHORD_4,
-                                             interval.TRITONE: CHORD_FLAT_5,
-                                             interval.DIAPENTE: CHORD_5,
-                                             interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
-                                             interval.COMPOUND_TONE: CHORD_6,
-                                             interval.COMPOUND_HEMIOLION: CHORD_7,
-                                             interval.COMPOUND_DITONE: CHORD_MAJ_7,
-                                             interval.DIAPASON: CHORD_8,
-                                             bitwise.transpose_interval(interval.HEMITONE): CHORD_FLAT_9,
-                                             bitwise.transpose_interval(interval.TONE): CHORD_9,
-                                             bitwise.transpose_interval(interval.HEMIOLION): CHORD_SHARP_9,
-                                             bitwise.transpose_interval(interval.DITONE): CHORD_10,
-                                             bitwise.transpose_interval(interval.DIATESSARON): CHORD_11,
-                                             bitwise.transpose_interval(interval.TRITONE): CHORD_SHARP_11,
-                                             bitwise.transpose_interval(interval.DIAPENTE): CHORD_12,
-                                             bitwise.transpose_interval(interval.COMPOUND_HEMITONE): CHORD_FLAT_13,
-                                             bitwise.transpose_interval(interval.COMPOUND_TONE): CHORD_13,
-                                             bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
-                                             bitwise.transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
-                                             bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
-                                             }
+# A listing of prescribed interval names, to be used in chord symbols when the
+# chord is not associated with a known parent scale.
+chord_symbol_prescription: dict[int, str] = {
+    interval.HEMITONE: CHORD_FLAT_2,
+    interval.TONE: CHORD_2,
+    interval.HEMIOLION: CHORD_MIN,
+    interval.DITONE: CHORD_MAJ,
+    interval.DIATESSARON: CHORD_4,
+    interval.TRITONE: CHORD_FLAT_5,
+    interval.DIAPENTE: CHORD_5,
+    interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
+    interval.COMPOUND_TONE: CHORD_6,
+    interval.COMPOUND_HEMIOLION: CHORD_7,
+    interval.COMPOUND_DITONE: CHORD_MAJ_7,
+    interval.DIAPASON: CHORD_8,
+    bitwise.transpose_interval(interval.HEMITONE): CHORD_FLAT_9,
+    bitwise.transpose_interval(interval.TONE): CHORD_9,
+    bitwise.transpose_interval(interval.HEMIOLION): CHORD_SHARP_9,
+    bitwise.transpose_interval(interval.DITONE): CHORD_10,
+    bitwise.transpose_interval(interval.DIATESSARON): CHORD_11,
+    bitwise.transpose_interval(interval.TRITONE): CHORD_SHARP_11,
+    bitwise.transpose_interval(interval.DIAPENTE): CHORD_12,
+    bitwise.transpose_interval(interval.COMPOUND_HEMITONE): CHORD_FLAT_13,
+    bitwise.transpose_interval(interval.COMPOUND_TONE): CHORD_13,
+    bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
+    bitwise.transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
+    bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
+    }
 
 
-# The prescribed symbol for each interval in absolute contexts.
-# We use this when we need to describe structures with other than 7 notes, or
-# if we're in a context where we don't know which notes might be relevant.
-interval_symbol_prescription: dict[int, str] = {interval.UNISON: '1',
-                                                interval.HEMITONE: CHORD_FLAT_2,
-                                                interval.TONE: CHORD_2,
-                                                interval.HEMIOLION: CHORD_FLAT_3,
-                                                interval.DITONE: CHORD_3,
-                                                interval.DIATESSARON: CHORD_4,
-                                                interval.TRITONE: CHORD_FLAT_5,
-                                                interval.DIAPENTE: CHORD_5,
-                                                interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
-                                                interval.COMPOUND_TONE: CHORD_6,
-                                                interval.COMPOUND_HEMIOLION: CHORD_FLAT_7,
-                                                interval.COMPOUND_DITONE: CHORD_7
-                                                }
+# A listing of prescribed interval names, to be used in describing
+# scales that are not heptatonic.
+interval_symbol_prescription: dict[int, str] = {
+    interval.UNISON: '1',
+    interval.HEMITONE: CHORD_FLAT_2,
+    interval.TONE: CHORD_2,
+    interval.HEMIOLION: CHORD_FLAT_3,
+    interval.DITONE: CHORD_3,
+    interval.DIATESSARON: CHORD_4,
+    interval.TRITONE: CHORD_FLAT_5,
+    interval.DIAPENTE: CHORD_5,
+    interval.COMPOUND_HEMITONE: CHORD_SHARP_5,
+    interval.COMPOUND_TONE: CHORD_6,
+    interval.COMPOUND_HEMIOLION: CHORD_FLAT_7,
+    interval.COMPOUND_DITONE: CHORD_7
+    }

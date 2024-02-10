@@ -11,22 +11,22 @@ from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
 
+from gui.fretboard_diagram.widgets import StringFingeringSelector, IntervalDisplaySelector
 
 
-class DiagramView(Frame):
+class FretboardDiagram(Frame):
 
     def __init__(self, master: Frame | Tk):
         self.master = master
-        self.callbacks: dict[str, Callable[..., Any]]
+        self.callbacks: dict[str, Callable[..., Any]] = {}
 
         # Frame 1: Fingering Diagram (LEFT, PERMANENT)
         self.canvas: Canvas
 
         # Frame 2: String-Fingering Controls (RIGHT, PERMANENT)
-        self.fingering_panel: Frame
-        # for string in diagram, a button toggle i or e
+        self.fingering_panel: StringFingeringSelector
         
-        # Frame 3: Scale selector (RIGHT, PERMANENT)
+        # Frame 3: Scale selector (TOP, PERMANENT)
         self.scale_selection: OptionMenu
         self.key_selection: OptionMenu
         self.position_selection: OptionMenu
@@ -50,10 +50,22 @@ class DiagramView(Frame):
         self.node_textcolour: str
         self.node_textdisplay: str
 
+    
+    def on_fingering_change(self, report: tuple[int, str]) -> None:
+        """Receive a report about the change in fingering and modify the 
+        diagram to reflect it"""
+
+
+    def on_node_option_change(self, report: dict[str, str | int]) -> None:
+        """Receive a report about the change to an interval node's
+        display options and modify the diagram to reflect it."""
+
+
 
     def add_callback(self, key: str, func: Callable[..., Any]) -> None:
         if not key in self.callbacks:
             self.callbacks.update({key: func})
+
 
     def bind_callbacks(self) -> None:
         """Bind the callbacks to their appropriate tkinter events."""

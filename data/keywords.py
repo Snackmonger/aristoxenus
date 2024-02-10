@@ -40,13 +40,14 @@ AEOLIAN: str = 'aeolian'
 LOCRIAN: str = 'locrian'
 
 # Canonical order of mode names
-MODAL_NAME_SERIES: tuple[str, ...] = (IONIAN,
-                                      DORIAN,
-                                      PHRYGIAN,
-                                      LYDIAN,
-                                      MIXOLYDIAN,
-                                      AEOLIAN,
-                                      LOCRIAN)
+MODAL_NAME_SERIES: tuple[str, ...] = (
+    IONIAN,
+    DORIAN,
+    PHRYGIAN,
+    LYDIAN,
+    MIXOLYDIAN,
+    AEOLIAN,
+    LOCRIAN)
 
 # Internal scale names
 DIATONIC: str = 'diatonic'
@@ -60,15 +61,16 @@ BISEPTIMAL: str = 'biseptimal'
 PALEOCHROMATIC: str = 'paleochromatic'
 
 # Internal canonical order of scale types
-HEPTATONIC_ORDER: tuple[str, ...] = (DIATONIC,
-                                     ALTERED,
-                                     HEMITONIC,
-                                     HEMIOLIC,
-                                     DIMINISHED,
-                                     AUGMENTED,
-                                     HARMONIC,
-                                     BISEPTIMAL,
-                                     PALEOCHROMATIC)
+HEPTATONIC_ORDER: tuple[str, ...] = (
+    DIATONIC,
+    ALTERED,
+    HEMITONIC,
+    HEMIOLIC,
+    DIMINISHED,
+    AUGMENTED,
+    HARMONIC,
+    BISEPTIMAL,
+    PALEOCHROMATIC)
 
 # Internal scale processing terms
 PREFERRED_NAME: str = 'preferred_name'
@@ -116,6 +118,7 @@ DOMINANT_SEVENTH_FLAT_FIVE: str = 'dominant_7_flat_5'
 
 # Fingering terms
 FINGERING: str = "fingering"
+CURRENT_FINGERING: str = "current_fingering"
 FINGER: str = "finger"
 INDEX: str = "index"
 MIDDLE: str = "middle"
@@ -126,6 +129,7 @@ MIXED: str = "mixed"
 # Instrument terms
 FRET: str = "fret"
 FRETBOARD: str = "fretboard"
+STRING: str = "string"
 TUNING: str = "tuning"
 STANDARD: str = 'standard'
 STANDARD_7_STRING: str = 'standard_7_string'
