@@ -11,15 +11,20 @@ from gui.config import (DIAGRAM_NODE_SIZES,
                         COLOURS,
                         FINGERING_TYPES)
 
-from data.keywords import (CURRENT_FINGERING, DIATONIC, IONIAN, SHAPE,
+from data.keywords import (CURRENT_FINGERING, 
+                           DIATONIC, INVERSE_TRIANGLE, 
+                           IONIAN, 
+                           SHAPE,
                            COLOUR,
                            SIZE, STRING,
                            TEXT_SIZE,
                            TEXT_COLOUR,
                            INTERVAL,
-                           BLACK,
+                           BLACK, TRIANGLE,
                            WHITE,
                            CIRCLE)
+from gui.fretboard_diagram import FretboardDiagram
+from src.models.diagrams import GuitarFingeringDiagram
 
 
 class ScaleSelectorWidget(LabelFrame):
@@ -68,18 +73,21 @@ class StringFingeringWidget(Frame):
                                             command=self.change_state)
         self.string_toggle.grid()
         
+    def report(self) -> dict[str, int|str]:
+        """Return a report about the current state of the widget."""
+        return {STRING: self.string,
+                CURRENT_FINGERING: self.current_fingering}
 
     def change_state(self, *args) -> None:
         """Toggle the string's fingering into the next state, and inform the
-        callback function that the user has made a change."""
+        callback function of the current state of the widget."""
         state: int = self.fingering_options.index(self.current_fingering)
         if state == len(self.fingering_options) - 1:
             self.current_fingering = self.fingering_options[0]
         else:
             self.current_fingering = self.fingering_options[state + 1]
         self.string_toggle.configure(text=self.current_fingering)
-        self.callback({STRING: self.string, 
-                       CURRENT_FINGERING: self.current_fingering})
+        self.callback(self.report())
 
 
 
@@ -168,10 +176,11 @@ class IntervalDisplayWidget(Frame):
     def change_state(self, *args) -> None:
         """Respond to any change of state by sending a report about the 
         current state to the controller's callback."""
-        self.callback(self.__report())
+        self.callback(self.report())
 
 
-    def __report(self) -> dict[str, str | int]:
+    def report(self) -> dict[str, str | int]:
+        """Return a report about the current state of the widget."""
         return {INTERVAL: self.interval,
                 SHAPE: self.shape.get(),
                 SIZE: self.size.get(),
@@ -234,6 +243,11 @@ class IntervalDisplaySelector(LabelFrame):
         self.current_subwidget.grid(column=0, row=1, columnspan=2)
 
 
+    def summarize(self) -> list[dict[str, int|str]]:
+        """Return a summary of the current state of all subwidgets
+        controlled by this widget."""
+        return [x.report() for x in self.subwidgets]
+
 
 class StringFingeringSelector(LabelFrame):
     """Widget that contains a number of buttons to cycle strings' 
@@ -248,13 +262,115 @@ class StringFingeringSelector(LabelFrame):
                     borderwidth=5,
                     labelanchor="nw",
                     relief="sunken")
+        self.subwidgets: list[StringFingeringWidget] = []
     
         for x in range(number_of_strings):
             w = StringFingeringWidget(self, callback, x)
+            self.subwidgets.append(w)
             l = Label(self, text=f"String {x}: ")
             l.grid(column=0, row=x, sticky="w")
             w.grid(column=1, row=x, sticky="e")
 
+
+    def summarize(self) -> list[dict[str, str|int]]:
+        """Return a summary of the current state of all subwidgets
+        controlled by this widget."""
+        return [x.report() for x in self.subwidgets]
+
+
+class FingerboardGridWidget(LabelFrame):
+    """A large widget that represents a grid, in the cells of which are shapes
+    representing notes, fingers, or intervals.
+    
+    This widget only ever displays information, it doesn't pass anything back to
+    the controller."""
+
+    def __init__(self, master: Tk|Frame|LabelFrame, diagram: GuitarFingeringDiagram) -> None:
+
+        LabelFrame.__init__(self, master)
+        self.config(text="Fretboard Diagram")
+        self.canvas: Canvas = Canvas(self, height=500, width=500, bg="white")
+        self.canvas.grid()
+        self.canvas.update()
+        self.draw_diagram(diagram)
+
+
+    def draw_diagram(self, diagram: GuitarFingeringDiagram) -> None:
+        """Create a rendering of the given diagram."""
+        self.__draw_grid(len(diagram.grid),len(diagram.grid[0]))
+        self.__draw_active_nodes(diagram)
+    
+
+    def __draw_grid(self, rows: int, columns: int) -> None:
+        """Draw the grid based on the dimensions of the diagram object."""
+        width: int = self.canvas.winfo_width()
+        height: int = self.canvas.winfo_height()
+        self.canvas.delete("all")
+
+        for i in range(0, width, width // columns):
+            self.canvas.create_line([(i, 0), (i, height)], tags="grid_line")
+        for i in range(0, height, height // rows):
+            self.canvas.create_line([(0, i), (width, i)], tags="grid_line")
+        self.canvas.grid()
+
+
+    def __draw_active_nodes(self, diagram: GuitarFingeringDiagram) -> None:
+        """Reload the display to show only the diagram's active nodes."""
+
+        self.canvas.delete("node_shape")
+        self.canvas.delete("node_text")
+        width: int = self.canvas.winfo_width()
+        height: int = self.canvas.winfo_height()
+        square_size: tuple[int, int] = width//len(diagram.grid[0]), height//len(diagram.grid)
+
+        for i, string in enumerate(diagram.grid):
+            for j, node in enumerate(string):
+                if not node.is_active:
+                    continue
+
+                centre: tuple[int, int] = (
+                    (square_size[0] // 2) + square_size[0] * j,
+                    (square_size[1] // 2) + square_size[1] * i
+                    )
+                
+                if node.shape == CIRCLE:
+                    p1, p2 = centre[0] - 15, centre[1] - 15
+                    p3, p4 = centre[0] + 15, centre[1] + 15
+                    self.canvas.create_oval(p1, p2, p3, p4,
+                                            fill=node.shape_colour,
+                                            tags="node_shape"
+                                            )
+
+                elif node.shape == INVERSE_TRIANGLE:
+                    p1, p2 = centre[0] - 20, centre[1] - 10
+                    p3, p4 = centre[0] + 20, centre[1] - 10
+                    p5, p6 = centre[0], centre[1] + 20
+                    self.canvas.create_polygon(p1, p2, p3, p4, p5, p6,
+                                                fill=node.shape_colour,
+                                                tags="node_shape"
+                                                )
+
+                elif node.shape == TRIANGLE:
+                    p1, p2 = centre[0] + 20, centre[1] + 15
+                    p3, p4 = centre[0] - 20, centre[1] + 15
+                    p5, p6 = centre[0], centre[1] - 20
+                    self.canvas.create_polygon(p1, p2, p3, p4, p5, p6,
+                                                fill=node.shape_colour,
+                                                tags="node_shape"
+                                                )
+                    
+                else:
+                    raise ValueError(f"Unknown node setting: shape={node.shape}")
+
+                self.canvas.create_text(centre[0],
+                                        centre[1],
+                                        text=repr(node),
+                                        fill=node.text_colour,
+                                        font=("Times", "12", "bold"),
+                                        tags="node_text"
+                                        )
+
+        self.canvas.grid()
 
 
 # class TestMainWidget(Frame):

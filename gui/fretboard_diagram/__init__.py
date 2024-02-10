@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from data.annotations import GuitarFretboard
 from data.intervallic_canon import HEPTATONIC_SYSTEM_BY_NAME
+from src.models.diagrams import GuitarFingeringDiagram
 from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
@@ -19,6 +20,10 @@ class FretboardDiagram(Frame):
     def __init__(self, master: Frame | Tk):
         self.master = master
         self.callbacks: dict[str, Callable[..., Any]] = {}
+
+        self.scale_diagram: GuitarFingeringDiagram
+        self.arpeggio_diagram: GuitarFingeringDiagram
+
 
         # Frame 1: Fingering Diagram (LEFT, PERMANENT)
         self.canvas: Canvas

@@ -41,7 +41,7 @@ from data.intervallic_canon import DIATONIC_SCALE, HEPTATONIC_SYSTEM_BY_NAME, HE
 from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
-from src.models.diagrams import (GuitarFingering, 
+from src.models.diagrams import (GuitarFingeringDiagram, 
                                  get_interval_map, 
                                  standard_fretboard)
 from data.keywords import (OPEN, 
@@ -68,7 +68,7 @@ class FretboardDiagramWidget(Tk):
 
         # Pre-set values for testing. This initializer will have to change
         # for the real version of the widget.
-        self.diagram: GuitarFingering = GuitarFingering(5, standard_fretboard(), 5, INDEX)
+        self.diagram: GuitarFingeringDiagram = GuitarFingeringDiagram(5, standard_fretboard(), 5, INDEX)
 
         self.current_scale: str = "diatonic"
         self.current_key: str = "C"
@@ -103,7 +103,7 @@ class FretboardDiagramWidget(Tk):
         # Scales dropdown menu
         scales =  HEPTATONIC_ORDER
         self.scale_selection.set(scales[0])
-        scales_ = OptionMenu(self.control_frame, self.scale_selection, scales[0], *scales, command=self.change_scale)
+        scales_ = OptionMenu(self.control_frame, self.scale_selection, scales[0], *scales, command=self.display_scale)
         scales_.grid(column=0, row=0)
         scales_.config(width=15)
 
@@ -145,7 +145,7 @@ class FretboardDiagramWidget(Tk):
     
 
     def update_diagram(self) -> None:
-        self.diagram = GuitarFingering(self.current_position, standard_fretboard(), self.current_width, self.current_fingering_type)
+        self.diagram = GuitarFingeringDiagram(self.current_position, standard_fretboard(), self.current_width, self.current_fingering_type)
         self.diagram.define_intervals(get_interval_map(self.current_key))
 
         # if displaytype = scale, draw all active nodes
@@ -153,10 +153,6 @@ class FretboardDiagramWidget(Tk):
         self.canvas.delete("all")
         self.draw_grid()
         self.draw_active_nodes()
-
-
-        
-
 
     def change_position(self, *args) -> None:
         """Adjust the diagram to display a different position of the 
@@ -168,8 +164,8 @@ class FretboardDiagramWidget(Tk):
         self.mask_note_names(self.scale_notes)
 
 
-    def change_scale(self, *args) -> None:
-        """Change the scale that underlies the diagram."""
+    def display_scale(self, *args) -> None:
+        """Set the diagram's nodes to show only the current scale."""
         self.current_scale = self.scale_selection.get()
         self.mask_note_names(self.scale_notes)
             
@@ -177,14 +173,13 @@ class FretboardDiagramWidget(Tk):
     def change_stretch(self, *args) -> None:
         """Change which finger stretches in the diagram."""
         self.current_fingering_type = self.stretch_selection.get()
-        self.diagram.stretch = self.current_fingering_type
+        self.diagram.fingering_type = self.current_fingering_type
         self.diagram.apply_fingering()
 
 
     def change_key(self, *args) -> None:
         # self.current_key = self.key_selection.get()
         ...
-
 
     def change_rendering_style(self, *args) -> None:
         """Indicate a new rendering style.."""

@@ -1,7 +1,7 @@
 from src.models.diagrams import (FingeringRepr,
                                  FingeringType,
                                  FingeringWidth,
-                                 GuitarFingering,
+                                 GuitarFingeringDiagram,
                                  simplify_guitar_fretboard,
                                  guitar_fretboard,
                                  convert_fretboard_to_relative)
@@ -13,7 +13,7 @@ f = simplify_guitar_fretboard(guitar_fretboard())
 f = convert_fretboard_to_relative(f, "A")
 
 
-x = GuitarFingering(5, f, FingeringWidth.OPEN, FingeringType.PINKY)
+x = GuitarFingeringDiagram(5, f, FingeringWidth.OPEN, FingeringType.PINKY)
 
 
 x.apply_fingering()

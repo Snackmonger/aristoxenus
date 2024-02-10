@@ -17,10 +17,8 @@ def guitar_fretboard(strings: int = 6,
                      frets: int = 24,
                      format_: str = keywords.SCIENTIFIC
                      ) -> GuitarFretboard:
-    '''
-    Return an array representing a guitar fretboard formatted to the given
-    specifications.
-    '''
+    '''Return an array representing a guitar fretboard formatted to the given
+    specifications.'''
     diagram: list[tuple[str, ...]] = []
     frets += 1
     if format_ is keywords.SCIENTIFIC:
@@ -45,10 +43,8 @@ def guitar_fretboard(strings: int = 6,
 
 
 def simplify_guitar_fretboard(fretboard: GuitarFretboard) -> GuitarFretboard:
-    '''
-    Take an array representing a guitar fretboard and make sure that all note
-    names are in plain (not scientific) notation.
-    '''
+    '''Take an array representing a guitar fretboard and make sure that all note
+    names are in plain (not scientific) notation.'''
     new_diagram: list[tuple[str, ...]] = []
     for string in fretboard:
         new_diagram.append(tuple(map(nomenclature.decode_enharmonic, string)))
@@ -65,10 +61,8 @@ def standard_fretboard() -> GuitarFretboard:
 def filter_guitar_fretboard(fretboard: GuitarFretboard,
                             note_list: tuple[str, ...] | list[str]
                             ) -> GuitarFretboard:
-    '''
-    For the given fretboard array, replace any note that is not represented
-    in the given list of notes with the "-" symbol.
-    '''
+    '''For the given fretboard array, replace any note that is not represented
+    in the given list of notes with the "-" symbol.'''
     diagram: list[tuple[str, ...]] = []
     new_string: list
     for string in fretboard:
@@ -84,10 +78,8 @@ def get_positional_fingering(fretboard: GuitarFretboard,
                              starting_column: int,
                              span: int
                              ) -> GuitarFretboard:
-    '''
-    Return a slice of the columns of a guitar fretboard, representing the span
-    of a positional fingering.
-    '''
+    '''Return a slice of the columns of a guitar fretboard, representing the span
+    of a positional fingering.'''
     diagram: list[tuple[str, ...]] = []
     for string in fretboard:
         diagram.append(tuple(note for index, note in enumerate(
@@ -124,7 +116,7 @@ def get_interval_map(tonal_centre: str) -> dict[str, str]:
 
     By default, this function uses the Aristoxenus library's prescribed 12-tone 
     interval names, but these will not always describe the underlying scale 
-    accurately (e.g. in the treatment of b3 vs #2, etc.)"""
+    accurately (e.g. in the treatment of b3 vs #2, etc.)."""
     interval_symbols = list(
         chord_symbols.interval_symbol_prescription.values())
     chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
@@ -193,7 +185,7 @@ class FingeringNode:
 
 
 
-class GuitarFingering:
+class GuitarFingeringDiagram:
     """Representation of a 4- or 5-fret fingering diagram in standard tuning, 
     that can display its nodes as names, intervals, or fingers, and that can
     turn nodes on and off in order to show arpeggios nested within scale 
@@ -214,7 +206,7 @@ class GuitarFingering:
         # Width defines how many frets are covered in the fingering (4 or 5)
         self.width: int = width
         # Stretch defines which finger must cover two frets if width == 5.
-        self.stretch: str | None = fingering_type
+        self.fingering_type: str | None = fingering_type
 
         # Override the default fingering diagram, if not None
         self.override: list[list[str]] | None = None
@@ -318,9 +310,9 @@ class GuitarFingering:
         fingers: list[str]
         if self.width == 4:
             fingers = ["i", "m", "a", "e"]
-        elif self.stretch == keywords.INDEX:
+        elif self.fingering_type == keywords.INDEX:
             fingers = ["i", "i", "m", "a", "e"]
-        elif self.stretch == keywords.PINKY:
+        elif self.fingering_type == keywords.PINKY:
             fingers = ["i", "m", "a", "e", "e"]
 
         for string in self.grid:
