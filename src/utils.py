@@ -13,14 +13,6 @@ def shift_list(list_: list[Any] | tuple[Any, ...],
     '''
     Rotate the given array so that the given item is first.
 
-    Parameters
-    ----------
-    list_ : list | tuple
-        Python list or tuple with any values.
-    
-    new_first_member : Any
-        The value that will start the new order.
-
     Returns
     -------
     list
@@ -34,16 +26,6 @@ def shift_list(list_: list[Any] | tuple[Any, ...],
 def roman_numeral(indian_numeral: int) -> str:
     '''
     Convert an Indian numeral between 1 and 3,999 to a Roman numeral.
-
-    Parameters
-    ----------
-    indian_numeral : int
-        A number in Indian notation
-
-    Returns
-    -------
-    str
-        A number in Roman notation.
 
     Raises
     ------

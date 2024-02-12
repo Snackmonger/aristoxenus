@@ -16,7 +16,7 @@ from data.keywords import (CURRENT_FINGERING,
                            IONIAN, 
                            SHAPE,
                            COLOUR,
-                           SIZE, STRING,
+                           SIZE, SQUARE, STRING,
                            TEXT_SIZE,
                            TEXT_COLOUR,
                            INTERVAL,
@@ -290,8 +290,10 @@ class FingerboardGridWidget(LabelFrame):
         LabelFrame.__init__(self, master)
         self.config(text="Fretboard Diagram")
         self.canvas: Canvas = Canvas(self, height=500, width=500, bg="white")
+
         self.canvas.grid()
         self.canvas.update()
+        
         self.draw_diagram(diagram)
 
 
@@ -334,27 +336,35 @@ class FingerboardGridWidget(LabelFrame):
                     )
                 
                 if node.shape == CIRCLE:
-                    p1, p2 = centre[0] - 15, centre[1] - 15
-                    p3, p4 = centre[0] + 15, centre[1] + 15
-                    self.canvas.create_oval(p1, p2, p3, p4,
+                    x0, y0 = centre[0] - 15, centre[1] - 15
+                    x1, y1 = centre[0] + 15, centre[1] + 15
+                    self.canvas.create_oval(x0, y0, x1, y1,
                                             fill=node.shape_colour,
                                             tags="node_shape"
                                             )
-
+                    
+                elif node.shape == SQUARE:
+                    x0, y0 = centre[0] - 15, centre[1] - 15
+                    x1, y1 = centre[0] + 15, centre[1] + 15
+                    self.canvas.create_rectangle(x0, y0, x1, y1,
+                                            fill=node.shape_colour,
+                                            tags="node_shape"
+                                            )
+                    
                 elif node.shape == INVERSE_TRIANGLE:
-                    p1, p2 = centre[0] - 20, centre[1] - 10
-                    p3, p4 = centre[0] + 20, centre[1] - 10
-                    p5, p6 = centre[0], centre[1] + 20
-                    self.canvas.create_polygon(p1, p2, p3, p4, p5, p6,
+                    x0, y0 = centre[0] - 20, centre[1] - 10
+                    x1, y1 = centre[0] + 20, centre[1] - 10
+                    x2, y2 = centre[0], centre[1] + 20
+                    self.canvas.create_polygon(x0, y0, x1, y1, x2, y2,
                                                 fill=node.shape_colour,
                                                 tags="node_shape"
                                                 )
 
                 elif node.shape == TRIANGLE:
-                    p1, p2 = centre[0] + 20, centre[1] + 15
-                    p3, p4 = centre[0] - 20, centre[1] + 15
-                    p5, p6 = centre[0], centre[1] - 20
-                    self.canvas.create_polygon(p1, p2, p3, p4, p5, p6,
+                    x0, y0 = centre[0] + 20, centre[1] + 15
+                    x1, y1 = centre[0] - 20, centre[1] + 15
+                    x2, y2 = centre[0], centre[1] - 20
+                    self.canvas.create_polygon(x0, y0, x1, y1, x2, y2,
                                                 fill=node.shape_colour,
                                                 tags="node_shape"
                                                 )

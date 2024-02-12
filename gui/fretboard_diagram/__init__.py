@@ -7,12 +7,13 @@ from typing import Any, Callable
 
 from data.annotations import GuitarFretboard
 from data.intervallic_canon import HEPTATONIC_SYSTEM_BY_NAME
-from src.models.diagrams import GuitarFingeringDiagram
+from data.keywords import INDEX
+from src.models.diagrams import GuitarFingeringDiagram, standard_fretboard
 from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
 
-from gui.fretboard_diagram.widgets import StringFingeringSelector, IntervalDisplaySelector
+from gui.fretboard_diagram.widgets import FingerboardGridWidget, StringFingeringSelector, IntervalDisplaySelector
 
 
 class FretboardDiagram(Frame):
@@ -21,15 +22,14 @@ class FretboardDiagram(Frame):
         self.master = master
         self.callbacks: dict[str, Callable[..., Any]] = {}
 
-        self.scale_diagram: GuitarFingeringDiagram
-        self.arpeggio_diagram: GuitarFingeringDiagram
-
+        # The basic diagram(s) that will be represented in the window.
+        self.diagram: GuitarFingeringDiagram = GuitarFingeringDiagram(5, standard_fretboard(), 5)
 
         # Frame 1: Fingering Diagram (LEFT, PERMANENT)
-        self.canvas: Canvas
+        self.canvas: FingerboardGridWidget = FingerboardGridWidget(self, self.diagram)
 
         # Frame 2: String-Fingering Controls (RIGHT, PERMANENT)
-        self.fingering_panel: StringFingeringSelector
+        self.fingering_panel: StringFingeringSelector = StringFingeringSelector(self, self.on_fingering_change, self.diagram.number_of_strings)
         
         # Frame 3: Scale selector (TOP, PERMANENT)
         self.scale_selection: OptionMenu

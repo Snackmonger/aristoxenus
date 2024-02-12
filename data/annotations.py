@@ -1,8 +1,7 @@
-from typing import TypedDict, NotRequired
+from typing import TypeAlias, TypedDict, NotRequired
 
 
-
-GuitarFretboard = tuple[tuple[str, ...], ...]
+GuitarFretboard: TypeAlias = tuple[tuple[str, ...], ...]
 
 
 class ChordConspectus(TypedDict):
@@ -20,7 +19,7 @@ class ChordConspectus(TypedDict):
     drop_2_and_4: NotRequired[dict[str, int]]
 
 
-ChordInventory = tuple[ChordConspectus, ...]
+ChordInventory: TypeAlias = tuple[ChordConspectus, ...]
 
 
 

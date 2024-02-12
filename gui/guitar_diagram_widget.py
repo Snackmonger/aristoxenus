@@ -189,7 +189,7 @@ class FretboardDiagramWidget(Tk):
 
     def mask_note_names(self, scale: list[str]) -> None:
         """Set the diagram to display only note names in the given list."""
-        self.diagram.mask_note_names(scale)
+        self.diagram.turn_on_names(scale)
         self.draw_active_nodes()
 
 

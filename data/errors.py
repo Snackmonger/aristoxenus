@@ -1,15 +1,7 @@
+
+
 class IntervalOutOfBoundsError(ValueError):
-    '''
-    Error indicating that the interval is not within the legal limits.
-    '''
-
-
-class MisconfiguredOOBError(ValueError):
-    '''
-    Error indicating that the LimitedIntervalStructure has parameter `oob` set
-    to a value not present in the `OOBOptions` enum.
-    '''
-
+    """Error that indicates that the given interval exceeded the expected range."""
 
 class NoteNameError(ValueError):
     ''' 
@@ -37,13 +29,6 @@ class ChordSymbolError(ValueError):
     incompatible with the parser.
     '''
     
-    
-class OctaveRotationError(ValueError):
-    '''
-    Error indicating that the requested rotation cannot be performed on 
-    structures exceeding the compass of one octave.
-    '''
-
 
 class UnknownKeywordError(ValueError):
     ''' 

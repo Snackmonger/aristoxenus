@@ -3,6 +3,7 @@ Functions pertaining to making musical diagrams (aside from staff notation).
 '''
 
 import dataclasses
+from data.intervallic_canon import DIATONIC_SCALE
 
 from src import nomenclature, utils
 from data import (chord_symbols,
@@ -110,23 +111,24 @@ def convert_fretboard_to_relative(diagram: GuitarFretboard,
     return tuple(new_diagram)
 
 
-def get_interval_map(tonal_centre: str) -> dict[str, str]:
+def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str, str]:
     """Get a dictionary mapping note names to interval names for a given 
-    tonic note name. 
-
-    By default, this function uses the Aristoxenus library's prescribed 12-tone 
-    interval names, but these will not always describe the underlying scale 
-    accurately (e.g. in the treatment of b3 vs #2, etc.)."""
-    interval_symbols = list(
-        chord_symbols.interval_symbol_prescription.values())
+    tonic note name and heptatonic scale form.
+    
+    This function will always preserve the correct interval names for the 
+    given heptatonic scale, plus 5 supplementary interval names that occupy
+    the chromatic gaps in the scale."""
+    interval_symbols = list(nomenclature.twelve_tone_scale_intervals(scale))
     chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
     return dict(zip(chromatic_, interval_symbols))
 
 
-@dataclasses.dataclass
+
+
 class FingeringNode:
     """Representation of a position in a fingering diagram, that can indicate
-    a scale degree, finger, or musical note."""
+    a scale degree, finger, or musical note, and can be represented by various
+    shapes and colours."""
 
     def __init__(self,
                  string: int,
@@ -138,17 +140,17 @@ class FingeringNode:
                  is_scale_tone: bool = False,
                  is_chord_tone: bool = False,
                  is_chromatic_tone: bool = False,
-                 shape: str = "circle",
-                 shape_colour: str = "black",
-                 text_colour: str = "white",
+                 shape: str = keywords.CIRCLE,
+                 shape_colour: str = keywords.BLACK,
+                 text_colour: str = keywords.WHITE,
                  rendering_mode: str = keywords.FRET
                  ) -> None:
-
-        # Used to evaluate the awkwardness of a fingering
+        
+        # Location of the node in the array
         self.string: int = string
         self.fret: int = fret
 
-        # Basic diagram information
+        # Rendering options
         self.finger: str | None = finger
         self.note_name: str | None = note_name
         self.scale_degree: str | None = scale_degree
@@ -194,23 +196,22 @@ class GuitarFingeringDiagram:
     def __init__(self,
                  position: int,
                  fretboard: GuitarFretboard,
-                 width: int,
-                 fingering_type: str | None = None
+                 width: int
                  ) -> None:
         
-        # The fretboard is an absolute reference
-        # point for notes in each postition.
+        # The fretboard is an absolute reference point for notes in each
+        # postition. If we want to change the tuning, number of notes, or
+        # number of frets, we have to create a new instance with the proper
+        # base fretboard.
         self.fretboard: GuitarFretboard = fretboard
+
+        # Position determines which fret will be the lowest in the diagram.
         self.position: int = position
 
-        # Width defines how many frets are covered in the fingering (4 or 5)
+        # Width defines how many frets are shown in the diagram (4 or 5)
         self.width: int = width
-        # Stretch defines which finger must cover two frets if width == 5.
-        self.fingering_type: str | None = fingering_type
 
-        # Override the default fingering diagram, if not None
-        self.override: list[list[str]] | None = None
-
+        # A table of nodes that can be turned on/off and change appearance.
         self.grid: list[list[FingeringNode]] = self.refresh_grid()
         
 
@@ -229,10 +230,26 @@ class GuitarFingeringDiagram:
     
 
     @property
-    def lowest_note(self) -> bool:
+    def lowest_note_is_aligned(self) -> bool:
         """Indicate whether the current diagram is set so that the
         lowest note of the diagram is occupied by an active node."""
         return self.grid[0][0].is_active
+    
+    @property
+    def number_of_strings(self) -> int:
+        """Return the number of strings (rows) in the current fretboard."""
+        return len(self.fretboard)
+    
+    @property
+    def number_of_frets(self) -> int:
+        """Return the number of frets (columns) in the current fretboard."""
+        return len(self.fretboard[0])
+
+
+    def positions(self, scale: list[str]) -> list[int]:
+        """Return the fret numbers where the given scale has notes on the
+        lowest string."""
+        return [i for i, s in enumerate(self.grid[0]) if s in scale]
 
 
     def clear_diagram(self) -> None:
@@ -247,15 +264,35 @@ class GuitarFingeringDiagram:
         for string in self.grid:
             for note in string:
                 note.is_active = True
+    
+
+    def apply_fingering(self, string: int, fingering_type: str) -> None:
+        """Change the fingering of the given string to the given type."""
+
+        # This should be moved somewhere else
+        types = {keywords.INDEX: ["i", "i", "m", "a", "e"],
+                 keywords.PINKY: ["i", "m", "a", "e", "e"]}
+        
+        fingers = types[fingering_type]
+        for j, note in enumerate(self.grid[string]):
+            note.finger = fingers[j]
 
 
-    def mask_note_names(self, note_names: list[str]) -> None:
+    def orient(self, scale: list[str], interval_map: dict[str, str], chord: list[str]) -> None:
+        """Orient the current diagram to the given scale, chord, and 
+        intervallic perspective."""
+        self.turn_on_names(scale)
+        self.define_scale(scale)
+        self.define_chord(chord)
+        self.define_intervals(interval_map)
+
+
+    def turn_on_names(self, note_names: list[str]) -> None:
         """Switch ON any node that contains one of the given note names, 
         and switch OFF any node that doesn't."""
         for string in self.grid:
             for note in string:
                 note.is_active = note.note_name in note_names
-
 
     def define_scale(self, note_names: list[str]) -> None:
         """Raise the scale flag for any node that contains a scale tone, and
@@ -288,33 +325,3 @@ class GuitarFingeringDiagram:
                     note.scale_degree = interval_map[note.note_name]
 
 
-    def fade_scale(self, colour: str = "gray") -> None:
-        """Recolour any node that contains a scale tone but does not contain 
-        a chord tone. This allows us to show arpeggios in full-colour against
-        their parent scale forms in faded colour."""
-        for string in self.grid:
-            for note in string:
-                if note.is_scale_tone and not note.is_chord_tone:
-                    note.shape_colour = colour
-                    
-
-    def apply_fingering(self) -> None:
-        """Take the rules defined in ``width`` and ``stretch`` 
-        attributes and assign fingerings to the nodes."""
-        if self.override:
-            for i, string in enumerate(self.grid):
-                for j, note in enumerate(string):
-                    note.finger = self.override[i][j]
-            return
-
-        fingers: list[str]
-        if self.width == 4:
-            fingers = ["i", "m", "a", "e"]
-        elif self.fingering_type == keywords.INDEX:
-            fingers = ["i", "i", "m", "a", "e"]
-        elif self.fingering_type == keywords.PINKY:
-            fingers = ["i", "m", "a", "e", "e"]
-
-        for string in self.grid:
-            for j, note in enumerate(string):
-                note.finger = fingers[j]

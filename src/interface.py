@@ -74,8 +74,7 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
 
 
 
-def render_heptatonic_chord_scale(optimal_rendering: tuple[str, ...], 
-                       notes: str|int):
+def render_heptatonic_chord_scale(optimal_rendering: tuple[str, ...], notes: str|int):
     
     # Because the optimal form might use a mix of accidentals
     # in order to maintain alphabetic order, we can't generate

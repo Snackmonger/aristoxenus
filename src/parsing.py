@@ -534,61 +534,62 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str|int|bool|float]
     '''
     return 0
     
+# Moved to Nomenclature module.
+#
+# def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = intervals.DIATONIC_SCALE) -> list[str]:
+#     '''
+#     For a given collection of note names, return the Indian numerals describing
+#     the pattern's relation to a given scale.
 
-def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = intervals.DIATONIC_SCALE) -> list[str]:
-    '''
-    For a given collection of note names, return the Indian numerals describing
-    the pattern's relation to a given scale.
+#     Parameters
+#     ----------
+#     note_names : list[str] | int
+#         A list of exactly 7 note names, from the naturals, sharps, flats, or
+#         binomials; or an integer representing an interval structure not 
+#         exceeding 12 bits.
 
-    Parameters
-    ----------
-    note_names : list[str] | int
-        A list of exactly 7 note names, from the naturals, sharps, flats, or
-        binomials; or an integer representing an interval structure not 
-        exceeding 12 bits.
+#     comparandum: int, default=2741
+#         A integer representing an interval structure to be used as a point 
+#         of comparison for the given collection. The default value represents
+#         a major scale. 
 
-    comparandum: int, default=2741
-        A integer representing an interval structure to be used as a point 
-        of comparison for the given collection. The default value represents
-        a major scale.
+#     Returns
+#     -------
+#     list[str]
+#         A list of numbers modified by the sharp or flat symbol according to
+#         their relationship to the given scale. 
 
-    Returns
-    -------
-    list[str]
-        A list of numbers modified by the sharp or flat symbol according to
-        their relationship to the given scale. 
+#     Examples
+#     --------
+#     >>> name_heptatonic_intervals(['C', 'D', 'Eb', 'Fb', 'Gbb', 'Ab', 'Bb']) 
+#     ['1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7']
 
-    Examples
-    --------
-    >>> name_heptatonic_intervals(['C', 'D', 'Eb', 'Fb', 'Gbb', 'Ab', 'Bb']) 
-    ['1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7']
+#     >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
+#     ['1', '#2', '3', '4', '#5', '#6', '7']
+#     '''
+#     if isinstance(note_names, int):
+#         note_names = rendering.render_plain(note_names)
 
-    >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
-    ['1', '#2', '3', '4', '#5', '#6', '7']
-    '''
-    if isinstance(note_names, int):
-        note_names = rendering.render_plain(note_names)
-
-    tonic: str = note_names[0]
-    binomial_names = list(map(nomenclature.decode_enharmonic, note_names))
-    if len(binomial_names) != constants.NOTES:
-        raise ValueError('Only works on heptatonic scales.')
+#     tonic: str = note_names[0]
+#     binomial_names = list(map(nomenclature.decode_enharmonic, note_names))
+#     if len(binomial_names) != constants.NOTES:
+#         raise ValueError('Only works on heptatonic scales.')
     
-    chromatic_names: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), tonic)
-    major_names: list[str] = rendering.render_plain(comparandum, chromatic_names)
-    intervals_: list[str] = []
-    for index in range(constants.NOTES):
-        expected_note: str = major_names[index]
-        given_note: str = binomial_names[index]
-        difference: int = chromatic_names.index(given_note) - chromatic_names.index(expected_note)
-        accidental: str = constants.SHARP_SYMBOL
-        if difference < 0:
-            accidental = constants.FLAT_SYMBOL
-            difference *= constants.FLAT_VALUE
+#     chromatic_names: list[str] = utils.shift_list(nomenclature.chromatic(constants.BINOMIALS), tonic)
+#     major_names: list[str] = rendering.render_plain(comparandum, chromatic_names)
+#     intervals_: list[str] = []
+#     for index in range(constants.NOTES):
+#         expected_note: str = major_names[index]
+#         given_note: str = binomial_names[index]
+#         difference: int = chromatic_names.index(given_note) - chromatic_names.index(expected_note)
+#         accidental: str = constants.SHARP_SYMBOL
+#         if difference < 0:
+#             accidental = constants.FLAT_SYMBOL
+#             difference *= constants.FLAT_VALUE
 
-        intervals_.append((accidental * difference) + str(index + 1))
+#         intervals_.append((accidental * difference) + str(index + 1))
 
-    return intervals_
+#     return intervals_
 
 
 def condense_note_names(note_names: list[str]) -> int:
