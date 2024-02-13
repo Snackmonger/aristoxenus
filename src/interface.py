@@ -59,7 +59,7 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
     chromatic_rendering: tuple[str, ...] = tuple(rendering.render_plain(base_scale, render_base))
     forced_rendering: tuple[str, ...]  = tuple(nomenclature.force_heptatonic(keynote, base_scale))
     best_rendering: tuple[str, ...]  = tuple(nomenclature.best_heptatonic(keynote, base_scale))
-    numeric_rendering: tuple[str, ...]  = tuple(parsing.name_heptatonic_intervals(base_scale))
+    numeric_rendering: tuple[str, ...]  = tuple(nomenclature.name_heptatonic_intervals(base_scale))
     
 
     return {keywords.SCALE_NAME: scale_name,

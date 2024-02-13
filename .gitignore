@@ -51,3 +51,6 @@ data/__pycache__/instrument_config.cpython-311.pyc
 gui/__pycache__/guitar_diagram_widget.cpython-311.pyc
 .gitignore
 gui/__pycache__/gui_scratchpad.cpython-311.pyc
+gui/fretboard_diagram/__pycache__/__init__.cpython-311.pyc
+gui/fretboard_diagram/__pycache__/widgets.cpython-311.pyc
+gui/__pycache__/config.cpython-311.pyc

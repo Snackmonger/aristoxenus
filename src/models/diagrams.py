@@ -2,10 +2,8 @@
 Functions pertaining to making musical diagrams (aside from staff notation).
 '''
 
-import dataclasses
-from data.intervallic_canon import DIATONIC_SCALE
-
 from src import nomenclature, utils
+from data.intervallic_canon import DIATONIC_SCALE
 from data import (chord_symbols,
                   constants,
                   keywords)
@@ -121,7 +119,6 @@ def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str
     interval_symbols = list(nomenclature.twelve_tone_scale_intervals(scale))
     chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
     return dict(zip(chromatic_, interval_symbols))
-
 
 
 
@@ -266,16 +263,21 @@ class GuitarFingeringDiagram:
                 note.is_active = True
     
 
-    def apply_fingering(self, string: int, fingering_type: str) -> None:
+    def apply_fingering(self, string: int, fingering: str) -> None:
         """Change the fingering of the given string to the given type."""
 
         # This should be moved somewhere else
         types = {keywords.INDEX: ["i", "i", "m", "a", "e"],
                  keywords.PINKY: ["i", "m", "a", "e", "e"]}
         
-        fingers = types[fingering_type]
+        fingers = types[fingering]
         for j, note in enumerate(self.grid[string]):
             note.finger = fingers[j]
+
+    def apply_rendering(self, rendering_mode: str) -> None:
+        for string in self.grid:
+            for note in string:
+                note.rendering_mode = rendering_mode
 
 
     def orient(self, scale: list[str], interval_map: dict[str, str], chord: list[str]) -> None:
@@ -323,5 +325,6 @@ class GuitarFingeringDiagram:
             for note in string:
                 if note.note_name:
                     note.scale_degree = interval_map[note.note_name]
+
 
 

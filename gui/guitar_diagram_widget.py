@@ -60,7 +60,7 @@ from data.keywords import (OPEN,
 
 
 class FretboardDiagramWidget(Tk):
-    """Widget to display interactive fretboard diagrams."""
+    """Mockup of a widget to display interactive fretboard diagrams."""
 
 
     def __init__(self) -> None:
