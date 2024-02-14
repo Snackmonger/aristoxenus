@@ -3,21 +3,11 @@
 
 from tkinter import E, EW, NS, NSEW, S, W, Canvas, Tk, StringVar, IntVar
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
-from typing import Any, Callable
+from typing import Any, Callable, cast
+
 from data.annotations import NodeDisplayReport, FingeringReport, ScaleformReport
 from data.intervallic_canon import DIATONIC_SCALE, HEPTATONIC_SYSTEM_BY_NAME
-
-from gui.config import (DIAGRAM_NODE_SIZES,
-                        DIAGRAM_SHAPES,
-                        DIAGRAM_TEXT_SIZES,
-                        COLOURS,
-                        FINGERING_TYPES)
-from src import bitwise
-
-from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
-
-from data.keywords import (CURRENT_FINGERING,
-                           DIATONIC, FINGER, FINGERING, FRET,
+from data.keywords import (DIATONIC, FINGER, FINGERING, FRET,
                            INVERSE_TRIANGLE,
                            IONIAN, KEYNOTE, MODAL_NAME_SERIES, MODE, NOTE_NAME, SCALE,
                            SHAPE,
@@ -33,6 +23,13 @@ from data.keywords import (CURRENT_FINGERING,
                            TRIANGLE,
                            WHITE,
                            CIRCLE)
+from gui.config import (DIAGRAM_NODE_SIZES,
+                        DIAGRAM_SHAPES,
+                        DIAGRAM_TEXT_SIZES,
+                        COLOURS,
+                        FINGERING_TYPES)
+from src import bitwise
+from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
 from src.nomenclature import chromatic
 from src.rendering import render_plain
 from src.utils import shift_list
@@ -109,10 +106,12 @@ class StringFingeringWidget(Frame):
                                             command=self.change_state)
         self.string_toggle.grid()
 
-    def report(self) -> dict[str, int | str]:
+    def report(self) -> FingeringReport:
         """Return a report about the current state of the widget."""
-        return {STRING: self.string,
-                FINGERING: self.current_fingering}
+        return cast(FingeringReport, {
+            STRING: self.string,
+            FINGERING: self.current_fingering}
+        )
 
     def change_state(self, *args) -> None:
         """Toggle the string's fingering into the next state, and inform the
@@ -266,6 +265,11 @@ class IntervalDisplaySelector(LabelFrame):
                     labelanchor="nw",
                     relief="sunken",)
 
+    def rename_intervals(self, intervals: list[str]) -> None:
+        """Rename the series of intervals that label the subwidgets."""
+        for i, interval in enumerate(intervals):
+            self.subwidgets[i].interval = interval
+
     def display_subwidget(self, *args) -> None:
         """Change which subwidget is currently being displayed, based on the 
         selected option in the dropdown menu."""
@@ -305,7 +309,7 @@ class StringFingeringSelector(LabelFrame):
             l.grid(column=0, row=x, sticky=W, pady=padding)
             w.grid(column=1, row=x, sticky=E, pady=padding)
 
-    def summarize(self) -> list[dict[str, str | int]]:
+    def summarize(self) -> list[FingeringReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
@@ -424,7 +428,12 @@ class DisplaySelector(LabelFrame):
         self.display_type = StringVar(self)
         self.display_options = [INTERVAL, FINGER, NOTE_NAME, FRET]
         self.select_display = OptionMenu(
-            self, self.display_type, *self.display_options, command=self.change_state)
+            self,
+            self.display_type,
+            self.display_options[0],
+            *self.display_options,
+            command=self.change_state)
+
         self.select_display.grid()
 
     def change_state(self, *args) -> None:
@@ -450,7 +459,7 @@ class PositionSelector(LabelFrame):
     def change_state(self, *args) -> None:
         """Report any change of state to the controller."""
         self.callback(self.report())
-    
+
     def set_position(self, position: int) -> None:
         """Set the current position. (Used when the scale has changed in such
         a way that the previous position is no longer legal)."""
@@ -471,25 +480,34 @@ class FretboardDiagram(Frame):
             5, standard_fretboard(), 5)
 
         # Top bar
-        self.scale_selector = ScaleSelectorWidget(self, self.on_scale_change)
+        self.scale_selector = ScaleSelectorWidget(
+            self,
+            self.on_scale_change)
         self.scale_selector.grid(column=0, row=0, sticky=W)
 
-        self.position_selector = PositionSelector(self, self.diagram.positions(render_plain(DIATONIC_SCALE)), self.on_position_change)
+        self.position_selector = PositionSelector(
+            self,
+            self.diagram.positions(render_plain(DIATONIC_SCALE)),
+            self.on_position_change)
+        self.position_selector.grid(column=1, row=0, sticky=W)
 
         self.display_type_selector = DisplaySelector(
-            self, self.on_display_change)
+            self,
+            self.on_display_mode_change)
         self.display_type_selector.grid(column=2, row=0, sticky=W)
 
         # Left large window (main diagram display)
-        self.fingerboard_grid = FingerboardGridWidget(self, self.diagram)
+        self.fingerboard_grid = FingerboardGridWidget(
+            self,
+            self.diagram)
         self.fingerboard_grid.grid(column=0, row=1, columnspan=2)
 
         # Centre narrow window
         self.fingering_panel = StringFingeringSelector(
-            self, self.on_fingering_change, self.diagram.number_of_strings)
+            self,
+            self.on_fingering_change,
+            self.diagram.number_of_strings)
         self.fingering_panel.grid(column=2, row=1, sticky=EW)
-        for report in self.fingering_panel.summarize():
-            self.diagram.apply_fingering(**report)
 
         # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
         self.mode_toggle: Button  # change state
@@ -514,6 +532,8 @@ class FretboardDiagram(Frame):
 
         # Display initial values
         self.scale_selector.change_state()
+        for report in self.fingering_panel.summarize():
+            self.diagram.apply_fingering(**report)
 
     def on_fingering_change(self, report: FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
@@ -525,7 +545,6 @@ class FretboardDiagram(Frame):
         """Receive a report about the change to an interval node's
         display options and modify the diagram to reflect it."""
         print(f"main class got report {report}")
-
 
     def on_scale_change(self, report: ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
@@ -543,17 +562,12 @@ class FretboardDiagram(Frame):
         self.diagram.turn_on_names(note_names)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
-        
-
-    def on_display_change(self, report: str) -> None:
-        """Receive a report about the change to the display style
+    def on_display_mode_change(self, report: str) -> None:
+        """Receive a report about the change to the display mode
         and modify the diagram to reflect it."""
         self.diagram.apply_rendering(report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
-
     def on_position_change(self, report: int) -> None:
         """Receive a report about the change to the position
         and modify the diagram to reflect it."""
-
-        

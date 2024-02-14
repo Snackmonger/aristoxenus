@@ -150,7 +150,7 @@ class FingeringNode:
         # Rendering options
         self.finger: str | None = finger
         self.note_name: str | None = note_name
-        self.scale_degree: str | None = scale_degree
+        self.interval: str | None = scale_degree
         self.rendering_mode: str = rendering_mode
         self.is_active: bool = is_active
         self.is_scale_tone: bool = is_scale_tone
@@ -174,9 +174,9 @@ class FingeringNode:
             case keywords.NOTE_NAME:
                 if self.note_name is not None:
                     return self.note_name
-            case keywords.SCALE_DEGREE:
-                if self.scale_degree is not None:
-                    return self.scale_degree
+            case keywords.INTERVAL:
+                if self.interval is not None:
+                    return self.interval
             case _:
                 raise ValueError(
                     f"Unrecognized rendering mode: {self.rendering_mode}")
@@ -191,9 +191,9 @@ class GuitarFingeringDiagram:
     forms."""
 
     def __init__(self,
-                 position: int,
-                 fretboard: GuitarFretboard,
-                 width: int
+                 position: int = 5,
+                 fretboard: GuitarFretboard = standard_fretboard(),
+                 width: int = 5
                  ) -> None:
         
         # The fretboard is an absolute reference point for notes in each
@@ -214,7 +214,7 @@ class GuitarFingeringDiagram:
 
     def new_grid(self) -> list[list[FingeringNode]]:
         """Create an array of FingeringNodes based on the information in the 
-        ``fretboard`` and ``position`` and ``width`` attributes."""
+        ``fretboard``, ``position``, and ``width`` attributes."""
         grid: list[list[FingeringNode]] = []
         for i, s in enumerate(self.fretboard):
             string: list[FingeringNode] = []
@@ -260,8 +260,8 @@ class GuitarFingeringDiagram:
 
     def positions(self, scale: list[str]) -> list[int]:
         """Return the fret numbers where the given scale has notes on the
-        lowest string."""
-        return [i for i, s in enumerate(self.grid[0]) if s in scale]
+        lowest string, up to fret 12."""
+        return [i for i, s in enumerate(self.fretboard[0]) if s in scale and i < 13]
 
 
     def clear_diagram(self) -> None:
@@ -341,7 +341,7 @@ class GuitarFingeringDiagram:
         for string in self.grid:
             for note in string:
                 if note.note_name:
-                    note.scale_degree = interval_map[note.note_name]
+                    note.interval = interval_map[note.note_name]
 
 
 
