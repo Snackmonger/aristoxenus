@@ -361,7 +361,7 @@ def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
     '''
     rotations: list[int] = []
     for _ in range(interval_structure.bit_count()):
-        interval_structure = previous_inversion(interval_structure, max_bits)
         rotations.append(interval_structure)
+        interval_structure = previous_inversion(interval_structure, max_bits)
     return tuple(rotations)
 

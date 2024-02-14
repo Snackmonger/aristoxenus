@@ -4,7 +4,8 @@
 from tkinter import E, EW, NS, NSEW, S, W, Canvas, Tk, StringVar, IntVar
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable
-from data.intervallic_canon import HEPTATONIC_SYSTEM_BY_NAME
+from data.annotations import NodeDisplayReport, FingeringReport, ScaleformReport
+from data.intervallic_canon import DIATONIC_SCALE, HEPTATONIC_SYSTEM_BY_NAME
 
 from gui.config import (DIAGRAM_NODE_SIZES,
                         DIAGRAM_SHAPES,
@@ -12,7 +13,6 @@ from gui.config import (DIAGRAM_NODE_SIZES,
                         COLOURS,
                         FINGERING_TYPES)
 from src import bitwise
-from src import nomenclature
 
 from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
 
@@ -64,24 +64,23 @@ class ScaleSelectorWidget(LabelFrame):
             self, self.mode, self.mode.get(), *MODAL_NAME_SERIES, command=self.change_state)
         self.select_key = OptionMenu(
             self, self.key, self.key.get(), *chromatic(), command=self.change_state)
-        
+
         self.select_scale.grid(column=0, row=0)
+        self.select_scale.config(width=15)
         self.select_mode.grid(column=1, row=0)
+        self.select_mode.config(width=15)
         self.select_key.grid(column=2, row=0)
-        
+        self.select_key.config(width=10)
 
     def change_state(self, *args) -> None:
         """Alert the controller about any change in state."""
         self.callback(self.report())
-
 
     def report(self) -> dict[str, str]:
         """Return a report about the current state of the widget."""
         return {SCALE: self.scale.get(),
                 MODE: self.mode.get(),
                 KEYNOTE: self.key.get()}
-
-
 
 
 class StringFingeringWidget(Frame):
@@ -412,9 +411,54 @@ class FingerboardGridWidget(LabelFrame):
                                         font=("Times", "12", "bold"),
                                         tags="node_text"
                                         )
-
         self.canvas.grid()
 
+
+class DisplaySelector(LabelFrame):
+    """A small widget that controls the display type."""
+
+    def __init__(self, master: Tk | Frame | LabelFrame, callback: Callable[..., Any]) -> None:
+        LabelFrame.__init__(self, master)
+        self.callback = callback
+        self.config(text="Select Display Mode")
+        self.display_type = StringVar(self)
+        self.display_options = [INTERVAL, FINGER, NOTE_NAME, FRET]
+        self.select_display = OptionMenu(
+            self, self.display_type, *self.display_options, command=self.change_state)
+        self.select_display.grid()
+
+    def change_state(self, *args) -> None:
+        """Report any change of state to the controller."""
+        self.callback(self.display_type.get())
+
+
+class PositionSelector(LabelFrame):
+    """A small widget that controls the current position."""
+
+    def __init__(self, master: Tk | Frame | LabelFrame, positions: list[int], callback: Callable[..., Any]) -> None:
+        LabelFrame.__init__(self, master)
+        self.callback = callback
+        self.config(text="Select Position")
+        self.position = IntVar(self)
+        self.position_options = positions
+        self.select_position = OptionMenu(self,
+                                          self.position,
+                                          *[str(x) for x in positions],
+                                          command=self.change_state)
+        self.select_position.grid()
+
+    def change_state(self, *args) -> None:
+        """Report any change of state to the controller."""
+        self.callback(self.report())
+    
+    def set_position(self, position: int) -> None:
+        """Set the current position. (Used when the scale has changed in such
+        a way that the previous position is no longer legal)."""
+        self.position.set(position)
+
+    def report(self) -> int:
+        """Report on the current state of the widget."""
+        return self.position.get()
 
 
 class FretboardDiagram(Frame):
@@ -423,28 +467,30 @@ class FretboardDiagram(Frame):
     def __init__(self, master: Frame | Tk):
         Frame.__init__(self, master)
 
-        self.callbacks: dict[str, Callable[..., Any]] = {}
-
         self.diagram: GuitarFingeringDiagram = GuitarFingeringDiagram(
             5, standard_fretboard(), 5)
 
         # Top bar
         self.scale_selector = ScaleSelectorWidget(self, self.on_scale_change)
-        self.scale_selector.grid(column=0, row=0, columnspan=2)
-        self.display_type = StringVar(self)
-        self.display_options = [INTERVAL, FINGER, NOTE_NAME, FRET]
-        self.select_display = OptionMenu(self, self.display_type, *self.display_options, command=self.on_display_change)
+        self.scale_selector.grid(column=0, row=0, sticky=W)
 
-        # Left large window
+        self.position_selector = PositionSelector(self, self.diagram.positions(render_plain(DIATONIC_SCALE)), self.on_position_change)
+
+        self.display_type_selector = DisplaySelector(
+            self, self.on_display_change)
+        self.display_type_selector.grid(column=2, row=0, sticky=W)
+
+        # Left large window (main diagram display)
         self.fingerboard_grid = FingerboardGridWidget(self, self.diagram)
-        self.fingerboard_grid.grid(column=1, row=1)
+        self.fingerboard_grid.grid(column=0, row=1, columnspan=2)
 
         # Centre narrow window
         self.fingering_panel = StringFingeringSelector(
             self, self.on_fingering_change, self.diagram.number_of_strings)
         self.fingering_panel.grid(column=2, row=1, sticky=EW)
+        for report in self.fingering_panel.summarize():
+            self.diagram.apply_fingering(**report)
 
-        
         # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
         self.mode_toggle: Button  # change state
         self.current_main_panel: Frame
@@ -466,44 +512,48 @@ class FretboardDiagram(Frame):
 
         self.grid()
 
-    def on_fingering_change(self, report: dict[str, str| int]) -> None:
+        # Display initial values
+        self.scale_selector.change_state()
+
+    def on_fingering_change(self, report: FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
         diagram to reflect it"""
-        
         self.diagram.apply_fingering(**report)
+        self.fingerboard_grid.draw_diagram(self.diagram)
 
-
-    def on_node_option_change(self, report: dict[str, str | int]) -> None:
+    def on_node_option_change(self, report: NodeDisplayReport) -> None:
         """Receive a report about the change to an interval node's
         display options and modify the diagram to reflect it."""
         print(f"main class got report {report}")
 
 
-    def on_scale_change(self, report: dict[str, str]) -> None:
+    def on_scale_change(self, report: ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
         and modify the diagram to reflect it."""
         scaleform: int = HEPTATONIC_SYSTEM_BY_NAME[report[SCALE]]
-        mode: int = MODAL_NAME_SERIES.index(report[MODE])
-        modalform = bitwise.inversions(scaleform, 12)[mode]
-        note_names: list[str] = render_plain(modalform, shift_list(chromatic(), report[KEYNOTE]))
+        i: int = MODAL_NAME_SERIES.index(report[MODE])
+        modalform: int = bitwise.inversions(scaleform, 12)[i]
+        intervals: dict[str, str] = get_interval_map(
+            report[KEYNOTE], modalform)
+        note_names: list[str] = render_plain(
+            modalform, shift_list(chromatic(), report[KEYNOTE]))
+
         self.diagram.define_scale(note_names)
-        self.diagram.turn_on_names(note_names)
-        intervals = get_interval_map(report[KEYNOTE], modalform)
         self.diagram.define_intervals(intervals)
+        self.diagram.turn_on_names(note_names)
+        self.fingerboard_grid.draw_diagram(self.diagram)
+
+        
+
+    def on_display_change(self, report: str) -> None:
+        """Receive a report about the change to the display style
+        and modify the diagram to reflect it."""
+        self.diagram.apply_rendering(report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
 
-    
-    def on_display_change(self, *args) -> None:
-        """Receive a report about the change to the display style
+    def on_position_change(self, report: int) -> None:
+        """Receive a report about the change to the position
         and modify the diagram to reflect it."""
-        self.diagram.apply_rendering(self.display_type.get())
 
-
-    def add_callback(self, key: str, func: Callable[..., Any]) -> None:
-        if not key in self.callbacks:
-            self.callbacks.update({key: func})
-
-    def bind_callbacks(self) -> None:
-        """Bind the callbacks to their appropriate tkinter events."""
-        ...
+        

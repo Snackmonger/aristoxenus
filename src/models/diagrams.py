@@ -7,7 +7,7 @@ from data.intervallic_canon import DIATONIC_SCALE
 from data import (chord_symbols,
                   constants,
                   keywords)
-from data.annotations import GuitarFretboard
+from data.annotations import GuitarFretboard, NodeDisplayReport
 from data.instrument_config import GUITAR_STANDARD_TUNING
 
 
@@ -209,10 +209,10 @@ class GuitarFingeringDiagram:
         self.width: int = width
 
         # A table of nodes that can be turned on/off and change appearance.
-        self.grid: list[list[FingeringNode]] = self.refresh_grid()
+        self.grid: list[list[FingeringNode]] = self.new_grid()
         
 
-    def refresh_grid(self) -> list[list[FingeringNode]]:
+    def new_grid(self) -> list[list[FingeringNode]]:
         """Create an array of FingeringNodes based on the information in the 
         ``fretboard`` and ``position`` and ``width`` attributes."""
         grid: list[list[FingeringNode]] = []
@@ -224,7 +224,22 @@ class GuitarFingeringDiagram:
                 string.append(FingeringNode(i, fret, note_name=name))
             grid.append(string)
         return grid
-    
+
+
+    # def change_position(self, position: int) -> None:
+    #     """Refresh the nodes so as to represent the new position."""
+    #     self.position = position
+    #     new_grid = self.new_grid()
+    #     intervals = []
+    #     for i, s in enumerate(self.grid):
+    #         for j, n in enumerate(s):
+    #             node = new_grid[i][j]
+    #             node.text_colour = n.text_colour
+    #             node.shape = n.shape
+    #             node.finger = n.finger
+    #             node.
+
+                
 
     @property
     def lowest_note_is_aligned(self) -> bool:
@@ -274,6 +289,7 @@ class GuitarFingeringDiagram:
         for j, note in enumerate(self.grid[string]):
             note.finger = fingers[j]
 
+
     def apply_rendering(self, rendering_mode: str) -> None:
         for string in self.grid:
             for note in string:
@@ -295,6 +311,7 @@ class GuitarFingeringDiagram:
         for string in self.grid:
             for note in string:
                 note.is_active = note.note_name in note_names
+
 
     def define_scale(self, note_names: list[str]) -> None:
         """Raise the scale flag for any node that contains a scale tone, and
