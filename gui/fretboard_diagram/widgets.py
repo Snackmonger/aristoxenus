@@ -30,7 +30,7 @@ from gui.config import (DIAGRAM_NODE_SIZES,
                         FINGERING_TYPES)
 from src import bitwise
 from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
-from src.nomenclature import chromatic
+from src.nomenclature import chromatic, twelve_tone_scale_intervals
 from src.rendering import render_plain
 from src.utils import shift_list
 
@@ -478,6 +478,9 @@ class FretboardDiagram(Frame):
 
         self.diagram: GuitarFingeringDiagram = GuitarFingeringDiagram(
             5, standard_fretboard(), 5)
+        self.diagram.define_scale(render_plain(DIATONIC_SCALE))
+        self.diagram.define_intervals(get_interval_map("C"))
+        self.diagram.turn_on_names(render_plain(DIATONIC_SCALE))
 
         # Top bar
         self.scale_selector = ScaleSelectorWidget(
@@ -509,6 +512,9 @@ class FretboardDiagram(Frame):
             self.diagram.number_of_strings)
         self.fingering_panel.grid(column=2, row=1, sticky=EW)
 
+
+        # self.interval_panel = IntervalDisplaySelector(self, self.on_node_option_change, )
+
         # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
         self.mode_toggle: Button  # change state
         self.current_main_panel: Frame
@@ -535,6 +541,7 @@ class FretboardDiagram(Frame):
         for report in self.fingering_panel.summarize():
             self.diagram.apply_fingering(**report)
 
+
     def on_fingering_change(self, report: FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
         diagram to reflect it"""
@@ -549,25 +556,50 @@ class FretboardDiagram(Frame):
     def on_scale_change(self, report: ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
         and modify the diagram to reflect it."""
+        note_names_ = list(set(self.diagram.active_names))
+        pos = self.diagram.positions(note_names_)
+        i = pos.index(self.diagram.position)
+
         scaleform: int = HEPTATONIC_SYSTEM_BY_NAME[report[SCALE]]
-        i: int = MODAL_NAME_SERIES.index(report[MODE])
-        modalform: int = bitwise.inversions(scaleform, 12)[i]
-        intervals: dict[str, str] = get_interval_map(
-            report[KEYNOTE], modalform)
-        note_names: list[str] = render_plain(
-            modalform, shift_list(chromatic(), report[KEYNOTE]))
+        j: int = MODAL_NAME_SERIES.index(report[MODE])
+        modalform = bitwise.inversions(scaleform, 12)[j]
+        keynote = report[KEYNOTE]
+        note_names = render_plain(
+            modalform, shift_list(chromatic(), keynote))
+        intervals = get_interval_map(keynote, modalform)
 
         self.diagram.define_scale(note_names)
         self.diagram.define_intervals(intervals)
         self.diagram.turn_on_names(note_names)
+
+        pos = self.diagram.positions(note_names)
+        if self.diagram.position not in pos:
+            self.on_position_change(pos[i])
+
         self.fingerboard_grid.draw_diagram(self.diagram)
 
     def on_display_mode_change(self, report: str) -> None:
         """Receive a report about the change to the display mode
         and modify the diagram to reflect it."""
-        self.diagram.apply_rendering(report)
+        self.diagram.apply_rendering_mode(report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
     def on_position_change(self, report: int) -> None:
         """Receive a report about the change to the position
         and modify the diagram to reflect it."""
+        self.diagram.position = report
+        scale = self.diagram.active_names
+        # Keep working here. We need to write a function
+        # in the diagram class that can extract the notes 
+        # and intervals and transfer them to the new grid.
+        # also extract node options settings.
+
+        self.diagram.grid = self.diagram.new_grid()
+        self.fingerboard_grid.draw_diagram(self.diagram)
+        
+
+
+        # get node options
+        # rename intervals in widget
+        # rename intervals in node options
+        # for report in node options self.node_option_change(report)

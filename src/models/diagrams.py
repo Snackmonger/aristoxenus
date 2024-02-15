@@ -1,13 +1,12 @@
 '''
 Functions pertaining to making musical diagrams (aside from staff notation).
 '''
-
 from src import nomenclature, utils
-from data.intervallic_canon import DIATONIC_SCALE
 from data import (chord_symbols,
                   constants,
                   keywords)
-from data.annotations import GuitarFretboard, NodeDisplayReport
+from data.annotations import GuitarFretboard
+from data.intervallic_canon import DIATONIC_SCALE
 from data.instrument_config import GUITAR_STANDARD_TUNING
 
 
@@ -224,22 +223,15 @@ class GuitarFingeringDiagram:
                 string.append(FingeringNode(i, fret, note_name=name))
             grid.append(string)
         return grid
+    
 
-
-    # def change_position(self, position: int) -> None:
-    #     """Refresh the nodes so as to represent the new position."""
-    #     self.position = position
-    #     new_grid = self.new_grid()
-    #     intervals = []
-    #     for i, s in enumerate(self.grid):
-    #         for j, n in enumerate(s):
-    #             node = new_grid[i][j]
-    #             node.text_colour = n.text_colour
-    #             node.shape = n.shape
-    #             node.finger = n.finger
-    #             node.
-
+    def change_position(self, position: int) -> None:
+        ...
                 
+    @property
+    def active_names(self) -> list[str]:
+        """Return a list of all note names for which at least 1 node is active."""
+        return [x.note_name for s in self.grid for x in s if x.is_active and x.note_name]
 
     @property
     def lowest_note_is_aligned(self) -> bool:
@@ -267,15 +259,15 @@ class GuitarFingeringDiagram:
     def clear_diagram(self) -> None:
         """Set all nodes in the diagram to OFF."""
         for string in self.grid:
-            for note in string:
-                note.is_active = False
+            for node in string:
+                node.is_active = False
 
 
     def flash_diagram(self) -> None:
         """Set all nodes in the diagram to ON."""
         for string in self.grid:
-            for note in string:
-                note.is_active = True
+            for node in string:
+                node.is_active = True
     
 
     def apply_fingering(self, string: int, fingering: str) -> None:
@@ -290,10 +282,11 @@ class GuitarFingeringDiagram:
             note.finger = fingers[j]
 
 
-    def apply_rendering(self, rendering_mode: str) -> None:
+    def apply_rendering_mode(self, rendering_mode: str) -> None:
+        """Change the rendering mode of the diagram's nodes."""
         for string in self.grid:
-            for note in string:
-                note.rendering_mode = rendering_mode
+            for node in string:
+                node.rendering_mode = rendering_mode
 
 
     def orient(self, scale: list[str], interval_map: dict[str, str], chord: list[str]) -> None:
@@ -309,8 +302,8 @@ class GuitarFingeringDiagram:
         """Switch ON any node that contains one of the given note names, 
         and switch OFF any node that doesn't."""
         for string in self.grid:
-            for note in string:
-                note.is_active = note.note_name in note_names
+            for node in string:
+                node.is_active = node.note_name in note_names
 
 
     def define_scale(self, note_names: list[str]) -> None:
@@ -318,16 +311,16 @@ class GuitarFingeringDiagram:
         conversely, raise the chromatic flag for any node that does not 
         contain a scale tone."""
         for string in self.grid:
-            for note in string:
-                note.is_scale_tone = note.note_name in note_names
-                note.is_chromatic_tone = note.note_name not in note_names
+            for node in string:
+                node.is_scale_tone = node.note_name in note_names
+                node.is_chromatic_tone = node.note_name not in note_names
 
 
     def define_chord(self, note_names: list[str]) -> None:
         """Raise the chord flag for any node that contains a chord tone."""
         for string in self.grid:
-            for note in string:
-                note.is_chord_tone = note.note_name in note_names
+            for node in string:
+                node.is_chord_tone = node.note_name in note_names
 
 
     def define_intervals(self, interval_map: dict[str, str]) -> None:
@@ -339,9 +332,9 @@ class GuitarFingeringDiagram:
         to redefine intervals for a different position or scale, but a new key
         does require new intervals."""
         for string in self.grid:
-            for note in string:
-                if note.note_name:
-                    note.interval = interval_map[note.note_name]
+            for node in string:
+                if node.note_name:
+                    node.interval = interval_map[node.note_name]
 
 
 

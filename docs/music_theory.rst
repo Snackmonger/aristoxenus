@@ -78,6 +78,7 @@ by assigning a numeral to the name, thereby creating scientific notation (e.g. C
 
 Interval
 --------
+    (Gk. *diastema*, "standing apart")
 
 An interval is the name we give to the magnitude of difference between two frequencies. The perfect intervals of an octave can be expressed as simple
 fractions (1/1, 2/1, 4/3, 3/2), in which the numerator represents the lower frequency and the denominator represents the higher. In 12-tone equal temperament, 
@@ -123,15 +124,18 @@ on the one hand, and plain or scientific on the other, and any combination of th
 
 Tetrachord
 ----------
+    (Gk. *tetrachordon*, "four-string (group)")
 
 
 
 Genus
 -----
+    (Gk. *genos*, "kind, type")
 
 
 Species
 -------
+    (Gk. *eidos*, "appearance, form" or *schema*, "appearance, form")
 
 
 Close Voicing
@@ -144,3 +148,6 @@ Spread Voicing
 
 Drop Voicing
 ------------
+
+Term used to refer to a type of chord in which one or more of the intervals has been "dropped" by an octave from its normal range. These chords are common 
+in guitar performance, where the standard tuning makes root-position voicings more difficult.
