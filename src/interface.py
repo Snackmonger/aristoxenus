@@ -55,13 +55,18 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
         render_base = nomenclature.chromatic(constants.FLATS)
 
     render_base = utils.shift_list(render_base, keynote)
-
     chromatic_rendering: tuple[str, ...] = tuple(rendering.render_plain(base_scale, render_base))
-    forced_rendering: tuple[str, ...]  = tuple(nomenclature.force_heptatonic(keynote, base_scale))
-    best_rendering: tuple[str, ...]  = tuple(nomenclature.best_heptatonic(keynote, base_scale))
-    numeric_rendering: tuple[str, ...]  = tuple(nomenclature.name_heptatonic_intervals(base_scale))
-    
 
+    best_rendering: tuple[str, ...]  = tuple(nomenclature.best_heptatonic(keynote, base_scale))
+    forced_rendering: tuple[str, ...] = best_rendering
+    if not keynote in constants.BINOMIALS:
+        forced_rendering: tuple[str, ...]  = tuple(nomenclature.force_heptatonic(keynote, base_scale))
+
+    numeric_rendering: tuple[str, ...]  = tuple(nomenclature.name_heptatonic_intervals(base_scale))
+    twelve_tone_intervals: dict[str, str] = dict(
+        zip(utils.shift_list(nomenclature.chromatic(), keynote), 
+            nomenclature.twelve_tone_scale_intervals(base_scale)))
+    
     return {keywords.SCALE_NAME: scale_name,
             keywords.MODAL_NAME: modal_name,
             keywords.INTERVAL_STRUCTURE: base_scale,
@@ -70,24 +75,10 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
             keywords.CHROMATIC_RENDERING: chromatic_rendering,
             keywords.ALPHABETIC_RENDERING: forced_rendering,
             keywords.OPTIMAL_KEYNOTE: best_rendering[0],
-            keywords.OPTIMAL_RENDERING: best_rendering}
-
-
-
-def render_heptatonic_chord_scale(optimal_rendering: tuple[str, ...], notes: str|int):
-    
-    # Because the optimal form might use a mix of accidentals
-    # in order to maintain alphabetic order, we can't generate
-    # chords from the integer interval maps...
-
-    # EDIT: actually, it might be easier just to render the scale as
-    # if it were pure, then write a function to mask a specific spelling.
-    
-    
-    base_form = parsing.parse_literal_sequence(optimal_rendering)
-    chords = permutation.chordify(base_form, notes)
-
+            keywords.OPTIMAL_RENDERING: best_rendering,
+            keywords.TWELVE_TONE_INTERVALS: twelve_tone_intervals}
     
 
-    series = [utils.roman_numeral(i+1).upper() for i in range(len(keywords.MODAL_NAME_SERIES))]
+
+
 

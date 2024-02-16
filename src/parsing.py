@@ -15,12 +15,12 @@ from src import (nomenclature,
 from data.annotations import ChordConspectus
 
 
-# ----------------------------------------------------------
-logger = loguru.logger
-logger.add(sys.stderr, format="{time} {level} {message}",
-           filter="my_module", level="INFO")
-logger.add("file_1.log", rotation="10 MB")
-#-----------------------------------------------------------
+# # ----------------------------------------------------------
+# logger = loguru.logger
+# logger.add(sys.stderr, format="{time} {level} {message}",
+#            filter="my_module", level="INFO")
+# logger.add("file_1.log", rotation="10 MB")
+# #-----------------------------------------------------------
 
 def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
@@ -212,8 +212,8 @@ def parse_chord_symbol(chord_symbol: str) -> int:
         elif symbol in chord_symbols.subtractive:
             structure ^= (chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
 
-    if chord_symbol != '':
-        logger.info(f'Parsed: {parsed_symbols}, Unparsed: {chord_symbol}')
+    # if chord_symbol != '':
+        # logger.info(f'Parsed: {parsed_symbols}, Unparsed: {chord_symbol}')
         
     return structure
 

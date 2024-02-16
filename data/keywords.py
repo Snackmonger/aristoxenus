@@ -77,6 +77,7 @@ PREFERRED_NAME: str = 'preferred_name'
 CANONICAL_NAME: str = 'canonical_name'
 CANONICAL_FORM: str = 'canonical_form'
 CHROMATIC_RENDERING: str = 'chromatic_rendering'
+TWELVE_TONE_INTERVALS: str = "twelve_tone_intervals"
 ALPHABETIC_RENDERING: str = 'alphabetic_rendering'
 OPTIMAL_RENDERING: str = 'optimal_rendering'
 OPTIMAL_KEYNOTE: str = 'optimal_keynote'
@@ -141,10 +142,12 @@ OPEN_G: str = "open_g"
 # Graphics display options
 # ------------------------
 SHAPE: str = "shape"
-SIZE: str = "size"
+SHAPE_SIZE: str = "size"
 TEXT_SIZE: str = "text_size"
 COLOUR: str = "colour"
+SHAPE_COLOUR: str = "shape_colour"
 TEXT_COLOUR: str = "text_colour"
+RENDERING_MODE: str = "rendering_mode"
 # Shape terms
 CIRCLE: str = "circle"
 TRIANGLE: str = "triangle"

@@ -138,26 +138,35 @@ class FingeringNode:
                  is_chromatic_tone: bool = False,
                  shape: str = keywords.CIRCLE,
                  shape_colour: str = keywords.BLACK,
+                 shape_size: int = 2,
                  text_colour: str = keywords.WHITE,
-                 rendering_mode: str = keywords.FRET
+                 text_size: int = 14,
+                 rendering_mode: str = keywords.INTERVAL
                  ) -> None:
         
         # Location of the node in the array
+        # (Not currently used)
         self.string: int = string
         self.fret: int = fret
 
-        # Rendering options
-        self.finger: str | None = finger
+        # Identity
         self.note_name: str | None = note_name
         self.interval: str | None = scale_degree
+        self.finger: str | None = finger
         self.rendering_mode: str = rendering_mode
+
+        # Rendering flags
         self.is_active: bool = is_active
         self.is_scale_tone: bool = is_scale_tone
         self.is_chord_tone: bool = is_chord_tone
         self.is_chromatic_tone: bool = is_chromatic_tone
+
+        # Rendering options
         self.shape: str = shape
         self.shape_colour: str = shape_colour
+        self.shape_size: int = shape_size
         self.text_colour: str = text_colour
+        self.text_size: int = text_size
 
 
     def __repr__(self) -> str:
@@ -181,6 +190,13 @@ class FingeringNode:
                     f"Unrecognized rendering mode: {self.rendering_mode}")
         return str()
 
+    # def report(self) -> dict[str, str | int | None]:
+    #     return {keywords.INTERVAL: self.interval,
+    #             keywords.SHAPE: self.shape,
+    #             keywords.SHAPE_SIZE: self.shape_size,
+    #             keywords.SHAPE_COLOUR: self.shape_colour,
+    #             keywords.TEXT_COLOUR: self.text_colour,
+    #             keywords.TEXT_SIZE: self.text_size}
 
 
 class GuitarFingeringDiagram:
@@ -223,15 +239,45 @@ class GuitarFingeringDiagram:
                 string.append(FingeringNode(i, fret, note_name=name))
             grid.append(string)
         return grid
-    
+
 
     def change_position(self, position: int) -> None:
-        ...
+        """Change the position of the diagram.
+        
+        This entails creating a new grid, so we transfer the old node
+        options from the current grid to the new grid, maintianing the current
+        display options."""
+
+        self.position = position
+        new: "GuitarFingeringDiagram" = self.__class__(position, self.fretboard, self.width)
+        mode = self.grid[0][0].rendering_mode
+        new.define_scale(self.active_names)
+        new.define_intervals(self.interval_map)
+        new.turn_on_names(self.active_names)
+        new.apply_rendering_mode(mode)
+        self.grid = new.grid
+        
+
+    @property
+    def interval_map(self) -> dict[str, str]:
+        """Return a list of all interval names for which at least 1 node is active."""
+        return {x.note_name : x.interval for s in self.grid for x in s if x.interval and x.note_name}
                 
     @property
     def active_names(self) -> list[str]:
         """Return a list of all note names for which at least 1 node is active."""
         return [x.note_name for s in self.grid for x in s if x.is_active and x.note_name]
+    
+
+    @property
+    def keynote(self) -> str:
+        """Return the note name that correlates to the interval 1."""
+        for s in self.grid:
+            for x in s:
+                if x.interval and x.interval == "1":
+                    assert isinstance(x.note_name, str)
+                    return x.note_name
+        raise ValueError("Keynote data not available.")
 
     @property
     def lowest_note_is_aligned(self) -> bool:

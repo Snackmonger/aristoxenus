@@ -25,8 +25,8 @@ ChordInventory: TypeAlias = tuple[ChordConspectus, ...]
 
 class ScaleformReport(TypedDict):
     """Report about a scaleform."""
-    scale: str
-    mode: str
+    scale_name: str
+    modal_name: str
     keynote: str
 
 

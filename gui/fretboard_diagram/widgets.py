@@ -1,19 +1,20 @@
 """Widgets that make up the GUI"""
 
 
-from tkinter import E, EW, NS, NSEW, S, W, Canvas, Tk, StringVar, IntVar
+from tkinter import E, EW, NS, NSEW, NW, S, SUNKEN, W, Canvas, Tk, StringVar, IntVar
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, cast
 
+from data import keywords
 from data.annotations import NodeDisplayReport, FingeringReport, ScaleformReport
 from data.intervallic_canon import DIATONIC_SCALE, HEPTATONIC_SYSTEM_BY_NAME
-from data.keywords import (DIATONIC, FINGER, FINGERING, FRET,
+from data.keywords import (CHROMATIC_RENDERING, DIATONIC, FINGER, FINGERING, FRET, INTERVAL_STRUCTURE,
                            INVERSE_TRIANGLE,
-                           IONIAN, KEYNOTE, MODAL_NAME_SERIES, MODE, NOTE_NAME, SCALE,
+                           IONIAN, KEYNOTE, MODAL_NAME, MODAL_NAME_SERIES, MODE, NOTE_NAME, SCALE, SCALE_NAME,
                            SHAPE,
                            COLOUR,
-                           HEPTATONIC_ORDER,
-                           SIZE,
+                           HEPTATONIC_ORDER, SHAPE_COLOUR,
+                           SHAPE_SIZE,
                            SQUARE,
                            STRING,
                            TEXT_SIZE,
@@ -28,7 +29,7 @@ from gui.config import (DIAGRAM_NODE_SIZES,
                         DIAGRAM_TEXT_SIZES,
                         COLOURS,
                         FINGERING_TYPES)
-from src import bitwise
+from src import bitwise, interface
 from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
 from src.nomenclature import chromatic, twelve_tone_scale_intervals
 from src.rendering import render_plain
@@ -75,8 +76,8 @@ class ScaleSelectorWidget(LabelFrame):
 
     def report(self) -> dict[str, str]:
         """Return a report about the current state of the widget."""
-        return {SCALE: self.scale.get(),
-                MODE: self.mode.get(),
+        return {SCALE_NAME: self.scale.get(),
+                MODAL_NAME: self.mode.get(),
                 KEYNOTE: self.key.get()}
 
 
@@ -197,8 +198,8 @@ class IntervalDisplayWidget(Frame):
 
         for i, (label, widget) in enumerate(
             [(SHAPE, self.select_shape),
-             (SIZE, self.select_size),
-             (COLOUR, self.select_colour),
+             (SHAPE_SIZE, self.select_size),
+             (SHAPE_COLOUR, self.select_colour),
              (TEXT_COLOUR, self.select_text_colour),
              (TEXT_SIZE, self.select_text_size)]):
 
@@ -217,8 +218,8 @@ class IntervalDisplayWidget(Frame):
         """Return a report about the current state of the widget."""
         return {INTERVAL: self.interval,
                 SHAPE: self.shape.get(),
-                SIZE: self.size.get(),
-                COLOUR: self.colour.get(),
+                SHAPE_SIZE: self.size.get(),
+                SHAPE_COLOUR: self.colour.get(),
                 TEXT_COLOUR: self.text_colour.get(),
                 TEXT_SIZE: self.text_size.get()}
 
@@ -240,7 +241,7 @@ class IntervalDisplaySelector(LabelFrame):
 
         LabelFrame.__init__(self, master)
         self.callback = callback
-        self.intervals = intervals
+        self.intervals = sorted(intervals)
 
         self.current_interval = StringVar(self, value=self.intervals[0])
         self.select_interval = OptionMenu(
@@ -256,19 +257,21 @@ class IntervalDisplaySelector(LabelFrame):
 
         self.current_subwidget: IntervalDisplayWidget = self.subwidgets[0]
         label = Label(self, text="Select interval: ")
-        label.grid(column=0, row=0, sticky="w")
-        self.select_interval.grid(column=1, row=0, sticky="e")
+        label.grid(column=0, row=0, sticky=W)
+        self.select_interval.grid(column=1, row=0, sticky=E)
         self.current_subwidget.grid(column=0, row=1, columnspan=2)
 
         self.config(text="Interval Controls",
                     borderwidth=5,
-                    labelanchor="nw",
-                    relief="sunken",)
+                    labelanchor=NW,
+                    relief=SUNKEN,)
 
     def rename_intervals(self, intervals: list[str]) -> None:
         """Rename the series of intervals that label the subwidgets."""
+        self.intervals = sorted(intervals)
         for i, interval in enumerate(intervals):
             self.subwidgets[i].interval = interval
+        self.select_interval.set_menu(self.intervals[0], *self.intervals)
 
     def display_subwidget(self, *args) -> None:
         """Change which subwidget is currently being displayed, based on the 
@@ -448,10 +451,11 @@ class PositionSelector(LabelFrame):
         LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Position")
-        self.position = IntVar(self)
+        self.position = IntVar(self, )
         self.position_options = positions
         self.select_position = OptionMenu(self,
                                           self.position,
+                                          str(self.position.get()),
                                           *[str(x) for x in positions],
                                           command=self.change_state)
         self.select_position.grid()
@@ -478,6 +482,7 @@ class FretboardDiagram(Frame):
 
         self.diagram: GuitarFingeringDiagram = GuitarFingeringDiagram(
             5, standard_fretboard(), 5)
+        
         self.diagram.define_scale(render_plain(DIATONIC_SCALE))
         self.diagram.define_intervals(get_interval_map("C"))
         self.diagram.turn_on_names(render_plain(DIATONIC_SCALE))
@@ -520,19 +525,9 @@ class FretboardDiagram(Frame):
         self.current_main_panel: Frame
 
         # Frame 4a: Scale Mode Panel (RIGHT, STATE)
-        self.scale_panel: Frame
-        # for interval in scale, a subpanel of frame 5
-
-        # Frame 4b: Arpeggio Mode Panel (RIGHT, STATE)
-        self.arpeggio_panel: Frame
-
-        # Frame 5: Node Options Subpanel
-        # (This must be a separate class for a repeating widget.)
-        self.node_options: Frame
-        self.node_colour: str
-        self.node_shape: str
-        self.node_textcolour: str
-        self.node_textdisplay: str
+        intervals = [v for k,v in self.diagram.interval_map.items() if k in self.diagram.active_names]
+        self.node_selector: IntervalDisplaySelector = IntervalDisplaySelector(self, self.on_node_option_change, intervals)
+        self.node_selector.grid(column=3, row=1, sticky=EW)
 
         self.grid()
 
@@ -556,25 +551,35 @@ class FretboardDiagram(Frame):
     def on_scale_change(self, report: ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
         and modify the diagram to reflect it."""
-        note_names_ = list(set(self.diagram.active_names))
-        pos = self.diagram.positions(note_names_)
-        i = pos.index(self.diagram.position)
 
-        scaleform: int = HEPTATONIC_SYSTEM_BY_NAME[report[SCALE]]
-        j: int = MODAL_NAME_SERIES.index(report[MODE])
-        modalform = bitwise.inversions(scaleform, 12)[j]
-        keynote = report[KEYNOTE]
-        note_names = render_plain(
-            modalform, shift_list(chromatic(), keynote))
-        intervals = get_interval_map(keynote, modalform)
+        # Whenever the scale, mode, or keynote changes, we have to change
+        # the active nodes to reflect the new notes and intervals. If the
+        # previous position no longer has an active node, 
+        current_names: list[str] = list(set(self.diagram.active_names))
+        positions: list[int] = self.diagram.positions(current_names)
+        i: int = positions.index(self.diagram.position)
+
+        data: dict[str, Any] = interface.render_heptatonic_form(**report)
+        modalform: int = data[INTERVAL_STRUCTURE]
+        keynote: str = data[KEYNOTE]
+        note_names: list[str] = data[CHROMATIC_RENDERING]
+        map_name_to_interval: dict[str, str] = get_interval_map(keynote, modalform)
+        
+        # The node selector will keep the same settings for each of the 7 
+        # intervals, but the intervals' names will be updated for the new 
+        # scale configuration.
+        self.node_selector.rename_intervals(
+            [v for k,v in map_name_to_interval.items() if k in note_names])
 
         self.diagram.define_scale(note_names)
-        self.diagram.define_intervals(intervals)
+        self.diagram.define_intervals(map_name_to_interval)
         self.diagram.turn_on_names(note_names)
 
-        pos = self.diagram.positions(note_names)
-        if self.diagram.position not in pos:
-            self.on_position_change(pos[i])
+        positions = self.diagram.positions(note_names)
+        self.position_selector.select_position.set_menu(self.diagram.position, *positions)
+        self.position_selector.set_position(self.diagram.position)
+        if self.diagram.position not in positions:
+            self.on_position_change(positions[i])
 
         self.fingerboard_grid.draw_diagram(self.diagram)
 
@@ -587,15 +592,12 @@ class FretboardDiagram(Frame):
     def on_position_change(self, report: int) -> None:
         """Receive a report about the change to the position
         and modify the diagram to reflect it."""
-        self.diagram.position = report
-        scale = self.diagram.active_names
-        # Keep working here. We need to write a function
-        # in the diagram class that can extract the notes 
-        # and intervals and transfer them to the new grid.
-        # also extract node options settings.
+        self.diagram.change_position(report)
+        for report_ in self.fingering_panel.summarize():
+            self.diagram.apply_fingering(**report_)
 
-        self.diagram.grid = self.diagram.new_grid()
         self.fingerboard_grid.draw_diagram(self.diagram)
+        # for node_option in self.
         
 
 

@@ -31,12 +31,12 @@ from src import (bitwise, utils,
                  rendering, 
                  temperament)
 
-# ----------------------------------------------------------
-logger = loguru.logger
-logger.add(sys.stderr, format="{time} {level} {message}",
-           filter="my_module", level="INFO")
-logger.add("file_1.log", rotation="10 MB")
-#-----------------------------------------------------------
+# # ----------------------------------------------------------
+# logger = loguru.logger
+# logger.add(sys.stderr, format="{time} {level} {message}",
+#            filter="my_module", level="INFO")
+# logger.add("file_1.log", rotation="10 MB")
+# #-----------------------------------------------------------
 
 
 def chromatic(accidental_notes: list[str] | tuple[str, ...]=constants.BINOMIALS) -> list[str]:
