@@ -41,48 +41,50 @@ Triads
 
 - Major 3 is indicated with 'maj' suffix.
 - Minor 3 is indicated with lowercase 'min' suffix.
+
 - A chord that replaces the 3 with a 2 or 4 is indicated with the 'sus' suffix, plus the appropriate numeral
 
-Examples
-- "Cmaj", "Emin", "Gsus2", "Dmaj", "Fmin", "Asus4", etc.
+    - "Cmaj", "Emin", "Gsus2", "Dmaj", "Fmin", "Asus4", etc.
 
 In user-generated chord symbols, the parser will also recognize the following symbols:
+
 - Major triads: "M", "Δ", (nothing)
 - Minor triads: "m", "-""
 
-Examples:
-- major triads: "CM", "DM", "EbΔ", "BΔ", "F", "G#", 
-- minor triads: "Em", "Dm", "F-", "G-"
+    - major triads: "CM", "DM", "EbΔ", "BΔ", "F", "G#", 
+    - minor triads: "Em", "Dm", "F-", "G-"
 
 The symbol interpretation always assumes that a chord contains a p5 unless one of the symbols indicates otherwise.
 Therefore, we refer to augmented chords as 'maj#5' and diminished chords as 'mb5'. If either of these symbols appears in
 the compound symbol and is not qualified by "add" or "no" (see below), then it will be understood as replacing the implicit p5 in the chord.
+
 - "Cmaj#5" -> C E G#
 - "Aminb5" -> A C Eb
 - "Ebmajb5" -> Eb G Bb
 
 In user-generated symbols, the parser will also recognize the following symbols:
+
 - Augmented triads: "aug", "+""
 - Diminished triads: "dim", "ø"
 
-Examples:
-- augmented triads: "Caug", "Daug", "F+", "G#+"
-- diminished triads: "Fdim", "Gbdim", "Bbø", "Aø"
+    - augmented triads: "Caug", "Daug", "F+", "G#+"
+    - diminished triads: "Fdim", "Gbdim", "Bbø", "Aø"
 
 Other triads with altered fifths are also possible:
-- "Cmajb5" (an uncommon triad, but useful as a base for a dominant 7 chord)
-- "Emin#5" (an awkward way to name a major triad in the first inversion)
+
+    - "Cmajb5" (an uncommon triad, but useful as a base for a dominant 7 chord)
+    - "Emin#5" (an awkward way to name a major triad in the first inversion)
 
 In situations where there is an ambiguity between possibile interpretations of a compound symbol, the parsers will always interpret an 
 accidental immediately after an alphabetic note name as modifying the pitch of the note name:
 
-- "C#5" means "a 5 chord (powerchord) built from C#", NOT "C augmented"
-- "Eb5" means "a 5 chord (powerchord) built from Eb", NOT "E major flat five"
+    - "C#5" means "a 5 chord (powerchord) built from C#", NOT "C augmented"
+    - "Eb5" means "a 5 chord (powerchord) built from Eb", NOT "E major flat five"
 
 The internal symbol generation uses 1:1 symbols wherever possible, partly to avoid these kinds of ambiguities:
 
-- "C#maj#5" unambiguously means "a major chord built from C#, but override the fifth with a #5"
-- "Emajb5" unambiguously means "a major chord built from E, but override the fifth with a b5"
+    - "C#maj#5" unambiguously means "a major chord built from C#, but override the fifth with a #5"
+    - "Emajb5" unambiguously means "a major chord built from E, but override the fifth with a b5"
 
 
 Tetrads 
@@ -98,6 +100,7 @@ Seventh chords are formed according to common idioms:
 - When "maj7" is appended to another chord type suffix, it indicates a natural 7 over that chord type.
 
 Examples:
+
 - "G7" -> G B D F
 - "Amin7" -> A C E G
 - "Dmaj7" -> D F A C 
@@ -107,32 +110,40 @@ Examples:
 
 When a seventh chord contains an altered fifth, we will always generate a compound symbol in which the 5 symbol comes *after* the 7 symbol. The reasoning behind this
 is that "half-diminished" chords are generally written "m7b5" or "min7b5", and so we should also expect to have "maj7#5" or "7#5", and other symbols of that sort. 
+
 - "Emin7b5"
 - "G7b5"
 - "Fmaj7#5"
 
 In practice, chords with altered fifths are written in a wide variety of ways, and the parser will understand the variants, as long as none of the symbols conflicts with the others.
+
 - "Gaug7", "G7aug", "Gaugb7" "G7+", "G+7", "G+b7" are all equivalent to the prescribed "G7#5"
 
 In user generated symbols, the alias symbols of chord types will be treated as equivalent to the prescribed symbol:
+
 - "BM7" and "BΔ7" are equivalent to "Bmaj7", but "B7" will imply a b7, as above.
 - "G-7" and "Gm7" are equivalent to "Gmin7"
 
 Conflicting symbols will be parsed along the same lines as in the triads:
+
 - "Eb7" means "a b7 over a major triad built from Eb", NOT "a b7 over a major triad built from E"
 
 However, the "b7" symbol will be understood correctly when it occurs after any other suffix:
+
 - "Emajb7" is equivalent to "E7"
 - "Eminb7" is equivalent to "Emin7".
 - "Eminb5b7" is equivalent to "Emin7b5"
 
 Sixth chords are formed according to common idioms:
+
 - The '6' suffix indicates a major triad with a natural 6 (structurally, a min7 chord in the first inversion)
 - The 'min6' indicates a minor triad with a natural 6 (structurally, a min7b5 chord in the first inversion)
 
 Examples:
-    - C6 -> C E G A ( = Amin7)
 
+- "C6" -> C E G A (=Amin7)
+- "Cm6" -> C Eb G A (=Am7b5)
+- "Cdim6" -> C Eb Gb A (=Cdim7)
 
 Other Polyads
 +++++++++++++
@@ -143,6 +154,7 @@ seventh chords, but chord will also include all odd-numbered tones between
 the seventh and the numeral.
 
 Examples:
+
 - Cmaj7   -> C, E, G, B
 - Cmaj9   -> C, E, G, B, D
 - Cmaj11  -> C, E, G, B, D, F
@@ -150,6 +162,7 @@ Examples:
 - Cm13    -> C, Eb, G, Bb, D, F, A
 
 As above, an altered 5th comes *after* the numeral. E.g.:
+
 - Cm9b5   -> C, Eb, Gb, Bb, D
 - Cmaj7#5 -> C, E, G#, B
 - C7#5    -> C, E, G#, Bb
