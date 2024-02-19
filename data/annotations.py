@@ -38,6 +38,8 @@ class FingeringReport(TypedDict):
 
 
 class NodeDisplayReport(TypedDict):
+    """Report about the display options for nodes in the guitar fingering
+    diagram."""
     interval: str
     shape: str
     size: int
