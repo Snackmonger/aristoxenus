@@ -1,8 +1,6 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from typing import cast
-from data import (annotations, constants,
 from data import (annotations, 
                   constants,
                   errors,
