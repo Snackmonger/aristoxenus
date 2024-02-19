@@ -1,4 +1,3 @@
-from typing import Optional
 from src import (nomenclature, 
                  utils, 
                  rendering)
@@ -7,19 +6,10 @@ from src import (nomenclature,
 
 class IntervalStructure:
 
-    def __init__(self, value: int, keynote: Optional[str]) -> None:
+    def __init__(self, value: int) -> None:
         self.value = value
-        self.keynote = keynote
 
-    def __repr__(self) -> str:
-        return str(self.render_binomial())
-
-    def render_binomial(self, keynote: Optional[str]) -> list[str]:
-        if keynote is None:
-            if self.keynote:
-                keynote = self.keynote
-            else:
-                keynote = "C"
+    def render_binomial(self, keynote: str) -> list[str]:
         keynote = nomenclature.decode_enharmonic(keynote)
         chromatic = utils.shift_list(nomenclature.chromatic(), keynote)
         return rendering.render_plain(self.value, chromatic)
