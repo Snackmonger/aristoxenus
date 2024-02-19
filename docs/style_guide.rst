@@ -167,7 +167,7 @@ As above, an altered 5th comes *after* the numeral. E.g.:
 - Cmaj7#5 -> C, E, G#, B
 - C7#5    -> C, E, G#, Bb
 
-However, since 'dim7' is a prescribed synbol, no altered 5th is necessary in, e.g.:
+However, since 'dim7' is a prescribed symbol, no altered 5th is necessary in, e.g.:
 
     - Cdim11  -> C, Eb, Gb, A, D, F
 
