@@ -25,7 +25,7 @@ from data.annotations import ChordConspectus
 def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
     root: str
-    for note in sorted(nomenclature.legal_chord_names(), key=lambda x: len(x), reverse=True):
+    for note in sorted(nomenclature.legal_chord_names(), key=len, reverse=True):
         if note in chord_symbol:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)
@@ -60,8 +60,8 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     -----
     A variety of standard forms are supported. Apart from the alphabetic chord
     name, any other unrecognized symbols are simply ignored. If the 
-    function does not raise an error, it will always return, at minimum, a p5 
-    (that is, 129 = 0b10000001). 
+    function does not raise an error because of a malformed root note, it will
+    always return, at minimum, a p5 (that is, 129 = 0b10000001). 
 
     The parser will treat all 'add' and 'no' notations last (even if they are 
     not written last in the chord symbol), so they can be used to make explicit 
@@ -121,6 +121,15 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     # Root note is not needed beyond this point.
     chord_symbol = __remove_chord_prefix(chord_symbol)[1]
 
+    # Get some easy cases out of the way.
+    # No suffix = major triad: C, D, E, etc.
+    if len(chord_symbol) == 0:
+        return structure | intervals.DITONE
+    # Powerchord suffix: D5, E5, F5, etc.,
+    # (implies a p5 and p8).
+    if chord_symbol == chord_symbols.CHORD_5:
+        return structure | intervals.DIAPASON
+
     # Remove all 'add'/'no' modifiers
     # to see what the base symbol is.
     add_drop: list[str] = []
@@ -132,15 +141,6 @@ def parse_chord_symbol(chord_symbol: str) -> int:
         if drop in chord_symbol:
             chord_symbol = chord_symbol.replace(drop, '')
             add_drop.append(drop)
-
-    # No suffix = major triad: C, D, E, etc.
-    if len(chord_symbol) == 0:
-        return structure | intervals.DITONE
-
-    # Powerchord suffix: D5, E5, F5, etc.,
-    # (implies a p5 and p8).
-    if chord_symbol == chord_symbols.CHORD_5:
-        return structure | intervals.DIAPASON
 
     parsed_symbols: list[str] = []
 
@@ -158,20 +158,20 @@ def parse_chord_symbol(chord_symbol: str) -> int:
                                                                    chord_symbols.CHORD_11,
                                                                    chord_symbols.CHORD_13]}.items():
         for symbol in chord_symbols.CHORD_SYMBOL_LIST:
-            if chord_symbol.startswith(symbol+extension):
+            if chord_symbol.startswith(symbol + extension):
                 parsed_symbols += extended_structure
 
                 # maj7 (or variant) -> maj, maj7, plus extensions
                 if symbol in chord_symbols.CHORD_MAJOR_SYMBOL_LIST:
-                    chord_symbol = chord_symbol.removeprefix(symbol+extension)
+                    chord_symbol = chord_symbol.removeprefix(symbol + extension)
                     parsed_symbols += [chord_symbols.CHORD_MAJ, chord_symbols.CHORD_MAJ_7]
 
                 # dim7 (or variant) -> dim, bb7, plus extensions
                 if symbol == chord_symbols.CHORD_DIM:
-                    chord_symbol = chord_symbol.removeprefix(symbol+extension)
+                    chord_symbol = chord_symbol.removeprefix(symbol + extension)
                     parsed_symbols += [chord_symbols.CHORD_DIM, chord_symbols.CHORD_DOUBLE_FLAT_7]
 
-                # m7 (or variant): ensure that b7 is present if not explicit (e.g. Em11)
+                # min7 (or variant): ensure that b7 is present if not explicit (e.g. Em11)
                 if symbol in chord_symbols.CHORD_MINOR_SYMBOL_LIST:
                     parsed_symbols += [chord_symbols.CHORD_FLAT_7]
 

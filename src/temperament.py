@@ -11,8 +11,6 @@ from data import (constants)
 from src import (nomenclature)
 
 
-
-
 def equal_temperament() -> tuple[float, ...]:
     '''
     Return a list of frequencies corresponding to the range of the scientific 

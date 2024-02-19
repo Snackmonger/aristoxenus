@@ -20,6 +20,7 @@ class ChordConspectus(TypedDict):
     drop_3: NotRequired[dict[str, int]]
     drop_2_and_4: NotRequired[dict[str, int]]
 
+
 ChordInventory: TypeAlias = tuple[ChordConspectus, ...]
 
 

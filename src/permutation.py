@@ -1,7 +1,8 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from data import (annotations, constants,
+from data import (annotations, 
+                  constants,
                   errors,
                   intervallic_canon,
                   keywords)
@@ -92,15 +93,15 @@ def chordify(interval_structure: int,
     Examples
     --------
     >>> chordify(0b101010110101)
-    [73, 137, 145, 145, 137, 137, 145]
+    [145, 137, 137, 145, 145, 137, 73]
 
     This translates to the diatonic triads
     (dim, min, maj, maj, min, min, maj)
 
     >>> chordify(0b101010110101, 4, 3)
-    [33825, 33825, 66593, 67649, 33825, 33825, 67617]
+    [67617, 33825, 33825, 67649, 66593, 33825, 33825]
     >>> chordify(0b101010110101, 'tetrad', 'quartal')
-    [33825, 33825, 66593, 67649, 33825, 33825, 67617]
+    [67617, 33825, 33825, 67649, 66593, 33825, 33825]
 
     This translates to quartal voicings of the diatonic tetrads.
     '''
@@ -115,14 +116,15 @@ def chordify(interval_structure: int,
 
     chord_scale: list[int] = []
     chord_intervals: list[int] = []
-    all_intervals: list
+    all_intervals: list[int]
     full_range: int
     clip: int
 
     # Grab the intervals for each mode and use them to derive chords
     for inversion in bitwise.inversions(interval_structure, 12):
         full_range = extend_structure(inversion)
-        all_intervals = list(bitwise.iterate_intervals(full_range))[::step]
+        all_intervals: list[int] = list(
+            bitwise.iterate_intervals(full_range))[::step]
 
         # Ensure that the requested number of notes in the chord
         # does not exceed the number of available notes.
@@ -309,10 +311,10 @@ def triad_variants(triads: dict[str, int] | None = None
         inversion_names.reverse()
 
         variants.append(annotations.ChordConspectus(canonical_name=name,
-                                              canonical_form=triad,
-                                              close=dict(
-                                                  zip(inversion_names, close_inversions)),
-                                              open=dict(zip(inversion_names, open_inversions))))
+                                                    canonical_form=triad,
+                                                    close=dict(
+                                                        zip(inversion_names, close_inversions)),
+                                                    open=dict(zip(inversion_names, open_inversions))))
 
     return tuple(variants)
 
@@ -340,10 +342,17 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
     Examples
     --------
     >>> x = tetrad_variants()
-    >>> bin(x[3]['close']['second_inversion'])
+
+    3 = Minor 6 chord
+
+    >>> bin(x[3]['close']['root_position'])
+    '0b1010001001'
+    >>> bin(x[3]['close']['first_inversion'])
     '0b1001010001'
-    >>> bin(x[3]['drop_2']['third_inversion'])
-    '0b1000001010000001'
+    >>> bin(x[3]['close']['second_inversion'])
+    '0b100100101'
+    >>> bin(x[3]['close']['third_inversion'])
+    '0b10001001001'
     '''
     if tetrads is None:
         tetrads = intervallic_canon.tetrads
@@ -353,12 +362,14 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
     for name, tetrad in tetrads.items():
         inversions: tuple[int, ...] = bitwise.inversions(
             tetrad, constants.TONES)
-        innerdict: annotations.ChordConspectus = annotations.ChordConspectus(canonical_name=name,
-                                                                 canonical_form=tetrad,
-                                                                 close={},
-                                                                 drop_2={},
-                                                                 drop_3={},
-                                                                 drop_2_and_4={})
+        innerdict = annotations.ChordConspectus(
+            canonical_name=name,
+            canonical_form=tetrad,
+            close={},
+            drop_2={},
+            drop_3={},
+            drop_2_and_4={}
+            )
 
         for i, inversion in enumerate(inversions):
             # We iterate the inversions THEN generate the drop voicings.
