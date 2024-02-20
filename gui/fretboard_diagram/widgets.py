@@ -5,45 +5,15 @@ from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, cast
 
-from data import keywords
-from data.annotations import NodeDisplayReport, FingeringReport, ScaleformReport
-from data.intervallic_canon import DIATONIC_SCALE
-from data.keywords import (CHROMATIC_RENDERING, 
-                           DIATONIC, 
-                           FINGER, 
-                           FINGERING, 
-                           FRET, 
-                           INTERVAL_STRUCTURE,
-                           INVERSE_TRIANGLE,
-                           IONIAN, 
-                           KEYNOTE, 
-                           MODAL_NAME, 
-                           MODAL_NAME_SERIES, 
-                           NOTE_NAME, 
-                           SCALE_NAME,
-                           SHAPE,
-                           HEPTATONIC_ORDER, 
-                           SHAPE_COLOUR,
-                           SHAPE_SIZE,
-                           SQUARE,
-                           STRING,
-                           TEXT_SIZE,
-                           TEXT_COLOUR,
-                           INTERVAL,
-                           BLACK,
-                           TRIANGLE,
-                           WHITE,
-                           CIRCLE)
-from gui.config import (DIAGRAM_NODE_SIZES,
-                        DIAGRAM_SHAPES,
-                        DIAGRAM_TEXT_SIZES,
-                        COLOURS,
-                        FINGERING_TYPES)
-from src import interface
-from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
-from src.nomenclature import chromatic
-from src.rendering import render_plain
-
+from data import (keywords, 
+                  annotations, 
+                  intervallic_canon)
+from gui import config
+from src import (interface, 
+                 nomenclature, 
+                 rendering)
+from src.models import diagrams
+# from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
 
 
 class ScaleSelectorWidget(LabelFrame):
@@ -61,17 +31,17 @@ class ScaleSelectorWidget(LabelFrame):
                  ) -> None:
 
         LabelFrame.__init__(self, master, text="Select Scale Pattern")
-        self.scale = StringVar(self, value=DIATONIC)
-        self.mode = StringVar(self, value=IONIAN)
+        self.scale = StringVar(self, value=keywords.DIATONIC)
+        self.mode = StringVar(self, value=keywords.IONIAN)
         self.key = StringVar(self, "C")
         self.callback = callback
 
         self.select_scale = OptionMenu(
-            self, self.scale, self.scale.get(), *HEPTATONIC_ORDER, command=self.change_state)
+            self, self.scale, self.scale.get(), *keywords.HEPTATONIC_ORDER, command=self.change_state)
         self.select_mode = OptionMenu(
-            self, self.mode, self.mode.get(), *MODAL_NAME_SERIES, command=self.change_state)
+            self, self.mode, self.mode.get(), *keywords.MODAL_NAME_SERIES, command=self.change_state)
         self.select_key = OptionMenu(
-            self, self.key, self.key.get(), *chromatic(), command=self.change_state)
+            self, self.key, self.key.get(), *nomenclature.chromatic(), command=self.change_state)
 
         self.select_scale.grid(column=0, row=0)
         self.select_scale.config(width=15)
@@ -86,9 +56,9 @@ class ScaleSelectorWidget(LabelFrame):
 
     def report(self) -> dict[str, str]:
         """Return a report about the current state of the widget."""
-        return {SCALE_NAME: self.scale.get(),
-                MODAL_NAME: self.mode.get(),
-                KEYNOTE: self.key.get()}
+        return {keywords.SCALE_NAME: self.scale.get(),
+                keywords.MODAL_NAME: self.mode.get(),
+                keywords.KEYNOTE: self.key.get()}
 
 
 class StringFingeringWidget(Frame):
@@ -109,22 +79,22 @@ class StringFingeringWidget(Frame):
         self.callback: Callable[..., Any] = callback
 
         self.string = string
-        self.fingering_options: list[str] = FINGERING_TYPES
-        self.current_fingering: str = FINGERING_TYPES[0]
+        self.fingering_options: list[str] = config.FINGERING_TYPES
+        self.current_fingering: str = config.FINGERING_TYPES[0]
 
         self.string_toggle: Button = Button(self,
                                             text=self.current_fingering,
                                             command=self.change_state)
         self.string_toggle.grid()
 
-    def report(self) -> FingeringReport:
+    def report(self) -> annotations.FingeringReport:
         """Return a report about the current state of the widget."""
-        return cast(FingeringReport, {
-            STRING: self.string,
-            FINGERING: self.current_fingering}
+        return cast(annotations.FingeringReport, {
+            keywords.STRING: self.string,
+            keywords.FINGERING: self.current_fingering}
         )
 
-    def change_state(self, *args) -> None:
+    def change_state(self, *args: StringVar) -> None:
         """Toggle the string's fingering into the next state, and inform the
         callback function of the current state of the widget."""
         state: int = self.fingering_options.index(self.current_fingering)
@@ -149,10 +119,10 @@ class IntervalDisplayWidget(Frame):
                  master: Frame | Tk | LabelFrame,
                  callback: Callable[..., Any],
                  interval: str,
-                 shape: str = CIRCLE,
+                 shape: str = keywords.CIRCLE,
                  size: int = 2,
-                 colour: str = BLACK,
-                 text_colour: str = WHITE,
+                 colour: str = keywords.BLACK,
+                 text_colour: str = keywords.WHITE,
                  text_size: int = 14) -> None:
 
         Frame.__init__(self, master)
@@ -160,10 +130,10 @@ class IntervalDisplayWidget(Frame):
 
         self.interval = interval
 
-        self.shape_options: list[str] = DIAGRAM_SHAPES
-        self.size_options: list[int] = DIAGRAM_NODE_SIZES
-        self.text_size_options: list[int] = DIAGRAM_TEXT_SIZES
-        self.colour_options: list[str] = COLOURS
+        self.shape_options: list[str] = config.DIAGRAM_SHAPES
+        self.size_options: list[int] = config.DIAGRAM_NODE_SIZES
+        self.text_size_options: list[int] = config.DIAGRAM_TEXT_SIZES
+        self.colour_options: list[str] = config.COLOURS
 
         self.shape = StringVar(self, value=shape)
         self.size = IntVar(self, value=size)
@@ -207,11 +177,11 @@ class IntervalDisplayWidget(Frame):
             command=self.change_state)
 
         for i, (label, widget) in enumerate(
-            [(SHAPE, self.select_shape),
-             (SHAPE_SIZE, self.select_size),
-             (SHAPE_COLOUR, self.select_colour),
-             (TEXT_COLOUR, self.select_text_colour),
-             (TEXT_SIZE, self.select_text_size)]):
+            [(keywords.SHAPE, self.select_shape),
+             (keywords.SHAPE_SIZE, self.select_size),
+             (keywords.SHAPE_COLOUR, self.select_colour),
+             (keywords.TEXT_COLOUR, self.select_text_colour),
+             (keywords.TEXT_SIZE, self.select_text_size)]):
 
             label_ = Label(self, text=str.replace(
                 label, "_", " ").capitalize())
@@ -219,19 +189,19 @@ class IntervalDisplayWidget(Frame):
             widget.grid(column=1, row=i, sticky="e")
             widget.config(width=15)
 
-    def change_state(self, *args) -> None:
+    def change_state(self, *args: StringVar) -> None:
         """Respond to any change of state by sending a report about the 
         current state to the controller's callback."""
         self.callback(self.report())
 
     def report(self) -> dict[str, str | int]:
         """Return a report about the current state of the widget."""
-        return {INTERVAL: self.interval,
-                SHAPE: self.shape.get(),
-                SHAPE_SIZE: self.size.get(),
-                SHAPE_COLOUR: self.colour.get(),
-                TEXT_COLOUR: self.text_colour.get(),
-                TEXT_SIZE: self.text_size.get()}
+        return {keywords.INTERVAL: self.interval,
+                keywords.SHAPE: self.shape.get(),
+                keywords.SHAPE_SIZE: self.size.get(),
+                keywords.SHAPE_COLOUR: self.colour.get(),
+                keywords.TEXT_COLOUR: self.text_colour.get(),
+                keywords.TEXT_SIZE: self.text_size.get()}
 
 
 class IntervalDisplaySelector(LabelFrame):
@@ -322,7 +292,7 @@ class StringFingeringSelector(LabelFrame):
             l.grid(column=0, row=x, sticky=W, pady=padding)
             w.grid(column=1, row=x, sticky=E, pady=padding)
 
-    def summarize(self) -> list[FingeringReport]:
+    def summarize(self) -> list[annotations.FingeringReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
@@ -335,7 +305,7 @@ class FingerboardGridWidget(LabelFrame):
     This widget only ever displays information, it doesn't pass anything back to
     the controller."""
 
-    def __init__(self, master: Tk | Frame | LabelFrame, diagram: GuitarFingeringDiagram) -> None:
+    def __init__(self, master: Tk | Frame | LabelFrame, diagram: diagrams.GuitarFingeringDiagram) -> None:
 
         LabelFrame.__init__(self, master)
         self.config(text="Fretboard Diagram")
@@ -346,7 +316,7 @@ class FingerboardGridWidget(LabelFrame):
 
         self.draw_diagram(diagram)
 
-    def draw_diagram(self, diagram: GuitarFingeringDiagram) -> None:
+    def draw_diagram(self, diagram: diagrams.GuitarFingeringDiagram) -> None:
         """Create a rendering of the given diagram."""
         self.__draw_grid(len(diagram.grid), len(diagram.grid[0]))
         self.__draw_active_nodes(diagram)
@@ -363,7 +333,7 @@ class FingerboardGridWidget(LabelFrame):
             self.canvas.create_line([(0, i), (width, i)], tags="grid_line")
         self.canvas.grid()
 
-    def __draw_active_nodes(self, diagram: GuitarFingeringDiagram) -> None:
+    def __draw_active_nodes(self, diagram: diagrams.GuitarFingeringDiagram) -> None:
         """Reload the display to show only the diagram's active nodes."""
 
         self.canvas.delete("node_shape")
@@ -383,7 +353,7 @@ class FingerboardGridWidget(LabelFrame):
                     (square_size[1] // 2) + square_size[1] * i
                 )
 
-                if node.shape == CIRCLE:
+                if node.shape == keywords.CIRCLE:
                     x0, y0 = centre[0] - 15, centre[1] - 15
                     x1, y1 = centre[0] + 15, centre[1] + 15
                     self.canvas.create_oval(x0, y0, x1, y1,
@@ -391,7 +361,7 @@ class FingerboardGridWidget(LabelFrame):
                                             tags="node_shape"
                                             )
 
-                elif node.shape == SQUARE:
+                elif node.shape == keywords.SQUARE:
                     x0, y0 = centre[0] - 15, centre[1] - 15
                     x1, y1 = centre[0] + 15, centre[1] + 15
                     self.canvas.create_rectangle(x0, y0, x1, y1,
@@ -399,7 +369,7 @@ class FingerboardGridWidget(LabelFrame):
                                                  tags="node_shape"
                                                  )
 
-                elif node.shape == INVERSE_TRIANGLE:
+                elif node.shape == keywords.INVERSE_TRIANGLE:
                     x0, y0 = centre[0] - 20, centre[1] - 10
                     x1, y1 = centre[0] + 20, centre[1] - 10
                     x2, y2 = centre[0], centre[1] + 20
@@ -408,7 +378,7 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape"
                                                )
 
-                elif node.shape == TRIANGLE:
+                elif node.shape == keywords.TRIANGLE:
                     x0, y0 = centre[0] + 20, centre[1] + 15
                     x1, y1 = centre[0] - 20, centre[1] + 15
                     x2, y2 = centre[0], centre[1] - 20
@@ -439,7 +409,7 @@ class DisplaySelector(LabelFrame):
         self.callback = callback
         self.config(text="Select Display Mode")
         self.display_type = StringVar(self)
-        self.display_options = [INTERVAL, FINGER, NOTE_NAME, FRET]
+        self.display_options = [keywords.INTERVAL, keywords.FINGER, keywords.NOTE_NAME, keywords.FRET]
         self.select_display = OptionMenu(
             self,
             self.display_type,
@@ -492,12 +462,12 @@ class FretboardDiagram(Frame):
     def __init__(self, master: Frame | Tk):
         Frame.__init__(self, master)
 
-        self.diagram: GuitarFingeringDiagram = GuitarFingeringDiagram(
-            5, standard_fretboard(), 5)
+        self.diagram = diagrams.GuitarFingeringDiagram(
+            5, diagrams.standard_fretboard(), 5)
         
-        self.diagram.define_scale(render_plain(DIATONIC_SCALE))
-        self.diagram.define_intervals(get_interval_map("C"))
-        self.diagram.turn_on_names(render_plain(DIATONIC_SCALE))
+        self.diagram.define_scale(rendering.render_plain(intervallic_canon.DIATONIC_SCALE))
+        self.diagram.define_intervals(diagrams.get_interval_map("C"))
+        self.diagram.turn_on_names(rendering.render_plain(intervallic_canon.DIATONIC_SCALE))
 
         # Top bar
         self.scale_selector = ScaleSelectorWidget(
@@ -506,7 +476,7 @@ class FretboardDiagram(Frame):
         self.scale_selector.grid(column=0, row=0, sticky=W)
 
         self.position_selector = PositionSelector(self,
-            self.diagram.positions(render_plain(DIATONIC_SCALE)),
+            self.diagram.positions(rendering.render_plain(intervallic_canon.DIATONIC_SCALE)),
             self.on_position_change)
         self.position_selector.grid(column=1, row=0, sticky=W)
 
@@ -544,46 +514,47 @@ class FretboardDiagram(Frame):
             self.diagram.apply_fingering(**report)
 
 
-    def on_fingering_change(self, report: FingeringReport) -> None:
+    def on_fingering_change(self, report: annotations.FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
         diagram to reflect it"""
         self.diagram.apply_fingering(**report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
-    def on_node_option_change(self, report: NodeDisplayReport) -> None:
+    def on_node_option_change(self, report: annotations.NodeDisplayReport) -> None:
         """Receive a report about the change to an interval node's
         display options and modify the diagram to reflect it."""
         self.diagram.apply_display_options(report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
-    def on_scale_change(self, report: ScaleformReport) -> None:
+    def on_scale_change(self, report: annotations.ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
         and modify the diagram to reflect it."""
 
         # Whenever the scale, mode, or keynote changes, we have to change
-        # the active nodes to reflect the new notes and intervals. If the
-        # previous position no longer has an active node, 
+        # the active nodes to reflect the new notes and intervals.
         current_names: list[str] = list(set(self.diagram.active_names))
         positions: list[int] = self.diagram.positions(current_names)
         i: int = positions.index(self.diagram.position)
 
+        # Get scale information from the API.
         data: dict[str, Any] = interface.render_heptatonic_form(**report)
-        modalform: int = data[INTERVAL_STRUCTURE]
-        keynote: str = data[KEYNOTE]
-        note_names: list[str] = data[CHROMATIC_RENDERING]
-        map_name_to_interval: dict[str, str] = get_interval_map(keynote, modalform)
+        modalform: int = data[keywords.INTERVAL_STRUCTURE]
+        keynote: str = data[keywords.KEYNOTE]
+        note_names: list[str] = data[keywords.CHROMATIC_RENDERING]
+        map_name_to_interval: dict[str, str] = diagrams.get_interval_map(keynote, modalform)
         
-        # The node selector will keep the same settings for each of the 7 
-        # intervals, but the intervals' names will be updated for the new 
+        # The node selector will keep the same settings for each of the 7
+        # intervals, but the intervals' names will be updated for the new
         # scale configuration.
         self.node_selector.rename_intervals(
             [v for k,v in map_name_to_interval.items() if k in note_names])
 
+        # Set the diagram to the new scale.
         self.diagram.define_scale(note_names)
         self.diagram.define_intervals(map_name_to_interval)
         self.diagram.turn_on_names(note_names)
 
-
+        # Check if current position is still legal, and correct if not.
         positions = self.diagram.positions(note_names)
         if self.diagram.position not in positions:
             self.on_position_change(positions[i])

@@ -25,24 +25,49 @@ ChordInventory: TypeAlias = tuple[ChordConspectus, ...]
 
 
 class ScaleformReport(TypedDict):
-    """Report about a scaleform."""
+    """Report about a scaleform selection. 
+    
+    Used by the GUI to handle the state of the scale selector widget.
+    """
     scale_name: str
     modal_name: str
     keynote: str
 
 
 class FingeringReport(TypedDict):
-    """Report about the fingering of a string on a guitar."""
+    """Report about the fingering of a string on a guitar.
+    
+    Used by the GUI to handle the state of the string fingering widgets.
+    """
     string: int
     fingering: str
 
 
 class NodeDisplayReport(TypedDict):
     """Report about the display options for nodes in the guitar fingering
-    diagram."""
+    diagram.
+
+    Used by the GUI to handle the state of the node display widgets.
+    """
     interval: str
     shape: str
     size: int
     colour: str
     text_colour: str
     text_size: int
+
+
+class APIScaleFormResponse(TypedDict):
+    """Response from the API containing information about a scaleform and its
+    properties.
+    """
+    scale_name: str
+    modal_name: str
+    interval_structure: int
+    interval_scale: tuple[str]
+    keynote: str
+    chromatic_rendering: tuple[str]
+    alphabetic_rendering: tuple[str]
+    optimal_keynote: str
+    optimal_rendering: tuple[str]
+    twelve_tone_intervals: tuple[str]

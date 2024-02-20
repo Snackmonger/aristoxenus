@@ -62,7 +62,7 @@ def filter_guitar_fretboard(fretboard: GuitarFretboard,
     '''For the given fretboard array, replace any note that is not represented
     in the given list of notes with the "-" symbol.'''
     diagram: list[tuple[str, ...]] = []
-    new_string: list
+    new_string: list[str]
     for string in fretboard:
         new_string = []
         for note in string:
@@ -97,7 +97,7 @@ def convert_fretboard_to_relative(diagram: GuitarFretboard,
         chord_symbols.interval_symbol_prescription.values())
     chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
     conversion: dict[str, str] = dict(zip(chromatic_, interval_symbols))
-
+    new_string: list[str]
     new_diagram: list[tuple[str, ...]] = []
     for string in diagram:
         new_string = []

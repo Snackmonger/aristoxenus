@@ -1,4 +1,4 @@
-"""Functions that process and supply the larger chunks of data requested by the API."""
+"""Functions that represent the end-points of an API."""
 
 
 from typing import Any
@@ -6,18 +6,21 @@ from typing import Any
 from src import (nomenclature,
                  rendering,
                  bitwise,
-                 parsing,
-                 utils,
-                 permutation)
+                 utils)
 
 from data import (constants,
                   keywords,
                   intervallic_canon)
 
 
-def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> dict[str, Any]:
+def render_heptatonic_form(
+        scale_name: str,
+        modal_name: str,
+        keynote: str
+) -> dict[str, Any]:
     '''
-    Render the given heptatonic scale according to the given modal name and keynote.
+    Render the given heptatonic scale according to the given modal 
+    name and keynote.
 
     Parameters
     ----------
@@ -36,14 +39,20 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
         following keys:
         - modal_name
         - scale_name
+        - interval_scale
+        - interval_structure
+        - chromatic_rendering
+        - alphabetic_rendering
         - recognized_names
         - keynote
-        - rendering
+        - twelve_tone_intervals
         - optimal_rendering
         - optimal_keynote
     '''
-    
-    base_scale: int = {value: key for key, value in intervallic_canon.HEPTATONIC_SYSTEM_BY_NUMBER.items()}[scale_name]
+
+    # base_scale: int = {value: key for key, value in intervallic_canon.HEPTATONIC_SYSTEM_BY_NUMBER.items()}[
+    #     scale_name]
+    base_scale:int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
     modal_rotations: int = keywords.MODAL_NAME_SERIES.index(modal_name)
     for _ in range(modal_rotations):
         base_scale = bitwise.previous_inversion(base_scale, 12)
@@ -55,18 +64,21 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
         render_base = nomenclature.chromatic(constants.FLATS)
 
     render_base = utils.shift_list(render_base, keynote)
-    chromatic_rendering: tuple[str, ...] = tuple(rendering.render_plain(base_scale, render_base))
-
-    best_rendering: tuple[str, ...]  = tuple(nomenclature.best_heptatonic(keynote, base_scale))
+    chromatic_rendering: tuple[str, ...] = tuple(
+        rendering.render_plain(base_scale, render_base))
+    best_rendering: tuple[str, ...] = tuple(
+        nomenclature.best_heptatonic(keynote, base_scale))
     forced_rendering: tuple[str, ...] = best_rendering
     if not keynote in constants.BINOMIALS:
-        forced_rendering: tuple[str, ...]  = tuple(nomenclature.force_heptatonic(keynote, base_scale))
-
-    numeric_rendering: tuple[str, ...]  = tuple(nomenclature.name_heptatonic_intervals(base_scale))
+        forced_rendering: tuple[str, ...] = tuple(
+            nomenclature.force_heptatonic(keynote, base_scale))
+        
+    numeric_rendering: tuple[str, ...] = tuple(
+        nomenclature.name_heptatonic_intervals(base_scale))
     twelve_tone_intervals: dict[str, str] = dict(
-        zip(utils.shift_list(nomenclature.chromatic(), keynote), 
+        zip(utils.shift_list(nomenclature.chromatic(), keynote),
             nomenclature.twelve_tone_scale_intervals(base_scale)))
-    
+
     return {keywords.SCALE_NAME: scale_name,
             keywords.MODAL_NAME: modal_name,
             keywords.INTERVAL_STRUCTURE: base_scale,
@@ -77,8 +89,3 @@ def render_heptatonic_form(scale_name: str, modal_name: str, keynote: str) -> di
             keywords.OPTIMAL_KEYNOTE: best_rendering[0],
             keywords.OPTIMAL_RENDERING: best_rendering,
             keywords.TWELVE_TONE_INTERVALS: twelve_tone_intervals}
-    
-
-
-
-
