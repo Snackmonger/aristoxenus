@@ -1,5 +1,5 @@
 from tkinter import Tk
-from gui.fretboard_diagram.widgets import FretboardDiagram
+from gui.fretboard_diagram import FretboardDiagram
 
 
 

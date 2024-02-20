@@ -7,6 +7,10 @@ for its internal reference, and which is the default representational style used
 The included parsers are generally capable of encoding/decoding the most common symbols and names, so the user
 is NOT bound by the program's prescription when entering symbols.
 
+
+.. contents:: Table of Contents
+
+
 CHORDS
 ------
 

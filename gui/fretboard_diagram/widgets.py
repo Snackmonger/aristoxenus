@@ -5,12 +5,12 @@ from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, cast
 
-from data import (keywords, 
-                  annotations, 
+from data import (keywords,
+                  annotations,
                   intervallic_canon)
 from gui import config
-from src import (interface, 
-                 nomenclature, 
+from src import (interface,
+                 nomenclature,
                  rendering)
 from src.models import diagrams
 # from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
@@ -251,7 +251,7 @@ class IntervalDisplaySelector(LabelFrame):
         self.intervals = sorted(intervals)
         for i, interval in enumerate(intervals):
             self.subwidgets[i].interval = interval
-        self.select_interval.set_menu(self.intervals[0], *self.intervals) #type:ignore (incomplete stub)
+        self.select_interval.set_menu(self.intervals[0], *self.intervals) #type:ignore
 
     def display_subwidget(self, *args: StringVar) -> None:
         """Change which subwidget is currently being displayed, based on the 
@@ -386,6 +386,15 @@ class FingerboardGridWidget(LabelFrame):
                                                fill=node.shape_colour,
                                                tags="node_shape"
                                                )
+                    
+                elif node.shape == keywords.DIAMOND:
+                    x0, y0 = centre[0], centre[1] - 15
+                    x1, y1 = centre[0] - 15, centre[1]
+                    x2, y2 = centre[0], centre[1] + 15
+                    x3, y3 = centre[0] + 15, centre[1] 
+                    self.canvas.create_polygon(x0, y0, x1, y1, x2, y2, x3, y3,
+                                               fill=node.shape_colour,
+                                               tags="node_shape")
 
                 else:
                     raise ValueError(
@@ -395,7 +404,8 @@ class FingerboardGridWidget(LabelFrame):
                                         centre[1],
                                         text=repr(node),
                                         fill=node.text_colour,
-                                        font=("Times", "12", "bold"), #type:ignore 
+                                        # type:ignore
+                                        font=("Times", str(node.text_size), "bold"), #type:ignore
                                         tags="node_text"
                                         )
         self.canvas.grid()
@@ -409,7 +419,8 @@ class DisplaySelector(LabelFrame):
         self.callback = callback
         self.config(text="Select Display Mode")
         self.display_type = StringVar(self)
-        self.display_options = [keywords.INTERVAL, keywords.FINGER, keywords.NOTE_NAME, keywords.FRET]
+        self.display_options = [keywords.INTERVAL,
+                                keywords.FINGER, keywords.NOTE_NAME, keywords.FRET]
         self.select_display = OptionMenu(
             self,
             self.display_type,
@@ -436,7 +447,8 @@ class PositionSelector(LabelFrame):
         self.select_position = OptionMenu(self,
                                           self.position,
                                           str(self.position.get()),
-                                          *[str(x) for x in positions if 0 < x < 13],
+                                          *[str(x)
+                                            for x in positions if 0 < x < 13],
                                           command=self.change_state)
         self.select_position.grid()
 
@@ -449,7 +461,7 @@ class PositionSelector(LabelFrame):
         a way that the previous position is no longer legal)."""
         self.position.set(position)
         self.position_options = positions
-        self.select_position.set_menu(str(position), *positions) #type:ignore
+        self.select_position.set_menu(str(position), *positions)  # type:ignore
 
     def report(self) -> int:
         """Report on the current state of the widget."""
@@ -464,10 +476,12 @@ class FretboardDiagram(Frame):
 
         self.diagram = diagrams.GuitarFingeringDiagram(
             5, diagrams.standard_fretboard(), 5)
-        
-        self.diagram.define_scale(rendering.render_plain(intervallic_canon.DIATONIC_SCALE))
+
+        self.diagram.define_scale(rendering.render_plain(
+            intervallic_canon.DIATONIC_SCALE))
         self.diagram.define_intervals(diagrams.get_interval_map("C"))
-        self.diagram.turn_on_names(rendering.render_plain(intervallic_canon.DIATONIC_SCALE))
+        self.diagram.turn_on_names(rendering.render_plain(
+            intervallic_canon.DIATONIC_SCALE))
 
         # Top bar
         self.scale_selector = ScaleSelectorWidget(
@@ -476,12 +490,13 @@ class FretboardDiagram(Frame):
         self.scale_selector.grid(column=0, row=0, sticky=W)
 
         self.position_selector = PositionSelector(self,
-            self.diagram.positions(rendering.render_plain(intervallic_canon.DIATONIC_SCALE)),
-            self.on_position_change)
+                                                  self.diagram.positions(rendering.render_plain(
+                                                      intervallic_canon.DIATONIC_SCALE)),
+                                                  self.on_position_change)
         self.position_selector.grid(column=1, row=0, sticky=W)
 
         self.display_type_selector = DisplaySelector(self,
-            self.on_display_mode_change)
+                                                     self.on_display_mode_change)
         self.display_type_selector.grid(column=2, row=0, sticky=W)
 
         # Left large window (main diagram display)
@@ -490,10 +505,9 @@ class FretboardDiagram(Frame):
 
         # Centre narrow window
         self.fingering_panel = StringFingeringSelector(self,
-            self.on_fingering_change,
-            self.diagram.number_of_strings)
+                                                       self.on_fingering_change,
+                                                       self.diagram.number_of_strings)
         self.fingering_panel.grid(column=2, row=1, sticky=EW)
-
 
         # self.interval_panel = IntervalDisplaySelector(self, self.on_node_option_change, )
 
@@ -502,8 +516,10 @@ class FretboardDiagram(Frame):
         self.current_main_panel: Frame
 
         # Frame 4a: Scale Mode Panel (RIGHT, STATE)
-        intervals = [v for k,v in self.diagram.interval_map.items() if k in self.diagram.active_names]
-        self.node_selector: IntervalDisplaySelector = IntervalDisplaySelector(self, self.on_node_option_change, intervals)
+        intervals = [v for k, v in self.diagram.interval_map.items()
+                     if k in self.diagram.active_names]
+        self.node_selector: IntervalDisplaySelector = IntervalDisplaySelector(
+            self, self.on_node_option_change, intervals)
         self.node_selector.grid(column=3, row=1, sticky=EW)
 
         self.grid()
@@ -512,7 +528,6 @@ class FretboardDiagram(Frame):
         self.scale_selector.change_state()
         for report in self.fingering_panel.summarize():
             self.diagram.apply_fingering(**report)
-
 
     def on_fingering_change(self, report: annotations.FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
@@ -541,13 +556,14 @@ class FretboardDiagram(Frame):
         modalform: int = data[keywords.INTERVAL_STRUCTURE]
         keynote: str = data[keywords.KEYNOTE]
         note_names: list[str] = data[keywords.CHROMATIC_RENDERING]
-        map_name_to_interval: dict[str, str] = diagrams.get_interval_map(keynote, modalform)
-        
+        map_name_to_interval: dict[str, str] = diagrams.get_interval_map(
+            keynote, modalform)
+
         # The node selector will keep the same settings for each of the 7
         # intervals, but the intervals' names will be updated for the new
         # scale configuration.
         self.node_selector.rename_intervals(
-            [v for k,v in map_name_to_interval.items() if k in note_names])
+            [v for k, v in map_name_to_interval.items() if k in note_names])
 
         # Set the diagram to the new scale.
         self.diagram.define_scale(note_names)
@@ -577,8 +593,6 @@ class FretboardDiagram(Frame):
 
         self.fingerboard_grid.draw_diagram(self.diagram)
         # for node_option in self.
-        
-
 
         # get node options
         # rename intervals in widget

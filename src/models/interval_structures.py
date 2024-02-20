@@ -1,7 +1,6 @@
-from src import (nomenclature, 
-                 utils, 
+from src import (nomenclature,
+                 utils,
                  rendering)
-
 
 
 class IntervalStructure:

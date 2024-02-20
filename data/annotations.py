@@ -52,7 +52,7 @@ class NodeDisplayReport(TypedDict):
     interval: str
     shape: str
     size: int
-    colour: str
+    shape_colour: str
     text_colour: str
     text_size: int
 

@@ -57,3 +57,7 @@ def roman_numeral(indian_numeral: int) -> str:
                 roman_numeral_ = roman_numeral_.replace(error, correction)
 
     return roman_numeral_
+
+def accidental_sorted(items: list[str]) -> list[str]:
+    
+    ...
