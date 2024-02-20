@@ -194,14 +194,14 @@ class IntervalDisplayWidget(Frame):
         current state to the controller's callback."""
         self.callback(self.report())
 
-    def report(self) -> dict[str, str | int]:
+    def report(self) -> annotations.NodeDisplayReport:
         """Return a report about the current state of the widget."""
-        return {keywords.INTERVAL: self.interval,
-                keywords.SHAPE: self.shape.get(),
-                keywords.SHAPE_SIZE: self.size.get(),
-                keywords.SHAPE_COLOUR: self.colour.get(),
-                keywords.TEXT_COLOUR: self.text_colour.get(),
-                keywords.TEXT_SIZE: self.text_size.get()}
+        return annotations.NodeDisplayReport(interval=self.interval,
+                                             shape=self.shape.get(),
+                                             size=self.size.get(),
+                                             shape_colour=self.colour.get(),
+                                             text_colour=self.text_colour.get(),
+                                             text_size=self.text_size.get())
 
 
 class IntervalDisplaySelector(LabelFrame):
@@ -221,7 +221,7 @@ class IntervalDisplaySelector(LabelFrame):
 
         LabelFrame.__init__(self, master)
         self.callback = callback
-        self.intervals = sorted(intervals)
+        self.intervals = intervals
 
         self.current_interval = StringVar(self, value=self.intervals[0])
         self.select_interval = OptionMenu(
@@ -239,19 +239,24 @@ class IntervalDisplaySelector(LabelFrame):
         label = Label(self, text="Select interval: ")
         label.grid(column=0, row=0, sticky=W)
         self.select_interval.grid(column=1, row=0, sticky=E)
-        self.current_subwidget.grid(column=0, row=1, columnspan=2)
+        self.current_subwidget.grid(column=0, row=2, columnspan=2)
 
         self.config(text="Interval Controls",
                     borderwidth=5,
                     labelanchor=NW,
                     relief=SUNKEN,)
+        
+    def set_subwidget(self, interval: str) -> None:
+        """Set the currently visible subwidget to the given interval."""
+        self.current_interval.set(interval)
+        self.display_subwidget()
 
     def rename_intervals(self, intervals: list[str]) -> None:
         """Rename the series of intervals that label the subwidgets."""
-        self.intervals = sorted(intervals)
+        self.intervals = intervals
         for i, interval in enumerate(intervals):
             self.subwidgets[i].interval = interval
-        self.select_interval.set_menu(self.intervals[0], *self.intervals) #type:ignore
+        self.select_interval.set_menu(self.intervals[0], *self.intervals)  # type:ignore
 
     def display_subwidget(self, *args: StringVar) -> None:
         """Change which subwidget is currently being displayed, based on the 
@@ -262,10 +267,11 @@ class IntervalDisplaySelector(LabelFrame):
                 self.current_subwidget = x
         self.current_subwidget.grid(column=0, row=1, columnspan=2)
 
-    def summarize(self) -> list[dict[str, int | str]]:
+    def summarize(self) -> list[annotations.NodeDisplayReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
+        
 
 
 class StringFingeringSelector(LabelFrame):
@@ -386,12 +392,12 @@ class FingerboardGridWidget(LabelFrame):
                                                fill=node.shape_colour,
                                                tags="node_shape"
                                                )
-                    
+
                 elif node.shape == keywords.DIAMOND:
                     x0, y0 = centre[0], centre[1] - 15
                     x1, y1 = centre[0] - 15, centre[1]
                     x2, y2 = centre[0], centre[1] + 15
-                    x3, y3 = centre[0] + 15, centre[1] 
+                    x3, y3 = centre[0] + 15, centre[1]
                     self.canvas.create_polygon(x0, y0, x1, y1, x2, y2, x3, y3,
                                                fill=node.shape_colour,
                                                tags="node_shape")
@@ -405,7 +411,9 @@ class FingerboardGridWidget(LabelFrame):
                                         text=repr(node),
                                         fill=node.text_colour,
                                         # type:ignore
-                                        font=("Times", str(node.text_size), "bold"), #type:ignore
+                                        # type:ignore
+                                        font=("Times", str(
+                                            node.text_size), "bold"),
                                         tags="node_text"
                                         )
         self.canvas.grid()
@@ -479,7 +487,7 @@ class FretboardDiagram(Frame):
 
         self.diagram.define_scale(rendering.render_plain(
             intervallic_canon.DIATONIC_SCALE))
-        self.diagram.define_intervals(diagrams.get_interval_map("C"))
+        self.diagram.define_intervals(nomenclature.get_interval_map("C"))
         self.diagram.turn_on_names(rendering.render_plain(
             intervallic_canon.DIATONIC_SCALE))
 
@@ -508,8 +516,6 @@ class FretboardDiagram(Frame):
                                                        self.on_fingering_change,
                                                        self.diagram.number_of_strings)
         self.fingering_panel.grid(column=2, row=1, sticky=EW)
-
-        # self.interval_panel = IntervalDisplaySelector(self, self.on_node_option_change, )
 
         # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
         self.mode_toggle: Button  # change state
@@ -556,7 +562,7 @@ class FretboardDiagram(Frame):
         modalform: int = data[keywords.INTERVAL_STRUCTURE]
         keynote: str = data[keywords.KEYNOTE]
         note_names: list[str] = data[keywords.CHROMATIC_RENDERING]
-        map_name_to_interval: dict[str, str] = diagrams.get_interval_map(
+        map_name_to_interval: dict[str, str] = nomenclature.get_interval_map(
             keynote, modalform)
 
         # The node selector will keep the same settings for each of the 7
@@ -574,7 +580,13 @@ class FretboardDiagram(Frame):
         positions = self.diagram.positions(note_names)
         if self.diagram.position not in positions:
             self.on_position_change(positions[i])
+
         self.position_selector.set_position(self.diagram.position, positions)
+
+        # Restore previous node display settings
+        for report_ in self.node_selector.summarize():
+            self.diagram.apply_display_options(report_)
+        self.node_selector.set_subwidget("1")
 
         self.fingerboard_grid.draw_diagram(self.diagram)
 
@@ -592,9 +604,3 @@ class FretboardDiagram(Frame):
             self.diagram.apply_fingering(**report_)
 
         self.fingerboard_grid.draw_diagram(self.diagram)
-        # for node_option in self.
-
-        # get node options
-        # rename intervals in widget
-        # rename intervals in node options
-        # for report in node options self.node_option_change(report)

@@ -6,7 +6,6 @@ from data import (chord_symbols,
                   constants,
                   keywords)
 from data.annotations import GuitarFretboard, NodeDisplayReport
-from data.intervallic_canon import DIATONIC_SCALE
 from data.instrument_config import GUITAR_STANDARD_TUNING
 
 
@@ -108,22 +107,11 @@ def convert_fretboard_to_relative(diagram: GuitarFretboard,
     return tuple(new_diagram)
 
 
-def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str, str]:
-    """Get a dictionary mapping note names to interval names for a given 
-    tonic note name and heptatonic scale form.
-
-    This function will always preserve the correct interval names for the 
-    given heptatonic scale, plus 5 supplementary interval names that occupy
-    the chromatic gaps in the scale."""
-    interval_symbols = list(nomenclature.twelve_tone_scale_intervals(scale))
-    chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
-    return dict(zip(chromatic_, interval_symbols))
-
-
 class FingeringNode:
     """Representation of a position in a fingering diagram, that can indicate
     a scale degree, finger, or musical note, and can be represented by various
-    shapes and colours."""
+    shapes and colours.
+    """
 
     def __init__(self,
                  string: int,

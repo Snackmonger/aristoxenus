@@ -19,8 +19,7 @@ def render_heptatonic_form(
         keynote: str
 ) -> dict[str, Any]:
     '''
-    Render the given heptatonic scale according to the given modal 
-    name and keynote.
+    Return a collection of data about a given scaleform configuration.
 
     Parameters
     ----------
@@ -89,3 +88,5 @@ def render_heptatonic_form(
             keywords.OPTIMAL_KEYNOTE: best_rendering[0],
             keywords.OPTIMAL_RENDERING: best_rendering,
             keywords.TWELVE_TONE_INTERVALS: twelve_tone_intervals}
+
+

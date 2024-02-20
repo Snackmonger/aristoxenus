@@ -681,3 +681,29 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
                 list(chord_symbols.interval_symbol_prescription.values())[i])
 
     return intervals
+
+
+def interval_identity(item: str) -> int:
+    """Return the numeric part of a numerical interval symbol.
+
+    Examples
+    --------
+    >>> interval_identity("bbb7")
+    7
+    >>> interval_identity("#4")
+    4
+    """
+    return int(item[-1])
+
+
+def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str, str]:
+    """Get a dictionary mapping note names to interval names for a given 
+    tonic note name and heptatonic scale form.
+
+    This function will always preserve the correct interval names for the 
+    given heptatonic scale, plus 5 supplementary interval names that occupy
+    the chromatic gaps in the scale.
+    """
+    interval_symbols = list(twelve_tone_scale_intervals(scale))
+    chromatic_ = utils.shift_list(chromatic(), tonal_centre)
+    return dict(zip(chromatic_, interval_symbols))
