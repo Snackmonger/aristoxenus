@@ -491,12 +491,13 @@ class FretboardDiagram(Frame):
 
         self.diagram = diagrams.GuitarFingeringDiagram(
             5, diagrams.standard_fretboard(), 5)
-
-        self.diagram.define_scale(rendering.render_plain(
-            intervallic_canon.DIATONIC_SCALE))
-        self.diagram.define_intervals(nomenclature.get_interval_map("C"))
-        self.diagram.turn_on_names(rendering.render_plain(
-            intervallic_canon.DIATONIC_SCALE))
+        
+        cmaj = interface.render_heptatonic_form(keywords.DIATONIC,
+                                                keywords.IONIAN,
+                                                "C")
+        self.diagram.define_scale(cmaj[keywords.OPTIMAL_RENDERING])
+        self.diagram.define_intervals(cmaj[keywords.INTERVAL_MAP])
+        self.diagram.turn_on_names(cmaj[keywords.OPTIMAL_RENDERING])
 
         # Top bar
         self.scale_selector = ScaleSelectorWidget(
@@ -505,8 +506,7 @@ class FretboardDiagram(Frame):
         self.scale_selector.grid(column=0, row=0, sticky=W)
 
         self.position_selector = PositionSelector(self,
-                                                  self.diagram.positions(rendering.render_plain(
-                                                      intervallic_canon.DIATONIC_SCALE)),
+                                                  self.diagram.positions(cmaj[keywords.OPTIMAL_RENDERING]),
                                                   self.on_position_change)
         self.position_selector.grid(column=1, row=0, sticky=W)
 
@@ -560,8 +560,8 @@ class FretboardDiagram(Frame):
         """Receive a report about the change to the main scale paradigm
         and modify the diagram to reflect it.
         """
-        # Whenever the scale, mode, or keynote changes, we have to change
-        # the active nodes to reflect the new notes and intervals. Grab 
+        # Whenever the scale, mode, or keynote changes, we have to reassign
+        # the active nodes to reflect the new notes and intervals. Grab
         # the current position's index in case its value becomes invalid.
         current_names: list[str] = list(set(self.diagram.active_names))
         positions: list[int] = self.diagram.positions(current_names)
@@ -569,33 +569,30 @@ class FretboardDiagram(Frame):
 
         # Define relevant scale information.
         data: dict[str, Any] = interface.render_heptatonic_form(**report)
-        modalform: int = data[keywords.INTERVAL_STRUCTURE]
-        keynote: str = data[keywords.KEYNOTE]
-        note_names: list[str] = data[keywords.CHROMATIC_RENDERING]
-        map_name_to_interval: dict[str, str] = nomenclature.get_interval_map(
-            keynote, modalform)
+        binomial_names: list[str] = data[keywords.CHROMATIC_RENDERING]
+        interval_map: dict[str, str] = data[keywords.INTERVAL_MAP]
         proper_names: list[str] = data[keywords.OPTIMAL_RENDERING]
 
         # Set the diagram to the new scale.
-        self.diagram.define_scale(note_names)
-        self.diagram.define_intervals(map_name_to_interval)
-        self.diagram.turn_on_names(note_names)
+        self.diagram.define_scale(binomial_names)
+        self.diagram.define_intervals(interval_map)
+        self.diagram.turn_on_names(binomial_names)
 
-        # Set the new position to the value of the index of the old position, 
+        # Set the new position to the value of the index of the old position,
         # in case the value of the old position is no longer a legal position.
-        positions = self.diagram.positions(note_names)
+        positions = self.diagram.positions(binomial_names)
         self.on_position_change(positions[i])
         self.position_selector.set_position(self.diagram.position, positions)
 
         # Configure nodes to display correct scale nomenclature
         self.diagram.clear_overrides()
-        self.diagram.override_names(dict(zip(note_names, proper_names)))
+        self.diagram.override_names(dict(zip(binomial_names, proper_names)))
 
         # The node selector will keep the same settings for each of the 7
         # intervals, but the intervals' names will be updated for the new
         # scale configuration.
         self.node_selector.rename_intervals(
-            [v for k, v in map_name_to_interval.items() if k in note_names])
+            [v for k, v in interval_map.items() if k in binomial_names])
         
         # Restore previous node display settings for new interval names.
         for report_ in self.node_selector.summarize():
@@ -624,14 +621,6 @@ class FretboardDiagram(Frame):
                                      node_reports, 
                                      rendering_mode)
 
-        # for report_ in self.fingering_panel.summarize():
-        #     self.diagram.apply_fingering(**report_)
-
-        # for report_ in self.node_selector.summarize():
-        #     self.diagram.apply_node_display_options(report_)
-
-        
-        # self.diagram.apply_rendering_mode(rendering_mode)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
 
