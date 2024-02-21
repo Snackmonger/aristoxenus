@@ -1,7 +1,7 @@
-"""Widgets that make up the GUI"""
-
+"""Widgets that make up the tkinter GUI of the FingeringDiagram app."""
 
 from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar
+from tkinter.font import Font
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, cast
 
@@ -14,7 +14,7 @@ from src import (interface,
                  rendering)
 from src.models import diagrams
 # from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
-
+CANVAS_SIZE: int = 500
 
 class ScaleSelectorWidget(LabelFrame):
     """A widget that allows the user to change which scale, mode, key, and 
@@ -273,7 +273,6 @@ class IntervalDisplaySelector(LabelFrame):
         return [x.report() for x in self.subwidgets]
         
 
-
 class StringFingeringSelector(LabelFrame):
     """Widget that contains a number of buttons to cycle strings' 
     fingerings through various states."""
@@ -315,7 +314,7 @@ class FingerboardGridWidget(LabelFrame):
 
         LabelFrame.__init__(self, master)
         self.config(text="Fretboard Diagram")
-        self.canvas: Canvas = Canvas(self, height=500, width=500, bg="white")
+        self.canvas: Canvas = Canvas(self, height=CANVAS_SIZE, width=CANVAS_SIZE, bg="white")
 
         self.canvas.grid()
         self.canvas.update()
@@ -406,14 +405,16 @@ class FingerboardGridWidget(LabelFrame):
                     raise ValueError(
                         f"Unknown node setting: shape={node.shape}")
 
+                font = Font(self, 
+                            family="Times", 
+                            size=node.text_size, 
+                            weight="bold"
+                            )
                 self.canvas.create_text(centre[0],
                                         centre[1],
                                         text=repr(node),
                                         fill=node.text_colour,
-                                        # type:ignore
-                                        # type:ignore
-                                        font=("Times", str(
-                                            node.text_size), "bold"),
+                                        font=font,
                                         tags="node_text"
                                         )
         self.canvas.grid()
@@ -557,33 +558,37 @@ class FretboardDiagram(Frame):
         positions: list[int] = self.diagram.positions(current_names)
         i: int = positions.index(self.diagram.position)
 
-        # Get scale information from the API.
+        # Define relevant scale information from the API response.
         data: dict[str, Any] = interface.render_heptatonic_form(**report)
         modalform: int = data[keywords.INTERVAL_STRUCTURE]
         keynote: str = data[keywords.KEYNOTE]
         note_names: list[str] = data[keywords.CHROMATIC_RENDERING]
         map_name_to_interval: dict[str, str] = nomenclature.get_interval_map(
             keynote, modalform)
-
-        # The node selector will keep the same settings for each of the 7
-        # intervals, but the intervals' names will be updated for the new
-        # scale configuration.
-        self.node_selector.rename_intervals(
-            [v for k, v in map_name_to_interval.items() if k in note_names])
+        proper_names: list[str] = data[keywords.OPTIMAL_RENDERING]
 
         # Set the diagram to the new scale.
         self.diagram.define_scale(note_names)
         self.diagram.define_intervals(map_name_to_interval)
         self.diagram.turn_on_names(note_names)
 
-        # Check if current position is still legal, and correct if not.
+        # Set the new position to the value of the index of the old position, 
+        # in case the value of the old position is no longer a legal position.
         positions = self.diagram.positions(note_names)
-        if self.diagram.position not in positions:
-            self.on_position_change(positions[i])
-
+        self.on_position_change(positions[i])
         self.position_selector.set_position(self.diagram.position, positions)
 
-        # Restore previous node display settings
+        # Configure nodes to display correct scale nomenclature
+        self.diagram.clear_overrides()
+        self.diagram.override_names(dict(zip(note_names, proper_names)))
+
+        # The node selector will keep the same settings for each of the 7
+        # intervals, but the intervals' names will be updated for the new
+        # scale configuration.
+        self.node_selector.rename_intervals(
+            [v for k, v in map_name_to_interval.items() if k in note_names])
+        
+        # Restore previous node display settings for new interval names.
         for report_ in self.node_selector.summarize():
             self.diagram.apply_display_options(report_)
         self.node_selector.set_subwidget("1")
@@ -604,3 +609,31 @@ class FretboardDiagram(Frame):
             self.diagram.apply_fingering(**report_)
 
         self.fingerboard_grid.draw_diagram(self.diagram)
+
+        # note: position change is clearing the saved proper names of notes
+        # because it creates a new grid. pick up here next time.
+
+
+
+ndnd = """
+
+Arpeggio widget
+    1. when the arpeggio widget is activated, the scaleform & position are 'frozen' and should appear greyed out until the scale widget is reactivated.
+    2. the arpeggio widget has a drop down menu for each chord in the scale (chord is defined by its own sub-panel)
+    3. when the chord is selected, we grey out any non-chord tones so the arpeggio is 'highlighted'
+    4. the arpeggio widget has a node display selector, but only the notes in the chord will be options
+
+    In order to do this...
+
+    1. create a new diagram, load the current scale, load the selected chord
+    2. change the diagram's interval map to that of the mode corresponding to the selected scale degree
+    3. for all chord tones, make a node control panel
+    4. for all non-chord tones, make a light grey circle
+
+    but you left out... how does the controller know to use the new diagram instead of self.diagram?
+    --> pass the dummy diagram back as part of the report to the callback...
+    ... therefore, must have a separate callback from the normal on_display_change
+
+   """
+
+

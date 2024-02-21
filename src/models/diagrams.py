@@ -138,6 +138,7 @@ class FingeringNode:
 
         # Identity
         self.note_name: str | None = note_name
+        self.name_override:str | None = None
         self.interval: str | None = scale_degree
         self.finger: str | None = finger
         self.rendering_mode: str = rendering_mode
@@ -162,14 +163,19 @@ class FingeringNode:
         match self.rendering_mode:
             case keywords.FRET:
                 return str(self.fret)
+            
             case keywords.FINGER:
-                if self.finger is not None:
+                if self.finger:
                     return self.finger
+                
             case keywords.NOTE_NAME:
-                if self.note_name is not None:
+                if self.name_override:
+                    return self.name_override
+                if self.note_name:
                     return self.note_name
+                
             case keywords.INTERVAL:
-                if self.interval is not None:
+                if self.interval:
                     return self.interval
             case _:
                 raise ValueError(
@@ -196,9 +202,7 @@ class GuitarFingeringDiagram:
                  ) -> None:
 
         # The fretboard is an absolute reference point for notes in each
-        # postition. If we want to change the tuning, number of notes, or
-        # number of frets, we have to create a new instance with the proper
-        # base fretboard.
+        # postition. 
         self.fretboard: GuitarFretboard = fretboard
 
         # Position determines which fret will be the lowest in the diagram.
@@ -360,3 +364,18 @@ class GuitarFingeringDiagram:
             for node in string:
                 if node.note_name:
                     node.interval = interval_map[node.note_name]
+
+    def override_names(self, names: dict[str, str]) -> None:
+        """Instruct the nodes to override the names in the keys with the 
+        names in the values."""
+        for k, v in names.items():
+            for s in self.grid:
+                for n in s:
+                    if n.note_name == k:
+                        n.name_override = v
+
+    def clear_overrides(self) -> None:
+        """Remove any name override instructions from all nodes."""
+        for s in self.grid:
+            for n in s:
+                n.name_override = None
