@@ -12,6 +12,7 @@ from gui import config
 from src import (interface,
                  nomenclature,
                  rendering)
+
 from src.models import diagrams
 # from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
 CANVAS_SIZE: int = 500
@@ -41,7 +42,7 @@ class ScaleSelectorWidget(LabelFrame):
         self.select_mode = OptionMenu(
             self, self.mode, self.mode.get(), *keywords.MODAL_NAME_SERIES, command=self.change_state)
         self.select_key = OptionMenu(
-            self, self.key, self.key.get(), *nomenclature.chromatic(), command=self.change_state)
+            self, self.key, self.key.get(), *interface.chromatic(), command=self.change_state)
 
         self.select_scale.grid(column=0, row=0)
         self.select_scale.config(width=15)
@@ -420,28 +421,33 @@ class FingerboardGridWidget(LabelFrame):
         self.canvas.grid()
 
 
-class DisplaySelector(LabelFrame):
+class RenderingModeSelector(LabelFrame):
     """A small widget that controls the display type."""
 
     def __init__(self, master: Tk | Frame | LabelFrame, callback: Callable[..., Any]) -> None:
         LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Display Mode")
-        self.display_type = StringVar(self)
-        self.display_options = [keywords.INTERVAL,
-                                keywords.FINGER, keywords.NOTE_NAME, keywords.FRET]
-        self.select_display = OptionMenu(
+        self.current_mode = StringVar(self)
+        self.rendering_modes = [keywords.INTERVAL,
+                                keywords.FINGER, 
+                                keywords.NOTE_NAME, 
+                                keywords.FRET]
+        self.select_rendering_mode = OptionMenu(
             self,
-            self.display_type,
-            self.display_options[0],
-            *self.display_options,
+            self.current_mode,
+            self.rendering_modes[0],
+            *self.rendering_modes,
             command=self.change_state)
 
-        self.select_display.grid()
+        self.select_rendering_mode.grid()
+
+    def report(self) -> str:
+        return self.current_mode.get()
 
     def change_state(self, *args: StringVar) -> None:
         """Report any change of state to the controller."""
-        self.callback(self.display_type.get())
+        self.callback(self.current_mode.get())
 
 
 class PositionSelector(LabelFrame):
@@ -504,9 +510,9 @@ class FretboardDiagram(Frame):
                                                   self.on_position_change)
         self.position_selector.grid(column=1, row=0, sticky=W)
 
-        self.display_type_selector = DisplaySelector(self,
-                                                     self.on_display_mode_change)
-        self.display_type_selector.grid(column=2, row=0, sticky=W)
+        self.rendering_mode_selector = RenderingModeSelector(self,
+                                                     self.on_rendering_mode_change)
+        self.rendering_mode_selector.grid(column=2, row=0, sticky=W)
 
         # Left large window (main diagram display)
         self.fingerboard_grid = FingerboardGridWidget(self, self.diagram)
@@ -538,27 +544,30 @@ class FretboardDiagram(Frame):
 
     def on_fingering_change(self, report: annotations.FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
-        diagram to reflect it"""
+        diagram to reflect it.
+        """
         self.diagram.apply_fingering(**report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
     def on_node_option_change(self, report: annotations.NodeDisplayReport) -> None:
         """Receive a report about the change to an interval node's
-        display options and modify the diagram to reflect it."""
-        self.diagram.apply_display_options(report)
+        display options and modify the diagram to reflect it.
+        """
+        self.diagram.apply_node_display_options(report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
     def on_scale_change(self, report: annotations.ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
-        and modify the diagram to reflect it."""
-
+        and modify the diagram to reflect it.
+        """
         # Whenever the scale, mode, or keynote changes, we have to change
-        # the active nodes to reflect the new notes and intervals.
+        # the active nodes to reflect the new notes and intervals. Grab 
+        # the current position's index in case its value becomes invalid.
         current_names: list[str] = list(set(self.diagram.active_names))
         positions: list[int] = self.diagram.positions(current_names)
         i: int = positions.index(self.diagram.position)
 
-        # Define relevant scale information from the API response.
+        # Define relevant scale information.
         data: dict[str, Any] = interface.render_heptatonic_form(**report)
         modalform: int = data[keywords.INTERVAL_STRUCTURE]
         keynote: str = data[keywords.KEYNOTE]
@@ -590,28 +599,46 @@ class FretboardDiagram(Frame):
         
         # Restore previous node display settings for new interval names.
         for report_ in self.node_selector.summarize():
-            self.diagram.apply_display_options(report_)
+            self.diagram.apply_node_display_options(report_)
         self.node_selector.set_subwidget("1")
 
         self.fingerboard_grid.draw_diagram(self.diagram)
 
-    def on_display_mode_change(self, report: str) -> None:
+    def on_rendering_mode_change(self, report: str) -> None:
         """Receive a report about the change to the display mode
-        and modify the diagram to reflect it."""
+        and modify the diagram to reflect it.
+        """
         self.diagram.apply_rendering_mode(report)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
     def on_position_change(self, report: int) -> None:
         """Receive a report about the change to the position
-        and modify the diagram to reflect it."""
-        self.diagram.change_position(report)
-        for report_ in self.fingering_panel.summarize():
-            self.diagram.apply_fingering(**report_)
+        and modify the diagram to reflect it.
+        """
+        fingering_reports: list[annotations.FingeringReport] = self.fingering_panel.summarize()
+        node_reports: list[annotations.NodeDisplayReport] = self.node_selector.summarize()
+        rendering_mode: str = self.rendering_mode_selector.report()
 
+        self.diagram.change_position(report, 
+                                     fingering_reports, 
+                                     node_reports, 
+                                     rendering_mode)
+
+        # for report_ in self.fingering_panel.summarize():
+        #     self.diagram.apply_fingering(**report_)
+
+        # for report_ in self.node_selector.summarize():
+        #     self.diagram.apply_node_display_options(report_)
+
+        
+        # self.diagram.apply_rendering_mode(rendering_mode)
         self.fingerboard_grid.draw_diagram(self.diagram)
 
-        # note: position change is clearing the saved proper names of notes
-        # because it creates a new grid. pick up here next time.
+
+    def change_interface_mode(self) -> None:
+        """Change the state of the main panel, and perform any necessary 
+        changes to the UI to accommodate the change."""
+
 
 
 

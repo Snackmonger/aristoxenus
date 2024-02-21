@@ -5,7 +5,7 @@ from src import nomenclature, utils
 from data import (chord_symbols,
                   constants,
                   keywords)
-from data.annotations import GuitarFretboard, NodeDisplayReport
+from data.annotations import FingeringReport, GuitarFretboard, NodeDisplayReport
 from data.instrument_config import GUITAR_STANDARD_TUNING
 
 
@@ -138,7 +138,7 @@ class FingeringNode:
 
         # Identity
         self.note_name: str | None = note_name
-        self.name_override:str | None = None
+        self.name_override: str | None = None
         self.interval: str | None = scale_degree
         self.finger: str | None = finger
         self.rendering_mode: str = rendering_mode
@@ -163,17 +163,17 @@ class FingeringNode:
         match self.rendering_mode:
             case keywords.FRET:
                 return str(self.fret)
-            
+
             case keywords.FINGER:
                 if self.finger:
                     return self.finger
-                
+
             case keywords.NOTE_NAME:
                 if self.name_override:
                     return self.name_override
                 if self.note_name:
                     return self.note_name
-                
+
             case keywords.INTERVAL:
                 if self.interval:
                     return self.interval
@@ -202,7 +202,7 @@ class GuitarFingeringDiagram:
                  ) -> None:
 
         # The fretboard is an absolute reference point for notes in each
-        # postition. 
+        # postition.
         self.fretboard: GuitarFretboard = fretboard
 
         # Position determines which fret will be the lowest in the diagram.
@@ -227,26 +227,44 @@ class GuitarFingeringDiagram:
             grid.append(string)
         return grid
 
-    def change_position(self, position: int) -> None:
+    def change_position(self, 
+                        position: int, 
+                        fingering_reports: list[FingeringReport], 
+                        node_reports: list[NodeDisplayReport], 
+                        rendering_mode: str) -> None:
         """Change the position of the diagram.
 
         This entails creating a new grid, so we transfer the old node
         options from the current grid to the new grid, maintianing the current
         display options."""
 
+        
         self.position = position
         new: "GuitarFingeringDiagram" = self.__class__(
             position, self.fretboard, self.width)
-        mode = self.grid[0][0].rendering_mode
         new.define_scale(self.active_names)
         new.define_intervals(self.interval_map)
         new.turn_on_names(self.active_names)
-        new.apply_rendering_mode(mode)
+        new.apply_rendering_mode(rendering_mode)
+        new.override_names(self.known_overrides)
+        
+        for report_ in fingering_reports:
+            new.apply_fingering(**report_)
+
+        for report_ in node_reports:
+            new.apply_node_display_options(report_)
+
         self.grid = new.grid
+
+
+    @property
+    def known_overrides(self) -> dict[str, str]:
+        """Return a mapping of overridden note names and their replacements."""
+        return {n.note_name: n.name_override for s in self.grid for n in s if n.name_override and n.note_name}
 
     @property
     def interval_map(self) -> dict[str, str]:
-        """Return a list of all interval names for which at least 1 node is active."""
+        """Return a mapping of all note names to interval names."""
         return {x.note_name: x.interval for s in self.grid for x in s if x.interval and x.note_name}
 
     @property
@@ -314,7 +332,7 @@ class GuitarFingeringDiagram:
             for node in string:
                 node.rendering_mode = rendering_mode
 
-    def apply_display_options(self, report: NodeDisplayReport) -> None:
+    def apply_node_display_options(self, report: NodeDisplayReport) -> None:
         """Apply the display options contained in the given report."""
         interval: str = report["interval"]
         for s in self.grid:

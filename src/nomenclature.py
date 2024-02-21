@@ -583,10 +583,14 @@ def is_scientific(note_name: str) -> bool:
     return note_name[-1].isnumeric()
 
 
-def get_accidentals(note_name: str
-                    ) -> tuple[str, ...]:
-    '''Tries to identify which accidental group the given note name belongs to.'''
-
+def get_accidentals(note_name: str) -> tuple[str, ...]:
+    '''Return the accidental group to which the given note name belongs.
+    
+    Examples
+    --------
+    >>> get_accidentals("C#")
+    ["C#", "D#", "F#", "G#", "A#"]
+    '''
     if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
         return constants.BINOMIALS
     if constants.SHARP_SYMBOL in note_name:
@@ -594,6 +598,25 @@ def get_accidentals(note_name: str
     if constants.FLAT_SYMBOL in note_name:
         return constants.FLATS
     return constants.BINOMIALS
+
+
+def get_accidental_keyword(note_name: str) -> str:
+    """Return the keyword representing the accidental group to which the given
+    note name belongs.
+
+    Examples
+    --------
+    >>> get_accidental_keyword("C#")
+    sharp
+    """
+    if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
+        return keywords.BINOMIAL
+    if constants.SHARP_SYMBOL in note_name:
+        return keywords.SHARP
+    if constants.FLAT_SYMBOL in note_name:
+        return keywords.FLAT
+    return keywords.BINOMIAL
+
 
 
 def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = DIATONIC_SCALE) -> list[str]:
@@ -698,7 +721,7 @@ def interval_identity(item: str) -> int:
 
 def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str, str]:
     """Get a dictionary mapping note names to interval names for a given 
-    tonic note name and heptatonic scale form.
+    tonic note name and heptatonic scale form within a twelve tone context.
 
     This function will always preserve the correct interval names for the 
     given heptatonic scale, plus 5 supplementary interval names that occupy
