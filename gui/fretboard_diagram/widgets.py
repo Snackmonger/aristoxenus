@@ -6,16 +6,12 @@ from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, cast
 
 from data import (keywords,
-                  annotations,
-                  intervallic_canon)
-from gui import config
-from src import (interface,
-                 nomenclature,
-                 rendering)
+                  annotations)
+from src import (interface)
+from src.models import (diagrams,
+                        data_structures)
+from gui.fretboard_diagram import config
 
-from src.models import diagrams
-# from src.models.diagrams import GuitarFingeringDiagram, get_interval_map, standard_fretboard
-CANVAS_SIZE: int = 500
 
 class ScaleSelectorWidget(LabelFrame):
     """A widget that allows the user to change which scale, mode, key, and 
@@ -246,7 +242,7 @@ class IntervalDisplaySelector(LabelFrame):
                     borderwidth=5,
                     labelanchor=NW,
                     relief=SUNKEN,)
-        
+
     def set_subwidget(self, interval: str) -> None:
         """Set the currently visible subwidget to the given interval."""
         self.current_interval.set(interval)
@@ -257,7 +253,8 @@ class IntervalDisplaySelector(LabelFrame):
         self.intervals = intervals
         for i, interval in enumerate(intervals):
             self.subwidgets[i].interval = interval
-        self.select_interval.set_menu(self.intervals[0], *self.intervals)  # type:ignore
+        self.select_interval.set_menu(
+            self.intervals[0], *self.intervals)  # type:ignore
 
     def display_subwidget(self, *args: StringVar) -> None:
         """Change which subwidget is currently being displayed, based on the 
@@ -272,7 +269,7 @@ class IntervalDisplaySelector(LabelFrame):
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
-        
+
 
 class StringFingeringSelector(LabelFrame):
     """Widget that contains a number of buttons to cycle strings' 
@@ -315,7 +312,8 @@ class FingerboardGridWidget(LabelFrame):
 
         LabelFrame.__init__(self, master)
         self.config(text="Fretboard Diagram")
-        self.canvas: Canvas = Canvas(self, height=CANVAS_SIZE, width=CANVAS_SIZE, bg="white")
+        self.canvas: Canvas = Canvas(
+            self, height=config.CANVAS_SIZE, width=config.CANVAS_SIZE, bg="white")
 
         self.canvas.grid()
         self.canvas.update()
@@ -406,9 +404,9 @@ class FingerboardGridWidget(LabelFrame):
                     raise ValueError(
                         f"Unknown node setting: shape={node.shape}")
 
-                font = Font(self, 
-                            family="Times", 
-                            size=node.text_size, 
+                font = Font(self,
+                            family="Times",
+                            size=node.text_size,
                             weight="bold"
                             )
                 self.canvas.create_text(centre[0],
@@ -430,8 +428,8 @@ class RenderingModeSelector(LabelFrame):
         self.config(text="Select Display Mode")
         self.current_mode = StringVar(self)
         self.rendering_modes = [keywords.INTERVAL,
-                                keywords.FINGER, 
-                                keywords.NOTE_NAME, 
+                                keywords.FINGER,
+                                keywords.NOTE_NAME,
                                 keywords.FRET]
         self.select_rendering_mode = OptionMenu(
             self,
@@ -491,27 +489,29 @@ class FretboardDiagram(Frame):
 
         self.diagram = diagrams.GuitarFingeringDiagram(
             5, diagrams.standard_fretboard(), 5)
-        
-        cmaj = interface.render_heptatonic_form(keywords.DIATONIC,
-                                                keywords.IONIAN,
-                                                "C")
-        self.diagram.define_scale(cmaj[keywords.OPTIMAL_RENDERING])
-        self.diagram.define_intervals(cmaj[keywords.INTERVAL_MAP])
-        self.diagram.turn_on_names(cmaj[keywords.OPTIMAL_RENDERING])
+
+        cmaj = data_structures.HeptatonicRendering(
+            **interface.render_heptatonic_form(keywords.DIATONIC,
+                                               keywords.IONIAN,
+                                               "C"))
+        # Set defaults
+        self.diagram.define_scale(cmaj.optimal_rendering)
+        self.diagram.define_intervals(cmaj.interval_map)
+        self.diagram.turn_on_names(cmaj.optimal_rendering)
 
         # Top bar
-        self.scale_selector = ScaleSelectorWidget(
-            self,
-            self.on_scale_change)
+        self.scale_selector = ScaleSelectorWidget(self,
+                                                  self.on_scale_change)
         self.scale_selector.grid(column=0, row=0, sticky=W)
 
         self.position_selector = PositionSelector(self,
-                                                  self.diagram.positions(cmaj[keywords.OPTIMAL_RENDERING]),
+                                                  self.diagram.positions(
+                                                      cmaj.optimal_rendering),
                                                   self.on_position_change)
         self.position_selector.grid(column=1, row=0, sticky=W)
 
         self.rendering_mode_selector = RenderingModeSelector(self,
-                                                     self.on_rendering_mode_change)
+                                                             self.on_rendering_mode_change)
         self.rendering_mode_selector.grid(column=2, row=0, sticky=W)
 
         # Left large window (main diagram display)
@@ -537,7 +537,7 @@ class FretboardDiagram(Frame):
 
         self.grid()
 
-        # Display initial values
+        # Display initial default values
         self.scale_selector.change_state()
         for report in self.fingering_panel.summarize():
             self.diagram.apply_fingering(**report)
@@ -566,34 +566,32 @@ class FretboardDiagram(Frame):
         current_names: list[str] = list(set(self.diagram.active_names))
         positions: list[int] = self.diagram.positions(current_names)
         i: int = positions.index(self.diagram.position)
-
-        # Define relevant scale information.
-        data: dict[str, Any] = interface.render_heptatonic_form(**report)
-        binomial_names: list[str] = data[keywords.CHROMATIC_RENDERING]
-        interval_map: dict[str, str] = data[keywords.INTERVAL_MAP]
-        proper_names: list[str] = data[keywords.OPTIMAL_RENDERING]
+        data = data_structures.HeptatonicRendering(
+            **interface.render_heptatonic_form(**report))
 
         # Set the diagram to the new scale.
-        self.diagram.define_scale(binomial_names)
-        self.diagram.define_intervals(interval_map)
-        self.diagram.turn_on_names(binomial_names)
+        self.diagram.define_scale(data.chromatic_rendering)
+        self.diagram.define_intervals(data.interval_map)
+        self.diagram.turn_on_names(data.chromatic_rendering)
 
         # Set the new position to the value of the index of the old position,
         # in case the value of the old position is no longer a legal position.
-        positions = self.diagram.positions(binomial_names)
+        positions = self.diagram.positions(data.chromatic_rendering)
         self.on_position_change(positions[i])
         self.position_selector.set_position(self.diagram.position, positions)
 
         # Configure nodes to display correct scale nomenclature
         self.diagram.clear_overrides()
-        self.diagram.override_names(dict(zip(binomial_names, proper_names)))
+        self.diagram.override_names(
+            dict(zip(data.chromatic_rendering, data.optimal_rendering)))
 
         # The node selector will keep the same settings for each of the 7
         # intervals, but the intervals' names will be updated for the new
         # scale configuration.
         self.node_selector.rename_intervals(
-            [v for k, v in interval_map.items() if k in binomial_names])
-        
+            [v for k, v in data.interval_map.items()
+             if k in data.chromatic_rendering])
+
         # Restore previous node display settings for new interval names.
         for report_ in self.node_selector.summarize():
             self.diagram.apply_node_display_options(report_)
@@ -612,23 +610,16 @@ class FretboardDiagram(Frame):
         """Receive a report about the change to the position
         and modify the diagram to reflect it.
         """
-        fingering_reports: list[annotations.FingeringReport] = self.fingering_panel.summarize()
-        node_reports: list[annotations.NodeDisplayReport] = self.node_selector.summarize()
-        rendering_mode: str = self.rendering_mode_selector.report()
-
-        self.diagram.change_position(report, 
-                                     fingering_reports, 
-                                     node_reports, 
-                                     rendering_mode)
+        self.diagram.change_position(report,
+                                     self.fingering_panel.summarize(),
+                                     self.node_selector.summarize(),
+                                     self.rendering_mode_selector.report())
 
         self.fingerboard_grid.draw_diagram(self.diagram)
-
 
     def change_interface_mode(self) -> None:
         """Change the state of the main panel, and perform any necessary 
         changes to the UI to accommodate the change."""
-
-
 
 
 ndnd = """
@@ -651,5 +642,3 @@ Arpeggio widget
     ... therefore, must have a separate callback from the normal on_display_change
 
    """
-
-

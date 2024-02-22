@@ -238,7 +238,6 @@ class GuitarFingeringDiagram:
         options from the current grid to the new grid, maintianing the current
         display options."""
 
-        
         self.position = position
         new: "GuitarFingeringDiagram" = self.__class__(
             position, self.fretboard, self.width)
@@ -342,7 +341,8 @@ class GuitarFingeringDiagram:
 
     def orient(self, scale: list[str], interval_map: dict[str, str], chord: list[str]) -> None:
         """Orient the current diagram to the given scale, chord, and 
-        intervallic perspective."""
+        intervallic perspective.
+        """
         self.turn_on_names(scale)
         self.define_scale(scale)
         self.define_chord(chord)
@@ -350,7 +350,8 @@ class GuitarFingeringDiagram:
 
     def turn_on_names(self, note_names: list[str]) -> None:
         """Switch ON any node that contains one of the given note names, 
-        and switch OFF any node that doesn't."""
+        and switch OFF any node that doesn't.
+        """
         for string in self.grid:
             for node in string:
                 node.is_active = node.note_name in note_names
@@ -358,7 +359,8 @@ class GuitarFingeringDiagram:
     def define_scale(self, note_names: list[str]) -> None:
         """Raise the scale flag for any node that contains a scale tone, and
         conversely, raise the chromatic flag for any node that does not 
-        contain a scale tone."""
+        contain a scale tone.
+        """
         for string in self.grid:
             for node in string:
                 node.is_scale_tone = node.note_name in note_names
@@ -377,7 +379,8 @@ class GuitarFingeringDiagram:
 
         The intervals will exist for the whole fretboard; it is not necessary
         to redefine intervals for a different position or scale, but a new key
-        does require new intervals."""
+        does require new intervals.
+        """
         for string in self.grid:
             for node in string:
                 if node.note_name:
@@ -385,7 +388,8 @@ class GuitarFingeringDiagram:
 
     def override_names(self, names: dict[str, str]) -> None:
         """Instruct the nodes to override the names in the keys with the 
-        names in the values."""
+        names in the values.
+        """
         for k, v in names.items():
             for s in self.grid:
                 for n in s:

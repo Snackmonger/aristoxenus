@@ -98,10 +98,6 @@ def render_heptatonic_form(
         
     numeric_rendering: tuple[str, ...] = tuple(
         nomenclature.name_heptatonic_intervals(base_scale))
-    twelve_tone_intervals: dict[str, str] = dict(
-        zip(utils.shift_list(nomenclature.chromatic(), keynote),
-            nomenclature.twelve_tone_scale_intervals(base_scale)))
-    
     interval_map = nomenclature.get_interval_map(keynote, base_scale)
 
     # this is fine for now, this should be a typeddict once the final
@@ -115,6 +111,5 @@ def render_heptatonic_form(
             keywords.CHROMATIC_RENDERING: chromatic_rendering,
             keywords.ALPHABETIC_RENDERING: forced_rendering,
             keywords.OPTIMAL_KEYNOTE: best_rendering[0],
-            keywords.OPTIMAL_RENDERING: best_rendering,
-            keywords.TWELVE_TONE_INTERVALS: twelve_tone_intervals}
+            keywords.OPTIMAL_RENDERING: best_rendering}
 

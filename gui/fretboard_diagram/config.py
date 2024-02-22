@@ -6,6 +6,7 @@ from data.keywords import (BLACK, BLUE, CIRCLE,
                            SQUARE, TRIANGLE,WHITE,
                            YELLOW)
 
+CANVAS_SIZE: int = 500
 DIAGRAM_SHAPES: list[str] = [CIRCLE, TRIANGLE, INVERSE_TRIANGLE, SQUARE, DIAMOND]
 COLOURS: list[str] = [BLACK, RED, BLUE, GREEN, ORANGE, YELLOW, PURPLE, WHITE]
 FINGERING_TYPES: list[str] = [INDEX, PINKY]
