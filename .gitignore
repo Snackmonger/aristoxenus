@@ -54,3 +54,5 @@ gui/__pycache__/gui_scratchpad.cpython-311.pyc
 gui/fretboard_diagram/__pycache__/__init__.cpython-311.pyc
 gui/fretboard_diagram/__pycache__/widgets.cpython-311.pyc
 gui/__pycache__/config.cpython-311.pyc
+gui/fretboard_diagram/__pycache__/config.cpython-311.pyc
+gui/fretboard_diagram/__pycache__/functions.cpython-311.pyc

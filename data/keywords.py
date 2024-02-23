@@ -20,6 +20,7 @@ MODAL_NAME: str = 'modal_name'
 SCALE_NAME: str = 'scale_name'
 MODE: str = "mode"
 SCALE: str = "scale"
+ARPEGGIO: str = "arpeggio"
 ABOVE: str = 'above'
 BELOW: str = 'below'
 STRUCTURE: str = 'structure'

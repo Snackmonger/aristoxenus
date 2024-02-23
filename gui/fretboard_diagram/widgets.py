@@ -1,12 +1,14 @@
 """Widgets that make up the tkinter GUI of the FingeringDiagram app."""
 
-from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar
+from gc import enable
+from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar, Widget
 from tkinter.font import Font
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, cast
 
 from data import (keywords,
                   annotations)
+from gui.fretboard_diagram.functions import enable_widget
 from src import (interface)
 from src.models import (diagrams,
                         data_structures)
@@ -481,6 +483,74 @@ class PositionSelector(LabelFrame):
         return self.position.get()
 
 
+class InterfaceModeToggle(LabelFrame):
+    """Simple button widget to change the state of the main app."""
+
+    def __init__(self, master: Frame|LabelFrame, callback: Callable[..., Any]) -> None:
+        LabelFrame.__init__(self, master)
+        self.callback = callback
+        self.config(text="Select Control Mode")
+        self.interface_mode_options: list[str] = [keywords.SCALE, keywords.ARPEGGIO]
+        self.current_interface_mode: str = self.interface_mode_options[0]
+        self.interface_mode_toggle: Button = Button(self, text=self.current_interface_mode, command=self.change_state)
+        self.interface_mode_toggle.grid()
+
+
+    def change_state(self) -> None:
+        """The callback is responsible for changing the layout of some 
+        other widgets in the main app; after this is done, record the
+        change and update the button's text."""
+        
+        self.callback()
+
+        state: int = self.interface_mode_options.index(self.current_interface_mode)
+        if state == len(self.interface_mode_options) - 1:
+            self.current_interface_mode = self.interface_mode_options[0]
+        else:
+            self.current_interface_mode = self.interface_mode_options[state + 1]
+        self.interface_mode_toggle.configure(text=self.current_interface_mode)
+
+
+class ArpeggioModeControlPanel(LabelFrame):
+    def __init__(self, master: Frame|LabelFrame) -> None:
+        LabelFrame.__init__(self, master)
+        self.config(text="Arpeggio Display Controls")
+
+        # Part 1
+        # Select number of notes -triad, tetrad --> Update display
+        # select chord type -tertial, quartal   --> update display
+
+        # Part 2
+        # node display selector for the intervals in the polyad
+        # These settings will be carried over when we change the
+        # chord degree, but the names of the intervals might 
+        # change as we move through the chord scale. --> update display
+
+        # Part 3
+        # select chord degree (based on frozen scale settings)
+        #       therefore, when the controller activates this widget, it 
+        #       should update the widget's knowledge of the base scale
+        #
+        # the intervals in the chord are shown according to the settings
+        # in part 2, but the non-chord tones are displayed opaque or greyed out
+        
+        # in order for the intervals to cycle correctly with the chords, so that
+        # the third of the chord (major or minor) will sill be a blue triangle or
+        # whatever, we need to regard each chord's root as the tonic of a modal
+        # centre. The 'true' centre of the scale will be whatever the frozen scale
+        # form is (hence why we deny the user to change it). We can give the user
+        # a toggle button to decide whether the intervals shown in the diagram are
+        # those of the parent scale or the individual chords. 
+        #       therefore, we can take the settings for the relative perspective 
+        #       that the user sees in the node display controls
+        
+        
+
+
+
+
+
+
 class FretboardDiagram(Frame):
     """Main widget for the fretboard diagram."""
 
@@ -500,32 +570,22 @@ class FretboardDiagram(Frame):
         self.diagram.turn_on_names(cmaj.optimal_rendering)
 
         # Top bar
-        self.scale_selector = ScaleSelectorWidget(self,
-                                                  self.on_scale_change)
-        self.scale_selector.grid(column=0, row=0, sticky=W)
-
-        self.position_selector = PositionSelector(self,
-                                                  self.diagram.positions(
-                                                      cmaj.optimal_rendering),
-                                                  self.on_position_change)
-        self.position_selector.grid(column=1, row=0, sticky=W)
-
-        self.rendering_mode_selector = RenderingModeSelector(self,
-                                                             self.on_rendering_mode_change)
-        self.rendering_mode_selector.grid(column=2, row=0, sticky=W)
+        self.scale_selector = ScaleSelectorWidget(self, self.on_scale_change)
+        self.position_selector = PositionSelector(self, self.diagram.positions(
+            cmaj.optimal_rendering), self.on_position_change)
+        self.rendering_mode_selector = RenderingModeSelector(
+            self, self.on_rendering_mode_change)
+        self.interface_mode_toggle = InterfaceModeToggle(self, self.change_interface_mode) 
 
         # Left large window (main diagram display)
         self.fingerboard_grid = FingerboardGridWidget(self, self.diagram)
-        self.fingerboard_grid.grid(column=0, row=1, columnspan=2)
 
         # Centre narrow window
-        self.fingering_panel = StringFingeringSelector(self,
-                                                       self.on_fingering_change,
-                                                       self.diagram.number_of_strings)
-        self.fingering_panel.grid(column=2, row=1, sticky=EW)
+        self.fingering_panel = StringFingeringSelector(
+            self, self.on_fingering_change, self.diagram.number_of_strings)
 
         # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
-        self.mode_toggle: Button  # change state
+    
         self.current_main_panel: Frame
 
         # Frame 4a: Scale Mode Panel (RIGHT, STATE)
@@ -533,6 +593,15 @@ class FretboardDiagram(Frame):
                      if k in self.diagram.active_names]
         self.node_selector: IntervalDisplaySelector = IntervalDisplaySelector(
             self, self.on_node_option_change, intervals)
+
+        # Finish orienting widgets 
+        self.scale_selector.grid(column=0, row=0, sticky=W)
+        self.position_selector.grid(column=1, row=0, sticky=W)
+        self.rendering_mode_selector.grid(column=2, row=0, sticky=W)
+        self.interface_mode_toggle.grid(column=3, row=0, sticky=W)
+
+        self.fingerboard_grid.grid(column=0, row=1, columnspan=2)
+        self.fingering_panel.grid(column=2, row=1, sticky=EW)   
         self.node_selector.grid(column=3, row=1, sticky=EW)
 
         self.grid()
@@ -620,6 +689,15 @@ class FretboardDiagram(Frame):
     def change_interface_mode(self) -> None:
         """Change the state of the main panel, and perform any necessary 
         changes to the UI to accommodate the change."""
+        if self.interface_mode_toggle.current_interface_mode == keywords.SCALE:
+            enable_widget(self.scale_selector, False)
+            enable_widget(self.node_selector, False)
+            enable_widget(self.position_selector, False)
+
+        elif self.interface_mode_toggle.current_interface_mode == keywords.ARPEGGIO:
+            enable_widget(self.scale_selector)
+            enable_widget(self.node_selector)
+            enable_widget(self.position_selector)
 
 
 ndnd = """
@@ -642,3 +720,11 @@ Arpeggio widget
     ... therefore, must have a separate callback from the normal on_display_change
 
    """
+
+# def enable(children: list[Widget]):
+#    for child in children:
+#       child.configure(state='enable')
+
+# def disable(children: list[Widget]):
+#    for child in children:
+#       child.configure(state='disable')
