@@ -3,30 +3,37 @@
 from typing import Mapping, Sequence, TypeAlias, TypedDict, NotRequired
 
 
-GuitarFretboard: TypeAlias = tuple[tuple[str, ...], ...]
+GuitarFretboard: TypeAlias = Sequence[Sequence[str]]
 
 
-class ChordConspectus(TypedDict):
+class TriadConspectus(TypedDict):
     '''
-    A collection of all permutations of a chord's inversions and voicings.
-
-    Individual keys will vary depending on chord type (triad/tetrad).
+    A collection of all permutations of a triad's inversions and voicings.
     '''
     canonical_name: str
     canonical_form: int
-    close: NotRequired[Mapping[str, int]]
-    open: NotRequired[Mapping[str, int]]
-    drop_2: NotRequired[Mapping[str, int]]
-    drop_3: NotRequired[Mapping[str, int]]
-    drop_2_and_4: NotRequired[Mapping[str, int]]
+    close: NotRequired[dict[str, int]]
+    open: NotRequired[dict[str, int]]
 
 
-ChordInventory: TypeAlias = tuple[ChordConspectus, ...]
+class TetradConspectus(TypedDict):
+    '''
+    A collection of all permutations of a tetrad's inversions and voicings.
+    '''
+    canonical_name: str
+    canonical_form: int
+    close: dict[str, int]
+    drop_2: dict[str, int]
+    drop_3: dict[str, int]
+    drop_2_and_4: dict[str, int]
+
+
+ChordInventory: TypeAlias = Sequence[TetradConspectus | TriadConspectus]
 
 
 class ScaleformReport(TypedDict):
     """Report about a scaleform selection. 
-    
+
     Used by the GUI to handle the state of the scale selector widget.
     """
     scale_name: str
@@ -36,7 +43,7 @@ class ScaleformReport(TypedDict):
 
 class FingeringReport(TypedDict):
     """Report about the fingering of a string on a guitar.
-    
+
     Used by the GUI to handle the state of the string fingering widgets.
     """
     string: int
@@ -59,13 +66,13 @@ class NodeDisplayReport(TypedDict):
 
 class ArpeggioFormReport(TypedDict):
     """Report about an arpeggio selection.
-    
+
     Used by the GUI to handle the state of the arpeggio selector widget.
     """
-    number_of_notes: int # triad, tetrad
+    number_of_notes: int  # triad, tetrad
     base_interval: int  # tertial, quartal
-    current_rotation: int # keeps the chord's intervals synched
-    node_display_reports: list[NodeDisplayReport] # not sure if this will be needed
+    current_rotation: int  # keeps the chord's intervals synched
+    node_display_reports: list[NodeDisplayReport] 
 
 
 class APIScaleFormResponse(TypedDict):

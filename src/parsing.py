@@ -12,7 +12,7 @@ from src import (nomenclature,
                  rendering,
                  permutation)
 
-from data.annotations import ChordConspectus
+from data.annotations import TetradConspectus
 
 
 # # ----------------------------------------------------------

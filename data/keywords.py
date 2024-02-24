@@ -1,49 +1,49 @@
-'''Strings used as dictionary or interface keywords in the program.'''
+'''String literals used as dictionary or interface keywords in the program.'''
 
 # General musical terms
-NOTE_NAME: str = 'note_name'
-FREQUENCY: str = 'frequency'
-SHARP: str = 'sharp'
-FLAT: str = 'flat'
-BINOMIAL: str = "binomial"
-ACCIDENTAL_NOTES: str = 'accidental_notes'
-OCTAVE: str = 'octave'
-CHROMATIC: str = 'chromatic'
-SCIENTIFIC: str = 'scientific'
-PLAIN: str = 'plain'
-INTERVAL_STRUCTURE: str = 'interval_structure'
-INTERVAL_SCALE: str = 'interval_scale'
-INTERVAL_MAP: str = "interval_map"
-INTERVAL: str = 'interval'
-KEYNOTE: str = 'keynote'
-MODAL_NAME: str = 'modal_name'
-SCALE_NAME: str = 'scale_name'
-MODE: str = "mode"
-SCALE: str = "scale"
-ARPEGGIO: str = "arpeggio"
-ABOVE: str = 'above'
-BELOW: str = 'below'
-STRUCTURE: str = 'structure'
-SCALE_DEGREE: str = "scale_degree"
+NOTE_NAME = 'note_name'
+FREQUENCY = 'frequency'
+SHARP = 'sharp'
+FLAT = 'flat'
+BINOMIAL = "binomial"
+ACCIDENTAL_NOTES = 'accidental_notes'
+OCTAVE = 'octave'
+CHROMATIC = 'chromatic'
+SCIENTIFIC = 'scientific'
+PLAIN = 'plain'
+INTERVAL_STRUCTURE = 'interval_structure'
+INTERVAL_SCALE = 'interval_scale'
+INTERVAL_MAP = "interval_map"
+INTERVAL = 'interval'
+KEYNOTE = 'keynote'
+MODAL_NAME = 'modal_name'
+SCALE_NAME = 'scale_name'
+MODE = "mode"
+SCALE = "scale"
+ARPEGGIO = "arpeggio"
+ABOVE = 'above'
+BELOW = 'below'
+STRUCTURE = 'structure'
+SCALE_DEGREE = "scale_degree"
 
 # Interval qualities
-MAJOR: str = 'major'
-MINOR: str = 'minor'
-DIMINISHED: str = 'diminished'
-AUGMENTED: str = 'augmented'
-PERFECT: str = 'perfect'
+MAJOR = 'major'
+MINOR = 'minor'
+DIMINISHED = 'diminished'
+AUGMENTED = 'augmented'
+PERFECT = 'perfect'
 
 # Modal names
-IONIAN: str = 'ionian'
-DORIAN: str = 'dorian'
-PHRYGIAN: str = 'phrygian'
-LYDIAN: str = 'lydian'
-MIXOLYDIAN: str = 'mixolydian'
-AEOLIAN: str = 'aeolian'
-LOCRIAN: str = 'locrian'
+IONIAN = 'ionian'
+DORIAN = 'dorian'
+PHRYGIAN = 'phrygian'
+LYDIAN = 'lydian'
+MIXOLYDIAN = 'mixolydian'
+AEOLIAN = 'aeolian'
+LOCRIAN = 'locrian'
 
 # Canonical order of mode names
-MODAL_NAME_SERIES: tuple[str, ...] = (
+MODAL_NAME_SERIES = (
     IONIAN,
     DORIAN,
     PHRYGIAN,
@@ -53,18 +53,18 @@ MODAL_NAME_SERIES: tuple[str, ...] = (
     LOCRIAN)
 
 # Internal scale names
-DIATONIC: str = 'diatonic'
-ALTERED: str = 'altered'
-HEMITONIC: str = 'hemitonic'
-HEMIOLIC: str = 'hemiolic'
+DIATONIC = 'diatonic'
+ALTERED = 'altered'
+HEMITONIC = 'hemitonic'
+HEMIOLIC = 'hemiolic'
 # diminished
 # augmented
-HARMONIC: str = 'harmonic'
-BISEPTIMAL: str = 'biseptimal'
-PALEOCHROMATIC: str = 'paleochromatic'
+HARMONIC = 'harmonic'
+BISEPTIMAL = 'biseptimal'
+PALEOCHROMATIC = 'paleochromatic'
 
 # Internal canonical order of scale types
-HEPTATONIC_ORDER: tuple[str, ...] = (
+HEPTATONIC_ORDER = (
     DIATONIC,
     ALTERED,
     HEMITONIC,
@@ -76,202 +76,202 @@ HEPTATONIC_ORDER: tuple[str, ...] = (
     PALEOCHROMATIC)
 
 # Internal scale processing terms
-PREFERRED_NAME: str = 'preferred_name'
-CANONICAL_NAME: str = 'canonical_name'
-CANONICAL_FORM: str = 'canonical_form'
-CHROMATIC_RENDERING: str = 'chromatic_rendering'
-TWELVE_TONE_INTERVALS: str = "twelve_tone_intervals"
-ALPHABETIC_RENDERING: str = 'alphabetic_rendering'
-OPTIMAL_RENDERING: str = 'optimal_rendering'
-OPTIMAL_KEYNOTE: str = 'optimal_keynote'
-RECOGNIZED_NAMES: str = 'recognized_names'
+PREFERRED_NAME = 'preferred_name'
+CANONICAL_NAME = 'canonical_name'
+CANONICAL_FORM = 'canonical_form'
+CHROMATIC_RENDERING = 'chromatic_rendering'
+TWELVE_TONE_INTERVALS = "twelve_tone_intervals"
+ALPHABETIC_RENDERING = 'alphabetic_rendering'
+OPTIMAL_RENDERING = 'optimal_rendering'
+OPTIMAL_KEYNOTE = 'optimal_keynote'
+RECOGNIZED_NAMES = 'recognized_names'
 
 # Chord terms
-ROOT: str = 'root'
-POSITION: str = 'position'
-INVERSION: str = 'inversion'
-OPEN: str = 'open'
-CLOSE: str = 'close'
-CHORD_SYMBOL: str = 'chord_symbol'
-CHORD_NAME: str = 'chord_name'
-DROP_2: str = 'drop_2'
-DROP_3: str = 'drop_3'
-DROP_2_and_4: str = 'drop_2_and_4'
+ROOT = 'root'
+POSITION = 'position'
+INVERSION = 'inversion'
+OPEN = 'open'
+CLOSE = 'close'
+CHORD_SYMBOL = 'chord_symbol'
+CHORD_NAME = 'chord_name'
+DROP_2 = 'drop_2'
+DROP_3 = 'drop_3'
+DROP_2_AND_4 = 'drop_2_and_4'
 
 # Triad terms
-MAJOR_TRIAD: str = 'major_triad'
-MINOR_TRIAD: str = 'minor_triad'
-MINOR_FLAT_5: str = 'minor_flat_5_triad'
-MAJOR_FLAT_5: str = 'major_flat_5_triad'
-MAJOR_SHARP_5: str = 'major_sharp_5_triad'
-SUS2_TRIAD: str = 'sus2_triad'
-SUS4_TRIAD: str = 'sus4_triad'
+MAJOR_TRIAD = 'major_triad'
+MINOR_TRIAD = 'minor_triad'
+MINOR_FLAT_5 = 'minor_flat_5_triad'
+MAJOR_FLAT_5 = 'major_flat_5_triad'
+MAJOR_SHARP_5 = 'major_sharp_5_triad'
+SUS2_TRIAD = 'sus2_triad'
+SUS4_TRIAD = 'sus4_triad'
 
 # Tetrad terms
-MAJOR_SEVENTH: str = 'major_7'
-MINOR_SEVENTH: str = 'minor_7'
-MAJOR_SIXTH: str = 'major_6'
-MINOR_SIXTH: str = 'minor_6'           
-MINOR_MAJOR_SEVENTH: str = 'minor_major_7'
-DOMINANT_SEVENTH:str = 'dominant_7'
-MINOR_SEVEN_FLAT_FIVE: str = 'minor_7_flat_5'
-DIMINISHED_SEVENTH: str = 'diminished_7'
-AUGMENTED_SEVENTH: str = 'augmented_7'
-AUGMENTED_MAJOR_SEVENTH: str = 'augmented_major_7'
-DOMINANT_SEVENTH_FLAT_FIVE: str = 'dominant_7_flat_5'
+MAJOR_SEVENTH = 'major_7'
+MINOR_SEVENTH = 'minor_7'
+MAJOR_SIXTH = 'major_6'
+MINOR_SIXTH = 'minor_6'           
+MINOR_MAJOR_SEVENTH = 'minor_major_7'
+DOMINANT_SEVENTH = 'dominant_7'
+MINOR_SEVEN_FLAT_FIVE = 'minor_7_flat_5'
+DIMINISHED_SEVENTH = 'diminished_7'
+AUGMENTED_SEVENTH = 'augmented_7'
+AUGMENTED_MAJOR_SEVENTH = 'augmented_major_7'
+DOMINANT_SEVENTH_FLAT_FIVE = 'dominant_7_flat_5'
 
 # Fingering terms
-FINGERING: str = "fingering"
-CURRENT_FINGERING: str = "current_fingering"
-FINGER: str = "finger"
-INDEX: str = "index"
-MIDDLE: str = "middle"
-RING: str = "ring"
-PINKY: str = "pinky"
-MIXED: str = "mixed"
+FINGERING = "fingering"
+CURRENT_FINGERING = "current_fingering"
+FINGER = "finger"
+INDEX = "index"
+MIDDLE = "middle"
+RING = "ring"
+PINKY = "pinky"
+MIXED = "mixed"
 
 # Instrument terms
-FRET: str = "fret"
-FRETBOARD: str = "fretboard"
-STRING: str = "string"
-TUNING: str = "tuning"
-STANDARD: str = 'standard'
-STANDARD_7_STRING: str = 'standard_7_string'
-STANDARD_8_STRING: str = 'standard_8_string'
-DROP_D: str = 'drop_d'
-OPEN_D: str = "open_d"
-OPEN_G: str = "open_g"
+FRET = "fret"
+FRETBOARD = "fretboard"
+STRING = "string"
+TUNING = "tuning"
+STANDARD = 'standard'
+STANDARD_7_STRING = 'standard_7_string'
+STANDARD_8_STRING = 'standard_8_string'
+DROP_D = 'drop_d'
+OPEN_D = "open_d"
+OPEN_G = "open_g"
 
 # Graphics display options
 # ------------------------
-SHAPE: str = "shape"
-SHAPE_SIZE: str = "size"
-TEXT_SIZE: str = "text_size"
-COLOUR: str = "colour"
-SHAPE_COLOUR: str = "shape_colour"
-TEXT_COLOUR: str = "text_colour"
-RENDERING_MODE: str = "rendering_mode"
+SHAPE = "shape"
+SHAPE_SIZE = "size"
+TEXT_SIZE = "text_size"
+COLOUR = "colour"
+SHAPE_COLOUR = "shape_colour"
+TEXT_COLOUR = "text_colour"
+RENDERING_MODE = "rendering_mode"
 # Shape terms
-CIRCLE: str = "circle"
-TRIANGLE: str = "triangle"
-INVERSE_TRIANGLE: str = "inverse_triangle"
-SQUARE: str = "square"
-DIAMOND: str = "diamond"
+CIRCLE = "circle"
+TRIANGLE = "triangle"
+INVERSE_TRIANGLE = "inverse_triangle"
+SQUARE = "square"
+DIAMOND = "diamond"
 # Colour terms
-BLACK: str = "black"
-RED: str = "red"
-BLUE: str = "blue"
-GREEN: str = "green"
-ORANGE: str = "orange"
-PURPLE: str = "purple"
-YELLOW: str = "yellow"
-WHITE: str = "white"
+BLACK = "black"
+RED = "red"
+BLUE = "blue"
+GREEN = "green"
+ORANGE = "orange"
+PURPLE = "purple"
+YELLOW = "yellow"
+WHITE = "white"
 
 # Numeration terms
 # ----------------
-CARDINAL: str = 'cardinal'
-ORDINAL: str = 'ordinal'
-UPLE: str = 'uple'
-POLYAD: str = 'polyad'
-TONAL: str = 'tonal'
-BASAL: str = 'basal'
+CARDINAL = 'cardinal'
+ORDINAL = 'ordinal'
+UPLE = 'uple'
+POLYAD = 'polyad'
+TONAL = 'tonal'
+BASAL = 'basal'
 
 # Cardinal numbers
-ONE: str = 'one'
-TWO: str = 'two'
-THREE: str = 'three'
-FOUR: str = 'four'
-FIVE: str = 'five'
-SIX: str = 'six'
-SEVEN: str = 'seven'
-EIGHT: str = 'eight'
-NINE: str = 'nine'
-TEN: str = 'ten'
-ELEVEN: str = 'eleven'
-TWELVE: str = 'twelve'
-THIRTEEN: str = 'thirteen'
-FOURTEEN: str = 'fourteen'
-FIFTEEN: str = 'fifteen'
+ONE = 'one'
+TWO = 'two'
+THREE = 'three'
+FOUR = 'four'
+FIVE = 'five'
+SIX = 'six'
+SEVEN = 'seven'
+EIGHT = 'eight'
+NINE = 'nine'
+TEN = 'ten'
+ELEVEN = 'eleven'
+TWELVE = 'twelve'
+THIRTEEN = 'thirteen'
+FOURTEEN = 'fourteen'
+FIFTEEN = 'fifteen'
 
 # Ordinal numbers
-FIRST: str = 'first'
-SECOND: str = 'second'
-THIRD: str = 'third'
-FOURTH: str = 'fourth'
-FIFTH: str = 'fifth'
-SIXTH: str = 'sixth'
-SEVENTH: str = 'seventh'
-EIGHTH: str = 'eighth'
-NINTH: str = 'ninth'
-TENTH: str = 'tenth'
-ELEVENTH: str = 'eleventh'
-TWELFTH: str = 'twelfth'
-THIRTEENTH: str = 'thirteenth'
-FOURTEENTH: str = 'fourteenth'
-FIFTEENTH: str = 'fifteenth'
+FIRST = 'first'
+SECOND = 'second'
+THIRD = 'third'
+FOURTH = 'fourth'
+FIFTH = 'fifth'
+SIXTH = 'sixth'
+SEVENTH = 'seventh'
+EIGHTH = 'eighth'
+NINTH = 'ninth'
+TENTH = 'tenth'
+ELEVENTH = 'eleventh'
+TWELFTH = 'twelfth'
+THIRTEENTH = 'thirteenth'
+FOURTEENTH = 'fourteenth'
+FIFTEENTH = 'fifteenth'
 
 # -Uples
-SINGLE: str = 'single'
-DOUBLE: str = 'double'
-TRIPLE: str = 'triple'
-QUADRUPLE: str = 'quadruple'
-QUINTUPLE: str = 'quintuple'
-SEXTUPLE: str = 'sextuple'
-SEPTUPLE: str = 'septuple'
-OCTUPLE: str = 'octuple'
-NONUPLE: str = 'nonuple'
-DECUPLE: str = 'decuple'
-HENDECUPLE: str = 'undecuple'
-DUODECUPLE: str = 'duopdecuple'
-TREDECUPLE: str = 'tredecuple'
-QUATTUORDECUPLE: str = 'quattuordecuple'
-QUINDECUPLE: str = 'quindecuple'
+SINGLE = 'single'
+DOUBLE = 'double'
+TRIPLE = 'triple'
+QUADRUPLE = 'quadruple'
+QUINTUPLE = 'quintuple'
+SEXTUPLE = 'sextuple'
+SEPTUPLE = 'septuple'
+OCTUPLE = 'octuple'
+NONUPLE = 'nonuple'
+DECUPLE = 'decuple'
+HENDECUPLE = 'undecuple'
+DUODECUPLE = 'duopdecuple'
+TREDECUPLE = 'tredecuple'
+QUATTUORDECUPLE = 'quattuordecuple'
+QUINDECUPLE = 'quindecuple'
 
 # Polyads
-MONAD: str = 'monad'
-DYAD: str = 'dyad'
-TRIAD: str = 'triad'
-TETRAD: str = 'tetrad'
-PENTAD: str = 'pentad'
-HEXAD: str = 'hexad'
-HEPTAD: str = 'heptad'
-OCTAD: str = 'octad'
-ENNEAD: str = 'nonad'
-DECAD: str = 'decad'
-HENDECAD: str = 'undecad'
-DUODECAD: str = 'duodecad'
+MONAD = 'monad'
+DYAD = 'dyad'
+TRIAD = 'triad'
+TETRAD = 'tetrad'
+PENTAD = 'pentad'
+HEXAD = 'hexad'
+HEPTAD = 'heptad'
+OCTAD = 'octad'
+ENNEAD = 'nonad'
+DECAD = 'decad'
+HENDECAD = 'undecad'
+DUODECAD = 'duodecad'
 
 # Tonal numbers
-MONOTONIC: str = 'monotonic'
-DITONIC: str = 'ditonic'
-TRITONIC: str = 'tritonic'
-TETRATONIC: str = 'tetratonic'
-PENTATONIC: str = 'pentatonic'
-HEXATONIC: str = 'hexatonic'
-HEPTATONIC: str = 'heptatonic'
-OCTATONIC: str = 'octatonic'
-ENNEATONIC: str = 'enneatonic'
-DECATONIC: str = 'decatonic'
-HENDECATONIC: str = 'hendecatonic'
-DUODECATONIC: str = 'duodecatonic'
+MONOTONIC = 'monotonic'
+DITONIC = 'ditonic'
+TRITONIC = 'tritonic'
+TETRATONIC = 'tetratonic'
+PENTATONIC = 'pentatonic'
+HEXATONIC = 'hexatonic'
+HEPTATONIC = 'heptatonic'
+OCTATONIC = 'octatonic'
+ENNEATONIC = 'enneatonic'
+DECATONIC = 'decatonic'
+HENDECATONIC = 'hendecatonic'
+DUODECATONIC = 'duodecatonic'
 
 # Basal structures
-PRIMAL: str = 'primal'
-SECUNDAL: str = 'secundal'
-TERTIAL: str = 'tertial'
-QUARTAL: str = 'quartal'
-QUINTAL: str = 'quintal'
-SEXTAL: str = 'sextal'
-SEPTIMAL: str = 'septimal'
-OCTONAL: str = 'octonal'
-NONAL: str = 'nonal'
-DECIMAL: str = 'decimal'
-UNDECIMAL: str = 'undecimal'
-DUODECIMAL: str = 'duodecimal'
+PRIMAL = 'primal'
+SECUNDAL = 'secundal'
+TERTIAL = 'tertial'
+QUARTAL = 'quartal'
+QUINTAL = 'quintal'
+SEXTAL = 'sextal'
+SEPTIMAL = 'septimal'
+OCTONAL = 'octonal'
+NONAL = 'nonal'
+DECIMAL = 'decimal'
+UNDECIMAL = 'undecimal'
+DUODECIMAL = 'duodecimal'
 
 # Groups of number words
 # polyad, tonal, basal, cardinal, ordinal, -uple
-NUMERATION: tuple[tuple[str|None, ...], ...] = (
+NUMERATION = (
     (MONAD, MONOTONIC, PRIMAL, ONE, FIRST, SINGLE),
     (DYAD, DITONIC, SECUNDAL, TWO, SECOND, DOUBLE),
     (TRIAD, TRITONIC, TERTIAL, THREE, THIRD, TRIPLE),
@@ -290,10 +290,10 @@ NUMERATION: tuple[tuple[str|None, ...], ...] = (
 )
 
 # Column names for the numeration matrix above
-NUMERATION_INDICES: tuple[str, ...] = (POLYAD, TONAL, BASAL, CARDINAL, ORDINAL, UPLE)
+NUMERATION_INDICES = (POLYAD, TONAL, BASAL, CARDINAL, ORDINAL, UPLE)
 
 # List of chord inversion terms
-numbered_inversions: tuple[str, ...] = tuple([ROOT+'_'+POSITION] + [NUMERATION[
+numbered_inversions = tuple([ROOT+'_'+POSITION] + [NUMERATION[
     x][4]+'_'+INVERSION for x in range(11)])
 
 

@@ -302,14 +302,14 @@ def triad_variants(triads: dict[str, int] | None = None
     if triads is None:
         triads = intervallic_canon.triads
 
-    variants: list[annotations.ChordConspectus] = []
+    variants: list[annotations.TriadConspectus] = []
     for name, triad in triads.items():
         open_triad = spread_triad(triad)
         close_inversions = bitwise.inversions(triad, constants.TONES)
         open_inversions = bitwise.inversions(open_triad, constants.TONES*2)
         inversion_names = [keywords.numbered_inversions[x] for x in range(3)]
 
-        variants.append(annotations.ChordConspectus(canonical_name=name,
+        variants.append(annotations.TriadConspectus(canonical_name=name,
                                                     canonical_form=triad,
                                                     close=dict(
                                                         zip(inversion_names, close_inversions)),
@@ -356,13 +356,13 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
     if tetrads is None:
         tetrads = intervallic_canon.tetrads
 
-    variants: list[annotations.ChordConspectus] = []
+    variants: annotations.ChordInventory = []
     inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
     
     for name, tetrad in tetrads.items():
         inversions: tuple[int, ...] = bitwise.inversions(
             tetrad, constants.TONES)
-        innerdict = annotations.ChordConspectus(
+        innerdict = annotations.TetradConspectus(
             canonical_name=name,
             canonical_form=tetrad,
             close={},
@@ -370,19 +370,18 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
             drop_3={},
             drop_2_and_4={}
             )
-
         for i, inversion in enumerate(inversions):
             # We iterate the inversions THEN generate the drop voicings.
             # See `permutation.drop_voicing` for info.
-            inversion_name = inversion_names[i]
-            drop2 = drop_voicing(inversion, constants.DROP_2)
-            drop3 = drop_voicing(inversion, constants.DROP_3)
-            drop24 = drop_voicing(inversion, constants.DROP_2_AND_4)
+            inversion_name: str = inversion_names[i]
+            drop2: int = drop_voicing(inversion, constants.DROP_2)
+            drop3: int = drop_voicing(inversion, constants.DROP_3)
+            drop24: int = drop_voicing(inversion, constants.DROP_2_AND_4)
 
             innerdict[keywords.CLOSE].update({inversion_name: inversion})
             innerdict[keywords.DROP_2].update({inversion_name: drop2})
             innerdict[keywords.DROP_3].update({inversion_name: drop3})
-            innerdict[keywords.DROP_2_and_4].update({inversion_name: drop24})
+            innerdict[keywords.DROP_2_AND_4].update({inversion_name: drop24})
 
         variants.append(innerdict)
 
