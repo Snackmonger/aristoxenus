@@ -1,6 +1,7 @@
 """Functions used by the GUI"""
 
 from tkinter import Widget, NORMAL, DISABLED
+from typing import Any, Sequence
 
 def enable_children(parent: Widget, enabled: bool=True):
     """Recursively en-/dis-able the dependents of the 
@@ -27,3 +28,13 @@ def enable_widget(widget: Widget, enabled: bool=True):
         widget.configure(state=NORMAL if enabled else DISABLED)
     else:
         enable_children(widget, enabled)
+
+
+def cycle_indices(sequence: Sequence[Any], member: Any) -> int:
+    """For the given sequence, return the index that comes after the index 
+    of the given member, or 0 if member is the last index.
+    
+    This function operates on the assumption that all members in the sequence
+    will be unique."""
+    i: int = sequence.index(member)
+    return 0 if i == len(sequence) -1 else i + 1

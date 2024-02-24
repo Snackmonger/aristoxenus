@@ -45,7 +45,7 @@ class ScaleSelectorWidget(LabelFrame):
         self.select_key.grid(column=2, row=0)
         self.select_key.config(width=10)
 
-    def change_state(self, *args: StringVar) -> None:
+    def change_state(self, *_: Any) -> None:
         """Alert the controller about any change in state."""
         self.callback(self.report())
 
@@ -89,14 +89,12 @@ class StringFingeringWidget(Frame):
             kws.FINGERING: self.current_fingering}
         )
 
-    def change_state(self, *args: StringVar) -> None:
+    def change_state(self) -> None:
         """Toggle the string's fingering into the next state, and inform the
         callback function of the current state of the widget."""
-        state: int = self.fingering_options.index(self.current_fingering)
-        if state == len(self.fingering_options) - 1:
-            self.current_fingering = self.fingering_options[0]
-        else:
-            self.current_fingering = self.fingering_options[state + 1]
+        i: int = functions.cycle_indices(
+            self.fingering_options, self.current_fingering)
+        self.current_fingering = self.fingering_options[i]
         self.string_toggle.configure(text=self.current_fingering)
         self.callback(self.report())
 
@@ -184,7 +182,7 @@ class IntervalDisplayWidget(Frame):
             widget.grid(column=1, row=i, sticky="e")
             widget.config(width=15)
 
-    def change_state(self, *args: StringVar) -> None:
+    def change_state(self, *_: Any) -> None:
         """Respond to any change of state by sending a report about the 
         current state to the controller's callback."""
         self.callback(self.report())
@@ -254,7 +252,7 @@ class IntervalDisplaySelectorWidget(LabelFrame):
         self.select_interval.set_menu(
             self.intervals[0], *self.intervals)  # type:ignore
 
-    def display_subwidget(self, *args: StringVar) -> None:
+    def display_subwidget(self, *_: Any) -> None:
         """Change which subwidget is currently being displayed, based on the 
         selected option in the dropdown menu."""
         self.current_subwidget.grid_forget()
@@ -306,7 +304,9 @@ class FingerboardGridWidget(LabelFrame):
     This widget only ever displays information, it doesn't pass anything back to
     the controller."""
 
-    def __init__(self, master: Tk | Frame | LabelFrame, diagram: diagrams.GuitarFingeringDiagram) -> None:
+    def __init__(self,
+                 master: Tk | Frame | LabelFrame,
+                 diagram: diagrams.GuitarFingeringDiagram) -> None:
 
         LabelFrame.__init__(self, master)
         self.config(text="Fretboard Diagram")
@@ -442,7 +442,7 @@ class RenderingModeSelectorWidget(LabelFrame):
         """Return a report about the current state of the widget."""
         return self.current_mode.get()
 
-    def change_state(self, *args: StringVar) -> None:
+    def change_state(self, *_: Any) -> None:
         """Report any change of state to the controller."""
         self.callback(self.current_mode.get())
 
@@ -450,7 +450,11 @@ class RenderingModeSelectorWidget(LabelFrame):
 class PositionSelectorWidget(LabelFrame):
     """A small widget that controls the current position."""
 
-    def __init__(self, master: Tk | Frame | LabelFrame, positions: list[int], callback: Callable[..., Any]) -> None:
+    def __init__(self,
+                 master: Tk | Frame | LabelFrame,
+                 positions: list[int],
+                 callback: Callable[..., Any]
+                 ) -> None:
         LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Position")
@@ -464,7 +468,7 @@ class PositionSelectorWidget(LabelFrame):
                                           command=self.change_state)
         self.select_position.grid()
 
-    def change_state(self, *args: StringVar) -> None:
+    def change_state(self, *_: Any) -> None:
         """Report any change of state to the controller."""
         self.callback(self.report())
 
@@ -473,7 +477,7 @@ class PositionSelectorWidget(LabelFrame):
         a way that the previous position is no longer legal)."""
         self.position.set(position)
         self.position_options = positions
-        self.select_position.set_menu(str(position), *positions)  # type:ignore
+        self.select_position.set_menu(str(position), *positions) # type: ignore
 
     def report(self) -> int:
         """Report on the current state of the widget."""
@@ -495,18 +499,11 @@ class InterfaceModeToggleWidget(LabelFrame):
         self.interface_mode_toggle.grid()
 
     def change_state(self) -> None:
-        """The callback is responsible for changing the layout of some 
-        other widgets in the main app; after this is done, record the
-        change and update the button's text."""
-
-        
-
-        state: int = self.interface_mode_options.index(
-            self.current_interface_mode)
-        if state == len(self.interface_mode_options) - 1:
-            self.current_interface_mode = self.interface_mode_options[0]
-        else:
-            self.current_interface_mode = self.interface_mode_options[state + 1]
+        """Cycle to the next state, and use the callback to update the 
+        controller."""
+        i: int = functions.cycle_indices(
+            self.interface_mode_options, self.current_interface_mode)
+        self.current_interface_mode = self.interface_mode_options[i]
         self.interface_mode_toggle.configure(text=self.current_interface_mode)
 
         self.callback()
@@ -517,9 +514,20 @@ class ArpeggioModeControlPanel(LabelFrame):
     the user to define which chord will be the focal point of the diagram.
     """
 
-    def __init__(self, master: Frame | LabelFrame) -> None:
+    def __init__(self, master: Frame | LabelFrame, callback: Callable[..., Any]) -> None:
         LabelFrame.__init__(self, master)
         self.config(text="Arpeggio Display Controls")
+        self.callback = callback
+
+        self.polyad_options = ["triad", "tetrad"]
+        self.current_polyad: str = self.polyad_options[0]
+        self.polyad_toggle = Button(self, text=self.current_polyad)
+
+    def toggle_polyad(self) -> None:
+        """Cycle the widget into the next polyad configuration."""
+        i = functions.cycle_indices(self.polyad_options, self.current_polyad)
+        self.current_polyad = self.polyad_options[i]
+        self.polyad_toggle.config(text=self.current_polyad)
 
         # Part 1
         # Select number of notes -triad, tetrad --> Update display
@@ -573,7 +581,7 @@ class FretboardDiagram(Frame):
         self.current_diagram.define_intervals(cmaj.interval_map)
         self.current_diagram.turn_on_names(cmaj.optimal_rendering)
 
-        # Top bar 
+        # Top bar
         self.scale_selector = ScaleSelectorWidget(self, self.on_scale_change)
         self.position_selector = PositionSelectorWidget(self, self.current_diagram.positions(
             cmaj.optimal_rendering), self.on_position_change)
@@ -583,12 +591,12 @@ class FretboardDiagram(Frame):
             self, self.on_interface_mode_change)
 
         # Left large window (main diagram display)
-        self.fingerboard_grid = FingerboardGridWidget(self, self.current_diagram)
+        self.fingerboard_grid = FingerboardGridWidget(
+            self, self.current_diagram)
 
         # Centre narrow window
         self.fingering_panel = StringFingeringSelectorWidget(
             self, self.on_fingering_change, self.current_diagram.number_of_strings)
-
 
         self.current_main_panel: Frame
 
@@ -664,9 +672,9 @@ class FretboardDiagram(Frame):
         # Configure nodes to display correct scale nomenclature
         self.current_diagram.clear_overrides()
         self.current_diagram.override_names({k: v for k, v in
-                                           dict(zip(data.chromatic_rendering,
-                                                data.optimal_rendering)).items()
-                                           if not k == v})
+                                             dict(zip(data.chromatic_rendering,
+                                                      data.optimal_rendering)).items()
+                                             if not k == v})
 
         # The node selector will restore the same settings for each of the 7
         # intervals, but the intervals' names will be updated for the new
@@ -678,7 +686,6 @@ class FretboardDiagram(Frame):
             self.current_diagram.apply_node_display_options(report_)
         self.scale_node_selector.set_subwidget("1")
 
-        
         self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_rendering_mode_change(self, report: str) -> None:
@@ -696,9 +703,9 @@ class FretboardDiagram(Frame):
         interface mode.
         """
         self.current_diagram.change_position(report,
-                                           self.fingering_panel.summarize(),
-                                           self.scale_node_selector.summarize(),
-                                           self.rendering_mode_selector.report())
+                                             self.fingering_panel.summarize(),
+                                             self.scale_node_selector.summarize(),
+                                             self.rendering_mode_selector.report())
         self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_interface_mode_change(self) -> None:
@@ -709,7 +716,6 @@ class FretboardDiagram(Frame):
             functions.enable_widget(self.scale_node_selector, False)
             functions.enable_widget(self.position_selector, False)
 
-            
             # rewrite the main app so that we keep two references to diagrams for the
             # two different modes, then switch between them depending on the user's
             # interface selection.
@@ -722,10 +728,8 @@ class FretboardDiagram(Frame):
             # THEREFORE: Whenever we switch modes, we clone the last settings for
             # FINGERING and RENDERING to the the current diagram.
 
-
             # current_scale = interface.render_heptatonic_form(**self.scale_selector.report())
             # self.current_diagram = self.arpeggio_diagram
-
 
         elif self.interface_mode_toggle.current_interface_mode == kws.SCALE:
             functions.enable_widget(self.scale_selector)
@@ -739,7 +743,7 @@ class FretboardDiagram(Frame):
         interface mode."""
 
 
-ndnd = """
+ABSTRACT = """
 
 Arpeggio widget
     1. when the arpeggio widget is activated, the scaleform & position are 'frozen' and should appear greyed out until the scale widget is reactivated.
