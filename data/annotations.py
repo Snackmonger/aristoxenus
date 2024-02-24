@@ -1,6 +1,6 @@
 """Type aliases to make the syntax of type hints easier to read."""
 
-from typing import TypeAlias, TypedDict, NotRequired
+from typing import Mapping, Sequence, TypeAlias, TypedDict, NotRequired
 
 
 GuitarFretboard: TypeAlias = tuple[tuple[str, ...], ...]
@@ -57,6 +57,17 @@ class NodeDisplayReport(TypedDict):
     text_size: int
 
 
+class ArpeggioFormReport(TypedDict):
+    """Report about an arpeggio selection.
+    
+    Used by the GUI to handle the state of the arpeggio selector widget.
+    """
+    number_of_notes: int # triad, tetrad
+    base_interval: int  # tertial, quartal
+    current_rotation: int # keeps the chord's intervals synched
+    node_display_reports: list[NodeDisplayReport] # not sure if this will be needed
+
+
 class APIScaleFormResponse(TypedDict):
     """Response from the API containing information about a scaleform and its
     properties.
@@ -64,10 +75,10 @@ class APIScaleFormResponse(TypedDict):
     scale_name: str
     modal_name: str
     interval_structure: int
-    interval_scale: tuple[str]
+    interval_scale: Sequence[str]
+    interval_map: Mapping[str, str]
     keynote: str
-    chromatic_rendering: tuple[str]
-    alphabetic_rendering: tuple[str]
+    chromatic_rendering: Sequence[str]
+    alphabetic_rendering: Sequence[str]
     optimal_keynote: str
-    optimal_rendering: tuple[str]
-    twelve_tone_intervals: tuple[str]
+    optimal_rendering: Sequence[str]

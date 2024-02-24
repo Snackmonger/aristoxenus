@@ -1,6 +1,9 @@
 from tkinter import Widget, NORMAL, DISABLED
 
 def enable_children(parent: Widget, enabled: bool=True):
+    """Recursively en-/dis-able the dependents of the 
+    given widget.
+    """
     for child in parent.winfo_children():
         wtype: str = child.winfo_class()
         if wtype not in ('Frame', 'Labelframe', 'TFrame', 'TLabelframe'):
@@ -10,6 +13,9 @@ def enable_children(parent: Widget, enabled: bool=True):
 
 
 def enable_widget(widget: Widget, enabled: bool=True):
+    """En-/dis-able the given widget as well as any dependents that
+    the widget has.
+    """
     wtype = widget.winfo_class()
     if wtype not in ('Frame', 'Labelframe', 'TFrame', 'TLabelframe'):
         widget.configure(state=NORMAL if enabled else DISABLED)

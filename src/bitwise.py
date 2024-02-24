@@ -365,3 +365,11 @@ def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
         interval_structure = previous_inversion(interval_structure, max_bits)
     return tuple(rotations)
 
+
+def get_modal_form(interval_structure: int, rotations: int) -> int:
+    """Shortcut for rotating an interval structure of exactly 12 bits, 
+    representing a scale form.
+    """
+    for _ in range(rotations):
+        interval_structure = previous_inversion(interval_structure, 12)
+    return interval_structure

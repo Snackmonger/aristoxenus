@@ -1,14 +1,15 @@
 """Functions that represent the end-points of an API."""
 
 
-from typing import Any, Optional
+from typing import Optional
 
 from src import (nomenclature,
                  rendering,
                  bitwise,
                  utils)
 
-from data import (constants,
+from data import (annotations, 
+                  constants,
                   keywords,
                   intervallic_canon)
 
@@ -49,8 +50,7 @@ def render_heptatonic_form(
         scale_name: str,
         modal_name: str,
         keynote: str
-) -> dict[str, Any]: 
-    # replace return with a typedDict once we have standardized the output
+        ) -> annotations.APIScaleFormResponse:
     '''
     Return a collection of data about a given scaleform configuration.
 
@@ -81,35 +81,43 @@ def render_heptatonic_form(
         - optimal_rendering
         - optimal_keynote
     '''
-    base_scale:int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
+    scale_base:int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
     modal_rotations: int = keywords.MODAL_NAME_SERIES.index(modal_name)
-    for _ in range(modal_rotations):
-        base_scale = bitwise.previous_inversion(base_scale, 12)
-    render_base: list[str] = chromatic(keynote)
+    scale_base = bitwise.get_modal_form(scale_base, modal_rotations)
+    binomial_base: list[str] = chromatic(nomenclature.decode_enharmonic(keynote))
 
+    # Chromatic rendering will use whatever accidental is indicated in the
+    # given keynote, or binomials if the note is binomial or natural.
     chromatic_rendering: tuple[str, ...] = tuple(
-        rendering.render_plain(base_scale, render_base))
-    best_rendering: tuple[str, ...] = tuple(
-        nomenclature.best_heptatonic(keynote, base_scale))
-    forced_rendering: tuple[str, ...] = best_rendering
+        rendering.render_plain(scale_base, binomial_base))
+    
+    # Optimal rendering is that which has the fewest accidentals, while
+    # still maintaining the alphabetic order (the 'correct' spelling).
+    optimal_rendering: tuple[str, ...] = tuple(
+        nomenclature.best_heptatonic(keynote, scale_base))
+    
+    # Alphabetic rendering forces the nomenclature to follow the given
+    # keynote, even if it makes an awkward spelling. If the keynote was
+    # a binomial, use the optimal rendering instead.
+    alphabetic_rendering: tuple[str, ...] = optimal_rendering
     if not keynote in constants.BINOMIALS:
-        forced_rendering: tuple[str, ...] = tuple(
-            nomenclature.force_heptatonic(keynote, base_scale))
-        
-    numeric_rendering: tuple[str, ...] = tuple(
-        nomenclature.name_heptatonic_intervals(base_scale))
-    interval_map = nomenclature.get_interval_map(keynote, base_scale)
+        alphabetic_rendering: tuple[str, ...] = tuple(
+            nomenclature.force_heptatonic(keynote, scale_base))
+    
+    # Interval scale is a list of intervals in the scale, spelled correctly so
+    # that there is exactly one each of 12334567, plus accidentals.
+    interval_scale: tuple[str, ...] = tuple(
+        nomenclature.name_heptatonic_intervals(scale_base))
+    interval_map = nomenclature.get_interval_map(keynote, scale_base)
 
-    # this is fine for now, this should be a typeddict once the final
-    # form is known
-    return {keywords.SCALE_NAME: scale_name,
-            keywords.MODAL_NAME: modal_name,
-            keywords.INTERVAL_STRUCTURE: base_scale,
-            keywords.INTERVAL_SCALE: numeric_rendering,
-            keywords.INTERVAL_MAP: interval_map,
-            keywords.KEYNOTE: keynote,
-            keywords.CHROMATIC_RENDERING: chromatic_rendering,
-            keywords.ALPHABETIC_RENDERING: forced_rendering,
-            keywords.OPTIMAL_KEYNOTE: best_rendering[0],
-            keywords.OPTIMAL_RENDERING: best_rendering}
+    return annotations.APIScaleFormResponse(scale_name=scale_name, 
+                                            modal_name=modal_name,
+                                            interval_structure=scale_base,
+                                            interval_scale=interval_scale,
+                                            interval_map=interval_map,
+                                            keynote=keynote,
+                                            chromatic_rendering=chromatic_rendering,
+                                            alphabetic_rendering=alphabetic_rendering,
+                                            optimal_keynote=optimal_rendering[0],
+                                            optimal_rendering=optimal_rendering)
 

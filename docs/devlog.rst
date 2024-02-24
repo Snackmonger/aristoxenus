@@ -4,6 +4,7 @@ Aristoxenus Library DevLog
 
 .. contents:: Table of Contents
 
+
 08/02/2024
 ==========
 The diagram GUI has occupied most of my attention this week. It really seems to be coming along well, all things considered, but I couldn't say that it's very pretty yet. 
@@ -52,7 +53,7 @@ Diagrams
 --------
 I have worked out a few basic functions for displaying guitar fingerboard diagrams. These are just arrays of notes representing strings. It's easy to
 write a function to filter the fretboard so as to show only the given notes of a chord/scale. We can also take a slice of the frets (i.e. columns) to get
-something resembling a fingering diagram. Just using pandas to display digrams for now. Eventually I want to be able to put a fretboard position and a chord 
+something resembling a fingering diagram. I'm just using pandas to display digrams for now. Eventually I want to be able to put a fretboard position and a chord 
 and generate a fingering chart like this::
 
             i - - - e       C - - - E
@@ -151,7 +152,7 @@ This formed the backbone for the current `nomenclature` module, which does some 
     `best_heptatonic_scale`
         Choose the best name for a given interval structure and tonic note name.
 
-I also began working on a module related to nomenclature, `parsing`, which can do a few things so far:
+I also began working on a module, `parsing`, which can do a few things so far:
 
     `parse_chord_symbol`
         Attempt to generate an interval map from the sub-symbols in a given chord symbol (e.g. Em7b5 >> 0b10001001001).

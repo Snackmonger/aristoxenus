@@ -5,6 +5,9 @@ from dataclasses import dataclass
 
 @dataclass
 class HeptatonicRendering:
+    """Simple structure with the same keys as  
+    ``annotations.APIScaleFormResponse``.
+    """
     scale_name: str
     modal_name: str
     interval_structure: int
