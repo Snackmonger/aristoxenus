@@ -5,7 +5,7 @@ from tkinter.font import Font
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
 from typing import Any, Callable, Sequence, cast
 
-from data import (data_models, keywords, annotations)
+from data import (data_models, keywords as kws, annotations, errors)
 from src import (interface)
 from src.models import (diagrams)
 from gui.fretboard_diagram import (config, functions)
@@ -26,15 +26,15 @@ class ScaleSelectorWidget(LabelFrame):
                  ) -> None:
 
         LabelFrame.__init__(self, master, text="Select Scale Pattern")
-        self.scale = StringVar(self, value=keywords.DIATONIC)
-        self.mode = StringVar(self, value=keywords.IONIAN)
+        self.scale = StringVar(self, value=kws.DIATONIC)
+        self.mode = StringVar(self, value=kws.IONIAN)
         self.key = StringVar(self, "C")
         self.callback = callback
 
         self.select_scale = OptionMenu(
-            self, self.scale, self.scale.get(), *keywords.HEPTATONIC_ORDER, command=self.change_state)
+            self, self.scale, self.scale.get(), *kws.HEPTATONIC_ORDER, command=self.change_state)
         self.select_mode = OptionMenu(
-            self, self.mode, self.mode.get(), *keywords.MODAL_NAME_SERIES, command=self.change_state)
+            self, self.mode, self.mode.get(), *kws.MODAL_NAME_SERIES, command=self.change_state)
         self.select_key = OptionMenu(
             self, self.key, self.key.get(), *interface.chromatic(), command=self.change_state)
 
@@ -51,9 +51,9 @@ class ScaleSelectorWidget(LabelFrame):
 
     def report(self) -> dict[str, str]:
         """Return a report about the current state of the widget."""
-        return {keywords.SCALE_NAME: self.scale.get(),
-                keywords.MODAL_NAME: self.mode.get(),
-                keywords.KEYNOTE: self.key.get()}
+        return {kws.SCALE_NAME: self.scale.get(),
+                kws.MODAL_NAME: self.mode.get(),
+                kws.KEYNOTE: self.key.get()}
 
 
 class StringFingeringWidget(Frame):
@@ -85,8 +85,8 @@ class StringFingeringWidget(Frame):
     def report(self) -> annotations.FingeringReport:
         """Return a report about the current state of the widget."""
         return cast(annotations.FingeringReport, {
-            keywords.STRING: self.string,
-            keywords.FINGERING: self.current_fingering}
+            kws.STRING: self.string,
+            kws.FINGERING: self.current_fingering}
         )
 
     def change_state(self, *args: StringVar) -> None:
@@ -114,10 +114,10 @@ class IntervalDisplayWidget(Frame):
                  master: Frame | Tk | LabelFrame,
                  callback: Callable[..., Any],
                  interval: str,
-                 shape: str = keywords.CIRCLE,
+                 shape: str = kws.CIRCLE,
                  size: int = 2,
-                 colour: str = keywords.BLACK,
-                 text_colour: str = keywords.WHITE,
+                 colour: str = kws.BLACK,
+                 text_colour: str = kws.WHITE,
                  text_size: int = 14) -> None:
 
         Frame.__init__(self, master)
@@ -172,11 +172,11 @@ class IntervalDisplayWidget(Frame):
             command=self.change_state)
 
         for i, (label, widget) in enumerate(
-            [(keywords.SHAPE, self.select_shape),
-             (keywords.SHAPE_SIZE, self.select_size),
-             (keywords.SHAPE_COLOUR, self.select_colour),
-             (keywords.TEXT_COLOUR, self.select_text_colour),
-             (keywords.TEXT_SIZE, self.select_text_size)]):
+            [(kws.SHAPE, self.select_shape),
+             (kws.SHAPE_SIZE, self.select_size),
+             (kws.SHAPE_COLOUR, self.select_colour),
+             (kws.TEXT_COLOUR, self.select_text_colour),
+             (kws.TEXT_SIZE, self.select_text_size)]):
 
             label_ = Label(self, text=str.replace(
                 label, "_", " ").capitalize())
@@ -355,7 +355,7 @@ class FingerboardGridWidget(LabelFrame):
                     (square_size[1] // 2) + square_size[1] * i
                 )
 
-                if node.shape == keywords.CIRCLE:
+                if node.shape == kws.CIRCLE:
                     x0, y0 = centre[0] - 15, centre[1] - 15
                     x1, y1 = centre[0] + 15, centre[1] + 15
                     self.canvas.create_oval(x0, y0, x1, y1,
@@ -363,7 +363,7 @@ class FingerboardGridWidget(LabelFrame):
                                             tags="node_shape"
                                             )
 
-                elif node.shape == keywords.SQUARE:
+                elif node.shape == kws.SQUARE:
                     x0, y0 = centre[0] - 15, centre[1] - 15
                     x1, y1 = centre[0] + 15, centre[1] + 15
                     self.canvas.create_rectangle(x0, y0, x1, y1,
@@ -371,7 +371,7 @@ class FingerboardGridWidget(LabelFrame):
                                                  tags="node_shape"
                                                  )
 
-                elif node.shape == keywords.INVERSE_TRIANGLE:
+                elif node.shape == kws.INVERSE_TRIANGLE:
                     x0, y0 = centre[0] - 20, centre[1] - 10
                     x1, y1 = centre[0] + 20, centre[1] - 10
                     x2, y2 = centre[0], centre[1] + 20
@@ -380,7 +380,7 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape"
                                                )
 
-                elif node.shape == keywords.TRIANGLE:
+                elif node.shape == kws.TRIANGLE:
                     x0, y0 = centre[0] + 20, centre[1] + 15
                     x1, y1 = centre[0] - 20, centre[1] + 15
                     x2, y2 = centre[0], centre[1] - 20
@@ -389,7 +389,7 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape"
                                                )
 
-                elif node.shape == keywords.DIAMOND:
+                elif node.shape == kws.DIAMOND:
                     x0, y0 = centre[0], centre[1] - 15
                     x1, y1 = centre[0] - 15, centre[1]
                     x2, y2 = centre[0], centre[1] + 15
@@ -399,7 +399,7 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape")
 
                 else:
-                    raise ValueError(
+                    raise errors.UnknownKeywordError(
                         f"Unknown node setting: shape={node.shape}")
 
                 font = Font(self,
@@ -425,10 +425,10 @@ class RenderingModeSelectorWidget(LabelFrame):
         self.callback = callback
         self.config(text="Select Display Mode")
         self.current_mode = StringVar(self)
-        self.rendering_modes = [keywords.INTERVAL,
-                                keywords.FINGER,
-                                keywords.NOTE_NAME,
-                                keywords.FRET]
+        self.rendering_modes = [kws.INTERVAL,
+                                kws.FINGER,
+                                kws.NOTE_NAME,
+                                kws.FRET]
         self.select_rendering_mode = OptionMenu(
             self,
             self.current_mode,
@@ -488,7 +488,7 @@ class InterfaceModeToggleWidget(LabelFrame):
         self.callback = callback
         self.config(text="Select Control Mode")
         self.interface_mode_options: list[str] = [
-            keywords.SCALE, keywords.ARPEGGIO]
+            kws.SCALE, kws.ARPEGGIO]
         self.current_interface_mode: str = self.interface_mode_options[0]
         self.interface_mode_toggle: Button = Button(
             self, text=self.current_interface_mode, command=self.change_state)
@@ -565,8 +565,8 @@ class FretboardDiagram(Frame):
 
         # Default scale data
         cmaj = data_models.HeptatonicRendering(
-            **interface.render_heptatonic_form(keywords.DIATONIC,
-                                               keywords.IONIAN,
+            **interface.render_heptatonic_form(kws.DIATONIC,
+                                               kws.IONIAN,
                                                "C"))
         # Set defaults
         self.current_diagram.define_scale(cmaj.optimal_rendering)
@@ -704,7 +704,7 @@ class FretboardDiagram(Frame):
     def on_interface_mode_change(self) -> None:
         """Change the state of the main panel, and perform any necessary 
         changes to the UI to accommodate the change."""
-        if self.interface_mode_toggle.current_interface_mode == keywords.ARPEGGIO:
+        if self.interface_mode_toggle.current_interface_mode == kws.ARPEGGIO:
             functions.enable_widget(self.scale_selector, False)
             functions.enable_widget(self.scale_node_selector, False)
             functions.enable_widget(self.position_selector, False)
@@ -727,7 +727,7 @@ class FretboardDiagram(Frame):
             # self.current_diagram = self.arpeggio_diagram
 
 
-        elif self.interface_mode_toggle.current_interface_mode == keywords.SCALE:
+        elif self.interface_mode_toggle.current_interface_mode == kws.SCALE:
             functions.enable_widget(self.scale_selector)
             functions.enable_widget(self.scale_node_selector)
             functions.enable_widget(self.position_selector)
