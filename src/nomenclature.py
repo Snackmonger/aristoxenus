@@ -143,7 +143,7 @@ def __identity(note_name: str) -> str:
     'B'
     '''
     if note_name in constants.BINOMIALS:
-        raise ValueError('Cannot resolve a binomial note name.')
+        raise errors.NoteNameError('Cannot resolve a binomial note name.')
     return note_name[0]
 
 
@@ -178,7 +178,7 @@ def decode_enharmonic(note_name: str) -> str:
     if note_name in chromatic(constants.BINOMIALS):
         return note_name
     if note_name not in decoder:
-        raise ValueError(f'Note name {note_name} not recognized.')
+        raise errors.NoteNameError(f'Note name {note_name} not recognized.')
     return decoder[note_name]
 
 
@@ -213,7 +213,7 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     'A######'
     '''
     if note_name not in constants.NATURALS:
-        raise ValueError('Target note name must be from the naturals.')
+        raise errors.NoteNameError('Target note name must be from the naturals.')
 
     note_value = decode_enharmonic(note_value)
     options: list[str] = get_enharmonic_equivalents(note_value)
@@ -242,11 +242,6 @@ def encode_scientific_enharmonic(note_value: str,
     This function allows you to rephrase a scientific note name as an accidental with
     up to 11 sharps or flats, with the correct scientific numeral.
 
-    Raises
-    ------
-    ValueError
-        If any of the parameters is incompatible with the function.
-
     Examples
     --------
     >>> encode_scientific_enharmonic('A4', 'G', 'below')
@@ -259,7 +254,7 @@ def encode_scientific_enharmonic(note_value: str,
     elif note_value in scientific_range(constants.FLATS):
         a = constants.FLATS
     else:
-        raise ValueError
+        raise errors.NoteNameError(note_value)
 
     i = scientific_range(a).index(note_value)
     octave: list[str] = []
@@ -276,13 +271,13 @@ def encode_scientific_enharmonic(note_value: str,
             symbol = constants.FLAT_SYMBOL
 
         case _:
-            raise ValueError(position)
+            raise errors.UnknownKeywordError(position)
 
     for i, note in enumerate(octave):
         if note[:-1] == note_name:
             return note[:-1] + (symbol * i) + note[-1]
 
-    raise ValueError(note_name)
+    raise errors.NoteNameError(note_name)
 
 
 def decode_scientific_enharmonic(note_name: str) -> str:
@@ -306,7 +301,7 @@ def decode_scientific_enharmonic(note_name: str) -> str:
     try:
         int(note_name[-1])
     except Exception as ex:
-        raise ValueError(
+        raise errors.NoteNameError(
             'Must be a scientific note name in octave 0 to 8') from ex
 
     # Get some information about the note name.
@@ -317,7 +312,7 @@ def decode_scientific_enharmonic(note_name: str) -> str:
 
     # Reject any note that mixes accidentals.
     if sharps_ != 0 and flats_ != 0:
-        raise ValueError(note_name)
+        raise errors.NoteNameError(note_name)
 
     # Find new index plus or minus the number of accidentals
     adjustment: int = constants.SHARP_VALUE * sharps_
@@ -327,7 +322,7 @@ def decode_scientific_enharmonic(note_name: str) -> str:
 
     # Check if index is out of bounds.
     if index < 0 or index > len(scientific_chromatic_binomials) - 1:
-        raise IndexError(note_name)
+        raise errors.AristoxenusIndexError(note_name)
 
     return scientific_chromatic_binomials[index]
 
@@ -376,7 +371,7 @@ def convert_frequency_to_note(frequency: float,
             return scientific_range(accidental_notes)[frequencies.index(frequency)]
         frequencies = [round(x, num) for x in frequencies]
 
-    raise ValueError(frequency)
+    raise errors.AristoxenusValueError(frequency)
 
 
 def convert_note_to_frequency(note_name: str,
@@ -396,7 +391,7 @@ def convert_note_to_frequency(note_name: str,
     try:
         note_name = decode_scientific_enharmonic(note_name)
     except Exception as ex:
-        raise ValueError(note_name) from ex
+        raise errors.NoteNameError(note_name) from ex
 
     return dict(zip(scientific_range(constants.BINOMIALS), temperament_()))[note_name]
 
@@ -418,10 +413,10 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
 
     '''
     if note_name in constants.BINOMIALS:
-        raise ValueError(
+        raise errors.NoteNameError(
             'Operation can only be performed on naturals, sharps, or flats.')
     if interval_structure.bit_count() != constants.NOTES or interval_structure.bit_length() > constants.TONES:
-        raise ValueError(
+        raise errors.IntervalStructureError(
             'Operation can only be performed on heptatonic scales in 12 tone style.')
     # Assemble basic alphabetic order to enforce.
     plain: list[str] = utils.shift_list(
@@ -589,7 +584,7 @@ def get_accidentals(note_name: str) -> tuple[str, ...]:
     Examples
     --------
     >>> get_accidentals("C#")
-    ["C#", "D#", "F#", "G#", "A#"]
+    ('C#', 'D#', 'F#', 'G#', 'A#')
     '''
     if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
         return constants.BINOMIALS
@@ -607,7 +602,7 @@ def get_accidental_keyword(note_name: str) -> str:
     Examples
     --------
     >>> get_accidental_keyword("C#")
-    sharp
+    'sharp'
     """
     if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
         return keywords.BINOMIAL
@@ -654,7 +649,7 @@ def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = DI
     tonic: str = note_names[0]
     binomial_names = list(map(decode_enharmonic, note_names))
     if len(binomial_names) != constants.NOTES:
-        raise ValueError('Only works on heptatonic scales.')
+        raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
 
     chromatic_names: list[str] = utils.shift_list(
         chromatic(constants.BINOMIALS), tonic)

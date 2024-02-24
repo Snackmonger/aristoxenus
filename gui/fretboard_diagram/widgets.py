@@ -3,16 +3,12 @@
 from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar
 from tkinter.font import Font
 from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
-from typing import Any, Callable, cast
+from typing import Any, Callable, Sequence, cast
 
-from data import (keywords,
-                  annotations)
-# from gui.fretboard_diagram.functions import enable_widget
+from data import (data_models, keywords, annotations)
 from src import (interface)
-from src.models import (diagrams,
-                        data_structures)
-from gui.fretboard_diagram import (config, 
-                                   functions)
+from src.models import (diagrams)
+from gui.fretboard_diagram import (config, functions)
 
 
 class ScaleSelectorWidget(LabelFrame):
@@ -149,7 +145,7 @@ class IntervalDisplayWidget(Frame):
 
         self.select_size = OptionMenu(
             self,
-            self.size,
+            self.size,  # type:ignore
             str(self.size.get()),
             *[str(x) for x in self.size_options],
             command=self.change_state)
@@ -170,7 +166,7 @@ class IntervalDisplayWidget(Frame):
 
         self.select_text_size = OptionMenu(
             self,
-            self.text_size,
+            self.text_size,  # type:ignore
             str(self.text_size.get()),
             *[str(x) for x in self.text_size_options],
             command=self.change_state)
@@ -203,7 +199,7 @@ class IntervalDisplayWidget(Frame):
                                              text_size=self.text_size.get())
 
 
-class IntervalDisplaySelector(LabelFrame):
+class IntervalDisplaySelectorWidget(LabelFrame):
     """Widget that contains many IntervalDisplayWidgets allows the user to
     select which one is currently displayed.
 
@@ -273,7 +269,7 @@ class IntervalDisplaySelector(LabelFrame):
         return [x.report() for x in self.subwidgets]
 
 
-class StringFingeringSelector(LabelFrame):
+class StringFingeringSelectorWidget(LabelFrame):
     """Widget that contains a number of buttons to cycle strings' 
     fingerings through various states."""
 
@@ -421,7 +417,7 @@ class FingerboardGridWidget(LabelFrame):
         self.canvas.grid()
 
 
-class RenderingModeSelector(LabelFrame):
+class RenderingModeSelectorWidget(LabelFrame):
     """A small widget that controls the display type."""
 
     def __init__(self, master: Tk | Frame | LabelFrame, callback: Callable[..., Any]) -> None:
@@ -443,6 +439,7 @@ class RenderingModeSelector(LabelFrame):
         self.select_rendering_mode.grid()
 
     def report(self) -> str:
+        """Return a report about the current state of the widget."""
         return self.current_mode.get()
 
     def change_state(self, *args: StringVar) -> None:
@@ -450,7 +447,7 @@ class RenderingModeSelector(LabelFrame):
         self.callback(self.current_mode.get())
 
 
-class PositionSelector(LabelFrame):
+class PositionSelectorWidget(LabelFrame):
     """A small widget that controls the current position."""
 
     def __init__(self, master: Tk | Frame | LabelFrame, positions: list[int], callback: Callable[..., Any]) -> None:
@@ -460,7 +457,7 @@ class PositionSelector(LabelFrame):
         self.position = IntVar(self, value=5)
         self.position_options = positions
         self.select_position = OptionMenu(self,
-                                          self.position,
+                                          self.position,  # type:ignore
                                           str(self.position.get()),
                                           *[str(x)
                                             for x in positions if 0 < x < 13],
@@ -471,7 +468,7 @@ class PositionSelector(LabelFrame):
         """Report any change of state to the controller."""
         self.callback(self.report())
 
-    def set_position(self, position: int, positions: list[int]) -> None:
+    def set_position(self, position: int, positions: Sequence[int]) -> None:
         """Set the current position. (Used when the scale has changed in such
         a way that the previous position is no longer legal)."""
         self.position.set(position)
@@ -483,27 +480,29 @@ class PositionSelector(LabelFrame):
         return self.position.get()
 
 
-class InterfaceModeToggle(LabelFrame):
+class InterfaceModeToggleWidget(LabelFrame):
     """Simple button widget to change the state of the main app."""
 
-    def __init__(self, master: Frame|LabelFrame, callback: Callable[..., Any]) -> None:
+    def __init__(self, master: Frame | LabelFrame, callback: Callable[..., Any]) -> None:
         LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Control Mode")
-        self.interface_mode_options: list[str] = [keywords.SCALE, keywords.ARPEGGIO]
+        self.interface_mode_options: list[str] = [
+            keywords.SCALE, keywords.ARPEGGIO]
         self.current_interface_mode: str = self.interface_mode_options[0]
-        self.interface_mode_toggle: Button = Button(self, text=self.current_interface_mode, command=self.change_state)
+        self.interface_mode_toggle: Button = Button(
+            self, text=self.current_interface_mode, command=self.change_state)
         self.interface_mode_toggle.grid()
-
 
     def change_state(self) -> None:
         """The callback is responsible for changing the layout of some 
         other widgets in the main app; after this is done, record the
         change and update the button's text."""
-        
+
         self.callback()
 
-        state: int = self.interface_mode_options.index(self.current_interface_mode)
+        state: int = self.interface_mode_options.index(
+            self.current_interface_mode)
         if state == len(self.interface_mode_options) - 1:
             self.current_interface_mode = self.interface_mode_options[0]
         else:
@@ -515,7 +514,8 @@ class ArpeggioModeControlPanel(LabelFrame):
     """A more sophisticated version of the IntervalDisplaySelector that allows
     the user to define which chord will be the focal point of the diagram.
     """
-    def __init__(self, master: Frame|LabelFrame) -> None:
+
+    def __init__(self, master: Frame | LabelFrame) -> None:
         LabelFrame.__init__(self, master)
         self.config(text="Arpeggio Display Controls")
 
@@ -526,27 +526,26 @@ class ArpeggioModeControlPanel(LabelFrame):
         # Part 2
         # node display selector for the intervals in the polyad
         # These settings will be carried over when we change the
-        # chord degree, but the names of the intervals might 
+        # chord degree, but the names of the intervals might
         # change as we move through the chord scale. --> update display
 
         # Part 3
         # select chord degree (based on frozen scale settings)
-        #       therefore, when the controller activates this widget, it 
+        #       therefore, when the controller activates this widget, it
         #       should update the widget's knowledge of the base scale
         #
         # the intervals in the chord are shown according to the settings
         # in part 2, but the non-chord tones are displayed opaque or greyed out
-        
+
         # in order for the intervals to cycle correctly with the chords, so that
         # the third of the chord (major or minor) will sill be a blue triangle or
         # whatever, we need to regard each chord's root as the tonic of a modal
         # centre. The 'true' centre of the scale will be whatever the frozen scale
         # form is (hence why we deny the user to change it). We can give the user
         # a toggle button to decide whether the intervals shown in the diagram are
-        # those of the parent scale or the individual chords. 
-        #       therefore, we can take the settings for the relative perspective 
+        # those of the parent scale or the individual chords.
+        #       therefore, we can take the settings for the relative perspective
         #       that the user sees in the node display controls
-        
 
 
 class FretboardDiagram(Frame):
@@ -563,50 +562,50 @@ class FretboardDiagram(Frame):
         self.current_diagram = self.scale_diagram
 
         # Default scale data
-        cmaj = data_structures.HeptatonicRendering(
+        cmaj = data_models.HeptatonicRendering(
             **interface.render_heptatonic_form(keywords.DIATONIC,
                                                keywords.IONIAN,
                                                "C"))
         # Set defaults
-        self.scale_diagram.define_scale(cmaj.optimal_rendering)
-        self.scale_diagram.define_intervals(cmaj.interval_map)
-        self.scale_diagram.turn_on_names(cmaj.optimal_rendering)
+        self.current_diagram.define_scale(cmaj.optimal_rendering)
+        self.current_diagram.define_intervals(cmaj.interval_map)
+        self.current_diagram.turn_on_names(cmaj.optimal_rendering)
 
-        # Top bar
+        # Top bar 
         self.scale_selector = ScaleSelectorWidget(self, self.on_scale_change)
-        self.position_selector = PositionSelector(self, self.scale_diagram.positions(
+        self.position_selector = PositionSelectorWidget(self, self.current_diagram.positions(
             cmaj.optimal_rendering), self.on_position_change)
-        self.rendering_mode_selector = RenderingModeSelector(
+        self.rendering_mode_selector = RenderingModeSelectorWidget(
             self, self.on_rendering_mode_change)
-        self.interface_mode_toggle = InterfaceModeToggle(self, self.on_interface_mode_change) 
+        self.interface_mode_toggle = InterfaceModeToggleWidget(
+            self, self.on_interface_mode_change)
 
         # Left large window (main diagram display)
-        self.fingerboard_grid = FingerboardGridWidget(self, self.scale_diagram)
+        self.fingerboard_grid = FingerboardGridWidget(self, self.current_diagram)
 
         # Centre narrow window
-        self.fingering_panel = StringFingeringSelector(
-            self, self.on_fingering_change, self.scale_diagram.number_of_strings)
+        self.fingering_panel = StringFingeringSelectorWidget(
+            self, self.on_fingering_change, self.current_diagram.number_of_strings)
 
-        # Frame 4: Main Option Panel (RIGHT, STATE-BASED)
-    
+
         self.current_main_panel: Frame
 
         # Frame 4a: Scale Mode Panel (RIGHT, STATE)
-        intervals = [v for k, v in self.scale_diagram.interval_map.items()
-                     if k in self.scale_diagram.active_names]
-        self.scale_node_selector: IntervalDisplaySelector = IntervalDisplaySelector(
+        intervals = [v for k, v in self.current_diagram.interval_map.items()
+                     if k in self.current_diagram.active_names]
+        self.scale_node_selector: IntervalDisplaySelectorWidget = IntervalDisplaySelectorWidget(
             self, self.on_node_option_change, intervals)
-        
+
         self.arpeggio_node_selector: ArpeggioModeControlPanel
 
-        # Finish orienting widgets 
+        # Finish orienting widgets
         self.scale_selector.grid(column=0, row=0, sticky=W)
         self.position_selector.grid(column=1, row=0, sticky=W)
         self.rendering_mode_selector.grid(column=2, row=0, sticky=W)
         self.interface_mode_toggle.grid(column=3, row=0, sticky=W)
 
         self.fingerboard_grid.grid(column=0, row=1, columnspan=2)
-        self.fingering_panel.grid(column=2, row=1, sticky=EW)   
+        self.fingering_panel.grid(column=2, row=1, sticky=EW)
         self.scale_node_selector.grid(column=3, row=1, sticky=EW)
 
         self.grid()
@@ -614,14 +613,14 @@ class FretboardDiagram(Frame):
         # Display initial default values
         self.scale_selector.change_state()
         for report in self.fingering_panel.summarize():
-            self.scale_diagram.apply_fingering(**report)
+            self.current_diagram.apply_fingering(**report)
 
     def on_fingering_change(self, report: annotations.FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
         diagram to reflect it.
         """
-        self.scale_diagram.apply_fingering(**report)
-        self.fingerboard_grid.draw_diagram(self.scale_diagram)
+        self.current_diagram.apply_fingering(**report)
+        self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_node_option_change(self, report: annotations.NodeDisplayReport) -> None:
         """Receive a report about the change to an interval node's
@@ -630,8 +629,8 @@ class FretboardDiagram(Frame):
         This method is only available when the app is in the "Scale" 
         interface mode.
         """
-        self.scale_diagram.apply_node_display_options(report)
-        self.fingerboard_grid.draw_diagram(self.scale_diagram)
+        self.current_diagram.apply_node_display_options(report)
+        self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_scale_change(self, report: annotations.ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
@@ -642,49 +641,50 @@ class FretboardDiagram(Frame):
         """
         # Whenever the scale, mode, or keynote changes, we have to reassign
         # the active nodes to reflect the new notes and intervals.
-        current_names: list[str] = list(set(self.scale_diagram.active_names))
-        positions: list[int] = self.scale_diagram.positions(current_names)
-        i: int = positions.index(self.scale_diagram.position)
-        data = data_structures.HeptatonicRendering(
+        current_names: list[str] = list(set(self.current_diagram.active_names))
+        positions: list[int] = self.current_diagram.positions(current_names)
+        i: int = positions.index(self.current_diagram.position)
+        data = data_models.HeptatonicRendering(
             **interface.render_heptatonic_form(**report))
 
         # Set the diagram to the new scale.
-        self.scale_diagram.define_scale(data.chromatic_rendering)
-        self.scale_diagram.define_intervals(data.interval_map)
-        self.scale_diagram.turn_on_names(data.chromatic_rendering)
+        self.current_diagram.define_scale(data.chromatic_rendering)
+        self.current_diagram.define_intervals(data.interval_map)
+        self.current_diagram.turn_on_names(data.chromatic_rendering)
 
-        # Set the new position to the value of the index of the old position,
-        # in case the value of the old position is no longer valid.
-        positions = self.scale_diagram.positions(data.chromatic_rendering)
+        # Set the new position to the value at the old position's index,
+        # in case the old position's value is no longer valid.
+        positions = self.current_diagram.positions(data.chromatic_rendering)
         self.on_position_change(positions[i])
-        self.position_selector.set_position(self.scale_diagram.position, positions)
+        self.position_selector.set_position(
+            self.current_diagram.position, positions)
 
         # Configure nodes to display correct scale nomenclature
-        self.scale_diagram.clear_overrides()
-        self.scale_diagram.override_names({k:v for k, v in
-            dict(zip(data.chromatic_rendering, data.optimal_rendering)).items()
-            if not k == v})
+        self.current_diagram.clear_overrides()
+        self.current_diagram.override_names({k: v for k, v in
+                                           dict(zip(data.chromatic_rendering,
+                                                data.optimal_rendering)).items()
+                                           if not k == v})
 
-        # The node selector will keep the same settings for each of the 7
+        # The node selector will restore the same settings for each of the 7
         # intervals, but the intervals' names will be updated for the new
         # scale configuration.
         self.scale_node_selector.rename_intervals(
             [v for k, v in data.interval_map.items()
              if k in data.chromatic_rendering])
-
-        # Restore previous node display settings for new interval names.
         for report_ in self.scale_node_selector.summarize():
-            self.scale_diagram.apply_node_display_options(report_)
+            self.current_diagram.apply_node_display_options(report_)
         self.scale_node_selector.set_subwidget("1")
 
-        self.fingerboard_grid.draw_diagram(self.scale_diagram)
+        
+        self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_rendering_mode_change(self, report: str) -> None:
         """Receive a report about the change to the display mode
         and modify the diagram to reflect it.
         """
-        self.scale_diagram.apply_rendering_mode(report)
-        self.fingerboard_grid.draw_diagram(self.scale_diagram)
+        self.current_diagram.apply_rendering_mode(report)
+        self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_position_change(self, report: int) -> None:
         """Receive a report about the change to the position
@@ -693,11 +693,11 @@ class FretboardDiagram(Frame):
         This method is only available when the app is in the "Scale" 
         interface mode.
         """
-        self.scale_diagram.change_position(report,
-                                     self.fingering_panel.summarize(),
-                                     self.scale_node_selector.summarize(),
-                                     self.rendering_mode_selector.report())
-        self.fingerboard_grid.draw_diagram(self.scale_diagram)
+        self.current_diagram.change_position(report,
+                                           self.fingering_panel.summarize(),
+                                           self.scale_node_selector.summarize(),
+                                           self.rendering_mode_selector.report())
+        self.fingerboard_grid.draw_diagram(self.current_diagram)
 
     def on_interface_mode_change(self) -> None:
         """Change the state of the main panel, and perform any necessary 
@@ -707,24 +707,23 @@ class FretboardDiagram(Frame):
             functions.enable_widget(self.scale_node_selector, False)
             functions.enable_widget(self.position_selector, False)
 
-            current_scale = interface.render_heptatonic_form(**self.scale_selector.report())
+            # current_scale = interface.render_heptatonic_form(**self.scale_selector.report())
 
             # self.arpeggio
 
             # self.diagram = self.arpeggio_diagram
 
-            # rewrite the main app so that we keep two references to diagrams for the 
-            # two different modes, then switch between them depending on the user's 
+            # rewrite the main app so that we keep two references to diagrams for the
+            # two different modes, then switch between them depending on the user's
             # interface selection.
 
             # Basically, we ALLOW the fingering selector and rendering type selector to
             # make changes to the main diagram, being ignorant of what interface mode
-            # is active, but we DISALLOW the scale selector, position selector, or 
+            # is active, but we DISALLOW the scale selector, position selector, or
             # scale node controls to make any changes to the arpeggio diagram.
 
-            # THEREFORE: Whenever we switch modes, we clone the last settings for 
+            # THEREFORE: Whenever we switch modes, we clone the last settings for
             # FINGERING and RENDERING to the the current diagram.
-
 
         elif self.interface_mode_toggle.current_interface_mode == keywords.ARPEGGIO:
             functions.enable_widget(self.scale_selector)
@@ -732,8 +731,8 @@ class FretboardDiagram(Frame):
             functions.enable_widget(self.position_selector)
 
             # self.diagram = self.scale_diagram
-    
-    def on_arpeggio_change(self, report: annotations.ArpeggioFormReport) -> None:      
+
+    def on_arpeggio_change(self, report: annotations.ArpeggioFormReport) -> None:
         """This method is only available when the app is in the "Arpeggio" 
         interface mode."""
 

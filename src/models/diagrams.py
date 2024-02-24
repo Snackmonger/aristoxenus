@@ -1,6 +1,7 @@
 '''
 Functions pertaining to making musical diagrams (aside from staff notation).
 '''
+from typing import Mapping, Sequence
 from src import nomenclature, utils
 from data import (chord_symbols,
                   constants,
@@ -10,7 +11,7 @@ from data.instrument_config import GUITAR_STANDARD_TUNING
 
 
 def guitar_fretboard(strings: int = 6,
-                     tuning: list[str] | tuple[str, ...] = GUITAR_STANDARD_TUNING,
+                     tuning: Sequence[str] = GUITAR_STANDARD_TUNING,
                      frets: int = 24,
                      format_: str = keywords.SCIENTIFIC
                      ) -> GuitarFretboard:
@@ -56,7 +57,7 @@ def standard_fretboard() -> GuitarFretboard:
 
 
 def filter_guitar_fretboard(fretboard: GuitarFretboard,
-                            note_list: tuple[str, ...] | list[str]
+                            note_list: Sequence[str]
                             ) -> GuitarFretboard:
     '''For the given fretboard array, replace any note that is not represented
     in the given list of notes with the "-" symbol.'''
@@ -218,7 +219,7 @@ class GuitarFingeringDiagram:
         """Create an array of FingeringNodes based on the information in the 
         ``fretboard``, ``position``, and ``width`` attributes."""
         grid: list[list[FingeringNode]] = []
-        for i, s in enumerate(self.fretboard):
+        for i, _ in enumerate(self.fretboard):
             string: list[FingeringNode] = []
             for n in range(self.width):
                 name: str = self.fretboard[i][self.position + n]
@@ -227,10 +228,10 @@ class GuitarFingeringDiagram:
             grid.append(string)
         return grid
 
-    def change_position(self, 
-                        position: int, 
-                        fingering_reports: list[FingeringReport], 
-                        node_reports: list[NodeDisplayReport], 
+    def change_position(self,
+                        position: int,
+                        fingering_reports: Sequence[FingeringReport],
+                        node_reports: Sequence[NodeDisplayReport],
                         rendering_mode: str) -> None:
         """Change the position of the diagram.
 
@@ -246,7 +247,7 @@ class GuitarFingeringDiagram:
         new.turn_on_names(self.active_names)
         new.apply_rendering_mode(rendering_mode)
         new.override_names(self.known_overrides)
-        
+
         for report_ in fingering_reports:
             new.apply_fingering(**report_)
 
@@ -254,7 +255,6 @@ class GuitarFingeringDiagram:
             new.apply_node_display_options(report_)
 
         self.grid = new.grid
-
 
     @property
     def known_overrides(self) -> dict[str, str]:
@@ -297,7 +297,7 @@ class GuitarFingeringDiagram:
         """Return the number of frets (columns) in the current fretboard."""
         return len(self.fretboard[0])
 
-    def positions(self, scale: list[str]) -> list[int]:
+    def positions(self, scale: Sequence[str]) -> list[int]:
         """Return the fret numbers where the given scale has notes on the
         lowest string, up to fret 12."""
         return [i for i, s in enumerate(self.fretboard[0]) if s in scale and 0 < i < 13]
@@ -339,7 +339,7 @@ class GuitarFingeringDiagram:
                 if n.interval == interval:
                     n.change_settings(report)
 
-    def orient(self, scale: list[str], interval_map: dict[str, str], chord: list[str]) -> None:
+    def orient(self, scale: Sequence[str], interval_map: Mapping[str, str], chord: Sequence[str]) -> None:
         """Orient the current diagram to the given scale, chord, and 
         intervallic perspective.
         """
@@ -348,7 +348,7 @@ class GuitarFingeringDiagram:
         self.define_chord(chord)
         self.define_intervals(interval_map)
 
-    def turn_on_names(self, note_names: list[str]) -> None:
+    def turn_on_names(self, note_names: Sequence[str]) -> None:
         """Switch ON any node that contains one of the given note names, 
         and switch OFF any node that doesn't.
         """
@@ -356,7 +356,7 @@ class GuitarFingeringDiagram:
             for node in string:
                 node.is_active = node.note_name in note_names
 
-    def define_scale(self, note_names: list[str]) -> None:
+    def define_scale(self, note_names: Sequence[str]) -> None:
         """Raise the scale flag for any node that contains a scale tone, and
         conversely, raise the chromatic flag for any node that does not 
         contain a scale tone.
@@ -366,13 +366,13 @@ class GuitarFingeringDiagram:
                 node.is_scale_tone = node.note_name in note_names
                 node.is_chromatic_tone = node.note_name not in note_names
 
-    def define_chord(self, note_names: list[str]) -> None:
+    def define_chord(self, note_names: Sequence[str]) -> None:
         """Raise the chord flag for any node that contains a chord tone."""
         for string in self.grid:
             for node in string:
                 node.is_chord_tone = node.note_name in note_names
 
-    def define_intervals(self, interval_map: dict[str, str]) -> None:
+    def define_intervals(self, interval_map: Mapping[str, str]) -> None:
         """Add intervals to the fretboard diagram. This entails defining a key
         note and generating a map of note names to intervals, relative to that
         key note (use the ``get_interval_map`` function to do this).
@@ -386,7 +386,7 @@ class GuitarFingeringDiagram:
                 if node.note_name:
                     node.interval = interval_map[node.note_name]
 
-    def override_names(self, names: dict[str, str]) -> None:
+    def override_names(self, names: Mapping[str, str]) -> None:
         """Instruct the nodes to override the names in the keys with the 
         names in the values.
         """

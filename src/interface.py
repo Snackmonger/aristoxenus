@@ -8,7 +8,7 @@ from src import (nomenclature,
                  bitwise,
                  utils)
 
-from data import (annotations, 
+from data import (annotations,
                   constants,
                   keywords,
                   intervallic_canon)
@@ -20,7 +20,7 @@ def chromatic(keynote: str = "C", accidental_type: Optional[str] = None) -> list
     """
     if not accidental_type:
         accidental_type = nomenclature.get_accidental_keyword(keynote)
-    
+
     # Catch fuzzy keyword
     keys = [keywords.BINOMIAL, keywords.FLAT, keywords.SHARP]
     for k in keys:
@@ -44,13 +44,11 @@ def chromatic(keynote: str = "C", accidental_type: Optional[str] = None) -> list
     return utils.shift_list(notes, keynote)
 
 
-
-
 def render_heptatonic_form(
         scale_name: str,
         modal_name: str,
         keynote: str
-        ) -> annotations.APIScaleFormResponse:
+) -> annotations.APIScaleFormResponse:
     '''
     Return a collection of data about a given scaleform configuration.
 
@@ -69,33 +67,33 @@ def render_heptatonic_form(
     dict[str, str|tuple[str, ...]|list[str]]
         A dictionary containing information about the rendering under the 
         following keys:
-        - modal_name
-        - scale_name
-        - interval_scale
-        - interval_structure
-        - chromatic_rendering
-        - alphabetic_rendering
-        - recognized_names
-        - keynote
-        - twelve_tone_intervals
-        - optimal_rendering
-        - optimal_keynote
+        scale_name: str
+        modal_name: str
+        interval_structure: int
+        interval_scale: Sequence[str]
+        interval_map: Mapping[str, str]
+        keynote: str
+        chromatic_rendering: Sequence[str]
+        alphabetic_rendering: Sequence[str]
+        optimal_keynote: str
+        optimal_rendering: Sequence[str]
     '''
-    scale_base:int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
+    scale_base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
     modal_rotations: int = keywords.MODAL_NAME_SERIES.index(modal_name)
     scale_base = bitwise.get_modal_form(scale_base, modal_rotations)
-    binomial_base: list[str] = chromatic(nomenclature.decode_enharmonic(keynote))
+    binomial_base: list[str] = chromatic(
+        nomenclature.decode_enharmonic(keynote))
 
     # Chromatic rendering will use whatever accidental is indicated in the
     # given keynote, or binomials if the note is binomial or natural.
     chromatic_rendering: tuple[str, ...] = tuple(
         rendering.render_plain(scale_base, binomial_base))
-    
+
     # Optimal rendering is that which has the fewest accidentals, while
     # still maintaining the alphabetic order (the 'correct' spelling).
     optimal_rendering: tuple[str, ...] = tuple(
         nomenclature.best_heptatonic(keynote, scale_base))
-    
+
     # Alphabetic rendering forces the nomenclature to follow the given
     # keynote, even if it makes an awkward spelling. If the keynote was
     # a binomial, use the optimal rendering instead.
@@ -103,14 +101,14 @@ def render_heptatonic_form(
     if not keynote in constants.BINOMIALS:
         alphabetic_rendering: tuple[str, ...] = tuple(
             nomenclature.force_heptatonic(keynote, scale_base))
-    
+
     # Interval scale is a list of intervals in the scale, spelled correctly so
     # that there is exactly one each of 12334567, plus accidentals.
     interval_scale: tuple[str, ...] = tuple(
         nomenclature.name_heptatonic_intervals(scale_base))
     interval_map = nomenclature.get_interval_map(keynote, scale_base)
 
-    return annotations.APIScaleFormResponse(scale_name=scale_name, 
+    return annotations.APIScaleFormResponse(scale_name=scale_name,
                                             modal_name=modal_name,
                                             interval_structure=scale_base,
                                             interval_scale=interval_scale,
@@ -120,4 +118,3 @@ def render_heptatonic_form(
                                             alphabetic_rendering=alphabetic_rendering,
                                             optimal_keynote=optimal_rendering[0],
                                             optimal_rendering=optimal_rendering)
-

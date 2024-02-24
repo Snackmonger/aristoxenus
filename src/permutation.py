@@ -39,7 +39,7 @@ def extend_structure(interval_structure: int,
     '0b101010110101101010110101101010110101'
     '''
     if not bitwise.validate_interval_structure(interval_structure, 12):
-        raise errors.IntervalOutOfBoundsError
+        raise errors.IntervalStructureError(interval_structure)
 
     compound_structure: int = interval_structure
     for transposed_octave in range(1, extensions):
@@ -112,7 +112,7 @@ def chordify(interval_structure: int,
         step = nomenclature.decode_numeric_keyword(step) - 1
 
     if not bitwise.validate_interval_structure(interval_structure, 12):
-        raise errors.IntervalOutOfBoundsError
+        raise errors.IntervalStructureError(interval_structure)
 
     chord_scale: list[int] = []
     chord_intervals: list[int] = []
@@ -206,7 +206,7 @@ def spread_triad(chord_structure: int) -> int:
     '0b10000000010000001'
     '''
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
-        raise errors.IntervalOutOfBoundsError
+        raise errors.IntervalStructureError(chord_structure)
 
     return drop_voicing(chord_structure, constants.DROP_2)
 
