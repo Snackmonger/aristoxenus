@@ -427,12 +427,12 @@ def identify_triad(interval_structure: int
 
     Examples
     --------
-    >>> identify_triad(0b10000000010000001)
-    {'result': {'canonical_name': 'major_triad', 'inversion': 'root_position', 'structure': 'open'}}
-    >>> identify_triad(0b100001001)
-    {'result': {'canonical_name': 'major_triad', 'inversion': 'first_inversion', 'structure': 'close'}} 
-    >>> identify_triad(0b10001001)
-    {'result': {'canonical_name': 'minor_triad', 'inversion': 'root_position', 'structure': 'close'}}  
+    >>> identify_triad(0b10000000010000001) == {'result': {'canonical_name': 'major_triad', 'inversion': 'root_position', 'structure': 'open'}}
+    True
+    >>> identify_triad(0b100001001) == {'result': {'canonical_name': 'major_triad', 'inversion': 'first_inversion', 'structure': 'close'}}
+    True
+    >>> identify_triad(0b10001001) == {'result': {'canonical_name': 'minor_triad', 'inversion': 'root_position', 'structure': 'close'}}
+    True
     '''
     if interval_structure.bit_length() > (constants.TONES * 2):
         raise ValueError(interval_structure)
@@ -643,7 +643,7 @@ def condense_note_names(note_names: list[str]) -> int:
             note_name = note_name[:-1]
         try:
             simplified_notes.append(nomenclature.decode_enharmonic(note_name))
-        except ValueError:
+        except errors.AristoxenusException:
             pass
     
     tonic: str = simplified_notes[0]

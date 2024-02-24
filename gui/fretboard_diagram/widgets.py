@@ -499,7 +499,7 @@ class InterfaceModeToggleWidget(LabelFrame):
         other widgets in the main app; after this is done, record the
         change and update the button's text."""
 
-        self.callback()
+        
 
         state: int = self.interface_mode_options.index(
             self.current_interface_mode)
@@ -508,6 +508,8 @@ class InterfaceModeToggleWidget(LabelFrame):
         else:
             self.current_interface_mode = self.interface_mode_options[state + 1]
         self.interface_mode_toggle.configure(text=self.current_interface_mode)
+
+        self.callback()
 
 
 class ArpeggioModeControlPanel(LabelFrame):
@@ -702,17 +704,12 @@ class FretboardDiagram(Frame):
     def on_interface_mode_change(self) -> None:
         """Change the state of the main panel, and perform any necessary 
         changes to the UI to accommodate the change."""
-        if self.interface_mode_toggle.current_interface_mode == keywords.SCALE:
+        if self.interface_mode_toggle.current_interface_mode == keywords.ARPEGGIO:
             functions.enable_widget(self.scale_selector, False)
             functions.enable_widget(self.scale_node_selector, False)
             functions.enable_widget(self.position_selector, False)
 
-            # current_scale = interface.render_heptatonic_form(**self.scale_selector.report())
-
-            # self.arpeggio
-
-            # self.diagram = self.arpeggio_diagram
-
+            
             # rewrite the main app so that we keep two references to diagrams for the
             # two different modes, then switch between them depending on the user's
             # interface selection.
@@ -725,7 +722,12 @@ class FretboardDiagram(Frame):
             # THEREFORE: Whenever we switch modes, we clone the last settings for
             # FINGERING and RENDERING to the the current diagram.
 
-        elif self.interface_mode_toggle.current_interface_mode == keywords.ARPEGGIO:
+
+            # current_scale = interface.render_heptatonic_form(**self.scale_selector.report())
+            # self.current_diagram = self.arpeggio_diagram
+
+
+        elif self.interface_mode_toggle.current_interface_mode == keywords.SCALE:
             functions.enable_widget(self.scale_selector)
             functions.enable_widget(self.scale_node_selector)
             functions.enable_widget(self.position_selector)

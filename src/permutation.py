@@ -308,7 +308,6 @@ def triad_variants(triads: dict[str, int] | None = None
         close_inversions = bitwise.inversions(triad, constants.TONES)
         open_inversions = bitwise.inversions(open_triad, constants.TONES*2)
         inversion_names = [keywords.numbered_inversions[x] for x in range(3)]
-        inversion_names.reverse()
 
         variants.append(annotations.ChordConspectus(canonical_name=name,
                                                     canonical_form=triad,
@@ -359,6 +358,7 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
 
     variants: list[annotations.ChordConspectus] = []
     inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
+    
     for name, tetrad in tetrads.items():
         inversions: tuple[int, ...] = bitwise.inversions(
             tetrad, constants.TONES)
@@ -387,3 +387,5 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
         variants.append(innerdict)
 
     return tuple(variants)
+
+

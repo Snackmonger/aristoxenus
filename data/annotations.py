@@ -14,11 +14,11 @@ class ChordConspectus(TypedDict):
     '''
     canonical_name: str
     canonical_form: int
-    close: NotRequired[dict[str, int]]
-    open: NotRequired[dict[str, int]]
-    drop_2: NotRequired[dict[str, int]]
-    drop_3: NotRequired[dict[str, int]]
-    drop_2_and_4: NotRequired[dict[str, int]]
+    close: NotRequired[Mapping[str, int]]
+    open: NotRequired[Mapping[str, int]]
+    drop_2: NotRequired[Mapping[str, int]]
+    drop_3: NotRequired[Mapping[str, int]]
+    drop_2_and_4: NotRequired[Mapping[str, int]]
 
 
 ChordInventory: TypeAlias = tuple[ChordConspectus, ...]
