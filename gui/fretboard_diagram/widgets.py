@@ -519,9 +519,13 @@ class ArpeggioModeControlPanel(LabelFrame):
         self.config(text="Arpeggio Display Controls")
         self.callback = callback
 
+        window = LabelFrame(self, text="Select chord type")
         self.polyad_options = ["triad", "tetrad"]
         self.current_polyad: str = self.polyad_options[0]
-        self.polyad_toggle = Button(self, text=self.current_polyad)
+        self.polyad_toggle = Button(window,
+                                    text=self.current_polyad,
+                                    command=self.toggle_polyad)
+
 
     def toggle_polyad(self) -> None:
         """Cycle the widget into the next polyad configuration."""
@@ -589,6 +593,8 @@ class FretboardDiagram(Frame):
             self, self.on_rendering_mode_change)
         self.interface_mode_toggle = InterfaceModeToggleWidget(
             self, self.on_interface_mode_change)
+        
+        # top bar also needs a toggle to hide the doubled note on the g or b string
 
         # Left large window (main diagram display)
         self.fingerboard_grid = FingerboardGridWidget(
