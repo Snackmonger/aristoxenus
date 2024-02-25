@@ -16,14 +16,14 @@ relationships, so the user interface (not yet implemented) will accept and
 display note names for most functions.
 '''
 
-from typing import Callable
+from typing import Callable, Sequence
 from dataclasses import dataclass
 
 from data import (constants,
                   keywords,
                   errors,
                   chord_symbols)
-from data.intervallic_canon import DIATONIC_SCALE, HEMIOLIC_SCALE
+from data.intervallic_canon import DIATONIC_SCALE
 
 from src import (bitwise,
                  utils,
@@ -613,22 +613,16 @@ def get_accidental_keyword(note_name: str) -> str:
     return keywords.BINOMIAL
 
 
-
-def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = DIATONIC_SCALE) -> list[str]:
+def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     '''For a given collection of note names, return the Indian numerals describing
     the pattern's relation to a given scale.
 
     Parameters
     ----------
-    note_names : list[str] | int
+    scale_data : list[str] | int
         A list of exactly 7 note names, from the naturals, sharps, flats, or
-        binomials; or an integer representing an interval structure not 
-        exceeding 12 bits.
-
-    comparandum: int, default=2741
-        A integer representing an interval structure to be used as a point 
-        of comparison for the given collection. The default value represents
-        a major scale. 
+        binomials; OR an integer representing an interval structure not 
+        exceeding 12 bits, of which 7 are flipped.
 
     Returns
     -------
@@ -643,19 +637,22 @@ def name_heptatonic_intervals(note_names: list[str] | int, comparandum: int = DI
     >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
     ['1', '#2', '3', '4', '#5', '#6', '7']
     '''
-    if isinstance(note_names, int):
-        note_names = rendering.render_plain(note_names)
+    if isinstance(scale_data, int):
+        scale_data = rendering.render_plain(scale_data)
 
-    tonic: str = note_names[0]
-    binomial_names = list(map(decode_enharmonic, note_names))
+    tonic: str = scale_data[0]
+    binomial_names = list(map(decode_enharmonic, scale_data))
     if len(binomial_names) != constants.NOTES:
         raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
 
     chromatic_names: list[str] = utils.shift_list(
         chromatic(constants.BINOMIALS), tonic)
     major_names: list[str] = rendering.render_plain(
-        comparandum, chromatic_names)
+        DIATONIC_SCALE, chromatic_names)
     intervals_: list[str] = []
+    
+    # Add one accidental for every step of difference between
+    # the actual binomial name and the major binomial name.
     for index in range(constants.NOTES):
         expected_note: str = major_names[index]
         given_note: str = binomial_names[index]
@@ -677,6 +674,7 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
 
     Examples
     --------
+    >>> from data.intervallic_canon import HEMIOLIC_SCALE
     >>> print(twelve_tone_scale_intervals(DIATONIC_SCALE))
     ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7']
     >>> print(twelve_tone_scale_intervals(HEMIOLIC_SCALE))

@@ -1,14 +1,15 @@
 '''
 Functions relating to permuting different types of interval structures.
 '''
-from data import (annotations, 
+from typing import Sequence
+from data import (annotations, chord_symbols, 
                   constants,
                   errors,
                   intervallic_canon,
                   keywords)
 
 from src import (bitwise,
-                 nomenclature,
+                 nomenclature, parsing,
                  utils)
 
 
@@ -51,24 +52,20 @@ def extend_structure(interval_structure: int,
 def chordify(interval_structure: int,
              notes: int | str = 3,
              step: int | str = 2
-             ) -> list[int]:
+             ) -> dict[str, int]:
     '''
     Return a dict of chords for the given scale and structural principles.
 
     Parameters
     ----------
     interval_structure : int
-        An integer not exceeding 12 bits representing the interval structure 
-        to be treated as the 'parent' scale. 
+        An integer not exceeding 12 bits representing the parent scale
     notes : int or str, default=3
-        The number of notes to include in each chord's structure, or a special
-        term denoting the number of notes in a structure (e.g. 'triad'). 
-        N.B. that the number of notes is the number of intervals + 1.
+        The number of notes to include, or a keyword denoting the same 
+        (e.g. 'triad'). 
     step : int or str, default=2
-        The number of structural steps between chord intervals, or a special
-        term denoting the number of steps between notes in the structure,
-        (e.g. 'tertial'). The step works like a list slice, starting on 0, so
-        tertial is 2, quartal is 3, etc.
+        The number of steps between chord tones, or a keyword denoting 
+        the same (e.g. 'tertial'). The steps start on 0, so 2=tertial.
 
     Returns
     -------
@@ -76,34 +73,20 @@ def chordify(interval_structure: int,
         A list of chords built from each degree of the scale, according to the
         given structural principles, expressed as integers.
 
-    Notes
-    -----
-    Importantly, the number of steps refers to the notes in the scale, not to
-    specific intervals, so 'tertial' means 'every third note,' not 
-    specifically 'major/minor thirds only.' This means that a 'tertial' chord 
-    might be made up of 'major seconds' or 'perfect fourths' depending on 
-    the actual interval structure of the parent scale.
+    # Examples
+    # --------
+    # >>> chordify(0b101010110101)
+    # [145, 137, 137, 145, 145, 137, 73]
 
-    The maximum extent of an interval structure is 108 bits. If the requested 
-    structure would exceed this limit (for instance, building a 12-note chord
-    out of octave intervals would yield a 144-bit structure) then we simply 
-    omit the excessive intervals and return an incomplete structure of 108
-    bits or fewer (depending on the specific structure).
+    # This translates to the diatonic triads
+    # (dim, min, maj, maj, min, min, maj)
 
-    Examples
-    --------
-    >>> chordify(0b101010110101)
-    [145, 137, 137, 145, 145, 137, 73]
+    # >>> chordify(0b101010110101, 4, 3)
+    # [67617, 33825, 33825, 67649, 66593, 33825, 33825]
+    # >>> chordify(0b101010110101, 'tetrad', 'quartal')
+    # [67617, 33825, 33825, 67649, 66593, 33825, 33825]
 
-    This translates to the diatonic triads
-    (dim, min, maj, maj, min, min, maj)
-
-    >>> chordify(0b101010110101, 4, 3)
-    [67617, 33825, 33825, 67649, 66593, 33825, 33825]
-    >>> chordify(0b101010110101, 'tetrad', 'quartal')
-    [67617, 33825, 33825, 67649, 66593, 33825, 33825]
-
-    This translates to quartal voicings of the diatonic tetrads.
+    # This translates to quartal voicings of the diatonic tetrads.
     '''
     # Convert keywords to ints
     if isinstance(notes, str):
@@ -114,25 +97,17 @@ def chordify(interval_structure: int,
     if not bitwise.validate_interval_structure(interval_structure, 12):
         raise errors.IntervalStructureError(interval_structure)
 
-    chord_scale: list[int] = []
+    interval_names: list[str] = nomenclature.name_heptatonic_intervals(
+        interval_structure)
+    chord_scale: dict[str, int] = {}
     chord_intervals: list[int] = []
-    all_intervals: list[int]
     full_range: int
-    clip: int
 
     # Grab the intervals for each mode and use them to derive chords
-    for inversion in bitwise.inversions(interval_structure, 12):
+    for i, inversion in enumerate(bitwise.inversions(interval_structure, 12)):
         full_range = extend_structure(inversion)
-        all_intervals: list[int] = list(
-            bitwise.iterate_intervals(full_range))[::step]
-
-        # Ensure that the requested number of notes in the chord
-        # does not exceed the number of available notes.
-        clip = len(all_intervals) if notes > len(all_intervals) else notes
-        chord_intervals = all_intervals[:clip]
-
-        # Reduce recognized intervals into discrete chords
-        chord_scale.append(bitwise.reduce_(chord_intervals))
+        chord_intervals = list(bitwise.iterate_intervals(full_range))[::step][:notes]
+        chord_scale.update({interval_names[i]: bitwise.reduce_(chord_intervals)})
 
     return chord_scale
 
@@ -160,11 +135,13 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
 
     Notes
     -----
-    In order to accommodate the chordification of scales with both sharps
-    and flats, this function does not attempt to validate that the notes are
-    legal. Technically, 
+    Since some scales might mix sharps and flats, this function does not 
+    attempt to validate or normalize note names, and is capable of producing
+    an invalid scale.
     '''
-
+    if len(note_names) != 7:
+        raise errors.HeptatonicScaleError(note_names)
+    
     # Convert keywords to ints
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
@@ -172,17 +149,45 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
         step = nomenclature.decode_numeric_keyword(step) - 1
 
     chord_scale: dict[str, tuple[str, ...]] = {}
-    for index, note_name in enumerate(note_names):
+    intervals: list[str] = nomenclature.name_heptatonic_intervals(note_names)
+    roman_intervals: list[str] = utils.romanize_intervals(intervals)
+
+    for i, note_name in enumerate(note_names):
         base: list[str] = utils.shift_list(note_names, note_name)
         full_range: list[str] = base * constants.NUMBER_OF_OCTAVES
-        chord_form: list[str] = full_range[::step]
-        degree: str = utils.roman_numeral(index+1)
-        clip: int = len(chord_form) if notes > len(chord_form) else notes
-        chord_form = chord_form[:clip]
-
-        chord_scale.update({degree: tuple(chord_form)})
+        chord_form: list[str] = full_range[::step][:notes]
+        chord_scale.update({roman_intervals[i]: tuple(chord_form)})
 
     return chord_scale
+
+
+def analyse_chordification(chord_scale: dict[str, list[str] | int]) -> dict[str, list[str] | int]:
+    fixed_names: dict[str, list[str]|int] = {}
+    use_structure: int
+    use_symbol: str
+    number_of_notes: int = 0
+    for interval_symbol, chord_structure in chord_scale.items():
+        use_symbol = interval_symbol
+        if isinstance(chord_structure, list):
+            use_structure = parsing.parse_literal_sequence(chord_structure)
+        else:
+            use_structure = chord_structure
+        
+        number_of_notes = use_structure.bit_count()
+        if bitwise.has_interval(use_structure, intervallic_canon.HEMIOLION):
+            use_symbol = interval_symbol.lower()
+
+
+        if number_of_notes == 3:
+            for name, triad in intervallic_canon.triads.items():
+                if triad == use_structure:
+                    symbol = chord_symbols.triads_symbols[name]
+
+
+    # blaaah too tired... keep working here
+    return fixed_names
+
+        
 
 
 def spread_triad(chord_structure: int) -> int:
@@ -212,7 +217,7 @@ def spread_triad(chord_structure: int) -> int:
 
 
 def drop_voicing(chord_structure: int,
-                 drop_notes: tuple[int, ...] | list[int]
+                 drop_notes: Sequence[int]
                  ) -> int:
     '''
     Adjust the intervals in a given chord structure to produce a 'drop' 
@@ -222,7 +227,7 @@ def drop_voicing(chord_structure: int,
     ----------
     chord_structure : int
         An integer representing the structure of a chord.
-    drop_notes : tuple[int, ...] or list[int]
+    drop_notes : Sequence[int]
         The notes of the chord that will be shifted to produce the new 
         voicing. These represent the flipped bits in the chord structure,
         so that index 0 is the least significant bit.
@@ -236,32 +241,24 @@ def drop_voicing(chord_structure: int,
 
     Notes
     -----
-    Although called 'drop' chords, the method by which we produce the voicing
-    is actually the opposite of what the abstraction might suggest. The 'drop'
-    logic produces a voicing in a different inversion from the starting chord:
+    The 'drop' logic produces a voicing in a different inversion from the 
+    starting chord:
 
         C E G B -> G C E B (drop the G, results in a 2nd inversion major7)
 
-    We prefer to express drop chords in terms of *raised* intervals:
+    This function expresses drop chords in terms of *raised* intervals:
 
         C E G B -> C E B G (raise the G, results in a root position major7)
 
-    This situation entails that a drop chord must **always** be generated from
-    the corresponding inversion of a close-voiced chord, e.g. first inversion
-    close voice produces first inversion drop 2, drop 3, drop 2&4, etc.
-
-    IMPORTANT: Although drop chords are called 'inversions' based on their 
-    bass note, this is misleading. The actual rotational inversion of a drop 
-    chord will produce several distict drop voicings:
+    This situation entails that a drop chord must be generated from the 
+    corresponding inversion of a close-voiced chord. If a chord is "dropped"
+    before it is rotated, then the "inversions" will actually represent a 
+    variety of drop types:
 
         C E B G (starting point: 'root position' drop 2 Cmaj7)
         E B G C (first rotation: a '1st inversion' drop 2&4 Cmaj7)
         B G C E (second rotation: a '3rd inversion' drop 3 Cmaj7)
         G C E B (third rotation: a '2nd inversion' drop 2 Cmaj7)
-
-    Therefore, if we want to make sure that a whole passage consists of 
-    similarly-voiced drop chords, we must apply the inversion to the close 
-    voicing and THEN apply the drop voicing modification. 
 
     Although drop chords are typically 4-note voicings, the function can 
     accommodate larger structures as well, as long as the indices are

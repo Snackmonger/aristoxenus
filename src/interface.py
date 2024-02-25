@@ -45,8 +45,8 @@ def chromatic(keynote: str = "C", accidental_type: Optional[str] = None) -> list
 
 
 def render_heptatonic_form(
-        scale_name: str,
-        modal_name: str,
+        scale_name: annotations.HeptatonicScales,
+        modal_name: annotations.ModalNames,
         keynote: str
 ) -> annotations.APIScaleFormResponse:
     '''
@@ -84,8 +84,7 @@ def render_heptatonic_form(
     binomial_base: list[str] = chromatic(
         nomenclature.decode_enharmonic(keynote))
 
-    # Chromatic rendering will use whatever accidental is indicated in the
-    # given keynote, or binomials if the note is binomial or natural.
+    # Chromatic rendering will use binomials (the 'absolute' spelling)
     chromatic_rendering: tuple[str, ...] = tuple(
         rendering.render_plain(scale_base, binomial_base))
 
@@ -103,9 +102,14 @@ def render_heptatonic_form(
             nomenclature.force_heptatonic(keynote, scale_base))
 
     # Interval scale is a list of intervals in the scale, spelled correctly so
-    # that there is exactly one each of 12334567, plus accidentals.
+    # that there is exactly one each of 12334567, plus any accidentals.
     interval_scale: tuple[str, ...] = tuple(
         nomenclature.name_heptatonic_intervals(scale_base))
+    
+    # Interval map is a dictionary of the chromatic binomials to the
+    # 7 correct interval names, plus 5 supplementary names, which can be used
+    # to supply chromatic accidentals to the scale intervals. The interval map
+    # for just the scale notes could be dict(zip(optimal_rendering, interval_scale))
     interval_map = nomenclature.get_interval_map(keynote, scale_base)
 
     return annotations.APIScaleFormResponse(scale_name=scale_name,

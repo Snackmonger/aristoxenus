@@ -2,8 +2,7 @@
 Collection of canonical strings used as decipherable chord symbols.
 '''
 
-from data import intervallic_canon as interval
-from data import constants
+from data import intervallic_canon as interval, constants, keywords
 from src import bitwise
 
 # Chord sub-symbols.
@@ -73,14 +72,14 @@ CHORD_FLAT_14 = constants.FLAT_SYMBOL + CHORD_14
 # dim11, etc.) that have nonexplicit structures (e.g. maj13 also implies
 # 9 and 11)
 CHORD_MAJOR_SYMBOL_LIST = [CHORD_MAJ,
-                                      CHORD_MAJ_DELTA,
-                                      CHORD_M_UPPER]
+                           CHORD_MAJ_DELTA,
+                           CHORD_M_UPPER]
 CHORD_MINOR_SYMBOL_LIST = [CHORD_MIN,
-                                      CHORD_M_LOWER,
-                                      CHORD_MINUS]
+                           CHORD_M_LOWER,
+                           CHORD_MINUS]
 CHORD_AUGMENTED_SYMBOL_LIST = [CHORD_AUG,
-                                          CHORD_PLUS,
-                                          CHORD_AUG_5]
+                               CHORD_PLUS,
+                               CHORD_AUG_5]
 CHORD_DIMINISHED_SYMBOL_LIST = [CHORD_DIM, CHORD_DIM_5]
 
 CHORD_SYMBOL_LIST = CHORD_MAJOR_SYMBOL_LIST + \
@@ -121,7 +120,7 @@ basic_symbols = {
     bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
     interval.MAJOR_SHARP_5: CHORD_AUGMENTED_SYMBOL_LIST,
     interval.MINOR_FLAT_5: CHORD_DIMINISHED_SYMBOL_LIST,
-    }
+}
 
 # Mapping of interval names to interval values.
 symbol_elements = {
@@ -162,7 +161,7 @@ chord_symbol_prescription = {
     bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): CHORD_FLAT_14,
     bitwise.transpose_interval(interval.COMPOUND_DITONE): CHORD_14,
     bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
-    }
+}
 
 
 # A listing of prescribed interval names, to be used in describing
@@ -180,4 +179,27 @@ interval_symbol_prescription = {
     interval.COMPOUND_TONE: CHORD_6,
     interval.COMPOUND_HEMIOLION: CHORD_FLAT_7,
     interval.COMPOUND_DITONE: CHORD_7
-    }
+}
+
+
+triads_symbols = {keywords.MAJOR_TRIAD: CHORD_MAJ,
+          keywords.MINOR_TRIAD: CHORD_MIN,
+          keywords.MINOR_FLAT_5: CHORD_MIN + CHORD_FLAT_5,
+          keywords.MAJOR_FLAT_5: CHORD_MAJ + CHORD_FLAT_5,
+          keywords.MAJOR_SHARP_5: CHORD_MAJ + CHORD_SHARP_5,
+          keywords.SUS2_TRIAD: CHORD_SUS_2,
+          keywords.SUS4_TRIAD: CHORD_SUS_4
+          }
+
+tetrads_symbols = {keywords.MAJOR_SEVENTH: CHORD_MAJ_7,
+           keywords.MINOR_SEVENTH: CHORD_MIN + CHORD_7,
+           keywords.MAJOR_SIXTH: CHORD_MAJ + CHORD_6,
+           keywords.MINOR_SIXTH: CHORD_MIN + CHORD_6,
+           keywords.MINOR_MAJOR_SEVENTH: CHORD_MIN + CHORD_MAJ_7,
+           keywords.DOMINANT_SEVENTH: CHORD_7,
+           keywords.DOMINANT_SEVENTH_FLAT_FIVE: CHORD_7 + CHORD_FLAT_5,
+           keywords.DIMINISHED_SEVENTH: CHORD_DIM_7,
+           keywords.AUGMENTED_MAJOR_SEVENTH: CHORD_MAJ_7 + CHORD_SHARP_5,
+           keywords.AUGMENTED_SEVENTH: CHORD_7 + CHORD_SHARP_5,
+           keywords.MINOR_SEVEN_FLAT_FIVE: CHORD_MIN + CHORD_7 + CHORD_FLAT_5
+           }

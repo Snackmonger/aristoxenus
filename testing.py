@@ -1,37 +1,36 @@
-# from src.permutation import tetrad_variants, triad_variants
-
-# from src.rendering import render_plain
 
 
-# for variant in tetrad_variants():
-#     for k, v in variant.items():
-#         if isinstance(v, dict):
-#             for kk, vv in v.items():
-#                 if isinstance(vv, int):
-#                     print(k, kk, render_plain(vv))
-#         elif isinstance(v, int):
-#             print(k, render_plain(v))
+from data import constants, intervallic_canon, keywords
+from data import annotations 
+from src import bitwise, nomenclature
+from src.permutation import chordify
+from src.utils import shift_list
 
 
-from typing import Literal, NotRequired, TypedDict
+def render_chord_scale(scale: annotations.HeptatonicScales, 
+                       mode: annotations.ModalNames, 
+                       keynote: str,
+                       number_of_notes: int = 3, 
+                       base_step: int = 2):
+
+    interval_structure: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale]
+    rotations: int = keywords.MODAL_NAME_SERIES.index(mode)
+    interval_structure = bitwise.get_modal_form(interval_structure, rotations)
+
+    note_names = nomenclature.best_heptatonic(keynote, interval_structure)
+
+    chords: dict[str, int] = chordify(interval_structure, number_of_notes, base_step)
+    collection: list[dict[str, int|str|list[int]]|list[str]] = []
+
+    # Generate correct note names based on parent scale.
+    for i, note in enumerate(note_names):
+        new_notes = shift_list(note_names, note)
+        new_notes *= constants.NUMBER_OF_OCTAVES
+        chord = new_notes[::base_step][:number_of_notes]
+        collection.append({"root": note, "notes": chord, "structure": list(chords.values())[i]})
+
+    return collection
 
 
-ITEMA: str = "itema"
-ITEMB: Literal["itemb"] = "itemb"
-ITEMC: str = "itemc"
-dictionary: dict[str, dict[str, int] | list[int]] = {"itema": {}, "itemb": []}
-dictionary[ITEMA].update({"key1": 55})
-dictionary[ITEMB].append(55)
 
-class Dictionary(TypedDict):
-    itema: dict[str, int]
-    itemb: list[int]
-    itemc: NotRequired[int]
-
-dictionary2: Dictionary = Dictionary(itema={"key1": 33}, itemb=[77, 88, 99])
-dictionary2[ITEMA].update({"key2": 101})
-dictionary2[ITEMB].append(202)
-dictionary2[ITEMC] = 909
-
-print(dictionary2[ITEMC], dictionary2[ITEMA])
-
+    

@@ -3,6 +3,9 @@
 from dataclasses import dataclass
 from typing import Mapping, Sequence
 
+from data import annotations
+from src import interface
+
 
 @dataclass
 class HeptatonicRendering:
@@ -12,11 +15,20 @@ class HeptatonicRendering:
     scale_name: str
     modal_name: str
     interval_structure: int
-    interval_scale: Sequence[str]
-    interval_map: Mapping[str, str]
+    interval_scale: list[str]
+    interval_map: dict[str, str]
     keynote: str
-    chromatic_rendering: Sequence[str]
-    alphabetic_rendering: Sequence[str]
+    chromatic_rendering: list[str]
+    alphabetic_rendering: list[str]
     optimal_keynote: str
-    optimal_rendering: Sequence[str]
+    optimal_rendering: list[str]
     
+
+    @classmethod
+    def from_names(cls, 
+                   scale: annotations.HeptatonicScales, 
+                   mode: annotations.ModalNames, 
+                   note_name: str) -> "HeptatonicRendering":
+        """Alternate constructor to mirror interface parameters."""
+        data = interface.render_heptatonic_form(scale, mode, note_name)
+        return cls(**data)

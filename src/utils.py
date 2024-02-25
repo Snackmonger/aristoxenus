@@ -2,12 +2,12 @@
 Miscellaneous functions.
 '''
 
-from typing import Any
+from typing import Any, Sequence
 
 
 
 
-def shift_list(list_: list[Any] | tuple[Any, ...],
+def shift_list(list_: Sequence[Any],
                new_first_member: Any
                ) -> list[Any]:
     '''
@@ -58,6 +58,12 @@ def roman_numeral(indian_numeral: int) -> str:
 
     return roman_numeral_
 
-def accidental_sorted(items: list[str]) -> list[str]:
-    
-    ...
+def romanize_intervals(interval_names: Sequence[str]) -> list[str]:
+    """Convert Indian numeral interval names to use Roman numerals instead."""
+    roman_intervals: list[str] = []
+    for interval in interval_names:
+        for number in range(1, 8):
+            if (x := str(number)) in interval:
+                roman_interval: str = interval.replace(x, roman_numeral(number))
+                roman_intervals.append(roman_interval)
+    return roman_intervals

@@ -1,9 +1,22 @@
 """Type aliases to make the syntax of type hints easier to read."""
 
-from typing import Mapping, Sequence, TypeAlias, TypedDict, NotRequired
+from typing import Mapping, Sequence, TypeAlias, TypedDict, NotRequired, Literal
+
 
 
 GuitarFretboard: TypeAlias = Sequence[Sequence[str]]
+
+HeptatonicScales = Literal["diatonic",
+                           "altered",
+                           "hemitonic",
+                           "hemiolic",
+                           "diminished",
+                           "augmented",
+                           "harmonic",
+                           "biseptimal",
+                           "paleochromatic"]
+
+ModalNames = Literal['ionian', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'aeolian', 'locrian']
 
 
 class TriadConspectus(TypedDict):
@@ -36,8 +49,8 @@ class ScaleformReport(TypedDict):
 
     Used by the GUI to handle the state of the scale selector widget.
     """
-    scale_name: str
-    modal_name: str
+    scale_name: HeptatonicScales
+    modal_name: ModalNames
     keynote: str
 
 
@@ -72,7 +85,7 @@ class ArpeggioFormReport(TypedDict):
     number_of_notes: int  # triad, tetrad
     base_interval: int  # tertial, quartal
     current_rotation: int  # keeps the chord's intervals synched
-    node_display_reports: list[NodeDisplayReport] 
+    node_display_reports: list[NodeDisplayReport]
 
 
 class APIScaleFormResponse(TypedDict):

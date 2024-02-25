@@ -525,6 +525,38 @@ class ArpeggioModeControlPanel(LabelFrame):
         self.polyad_toggle = Button(window,
                                     text=self.current_polyad,
                                     command=self.toggle_polyad)
+        
+        # for the select chord dropdown, we want to be able to parse
+        # a chord scale and generate the correct chord symbol:
+        # 1. Imaj7, 2. iimin7, 3. iiimin7, 4. IVmaj7
+
+        # but also: we should be able to name the chord too
+        # 1. Dbmaj7, 2. Ebmin7, 3. Fmin7, 4. Gbmaj7
+
+        # so maybe the dropdown is just for 1, 2, b3, 4, 5, etc.,
+        # and a little display shows that 1 = Dbmaj7 (Imaj7)
+
+        # we need to add some things to be back end in order to get the 
+        # necessary data for this widget.
+        #   - generate a chord scale with roman numerals representing degrees
+        #       - uppercase = maj 3, lowercase = min3
+        #       - use same accidental as numeric interval (b3 > bIII/biii)
+
+
+        #       actually, now that I think about it, just use the interval scale
+        #       function, then replace any numeral with a roman numeral:
+        #
+        #       scale = name_heptatonic_intervals(scale_type)
+        #       scale_pattern = ["maj", "min", "min", "maj", ... etc]
+        #       for i, interval_name in enumerate(scale):
+        #           for char in interval_name:
+        #               if char.is_digit():
+        #                   roman = get_roman_numeral(int(char))
+        #                   if scale_patern[i] == "maj":
+        #                       roman = roman.upper()
+        #                   if scale_pattern[i] == "min":
+        #                       roman = roman.lower()
+        #                   interval_name.replace(char, roman)
 
 
     def toggle_polyad(self) -> None:
@@ -532,6 +564,9 @@ class ArpeggioModeControlPanel(LabelFrame):
         i = functions.cycle_indices(self.polyad_options, self.current_polyad)
         self.current_polyad = self.polyad_options[i]
         self.polyad_toggle.config(text=self.current_polyad)
+
+
+    
 
         # Part 1
         # Select number of notes -triad, tetrad --> Update display
