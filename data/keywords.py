@@ -89,6 +89,7 @@ RECOGNIZED_NAMES = 'recognized_names'
 # Chord terms
 ROOT = 'root'
 POSITION = 'position'
+ROOT_POSITION = 'root_position'
 INVERSION = 'inversion'
 OPEN = 'open'
 CLOSE = 'close'
@@ -144,6 +145,7 @@ OPEN_G = "open_g"
 
 # Graphics display options
 # ------------------------
+# Diagram node control options
 SHAPE = "shape"
 SHAPE_SIZE = "size"
 TEXT_SIZE = "text_size"
@@ -166,6 +168,12 @@ ORANGE = "orange"
 PURPLE = "purple"
 YELLOW = "yellow"
 WHITE = "white"
+
+# API terms
+# ---------
+RESULT = 'result'
+RESPONSE = 'response'
+NO_MATCH = 'no_match'
 
 # Numeration terms
 # ----------------

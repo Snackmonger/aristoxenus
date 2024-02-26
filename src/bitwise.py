@@ -185,9 +185,9 @@ def rotate_right(collection: int, max_bits: int) -> int:
     return (collection & (2 ** max_bits - 1)) >> 1 | (collection << (max_bits - 1) & (2 ** max_bits - 1))
 
 
-def previous_inversion(interval_structure: int, max_bits: int) -> int:
+def next_inversion(interval_structure: int, max_bits: int) -> int:
     '''
-    Rotate the bit collection right to the next mode/inversion.
+    Rotate the bit collection to the next mode/inversion.
 
     Parameters
     ----------
@@ -214,9 +214,9 @@ def previous_inversion(interval_structure: int, max_bits: int) -> int:
     return interval_structure
 
 
-def next_inversion(interval_structure: int, max_bits: int) -> int:
+def previous_inversion(interval_structure: int, max_bits: int) -> int:
     '''
-    Rotate the bit collection left to the next mode/inversion.
+    Rotate the bit collection to the previous mode/inversion.
 
     Parameters
     ----------
@@ -362,7 +362,7 @@ def inversions(interval_structure: int, max_bits: int) -> tuple[int, ...]:
     rotations: list[int] = []
     for _ in range(interval_structure.bit_count()):
         rotations.append(interval_structure)
-        interval_structure = previous_inversion(interval_structure, max_bits)
+        interval_structure = next_inversion(interval_structure, max_bits)
     return tuple(rotations)
 
 
@@ -371,5 +371,5 @@ def get_modal_form(interval_structure: int, rotations: int) -> int:
     representing a scale form.
     """
     for _ in range(rotations):
-        interval_structure = previous_inversion(interval_structure, 12)
+        interval_structure = next_inversion(interval_structure, 12)
     return interval_structure

@@ -32,5 +32,9 @@ def render_chord_scale(scale: annotations.HeptatonicScales,
     return collection
 
 
+from src.parsing import generate_chord_symbol
+from data.intervallic_canon import DOMINANT_SEVENTH, DOMINANT_SEVENTH_FLAT_FIVE, MAJOR_SEVENTH, AUGMENTED_MAJOR_SEVENTH
 
-    
+
+for chord in (DOMINANT_SEVENTH, DOMINANT_SEVENTH_FLAT_FIVE, MAJOR_SEVENTH, AUGMENTED_MAJOR_SEVENTH):
+    print (generate_chord_symbol(chord))

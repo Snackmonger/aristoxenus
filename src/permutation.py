@@ -118,6 +118,9 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
                         ) -> dict[str, tuple[str, ...]]:
     '''
     Return a dict of chords for the given scale and structural principles.
+    
+    This dictionary is intended for chords in plain notation,
+    and will not properly create chords in scientific notation.
 
     Parameters
     ----------
@@ -141,7 +144,7 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
     '''
     if len(note_names) != 7:
         raise errors.HeptatonicScaleError(note_names)
-    
+
     # Convert keywords to ints
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
@@ -162,7 +165,7 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
 
 
 def analyse_chordification(chord_scale: dict[str, list[str] | int]) -> dict[str, list[str] | int]:
-    fixed_names: dict[str, list[str]|int] = {}
+    fixed_names: dict[str, list[str] | int] = {}
     use_structure: int
     use_symbol: str
     number_of_notes: int = 0
@@ -279,8 +282,7 @@ def drop_voicing(chord_structure: int,
     return bitwise.reduce_(intervals)
 
 
-def triad_variants(triads: dict[str, int] | None = None
-                   ) -> annotations.ChordInventory:
+def triad_variants() -> annotations.TriadInventory:
     '''
     Return a tuple containing all known triads and their voicing variants.
 
@@ -296,8 +298,7 @@ def triad_variants(triads: dict[str, int] | None = None
                 second_inversion: int}
             open: dict{ same as above }
     '''
-    if triads is None:
-        triads = intervallic_canon.triads
+    triads = intervallic_canon.triads
 
     variants: list[annotations.TriadConspectus] = []
     for name, triad in triads.items():
@@ -305,7 +306,6 @@ def triad_variants(triads: dict[str, int] | None = None
         close_inversions = bitwise.inversions(triad, constants.TONES)
         open_inversions = bitwise.inversions(open_triad, constants.TONES*2)
         inversion_names = [keywords.numbered_inversions[x] for x in range(3)]
-
         variants.append(annotations.TriadConspectus(canonical_name=name,
                                                     canonical_form=triad,
                                                     close=dict(
@@ -315,8 +315,7 @@ def triad_variants(triads: dict[str, int] | None = None
     return tuple(variants)
 
 
-def tetrad_variants(tetrads: dict[str, int] | None = None
-                    ) -> annotations.ChordInventory:
+def tetrad_variants() -> annotations.TetradInventory:
     '''
     Return a tuple containing all known tetrads and their voicing variants.
 
@@ -350,10 +349,9 @@ def tetrad_variants(tetrads: dict[str, int] | None = None
     >>> bin(x[3]['close']['third_inversion'])
     '0b10001001001'
     '''
-    if tetrads is None:
-        tetrads = intervallic_canon.tetrads
+    tetrads = intervallic_canon.tetrads
 
-    variants: annotations.ChordInventory = []
+    variants: annotations.TetradInventory = []
     inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
     
     for name, tetrad in tetrads.items():

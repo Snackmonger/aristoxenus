@@ -1,6 +1,6 @@
 """Type aliases to make the syntax of type hints easier to read."""
 
-from typing import Mapping, Sequence, TypeAlias, TypedDict, NotRequired, Literal
+from typing import Mapping, Sequence, TypeAlias, TypedDict, Literal
 
 
 
@@ -25,8 +25,8 @@ class TriadConspectus(TypedDict):
     '''
     canonical_name: str
     canonical_form: int
-    close: NotRequired[dict[str, int]]
-    open: NotRequired[dict[str, int]]
+    close: dict[str, int]
+    open: dict[str, int]
 
 
 class TetradConspectus(TypedDict):
@@ -41,7 +41,9 @@ class TetradConspectus(TypedDict):
     drop_2_and_4: dict[str, int]
 
 
-ChordInventory: TypeAlias = Sequence[TetradConspectus | TriadConspectus]
+TriadInventory: TypeAlias = Sequence[TriadConspectus]
+TetradInventory: TypeAlias = Sequence[TetradConspectus]
+ChordInventory: TypeAlias = TriadInventory | TetradInventory
 
 
 class ScaleformReport(TypedDict):
