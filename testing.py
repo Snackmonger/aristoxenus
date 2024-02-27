@@ -1,40 +1,43 @@
 
+from data import (chord_symbols, intervallic_canon,
+                  keywords,
+                  annotations)
 
-from data import constants, intervallic_canon, keywords
-from data import annotations 
-from src import bitwise, nomenclature
-from src.permutation import chordify
-from src.utils import shift_list
-
-
-def render_chord_scale(scale: annotations.HeptatonicScales, 
-                       mode: annotations.ModalNames, 
-                       keynote: str,
-                       number_of_notes: int = 3, 
-                       base_step: int = 2):
-
-    interval_structure: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale]
-    rotations: int = keywords.MODAL_NAME_SERIES.index(mode)
-    interval_structure = bitwise.get_modal_form(interval_structure, rotations)
-
-    note_names = nomenclature.best_heptatonic(keynote, interval_structure)
-
-    chords: dict[str, int] = chordify(interval_structure, number_of_notes, base_step)
-    collection: list[dict[str, int|str|list[int]]|list[str]] = []
-
-    # Generate correct note names based on parent scale.
-    for i, note in enumerate(note_names):
-        new_notes = shift_list(note_names, note)
-        new_notes *= constants.NUMBER_OF_OCTAVES
-        chord = new_notes[::base_step][:number_of_notes]
-        collection.append({"root": note, "notes": chord, "structure": list(chords.values())[i]})
-
-    return collection
+from src import (bitwise,
+                 nomenclature,
+                 permutation,
+                 utils)
 
 
-from src.parsing import generate_chord_symbol
-from data.intervallic_canon import DOMINANT_SEVENTH, DOMINANT_SEVENTH_FLAT_FIVE, MAJOR_SEVENTH, AUGMENTED_MAJOR_SEVENTH
 
 
-for chord in (DOMINANT_SEVENTH, DOMINANT_SEVENTH_FLAT_FIVE, MAJOR_SEVENTH, AUGMENTED_MAJOR_SEVENTH):
-    print (generate_chord_symbol(chord))
+print(nomenclature.basic_chord_scale("diatonic", "ionian", "C", "tetrad", "tertial"))
+
+
+
+
+def chord_symbol_from_interval_names(interval_names: list[str]) -> list[str]:
+
+    # when a chord's intervals have been derived from its position in a chord 
+    # scale, we can distinguish between interval names that have the same 
+    # enharmonic values. thus a chord 1 bb3 5 7 would be spelled maj7sus2
+    # if we don't know the context in the parent chord scale, but when we
+    # know how to interpret the intervals nomenclaturally, we can generate
+    # something like maj7bb3
+
+    symbol: str
+    if chord_symbols.CHORD_3 in interval_names:
+        symbol = chord_symbols.CHORD_MAJ
+    
+    if chord_symbols.CHORD_FLAT_3 in interval_names:
+        if chord_symbols.CHORD_FLAT_5 in interval_names:
+            ...
+
+        symbol = chord_symbols.CHORD_DIM
+
+    if chord_symbols.CHORD_FLAT_3:
+        ...
+
+    for x in [chord_symbols.CHORD_SHARP_5, chord_symbols.CHORD_FLAT_5]:
+        if x in interval_names:
+            ...

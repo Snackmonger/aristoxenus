@@ -22,13 +22,15 @@ from dataclasses import dataclass
 from data import (constants,
                   keywords,
                   errors,
-                  chord_symbols)
-from data.intervallic_canon import DIATONIC_SCALE
+                  chord_symbols,
+                  annotations, 
+                  intervallic_canon)
 
 from src import (bitwise,
                  utils,
                  rendering,
-                 temperament)
+                 temperament,
+                 permutation)
 
 __all__ = ["chromatic",
            "enharmonic_decoder",
@@ -539,9 +541,13 @@ def decode_numeric_keyword(term: str) -> int:
     '''
     # 0 = polyad, 1 = tonal, 2 = basal
     # but we will expand this later... so let's not
-    for number, tuple_ in enumerate(keywords.NUMERATION):
-        if term in tuple_:
-            return number + 1
+    j: int = keywords.NUMERATION_INDICES.index(keywords.BASAL)
+    basal_words: list[str] = [x for k in keywords.NUMERATION for x in k if x and k.index(x) == j]
+    for i, terms in enumerate(keywords.NUMERATION):
+        if term in terms:
+            if term in basal_words:
+                return i 
+            return i + 1
     raise errors.UnknownKeywordError(term)
 
 
@@ -640,7 +646,7 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     if isinstance(scale_data, int):
         scale_data = rendering.render_plain(scale_data)
 
-    tonic: str = scale_data[0]
+    tonic: str = decode_enharmonic(scale_data[0])
     binomial_names = list(map(decode_enharmonic, scale_data))
     if len(binomial_names) != constants.NOTES:
         raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
@@ -648,7 +654,7 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     chromatic_names: list[str] = utils.shift_list(
         chromatic(constants.BINOMIALS), tonic)
     major_names: list[str] = rendering.render_plain(
-        DIATONIC_SCALE, chromatic_names)
+        intervallic_canon.DIATONIC_SCALE, chromatic_names)
     intervals_: list[str] = []
     
     # Add one accidental for every step of difference between
@@ -712,7 +718,7 @@ def interval_identity(item: str) -> int:
     return int(item[-1])
 
 
-def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str, str]:
+def get_interval_map(tonal_centre: str, scale: int = intervallic_canon.DIATONIC_SCALE) -> dict[str, str]:
     """Get a dictionary mapping note names to interval names for a given 
     tonic note name and heptatonic scale form within a twelve tone context.
 
@@ -723,3 +729,94 @@ def get_interval_map(tonal_centre: str, scale: int = DIATONIC_SCALE) -> dict[str
     interval_symbols = list(twelve_tone_scale_intervals(scale))
     chromatic_ = utils.shift_list(chromatic(), tonal_centre)
     return dict(zip(chromatic_, interval_symbols))
+
+
+def basic_chord_scale(scale: annotations.HeptatonicScales,
+                       mode: annotations.ModalNames,
+                       keynote: str,
+                       number_of_notes: int | str = 3,
+                       base_step: int | str = 2):
+    '''
+    Create chords from the nomenclaturally-correct form of the given scale 
+    and return a list of dictionaries representing the chords built from each 
+    degree of that scale, spelled according to the nomenclature of the parent 
+    scale.
+
+    Parameters
+    ----------
+    scale : annotations.HeptatonicScales
+        A name representing a canonical scale base.
+    mode : annotations.ModalNames
+        A name representing a degree of scalar rotation.
+    keynote : str
+        A name representing the tonal centre of the scale.
+    number_of_notes : int | str, optional
+        The number of notes in the chord, by default 3. This can be expressed
+        with an integer, or a keyword representing a chord type (e.g. "triad")
+    base_step : int | str, optional
+        The number of scale steps between chord tones, by default 2. This can
+        be expressed with an integer or a keyword representing a step type 
+        (e.g. "tertial"). Note that the number of steps starts at 0, so that
+        2 == tertial.
+
+    Return
+    ------
+    list of dict of
+        degree: str               : The root interval in the parent scale.
+        root: str                 : The root note of the chord.
+        notes: list[str]          : The spelling of the notes of the chord.
+        interval_structure: int   : A number representing the chord structure.
+        interval_names: list[str] : The spelling of the intervals of the chord.
+
+    Examples
+    --------
+    >>> x = basic_chord_scale("diatonic", "ionian", "C")
+    >>> x[0]
+    {'numeric_degree': '1', 'root': 'C', 'notes': ['C', 'E', 'G', 'B'], 'interval_structure': 2193, 'interval_names': ['1', '3', '5', '7']}
+
+    '''
+    if isinstance(number_of_notes, str):
+        number_of_notes = decode_numeric_keyword(number_of_notes)
+    if isinstance(base_step, str):
+        base_step = decode_numeric_keyword(base_step)
+
+    base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale]
+    rotations: int = keywords.MODAL_NAME_SERIES.index(mode)
+    interval_structure: int = bitwise.get_modal_form(base, rotations)
+    note_names: list[str] = best_heptatonic(keynote, 
+                                                         interval_structure)
+    parent_interval_names: list[str] = name_heptatonic_intervals(
+        interval_structure)
+    chords: dict[str, int] = permutation.chordify(interval_structure, 
+                                                  number_of_notes, 
+                                                  base_step)
+    collection: list[dict[str, int | str |
+                          list[int] | list[str]] | list[str]] = []
+
+    for i, note in enumerate(note_names):
+        new_notes: list[str] = utils.shift_list(note_names, note)
+        interval_names: list[str] = name_heptatonic_intervals(
+            new_notes)
+        upper_octave: list[str] = []
+        for interval_name in interval_names:
+            for char in interval_name:
+                if char.isdigit():
+                    upper_octave.append(
+                        interval_name.replace(char, str(int(char)+7)))
+        interval_names += upper_octave
+        new_notes += new_notes
+
+        if number_of_notes > len(new_notes):
+            number_of_notes = len(new_notes)
+
+        chord = new_notes[::base_step][:number_of_notes]
+        chord_intervals = interval_names[::base_step][:number_of_notes]
+
+        collection.append({"numeric_degree": parent_interval_names[i],
+                            "root": note,
+                           "notes": chord,
+                           "interval_structure": list(chords.values())[i],
+                           "interval_names": chord_intervals,
+                           }
+                          )
+    return collection

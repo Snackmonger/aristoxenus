@@ -92,7 +92,7 @@ def chordify(interval_structure: int,
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
     if isinstance(step, str):
-        step = nomenclature.decode_numeric_keyword(step) - 1
+        step = nomenclature.decode_numeric_keyword(step) 
 
     if not bitwise.validate_interval_structure(interval_structure, 12):
         raise errors.IntervalStructureError(interval_structure)
@@ -149,7 +149,7 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
     if isinstance(step, str):
-        step = nomenclature.decode_numeric_keyword(step) - 1
+        step = nomenclature.decode_numeric_keyword(step)
 
     chord_scale: dict[str, tuple[str, ...]] = {}
     intervals: list[str] = nomenclature.name_heptatonic_intervals(note_names)

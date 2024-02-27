@@ -31,6 +31,14 @@ def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)
             return root, chord_symbol
+        
+    # NOTE: The note name is actually irrelevant to the parsing of the symbol.
+    # If we wanted to make an Emin7b5, then we need to know about E, but if 
+    # all we're doing is creating a structure 10001001001, we should be able 
+    # to offer parsing of a 'headless' symbol.
+    # HOWEVER: slash chords depend on alphabetic nomenclature to orient the 
+    # relation of chord/bass... So maybe it's best to assume that all symbols
+    # are 'real' symbols?
 
     raise errors.ChordNameError('Unknown note name.')
 
@@ -106,14 +114,14 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     >>> bin(parse_chord_symbol('G7b9'))
     '0b10010010010001'
     '''
-    structure: int = intervals.DIAPENTE
-
     # Remove contradictory symbol usage of '/'
     # AFAIK, this is the only symbol to conflict with slash notation
     if '6/9' in chord_symbol:
         chord_symbol = chord_symbol.replace('6/9', '69')
 
-    # Delegate special structures to auxiliary functions.
+    # Delegate special structures to auxiliary functions. These types of chord
+    # symbols use explicit note names to identify structural features, and so
+    # they cannot be parsed purely based on the chord suffix.
     if constants.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
         return parse_polychord_symbol(chord_symbol)
     if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
@@ -122,6 +130,16 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     # Root note is not needed beyond this point.
     chord_symbol = __remove_chord_prefix(chord_symbol)[1]
 
+    return parse_simple_chord_suffix(chord_symbol)
+
+
+def parse_simple_chord_suffix(chord_symbol: str) -> int:
+    """Attempt to generate an interval map from the parts of a chord symbol
+    that do not refer to note names (e.g. "min7b5", "maj7", "7b5", etc.)
+    
+    """
+
+    structure: int = intervals.DIAPENTE
     # Get some easy cases out of the way.
     # No suffix = major triad: C, D, E, etc.
     if len(chord_symbol) == 0:
@@ -209,6 +227,11 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     for symbol in chord_symbols.CHORD_ALTERED_FIFTH_SYMBOL_LIST:
         if symbol in parsed_symbols:
             structure ^= (intervals.DIAPENTE - 1)  # 1 = tonic
+
+    # If we have a sus2 or sus4 symbol, we should make sure there's 
+    # no third in the chord... But what about a disguised third?
+    # G7#9sus4 
+        
 
     # Handle add/no notation
     for symbol in add_drop:
@@ -561,6 +584,10 @@ def generate_chord_symbol(interval_structure: int
             attempt = function(interval_structure)
             if isinstance(result := attempt[keywords.RESULT], dict):
                 return result[keywords.CHORD_SYMBOL]
+            
+    # if no symbol has been found, check if the chord is a variant of
+    # a triad or tetrad plus an extra note...
+    # for label, extensions in intervals.
 
 
 
