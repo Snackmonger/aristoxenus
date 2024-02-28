@@ -1,27 +1,17 @@
 
 
+from typing import Sequence
 from data import (chord_symbols,
                   intervallic_canon as intervals,
                   constants,
                   errors,
-                  keywords)
-
-from data import annotations
-from src import (bitwise,
-                 nomenclature,
+                  keywords,
+                  annotations)
+from src import (nomenclature,
                  utils,
                  rendering,
                  permutation)
 
-from data.annotations import TetradConspectus, TriadConspectus
-
-
-# # ----------------------------------------------------------
-# logger = loguru.logger
-# logger.add(sys.stderr, format="{time} {level} {message}",
-#            filter="my_module", level="INFO")
-# logger.add("file_1.log", rotation="10 MB")
-# #-----------------------------------------------------------
 
 def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
@@ -31,14 +21,6 @@ def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)
             return root, chord_symbol
-        
-    # NOTE: The note name is actually irrelevant to the parsing of the symbol.
-    # If we wanted to make an Emin7b5, then we need to know about E, but if 
-    # all we're doing is creating a structure 10001001001, we should be able 
-    # to offer parsing of a 'headless' symbol.
-    # HOWEVER: slash chords depend on alphabetic nomenclature to orient the 
-    # relation of chord/bass... So maybe it's best to assume that all symbols
-    # are 'real' symbols?
 
     raise errors.ChordNameError('Unknown note name.')
 
@@ -134,13 +116,14 @@ def parse_chord_symbol(chord_symbol: str) -> int:
 
 
 def parse_simple_chord_suffix(chord_symbol: str) -> int:
-    """Attempt to generate an interval map from the parts of a chord symbol
+    """Generate an interval map from the parts of a chord symbol
     that do not refer to note names (e.g. "min7b5", "maj7", "7b5", etc.)
-    
     """
-
+    # Dummy structure is a P5. This gets removed if the chord has an
+    # alteration or a 'no5' suffix. If no symbol gets recognized,
+    # this P5 is returned as a default.
     structure: int = intervals.DIAPENTE
-    # Get some easy cases out of the way.
+
     # No suffix = major triad: C, D, E, etc.
     if len(chord_symbol) == 0:
         return structure | intervals.DITONE
@@ -149,8 +132,7 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
     if chord_symbol == chord_symbols.CHORD_5:
         return structure | intervals.DIAPASON
 
-    # Remove all 'add'/'no' modifiers
-    # to see what the base symbol is.
+    # Remove all 'add'/'no' modifiers to see what the base symbol is.
     add_drop: list[str] = []
     for add in chord_symbols.additive:
         if add in chord_symbol:
@@ -163,19 +145,20 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
 
     parsed_symbols: list[str] = []
 
-    # Parse prototypical prefix, e.g. maj11, min9, 13, etc., and create an
-    # explicit list of implicit intervals. Most symbols correspond directly
-    # to specific intervals, so it is only necessary to remove those symbols
-    # that have positional meanings that get lost in the 1:1 parser below.
-    for extension, extended_structure in {chord_symbols.CHORD_7: ['1'],  # dummy value: 7 is idiomatic
-                                          chord_symbols.CHORD_9: [chord_symbols.CHORD_9],
+    # Parse prototypical prefixes, e.g. maj11, min9, 13, etc., 
+    # and create an explicit list of implicit intervals.
+    for extension, extended_structure in {
+        chord_symbols.CHORD_7: ['1'],  # dummy value: 7 is idiomatic
+        chord_symbols.CHORD_9: [chord_symbols.CHORD_9],
 
-                                          chord_symbols.CHORD_11: [chord_symbols.CHORD_9,
-                                                                   chord_symbols.CHORD_11],
+        chord_symbols.CHORD_11: [chord_symbols.CHORD_9,
+                                 chord_symbols.CHORD_11],
 
-                                          chord_symbols.CHORD_13: [chord_symbols.CHORD_9,
-                                                                   chord_symbols.CHORD_11,
-                                                                   chord_symbols.CHORD_13]}.items():
+        chord_symbols.CHORD_13: [chord_symbols.CHORD_9,
+                                 chord_symbols.CHORD_11,
+                                 chord_symbols.CHORD_13]
+    }.items():
+
         for symbol in chord_symbols.CHORD_SYMBOL_LIST:
             if chord_symbol.startswith(symbol + extension):
                 parsed_symbols += extended_structure
@@ -194,7 +177,8 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
                     parsed_symbols += [chord_symbols.CHORD_DIM,
                                        chord_symbols.CHORD_DOUBLE_FLAT_7]
 
-                # min7 (or variant): ensure that b7 is present if not explicit (e.g. Em11)
+                # min7 (or variant): ensure that b7 is present
+                # if not explicit (e.g. Em11)
                 if symbol in chord_symbols.CHORD_MINOR_SYMBOL_LIST:
                     parsed_symbols += [chord_symbols.CHORD_FLAT_7]
 
@@ -205,17 +189,22 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
             chord_symbol = chord_symbol.removeprefix(extension)
 
     # First element is another number: C2, C4, C6, etc.
-    # implies major triad plus colour tone (different from sus2, sus4, which have no 3rd)
-    for symbol in [chord_symbols.CHORD_6, chord_symbols.CHORD_2, chord_symbols.CHORD_4]:
+    # implies major triad plus colour tone (different from sus2,
+    # sus4, which have no 3rd)
+    for symbol in [chord_symbols.CHORD_6,
+                   chord_symbols.CHORD_2,
+                   chord_symbols.CHORD_4]:
         if chord_symbol.startswith(symbol):
             parsed_symbols.append(chord_symbols.CHORD_MAJ)
 
     # By now, we should have an explicit list of all previously implicit
     # intervals, plus any explicit intervals remaining in the chord symbol.
     # (start with longest values to avoid misparsing a subsymbol)
-    for symbol_element, interval in sorted(chord_symbols.symbol_elements.items(),
-                                           key=lambda key: len(key[0]),
-                                           reverse=True):
+    for symbol_element, interval in sorted(
+        chord_symbols.symbol_elements.items(),
+        key=lambda key: len(key[0]),
+        reverse=True
+        ):
         # Add intervals to structure
         if symbol_element in chord_symbol or symbol_element in parsed_symbols:
             structure |= interval
@@ -228,10 +217,10 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
         if symbol in parsed_symbols:
             structure ^= (intervals.DIAPENTE - 1)  # 1 = tonic
 
-    # If we have a sus2 or sus4 symbol, we should make sure there's 
-    # no third in the chord... But what about a disguised third?
-    # G7#9sus4 
-        
+    # TODO:
+    # If we have a sus2 or sus4 symbol, we should assume that any 3rd that
+    # would normally be implied is omitted: Cmaj7sus4, Ddim7sus2 have no maj
+    # and min 3 respectively.
 
     # Handle add/no notation
     for symbol in add_drop:
@@ -331,6 +320,8 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
 
     This translates to : C0 D0 E0 F0 G0 A0 B0 (C major scale)
     '''
+    # TODO: Repair this shit
+
     compiled_structure: int = 1
     subchord_structure: int = 1
     current_bass: str = ''
@@ -584,11 +575,10 @@ def generate_chord_symbol(interval_structure: int
             attempt = function(interval_structure)
             if isinstance(result := attempt[keywords.RESULT], dict):
                 return result[keywords.CHORD_SYMBOL]
-            
+
     # if no symbol has been found, check if the chord is a variant of
     # a triad or tetrad plus an extra note...
     # for label, extensions in intervals.
-
 
 
 def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str | int | bool | float]) -> int:
@@ -633,7 +623,7 @@ def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str | int | bool | 
     return 0
 
 
-def condense_note_names(note_names: list[str]) -> int:
+def condense_note_names(note_names: Sequence[str]) -> int:
     '''
     Return a 12-bit integer representing a given collection of note names.
 
@@ -648,22 +638,11 @@ def condense_note_names(note_names: list[str]) -> int:
     note_names : list[str]
         A list of note names. 
 
-        Legal names from the naturals, sharps, flats, and binomials (both 
-        plain and scientific) will be parsed as binomials, and illegal names 
-        will be ignored.
-
     Returns
     -------
     int
         A 12-bit integer representing all the intervals transposed into a 
         single octave.
-
-    Notes
-    -----
-    This function is mostly useful when you want to analyse whether a whole
-    section of music belongs to a single chord or scale system. Grab all the 
-    named notes and reduce them to a single octave to see their simplest 
-    structural expression. 
 
     See Also
     --------
@@ -696,37 +675,25 @@ def condense_note_names(note_names: list[str]) -> int:
     return interval_map
 
 
-def parse_literal_sequence(note_names: list[str] | tuple[str, ...]) -> int:
+def parse_literal_sequence(note_names: Sequence[str]) -> int:
     '''
     Return an integer interval structure based on the specific sequence of notes.
 
-    This function takes a list of notes of any accidental type and uses their
-    literal sequence to create an interval structure. This entails that only 
-    the enharmonic value and relative position are relevant; a note marked 
-    C##3 wil be treated as a higher pitch than A5 if it comes later in the 
-    sequence, since these are read as A ... C. Each note defines the octave in
-    which the next note will be contextualized (except the last). 
+    This function ignores scientific names and simply assumes that all sequences
+    read left to right, low to high, according to position in the binomial octave.
 
     Parameters
     ----------
     note_names : list[str]
-        A list of note names from the naturals, sharps, flats, binomials.
-        Scientific variants of these categories will be reduced to their 
-        non-scientific equivalents.
+        A list of note names from the naturals, sharps, flats, or binomials. 
 
     Returns
     -------
     int
         An interval map representing the structure indicated by the sequence
         of note names. 
-
-    Notes
-    -----
-        The structure generated by this function has no theoretical limit; 
-        other functions expect limited structures, so check bit-length before 
-        passing these structures to functions.
     '''
-    note_names = list(map(nomenclature.decode_enharmonic, note_names))
+    note_names = [nomenclature.decode_enharmonic(x) for x in note_names]
     rotandum: list[str] = utils.shift_list(
         nomenclature.chromatic(), note_names[0])
     interval_structure: int = 1

@@ -1,12 +1,7 @@
 
-from data import (chord_symbols, intervallic_canon,
-                  keywords,
-                  annotations)
+from data import (chord_symbols)
 
-from src import (bitwise,
-                 nomenclature,
-                 permutation,
-                 utils)
+from src import (nomenclature)
 
 
 
