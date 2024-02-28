@@ -3,8 +3,8 @@ Sequences module pertains to the ordering of notes from a given structure
 in diachronic context.
 '''
 
-from src import nomenclature, parsing, rendering
-from data import constants
+from src import nomenclature, rendering
+
 
 
 class NoteSequence():

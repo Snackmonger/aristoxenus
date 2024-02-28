@@ -23,7 +23,7 @@ from data import (constants,
                   keywords,
                   errors,
                   chord_symbols,
-                  annotations, 
+                  annotations,
                   intervallic_canon)
 
 from src import (bitwise,
@@ -52,7 +52,10 @@ __all__ = ["chromatic",
            "is_scientific",
            "get_accidentals",
            "name_heptatonic_intervals",
-           "twelve_tone_scale_intervals"]
+           "twelve_tone_scale_intervals",
+           "interval_identity",
+           "get_interval_map",
+           "heptatonic_chord_scale"]
 
 
 def chromatic(accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIALS) -> list[str]:
@@ -215,7 +218,8 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
     'A######'
     '''
     if note_name not in constants.NATURALS:
-        raise errors.NoteNameError('Target note name must be from the naturals.')
+        raise errors.NoteNameError(
+            'Target note name must be from the naturals.')
 
     note_value = decode_enharmonic(note_value)
     options: list[str] = get_enharmonic_equivalents(note_value)
@@ -542,11 +546,12 @@ def decode_numeric_keyword(term: str) -> int:
     # 0 = polyad, 1 = tonal, 2 = basal
     # but we will expand this later... so let's not
     j: int = keywords.NUMERATION_INDICES.index(keywords.BASAL)
-    basal_words: list[str] = [x for k in keywords.NUMERATION for x in k if x and k.index(x) == j]
+    basal_words: list[str] = [
+        x for k in keywords.NUMERATION for x in k if x and k.index(x) == j]
     for i, terms in enumerate(keywords.NUMERATION):
         if term in terms:
             if term in basal_words:
-                return i 
+                return i
             return i + 1
     raise errors.UnknownKeywordError(term)
 
@@ -586,7 +591,7 @@ def is_scientific(note_name: str) -> bool:
 
 def get_accidentals(note_name: str) -> tuple[str, ...]:
     '''Return the accidental group to which the given note name belongs.
-    
+
     Examples
     --------
     >>> get_accidentals("C#")
@@ -656,7 +661,7 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     major_names: list[str] = rendering.render_plain(
         intervallic_canon.DIATONIC_SCALE, chromatic_names)
     intervals_: list[str] = []
-    
+
     # Add one accidental for every step of difference between
     # the actual binomial name and the major binomial name.
     for index in range(constants.NOTES):
@@ -718,24 +723,22 @@ def interval_identity(item: str) -> int:
     return int(item[-1])
 
 
-def get_interval_map(tonal_centre: str, scale: int = intervallic_canon.DIATONIC_SCALE) -> dict[str, str]:
-    """Get a dictionary mapping note names to interval names for a given 
-    tonic note name and heptatonic scale form within a twelve tone context.
-
-    This function will always preserve the correct interval names for the 
-    given heptatonic scale, plus 5 supplementary interval names that occupy
-    the chromatic gaps in the scale.
+def get_interval_map(tonal_centre: str, 
+                     scale: int = intervallic_canon.DIATONIC_SCALE
+                     ) -> dict[str, str]:
+    """A dictionary containing 12 chromatic binomials mapped to 12 unique 
+    interval names, following the logic of ``twelve_tone_scale_intervals``.
     """
     interval_symbols = list(twelve_tone_scale_intervals(scale))
     chromatic_ = utils.shift_list(chromatic(), tonal_centre)
     return dict(zip(chromatic_, interval_symbols))
 
 
-def basic_chord_scale(scale: annotations.HeptatonicScales,
-                       mode: annotations.ModalNames,
-                       keynote: str,
-                       number_of_notes: int | str = 3,
-                       base_step: int | str = 2):
+def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
+                           mode: annotations.ModalNames,
+                           keynote: str,
+                           number_of_notes: int | str = 3,
+                           base_step: int | str = 2):
     '''
     Create chords from the nomenclaturally-correct form of the given scale 
     and return a list of dictionaries representing the chords built from each 
@@ -783,12 +786,12 @@ def basic_chord_scale(scale: annotations.HeptatonicScales,
     base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale]
     rotations: int = keywords.MODAL_NAME_SERIES.index(mode)
     interval_structure: int = bitwise.get_modal_form(base, rotations)
-    note_names: list[str] = best_heptatonic(keynote, 
-                                                         interval_structure)
+    note_names: list[str] = best_heptatonic(keynote,
+                                            interval_structure)
     parent_interval_names: list[str] = name_heptatonic_intervals(
         interval_structure)
-    chords: dict[str, int] = permutation.chordify(interval_structure, 
-                                                  number_of_notes, 
+    chords: dict[str, int] = permutation.chordify(interval_structure,
+                                                  number_of_notes,
                                                   base_step)
     collection: list[dict[str, int | str |
                           list[int] | list[str]] | list[str]] = []
@@ -813,7 +816,7 @@ def basic_chord_scale(scale: annotations.HeptatonicScales,
         chord_intervals = interval_names[::base_step][:number_of_notes]
 
         collection.append({"numeric_degree": parent_interval_names[i],
-                            "root": note,
+                           "root": note,
                            "notes": chord,
                            "interval_structure": list(chords.values())[i],
                            "interval_names": chord_intervals,

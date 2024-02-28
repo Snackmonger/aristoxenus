@@ -6,7 +6,7 @@ from src import (nomenclature)
 
 
 
-print(nomenclature.basic_chord_scale("diatonic", "ionian", "C", "tetrad", "tertial"))
+print(nomenclature.heptatonic_chord_scale("diatonic", "ionian", "C", "tetrad", "tertial"))
 
 
 
