@@ -626,7 +626,7 @@ def get_accidental_keyword(note_name: str) -> str:
 
 def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     '''For a given collection of note names, return the Indian numerals describing
-    the pattern's relation to a given scale.
+    the pattern's relation to the diatonic scale.
 
     Parameters
     ----------
@@ -652,7 +652,7 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
         scale_data = rendering.render_plain(scale_data)
 
     tonic: str = decode_enharmonic(scale_data[0])
-    binomial_names = list(map(decode_enharmonic, scale_data))
+    binomial_names: list[str] = [decode_enharmonic(x) for x in scale_data]
     if len(binomial_names) != constants.NOTES:
         raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
 
@@ -665,10 +665,9 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     # Add one accidental for every step of difference between
     # the actual binomial name and the major binomial name.
     for index in range(constants.NOTES):
-        expected_note: str = major_names[index]
-        given_note: str = binomial_names[index]
-        difference: int = chromatic_names.index(
-            given_note) - chromatic_names.index(expected_note)
+        expected_note: int = chromatic_names.index(major_names[index])
+        given_note: int = chromatic_names.index(binomial_names[index])
+        difference: int = given_note - expected_note
         accidental: str = constants.SHARP_SYMBOL
         if difference < 0:
             accidental = constants.FLAT_SYMBOL
@@ -685,7 +684,7 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
 
     Examples
     --------
-    >>> from data.intervallic_canon import HEMIOLIC_SCALE
+    >>> from data.intervallic_canon import HEMIOLIC_SCALE, DIATONIC_SCALE
     >>> print(twelve_tone_scale_intervals(DIATONIC_SCALE))
     ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7']
     >>> print(twelve_tone_scale_intervals(HEMIOLIC_SCALE))
@@ -724,14 +723,45 @@ def interval_identity(item: str) -> int:
 
 
 def get_interval_map(tonal_centre: str, 
-                     scale: int = intervallic_canon.DIATONIC_SCALE
+                     scale: int = intervallic_canon.DIATONIC_SCALE,
+                     binomial: bool = False
                      ) -> dict[str, str]:
-    """A dictionary containing 12 chromatic binomials mapped to 12 unique 
+    """A dictionary containing a mapping of 12 unique note names to 12 unique
     interval names, following the logic of ``twelve_tone_scale_intervals``.
+
+    The names will be based on the premise that the tonal centre will be
+    used to force a heptatonic scale, and the missing 5 notes will be drawn
+    from the chromatic notes of that centre's accidental type. If the tonal 
+    centre is a binomial, it will resolve into the best names. If the binomial
+    flag is set to True, then the note names will simply be the binomials.
     """
-    interval_symbols = list(twelve_tone_scale_intervals(scale))
-    chromatic_ = utils.shift_list(chromatic(), tonal_centre)
-    return dict(zip(chromatic_, interval_symbols))
+    if tonal_centre not in legal_chord_names():
+        tonal_centre = decode_enharmonic(tonal_centre)
+    real_names: Sequence[str]
+
+    if tonal_centre in constants.BINOMIALS:
+        real_names = best_heptatonic(tonal_centre, scale)
+    else:
+        real_names = force_heptatonic(tonal_centre, scale)
+
+    tonal_centre = real_names[0]
+    binomial_names: Sequence[str] = [decode_enharmonic(x) for x in real_names] 
+    accidental_chromatic: Sequence[str] = utils.shift_list(
+        chromatic(get_accidentals(tonal_centre)), tonal_centre)
+    interval_symbols: Sequence[str] = list(twelve_tone_scale_intervals(scale))
+    special_chromatic: Sequence[str] = []
+
+    for i in range(constants.TONES):
+        note = accidental_chromatic[i]
+        if (b:=decode_enharmonic(note)) in binomial_names:
+            j = binomial_names.index(b)
+            note = real_names[j]
+        special_chromatic.append(note)
+
+    if binomial:
+        special_chromatic = utils.shift_list(chromatic(), decode_enharmonic(tonal_centre))
+
+    return dict(zip(special_chromatic, interval_symbols))
 
 
 def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
