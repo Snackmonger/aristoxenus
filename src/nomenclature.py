@@ -768,7 +768,8 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
                            mode: annotations.ModalNames,
                            keynote: str,
                            number_of_notes: int | str = 3,
-                           base_step: int | str = 2):
+                           base_step: int | str = 2
+                           ) -> list[annotations.HeptatonicChord]:
     '''
     Create chords from the nomenclaturally-correct form of the given scale 
     and return a list of dictionaries representing the chords built from each 
@@ -823,8 +824,7 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
     chords: dict[str, int] = permutation.chordify(interval_structure,
                                                   number_of_notes,
                                                   base_step)
-    collection: list[dict[str, int | str |
-                          list[int] | list[str]] | list[str]] = []
+    collection: list[annotations.HeptatonicChord] = []
 
     for i, note in enumerate(note_names):
         new_notes: list[str] = utils.shift_list(note_names, note)
@@ -844,12 +844,10 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
 
         chord = new_notes[::base_step][:number_of_notes]
         chord_intervals = interval_names[::base_step][:number_of_notes]
-
-        collection.append({"numeric_degree": parent_interval_names[i],
-                           "root": note,
-                           "notes": chord,
-                           "interval_structure": list(chords.values())[i],
-                           "interval_names": chord_intervals,
-                           }
-                          )
+        x = annotations.HeptatonicChord(numeric_degree=parent_interval_names[i], 
+                                        root=note, 
+                                        notes=chord, 
+                                        interval_structure=list(chords.values())[i], 
+                                        interval_names=chord_intervals)
+        collection.append(x)
     return collection

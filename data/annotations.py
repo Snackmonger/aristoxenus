@@ -90,6 +90,21 @@ class ArpeggioFormReport(TypedDict):
     node_display_reports: list[NodeDisplayReport]
 
 
+class HeptatonicChord(TypedDict):
+    """A representation of a chordform contextualized in its parent scale and 
+    modal rotation. 
+
+    The intervals of the chord will respect the logic of the nomenclature of
+    the parent form, e.g. natural 2 might be spelled bb3 in some contexts, etc.
+    """
+    numeric_degree: str
+    root: str
+    notes: list[str]
+    interval_structure: int
+    interval_names: list[str]
+
+
+
 class APIScaleFormResponse(TypedDict):
     """Response from the API containing information about a scaleform and its
     properties.
