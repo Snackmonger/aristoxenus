@@ -37,6 +37,7 @@ CHORD_15 = '15'
 # Symbols that are compounds of other symbols.
 CHORD_FLAT_2 = constants.FLAT_SYMBOL + CHORD_2
 CHORD_SUS_2 = CHORD_SUS + CHORD_2
+CHORD_DOUBLE_FLAT_3 = constants.FLAT_SYMBOL + constants.FLAT_SYMBOL + CHORD_3
 CHORD_SHARP_2 = constants.SHARP_SYMBOL + CHORD_2
 CHORD_FLAT_3 = constants.FLAT_SYMBOL + CHORD_3
 CHORD_SHARP_3 = constants.SHARP_SYMBOL + CHORD_3
