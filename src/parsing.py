@@ -145,7 +145,7 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
 
     parsed_symbols: list[str] = []
 
-    # Parse prototypical prefixes, e.g. maj11, min9, 13, etc., 
+    # Parse prototypical prefixes, e.g. maj11, min9, 13, etc.,
     # and create an explicit list of implicit intervals.
     for extension, extended_structure in {
         chord_symbols.CHORD_7: ['1'],  # dummy value: 7 is idiomatic
@@ -204,7 +204,7 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
         chord_symbols.symbol_elements.items(),
         key=lambda key: len(key[0]),
         reverse=True
-        ):
+    ):
         # Add intervals to structure
         if symbol_element in chord_symbol or symbol_element in parsed_symbols:
             structure |= interval
@@ -556,8 +556,7 @@ def identify_tetrad(interval_structure: int
     return {'result': 'no_match'}
 
 
-def generate_chord_symbol(interval_structure: int
-                          ) -> str:
+def parse_interval_structure_as_chord_symbol(interval_structure: int) -> str:
     '''
     Return a generic chord symbol for a given interval structure.
 
@@ -566,7 +565,7 @@ def generate_chord_symbol(interval_structure: int
     drop3 maj7 will both return 'maj7', etc. 
     '''
     symbol_elements: list[str] = []
-
+    canonical_form: int
     # Check against common structures before trying to generate
     # a symbol procedurally. This will cover 90% of chords.
     for number_of_notes, function in [(3, identify_triad),
@@ -575,10 +574,12 @@ def generate_chord_symbol(interval_structure: int
             attempt = function(interval_structure)
             if isinstance(result := attempt[keywords.RESULT], dict):
                 return result[keywords.CHORD_SYMBOL]
+    interval_12_tone = nomenclature.twelve_tone_scale_intervals(
+        interval_structure)
+    chord_intervals = rendering.render_plain(
+        interval_structure, interval_12_tone)
 
-    # if no symbol has been found, check if the chord is a variant of
-    # a triad or tetrad plus an extra note...
-    # for label, extensions in intervals.
+    return parse_interval_names_as_chord_symbol(chord_intervals)
 
 
 def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str | int | bool | float]) -> int:
@@ -709,3 +710,202 @@ def parse_literal_sequence(note_names: Sequence[str]) -> int:
             interval_structure |= (1 << distance)
 
     return interval_structure
+
+
+def parse_interval_names_as_chord_symbol(interval_names: list[str]
+                                         ) -> str:
+    """Attempt to generate a chord symbol from the given interval names.
+
+    This function anticipates that interval names might be unusual enharmonic
+    variants used to accommodate a few unusual scale structures (e.g. bb3, 
+    bb7) and attempts to generate a nomenclaturally-consistent name.
+
+    This function has a companion function designed to parse integer interval
+    structures in the most main straightforward way possible. In that function
+    a bb3 is not distinct from a 2, and so maj7bb3 will be rendered maj7sus2.
+    """
+
+    # The function does a pretty good job of naming the common chords in root
+    # position, but in order to describe chords from weird heptatonic scales 
+    # it is unable to recognize enharmonic variants, inversions, and reordered 
+    # voice chords.
+
+    parsed_symbols: list[str] = []
+    is_dim: bool = False
+    is_dom: bool = False
+    normal3: str = ""
+    primary_suffix: str = ""
+    secondary_suffix: str = ""
+    sus: str = ""
+    alt3: str = ""
+    alt5: str = ""
+    add: str = ""
+    no5: str = ""
+    no3: str = ""
+    extensions: str = ""
+
+    interval_names.pop(0)  # Unison is not relevant in this context
+    diminished_symbols: list[str] = [chord_symbols.CHORD_FLAT_3,
+                                     chord_symbols.CHORD_FLAT_5,
+                                     chord_symbols.CHORD_DOUBLE_FLAT_7]
+    primary_suffixes: list[str] = [chord_symbols.CHORD_FLAT_7,
+                                   chord_symbols.CHORD_7,
+                                   chord_symbols.CHORD_DOUBLE_FLAT_7]
+    secondary_suffixes: list[str] = [chord_symbols.CHORD_6,
+                                     chord_symbols.CHORD_FLAT_6,
+                                     chord_symbols.CHORD_SHARP_6]
+    altered_fifths: list[str] = [chord_symbols.CHORD_FLAT_5,
+                                 chord_symbols.CHORD_SHARP_5]
+    altered_thirds: list[str] = [chord_symbols.CHORD_DOUBLE_FLAT_3,
+                                 chord_symbols.CHORD_SHARP_3]
+    suspensions: list[str] = [chord_symbols.CHORD_2,
+                              chord_symbols.CHORD_4]
+    natural_extensions: list[str] = [chord_symbols.CHORD_9,
+                                     chord_symbols.CHORD_11,
+                                     chord_symbols.CHORD_13]
+
+    def __finish(symbol: str) -> None:
+        interval_names.remove(symbol)
+        parsed_symbols.append(symbol)
+
+    # Does the chord have a primary/seconday suffix?
+    # A primary suffix will incorporate the numeral of the highest sequential
+    # natural extension, a secondary suffix will not.
+    for symb in primary_suffixes:
+        if symb in interval_names:
+            primary_suffix = symb
+            __finish(symb)
+    for symb in secondary_suffixes:
+        if symb in interval_names:
+            secondary_suffix = symb
+            __finish(symb)
+    # If there's both suffixes, then the secondary suffix is a colour tone.
+    if secondary_suffix and primary_suffix:
+        add += chord_symbols.CHORD_ADD + secondary_suffix
+        secondary_suffix = ""
+
+    # Change 7s from literal to symbolic value
+    # 7 => maj7, b7 => 7, bb7 => dim7 or bb7
+    if chord_symbols.CHORD_DOUBLE_FLAT_7 in primary_suffix:
+        if all(x in parsed_symbols + interval_names for x in diminished_symbols):
+            primary_suffix = primary_suffix.replace(
+                chord_symbols.CHORD_DOUBLE_FLAT_7,
+                chord_symbols.CHORD_DIM_7)
+            __finish(chord_symbols.CHORD_FLAT_5)
+            __finish(chord_symbols.CHORD_FLAT_3)
+            is_dim = True
+    elif chord_symbols.CHORD_FLAT_7 in primary_suffix:
+        primary_suffix = primary_suffix.replace(
+            chord_symbols.CHORD_FLAT_7, chord_symbols.CHORD_7)
+    elif chord_symbols.CHORD_7 in primary_suffix:
+        primary_suffix = primary_suffix.replace(
+            chord_symbols.CHORD_7, chord_symbols.CHORD_MAJ_7)
+
+    # How is the 3rd of the chord expressed?
+    if chord_symbols.CHORD_3 in interval_names:
+        __finish(chord_symbols.CHORD_3)
+        # C,3,5,7 > Cmaj7 but C,3,5,b7 > C7
+        if chord_symbols.CHORD_FLAT_7 not in parsed_symbols:
+            normal3 = chord_symbols.CHORD_MAJ
+        else:
+            is_dom = True
+    elif chord_symbols.CHORD_FLAT_3 in interval_names:
+        __finish(chord_symbols.CHORD_FLAT_3)
+        # C,b3,b5,bb7 > Cdim7 but C,b3,b5,b7 > Cmin7b5
+        if not is_dim:
+            normal3 = chord_symbols.CHORD_MIN
+
+    # Is there a colour tone or suspended tone?
+    if not normal3:
+        # Suspension: C,2,5 > Csus2
+        for symb in suspensions:
+            if symb in interval_names:
+                sus += chord_symbols.CHORD_SUS + symb
+                __finish(symb)
+    else:
+        # Colour tone: C,2,3,5 > Cmajadd2
+        for symb in suspensions:
+            if symb in interval_names:
+                add += chord_symbols.CHORD_ADD + symb
+                __finish(symb)
+
+    # Does a series of extensions get condensed into a single symbol?
+    # If not, does the extension get expressed as a plain symbol or as
+    # an addition?
+    largest_extension: str = ""
+    if primary_suffix:
+        for i, symb in enumerate(natural_extensions):
+            # Check that the sequence was maintained, otherwise the interval
+            # is characterized as an addition.
+            previous = natural_extensions[i-1] if i > 0 else None
+            if symb in interval_names:
+                if not previous:
+                    largest_extension = symb
+                    __finish(symb)
+                elif previous in parsed_symbols:
+                    largest_extension = symb
+                    __finish(symb)
+                else:
+                    add += chord_symbols.CHORD_ADD + symb
+                    __finish(symb)
+    # C7,9,11,13 > C13, etc.
+    if largest_extension:
+        if chord_symbols.CHORD_7 in primary_suffix:
+            primary_suffix = primary_suffix.replace(
+                chord_symbols.CHORD_7, largest_extension)
+    # C7,9,13 > C9add13, etc.
+    for symb in natural_extensions:
+        if symb in interval_names:
+            add += chord_symbols.CHORD_ADD + symb
+            __finish(symb)
+
+    # How does the chord express its fifth (if it has one)?
+    for symb in altered_fifths:
+        if symb in interval_names:
+            alt5 = symb
+            __finish(symb)
+    # C,3,7 > Cmaj7no5
+    if not chord_symbols.CHORD_5 in interval_names:
+        if not alt5:
+            alt5 = chord_symbols.CHORD_NO + chord_symbols.CHORD_5
+    # Most chords don't mention the fifth: C,3,5,7 > Cmaj7
+    else:
+        interval_names.remove(chord_symbols.CHORD_5)
+
+    # Does the chord contain an altered 3rd?
+    for symb in altered_thirds:
+        if symb in interval_names:
+            alt3 = symb
+            __finish(symb)
+
+    # Is a 3rd accounted for at all?
+    if not any([alt3, normal3, sus, is_dom, is_dim]):
+        no3 = chord_symbols.CHORD_NO + chord_symbols.CHORD_3
+
+    # Does the chord symbol contain a redundant sub-symbol?
+    if chord_symbols.CHORD_MAJ in primary_suffix and normal3 == chord_symbols.CHORD_MAJ:
+        normal3 = ""
+    if chord_symbols.CHORD_DIM in primary_suffix:
+        alt5 = ""
+
+    # An extension without an accidental is easier to read as an addition.
+    # C7sus2#11 vs C7sus2add11
+    for ex in extensions:
+        if not any([constants.SHARP_SYMBOL in ex, constants.FLAT_SYMBOL in ex]):
+            add += chord_symbols.CHORD_ADD + ex
+            ex = ""
+
+    extensions = "".join(interval_names)
+    symbols: list[str] = [normal3,
+                          primary_suffix,
+                          secondary_suffix,
+                          sus,
+                          alt5,
+                          alt3,
+                          add,
+                          no3,
+                          no5,
+                          extensions]
+    final_form = "".join(symbols)
+
+    return final_form
