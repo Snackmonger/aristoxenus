@@ -3,14 +3,15 @@ from data import keywords
 from src import parsing
 from src.nomenclature import heptatonic_chord_scale
 from src.parsing import parse_interval_names_as_chord_symbol
-from src.permutation import tetrad_variants
+from tests.decorators import test_perf
 
 
-
+@test_perf(True)
 def do_ch_tests(ch_dict: dict[str, list[str]], verbose: bool = False):
     """Perform a series of tests on the chord symbol generation function to 
     see if the correct symbols are being created."""
 
+    @test_perf(True)
     def __test_ch_symbol_generation(expected_symbol: str, interval_names: list[str]):
         err = f"# Testing intervals\t{interval_names}"
         x = parse_interval_names_as_chord_symbol(interval_names)
