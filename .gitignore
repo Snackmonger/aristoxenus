@@ -1,4 +1,4 @@
-a.vscode/settings.json
+.vscode/settings.json
 src/__pycache__/__init__.cpython-311.pyc
 src/__pycache__/nomenclature.cpython-311.pyc
 tests/__pycache__/__init__.cpython-311.pyc
