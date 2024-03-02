@@ -219,6 +219,8 @@ No 5
     a symbol that indicates that the preceding symbol should be interepreted as not having the perfect fifth that would normally be implied.
 No 3
     a symbol that indicates that the preceding symbol should be interepreted as not having the normal third that would normally be implied.
+Extensions
+    Any other symbols that don't fit into one of the above categories.
 
 
 Polychords
