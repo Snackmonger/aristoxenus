@@ -190,6 +190,36 @@ alteration is placed after the altered fifth. E.g.:
 
 While these symbols are easily understood by the parser, they are difficult for humans to read, and may be better replaced by a polychord symbol, e.g. "Cmaj7b5@Dminb5" (see below).
 
+Chord Symbol Order
+++++++++++++++++++
+
+The library handles all normal chords and most chords derived from the heptatonic scale series (see below).
+Therefore, we need to be able to generate chords that preserve the enharmonic speling of interval names relative to their
+parent (e.g. Emajbb3 for a chord that might otherwise be called Esus2).
+
+The order will be:
+
+normal 3, primary suffix, secondary suffix, sus, alt5, alt3, add, no5, no3, extensions
+
+Normal 3
+    a 3 or b3, which is represented by maj and min, but which might also be implied in another symbol.
+Primary suffix 
+    a symbol with a 7, which can be replaced by a larger numeral in certain situations.
+Secondary suffix 
+    a symbol with a 6, which is often just an inversion of a chord with a 7. If there is both 6 and 7, then the 6 is an added colour tone.
+Sus
+    a sus2 or sus4. This symbol only appears if the normal 3 slot is empty.
+Alt 5
+    a b5 or #5. This symbol only appears if the chord does not have a perfect 5. If there is both a perfect and an altered fifth, then the altered fifth is added as a colour tone.
+Alt 3
+    a bb3 or #3. This symbol only appears if the chord does not have a normal 3. If there is both a normal and altered third, then the altered third is added as a colour tone.
+Add
+    a symbol that indicates that the subjoined symbol(s) is/are to be added to the chord, without implying any other intervals
+No 5
+    a symbol that indicates that the preceding symbol should be interepreted as not having the perfect fifth that would normally be implied.
+No 3
+    a symbol that indicates that the preceding symbol should be interepreted as not having the normal third that would normally be implied.
+
 
 Polychords
 ----------

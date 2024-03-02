@@ -1,5 +1,6 @@
 """Tests that require a bit more detail than docstring testing can comfortably provide."""
 from data import keywords
+from data.annotations import HeptatonicChord
 from src import parsing
 from src.nomenclature import heptatonic_chord_scale
 from src.parsing import parse_interval_names_as_chord_symbol
@@ -11,7 +12,7 @@ def do_ch_tests(ch_dict: dict[str, list[str]], verbose: bool = False):
     """Perform a series of tests on the chord symbol generation function to 
     see if the correct symbols are being created."""
 
-    @test_perf(True)
+    @test_perf(False)
     def __test_ch_symbol_generation(expected_symbol: str, interval_names: list[str]):
         err = f"# Testing intervals\t{interval_names}"
         x = parse_interval_names_as_chord_symbol(interval_names)
@@ -34,7 +35,7 @@ def do_ch_tests(ch_dict: dict[str, list[str]], verbose: bool = False):
     print(f"Passed {test_total}/{len(ch_dict)} tests.")
 
 
-chords = {"maj": ["1", "3", "5"],
+chord_tests = {"maj": ["1", "3", "5"],
           "min": ["1", "b3", "5"],
           "majb5": ["1", "3", "b5"],
           "minb5": ["1", "b3", "b5"],
@@ -46,6 +47,7 @@ chords = {"maj": ["1", "3", "5"],
           "minmaj7": ["1", "b3", "5", "7"],
           "minmaj7b5": ["1", "b3", "b5", "7"],
           "7": ["1", "3", "5", "b7"],
+          "7no3": ["1", "5", "b7"],
           "7add6": ["1", "3", "5", "6", "b7"],
           "7sus2#11": ["1", "2", "5", "b7", "#11"],
           "7sus2add11": ["1", "2", "5", "b7", "11"],
@@ -85,12 +87,19 @@ chords = {"maj": ["1", "3", "5"],
 def test_heptatonic_scales():
 
     for scale in keywords.HEPTATONIC_ORDER:
-        chords = heptatonic_chord_scale(scale, keywords.IONIAN, "C")
-        print("###################################################")
+        triads = heptatonic_chord_scale(scale, keywords.IONIAN, "C")
+        tetrads = heptatonic_chord_scale(scale, keywords.IONIAN, "C", 4)
+        print("##################################################")
         print(f"# Now trying {scale} scale")
-        for chord in chords:
-            root = chord["root"]
-            stem = parsing.parse_interval_names_as_chord_symbol(chord["interval_names"])
-            print(f"# {chord['numeric_degree']} :: {root} {stem}")
+        for i in range(7):
+            triad: HeptatonicChord = triads[i]
+            tetrad: HeptatonicChord = tetrads[i]
+            root = triad["root"]
+            triad_stem = parsing.parse_interval_names_as_chord_symbol(triad["interval_names"])
+            tetrad_stem = parsing.parse_interval_names_as_chord_symbol(tetrad["interval_names"])
+
+            pad1 = 20 - len(root+triad_stem)
+            pad2 = 20 -  len(root+tetrad_stem)
+            print(f"# {triad['numeric_degree']}\t::{' '*pad1}{root + triad_stem}{' '*pad2}{root + tetrad_stem}")
         
             

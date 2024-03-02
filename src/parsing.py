@@ -882,6 +882,21 @@ def parse_interval_names_as_chord_symbol(interval_names: list[str]
     if not any([alt3, normal3, sus, is_dom, is_dim]):
         no3 = chord_symbols.CHORD_NO + chord_symbols.CHORD_3
 
+    # Cbb3, etc. is ambiguous, convert to Cmajbb3, etc.
+    if alt3 and not any([primary_suffix, secondary_suffix]):
+        if alt5 and alt5 == chord_symbols.CHORD_FLAT_5:
+            normal3 =  chord_symbols.CHORD_MIN
+        else:
+            normal3 = chord_symbols.CHORD_MAJ
+        
+    # Cbb7 etc. is ambiguous, convert to Cmajbb7
+    if chord_symbols.CHORD_DOUBLE_FLAT_7 in parsed_symbols and not is_dim:
+        if not normal3:
+            if alt5 and alt5 == chord_symbols.CHORD_FLAT_5:
+                normal3 = chord_symbols.CHORD_MIN
+            else: 
+                normal3 = chord_symbols.CHORD_MAJ
+
     # Does the chord symbol contain a redundant sub-symbol?
     if chord_symbols.CHORD_MAJ in primary_suffix and normal3 == chord_symbols.CHORD_MAJ:
         normal3 = ""
