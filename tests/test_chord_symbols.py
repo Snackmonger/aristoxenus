@@ -12,7 +12,7 @@ def do_ch_tests(ch_dict: dict[str, list[str]], verbose: bool = False):
     """Perform a series of tests on the chord symbol generation function to 
     see if the correct symbols are being created."""
 
-    @test_perf(False)
+    @test_perf(verbose)
     def __test_ch_symbol_generation(expected_symbol: str, interval_names: list[str]):
         err = f"# Testing intervals\t{interval_names}"
         x = parse_interval_names_as_chord_symbol(interval_names)
@@ -83,7 +83,7 @@ chord_tests = {"maj": ["1", "3", "5"],
           "dim7b9": ["1", "b3", "b5", "bb7", "b9"]}
 
 
-
+@test_perf(True)
 def test_heptatonic_scales():
 
     for scale in keywords.HEPTATONIC_ORDER:
