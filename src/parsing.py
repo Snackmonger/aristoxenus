@@ -217,10 +217,11 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
         if symbol in parsed_symbols:
             structure ^= (intervals.DIAPENTE - 1)  # 1 = tonic
 
-    # TODO:
-    # If we have a sus2 or sus4 symbol, we should assume that any 3rd that
-    # would normally be implied is omitted: Cmaj7sus4, Ddim7sus2 have no maj
-    # and min 3 respectively.
+    # If the chord indicated sus, assume that this symbol overrides any
+    # symbol indicating a 3rd.
+    for sus in [chord_symbols.CHORD_SUS_2, chord_symbols.CHORD_SUS_4]:
+        if sus in parsed_symbols:
+            structure ^= intervals.DITONE | intervals.HEMIOLION
 
     # Handle add/no notation
     for symbol in add_drop:

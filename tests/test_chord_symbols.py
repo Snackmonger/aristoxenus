@@ -8,7 +8,7 @@ from tests.decorators import test_perf
 
 
 @test_perf(True)
-def do_ch_tests(ch_dict: dict[str, list[str]], verbose: bool = False):
+def test_chord_symbol_from_interval_names(ch_dict: dict[str, list[str]], verbose: bool = False):
     """Perform a series of tests on the chord symbol generation function to 
     see if the correct symbols are being created."""
 
@@ -84,7 +84,7 @@ chord_tests = {"maj": ["1", "3", "5"],
 
 
 @test_perf(True)
-def test_heptatonic_scales():
+def test_generate_chord_names_for_heptatonic():
 
     for scale in keywords.HEPTATONIC_ORDER:
         triads = heptatonic_chord_scale(scale, keywords.IONIAN, "C")
@@ -103,3 +103,6 @@ def test_heptatonic_scales():
             print(f"# {triad['numeric_degree']}\t::{' '*pad1}{root + triad_stem}{' '*pad2}{root + tetrad_stem}")
         
             
+
+def test_generate_interval_structure_from_chord_symbol():
+    ...

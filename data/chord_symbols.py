@@ -96,7 +96,7 @@ CHORD_ALTERED_FIFTH_SYMBOL_LIST = CHORD_AUGMENTED_SYMBOL_LIST + \
 # Mapping of interval values to interval names.
 basic_symbols = {
     interval.HEMITONE: [CHORD_FLAT_2],
-    interval.TONE: [CHORD_2, CHORD_SUS_2],
+    interval.TONE: [CHORD_2, CHORD_SUS_2, CHORD_DOUBLE_FLAT_3],
     interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3] + CHORD_MINOR_SYMBOL_LIST,
     interval.DITONE: [CHORD_3, CHORD_FLAT_4] + CHORD_MAJOR_SYMBOL_LIST,
     interval.DIATESSARON: [CHORD_SUS_4, CHORD_4, CHORD_SHARP_3],

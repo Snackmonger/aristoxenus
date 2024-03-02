@@ -1,10 +1,10 @@
 
 import time
-from tests.test_chord_symbols import do_ch_tests, chord_tests, test_heptatonic_scales
+from tests.test_chord_symbols import test_chord_symbol_from_interval_names, chord_tests, test_generate_chord_names_for_heptatonic
 
 
 
 
-do_ch_tests(chord_tests)
+test_chord_symbol_from_interval_names(chord_tests)
 
-test_heptatonic_scales()
+test_generate_chord_names_for_heptatonic()
