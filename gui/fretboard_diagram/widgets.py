@@ -1,17 +1,41 @@
+
 """Widgets that make up the tkinter GUI of the FingeringDiagram app."""
+import typing
+import tkinter as tk
+from tkinter import (
+    ttk,
+    font as tkfont
+)
 
-from tkinter import E, EW, NW, SUNKEN, W, Canvas, Tk, StringVar, IntVar
-from tkinter.font import Font
-from tkinter.ttk import Button, Frame, OptionMenu, LabelFrame, Label
-from typing import Any, Callable, Sequence, cast
+from data import (
+    keywords as K,
+    annotations as T,
+    errors as E
+)
 
-from data import (data_models, keywords as kws, annotations, errors)
-from src import (interface)
-from src.models import (diagrams)
-from gui.fretboard_diagram import (config, functions)
+from src import interface
+from src.models import diagrams
+from gui.fretboard_diagram import (
+    config,
+    functions
+)
+
+if typing.TYPE_CHECKING:
+    from .app import FretboardDiagramApp
+
+__all__ = [
+    "ScaleSelector",
+    "PositionSelector",
+    "RenderingModeSelector",
+    "InterfaceModeToggle",
+    "FingerboardGrid",
+    "StringFingeringSelector",
+    "IntervalDisplaySelector",
+    "ArpeggioModeControlPanel"
+]
 
 
-class ScaleSelectorWidget(LabelFrame):
+class ScaleSelector(ttk.LabelFrame):
     """A widget that allows the user to change which scale, mode, key, and 
     position the diagram is currently set to.
 
@@ -21,21 +45,21 @@ class ScaleSelectorWidget(LabelFrame):
     Position defines where on the fretboard to show the scale form."""
 
     def __init__(self,
-                 master: Tk | Frame | LabelFrame,
-                 callback: Callable[..., Any]
+                 master: "FretboardDiagramApp",
+                 callback: typing.Callable[..., typing.Any]
                  ) -> None:
 
-        LabelFrame.__init__(self, master, text="Select Scale Pattern")
-        self.scale = StringVar(self, value=kws.DIATONIC)
-        self.mode = StringVar(self, value=kws.IONIAN)
-        self.key = StringVar(self, "C")
+        ttk.LabelFrame.__init__(self, master, text="Select Scale Pattern")
+        self.scale = tk.StringVar(self, value=K.DIATONIC)
+        self.mode = tk.StringVar(self, value=K.IONIAN)
+        self.key = tk.StringVar(self, "C")
         self.callback = callback
 
-        self.select_scale = OptionMenu(
-            self, self.scale, self.scale.get(), *kws.HEPTATONIC_ORDER, command=self.change_state)
-        self.select_mode = OptionMenu(
-            self, self.mode, self.mode.get(), *kws.MODAL_NAME_SERIES, command=self.change_state)
-        self.select_key = OptionMenu(
+        self.select_scale = ttk.OptionMenu(
+            self, self.scale, self.scale.get(), *K.HEPTATONIC_ORDER, command=self.change_state)
+        self.select_mode = ttk.OptionMenu(
+            self, self.mode, self.mode.get(), *K.MODAL_NAME_SERIES, command=self.change_state)
+        self.select_key = ttk.OptionMenu(
             self, self.key, self.key.get(), *interface.chromatic(), command=self.change_state)
 
         self.select_scale.grid(column=0, row=0)
@@ -45,18 +69,18 @@ class ScaleSelectorWidget(LabelFrame):
         self.select_key.grid(column=2, row=0)
         self.select_key.config(width=10)
 
-    def change_state(self, *_: Any) -> None:
+    def change_state(self, *_: typing.Any) -> None:
         """Alert the controller about any change in state."""
         self.callback(self.report())
 
     def report(self) -> dict[str, str]:
         """Return a report about the current state of the widget."""
-        return {kws.SCALE_NAME: self.scale.get(),
-                kws.MODAL_NAME: self.mode.get(),
-                kws.KEYNOTE: self.key.get()}
+        return {K.SCALE_NAME: self.scale.get(),
+                K.MODAL_NAME: self.mode.get(),
+                K.KEYNOTE: self.key.get()}
 
 
-class StringFingeringWidget(Frame):
+class StringFingeringSubWidget(ttk.Frame):
     """A small widget that controls how a string will be fingered.
 
     A button is displayed and will cycle through a series of states
@@ -65,28 +89,32 @@ class StringFingeringWidget(Frame):
     """
 
     def __init__(self,
-                 master: Frame | Tk | LabelFrame,
-                 callback: Callable[..., Any],
+                 master: ttk.Frame | tk.Tk | ttk.LabelFrame,
+                 callback: typing.Callable[..., typing.Any],
                  string: int
                  ) -> None:
 
-        Frame.__init__(self, master)
-        self.callback: Callable[..., Any] = callback
+        ttk.Frame.__init__(self, master)
+        self.callback: typing.Callable[..., typing.Any] = callback
 
         self.string = string
         self.fingering_options: list[str] = config.FINGERING_TYPES
         self.current_fingering: str = config.FINGERING_TYPES[0]
 
-        self.string_toggle: Button = Button(self,
-                                            text=self.current_fingering,
-                                            command=self.change_state)
+        self.string_toggle: ttk.Button = ttk.Button(self,
+                                                    text=self.current_fingering,
+                                                    command=self.change_state)
         self.string_toggle.grid()
 
-    def report(self) -> annotations.FingeringReport:
+    def report(self) -> T.FingeringReport:
         """Return a report about the current state of the widget."""
-        return cast(annotations.FingeringReport, {
-            kws.STRING: self.string,
-            kws.FINGERING: self.current_fingering}
+        # return cast(T.FingeringReport, {
+        #     K.STRING: self.string,
+        #     K.FINGERING: self.current_fingering}
+        # )
+        return T.FingeringReport(
+            string=self.string,
+            fingering=self.current_fingering
         )
 
     def change_state(self) -> None:
@@ -99,7 +127,7 @@ class StringFingeringWidget(Frame):
         self.callback(self.report())
 
 
-class IntervalDisplayWidget(Frame):
+class IntervalDisplaySubWidget(ttk.Frame):
     """A small widget that controls how an interval will be displayed in the 
     fingering diagram.
 
@@ -109,17 +137,17 @@ class IntervalDisplayWidget(Frame):
     and any change of state is reported to a callback function."""
 
     def __init__(self,
-                 master: Frame | Tk | LabelFrame,
-                 callback: Callable[..., Any],
+                 master: ttk.Frame | tk.Tk | ttk.LabelFrame,
+                 callback: typing.Callable[..., typing.Any],
                  interval: str,
-                 shape: str = kws.CIRCLE,
+                 shape: str = K.CIRCLE,
                  size: int = 2,
-                 colour: str = kws.BLACK,
-                 text_colour: str = kws.WHITE,
+                 colour: str = K.BLACK,
+                 text_colour: str = K.WHITE,
                  text_size: int = 14) -> None:
 
-        Frame.__init__(self, master)
-        self.callback: Callable[..., Any] = callback
+        ttk.Frame.__init__(self, master)
+        self.callback: typing.Callable[..., typing.Any] = callback
 
         self.interval = interval
 
@@ -128,41 +156,41 @@ class IntervalDisplayWidget(Frame):
         self.text_size_options: list[int] = config.DIAGRAM_TEXT_SIZES
         self.colour_options: list[str] = config.COLOURS
 
-        self.shape = StringVar(self, value=shape)
-        self.size = IntVar(self, value=size)
-        self.colour = StringVar(self, value=colour)
-        self.text_colour = StringVar(self, value=text_colour)
-        self.text_size = IntVar(self, value=text_size)
+        self.shape = tk.StringVar(self, value=shape)
+        self.size = tk.IntVar(self, value=size)
+        self.colour = tk.StringVar(self, value=colour)
+        self.text_colour = tk.StringVar(self, value=text_colour)
+        self.text_size = tk.IntVar(self, value=text_size)
 
-        self.select_shape = OptionMenu(
+        self.select_shape = ttk.OptionMenu(
             self,
             self.shape,
             self.shape.get(),
             *self.shape_options,
             command=self.change_state)
 
-        self.select_size = OptionMenu(
+        self.select_size = ttk.OptionMenu(
             self,
             self.size,  # type:ignore
             str(self.size.get()),
             *[str(x) for x in self.size_options],
             command=self.change_state)
 
-        self.select_colour = OptionMenu(
+        self.select_colour = ttk.OptionMenu(
             self,
             self.colour,
             self.colour.get(),
             *self.colour_options,
             command=self.change_state)
 
-        self.select_text_colour = OptionMenu(
+        self.select_text_colour = ttk.OptionMenu(
             self,
             self.text_colour,
             self.text_colour.get(),
             *self.colour_options,
             command=self.change_state)
 
-        self.select_text_size = OptionMenu(
+        self.select_text_size = ttk.OptionMenu(
             self,
             self.text_size,  # type:ignore
             str(self.text_size.get()),
@@ -170,74 +198,75 @@ class IntervalDisplayWidget(Frame):
             command=self.change_state)
 
         for i, (label, widget) in enumerate(
-            [(kws.SHAPE, self.select_shape),
-             (kws.SHAPE_SIZE, self.select_size),
-             (kws.SHAPE_COLOUR, self.select_colour),
-             (kws.TEXT_COLOUR, self.select_text_colour),
-             (kws.TEXT_SIZE, self.select_text_size)]):
+            [(K.SHAPE, self.select_shape),
+             (K.SHAPE_SIZE, self.select_size),
+             (K.SHAPE_COLOUR, self.select_colour),
+             (K.TEXT_COLOUR, self.select_text_colour),
+             (K.TEXT_SIZE, self.select_text_size)]):
 
-            label_ = Label(self, text=str.replace(
+            label_ = ttk.Label(self, text=str.replace(
                 label, "_", " ").capitalize())
             label_.grid(column=0, row=i, sticky="w")
             widget.grid(column=1, row=i, sticky="e")
             widget.config(width=15)
 
-    def change_state(self, *_: Any) -> None:
+    def change_state(self, *_: typing.Any) -> None:
         """Respond to any change of state by sending a report about the 
         current state to the controller's callback."""
         self.callback(self.report())
 
-    def report(self) -> annotations.NodeDisplayReport:
+    def report(self) -> T.NodeDisplayReport:
         """Return a report about the current state of the widget."""
-        return annotations.NodeDisplayReport(interval=self.interval,
-                                             shape=self.shape.get(),
-                                             size=self.size.get(),
-                                             shape_colour=self.colour.get(),
-                                             text_colour=self.text_colour.get(),
-                                             text_size=self.text_size.get())
+        return T.NodeDisplayReport(interval=self.interval,
+                                   shape=self.shape.get(),
+                                   size=self.size.get(),
+                                   shape_colour=self.colour.get(),
+                                   text_colour=self.text_colour.get(),
+                                   text_size=self.text_size.get())
 
 
-class IntervalDisplaySelectorWidget(LabelFrame):
-    """Widget that contains many IntervalDisplayWidgets allows the user to
+class IntervalDisplaySelector(ttk.LabelFrame):
+    """Widget that contains many IntervalDisplaySubWidgets allows the user to
     select which one is currently displayed.
 
     The widget shows a dropdown menu which, when an interval is selected, 
     causes an interval node control panel for that interval to appear below.
     It passes a callback function to all the control panels generated by
-    the list of intervals provided."""
+    the list of intervals provided.
+    """
 
     def __init__(self,
-                 master: Frame | Tk,
-                 callback: Callable[..., Any],
+                 master: "FretboardDiagramApp",
+                 callback: typing.Callable[..., typing.Any],
                  intervals: list[str]
                  ) -> None:
 
-        LabelFrame.__init__(self, master)
+        ttk.LabelFrame.__init__(self, master)
         self.callback = callback
         self.intervals = intervals
 
-        self.current_interval = StringVar(self, value=self.intervals[0])
-        self.select_interval = OptionMenu(
+        self.current_interval = tk.StringVar(self, value=self.intervals[0])
+        self.select_interval = ttk.OptionMenu(
             self,
             self.current_interval,
             self.current_interval.get(),
             *self.intervals,
             command=self.display_subwidget)
 
-        self.subwidgets: list[IntervalDisplayWidget] = []
+        self.subwidgets: list[IntervalDisplaySubWidget] = []
         for x in self.intervals:
-            self.subwidgets.append(IntervalDisplayWidget(self, callback, x))
+            self.subwidgets.append(IntervalDisplaySubWidget(self, callback, x))
 
-        self.current_subwidget: IntervalDisplayWidget = self.subwidgets[0]
-        label = Label(self, text="Select interval: ")
-        label.grid(column=0, row=0, sticky=W)
-        self.select_interval.grid(column=1, row=0, sticky=E)
+        self.current_subwidget: IntervalDisplaySubWidget = self.subwidgets[0]
+        label = ttk.Label(self, text="Select interval: ")
+        label.grid(column=0, row=0, sticky=tk.W)
+        self.select_interval.grid(column=1, row=0, sticky=tk.E)
         self.current_subwidget.grid(column=0, row=2, columnspan=2)
 
         self.config(text="Interval Controls",
                     borderwidth=5,
-                    labelanchor=NW,
-                    relief=SUNKEN,)
+                    labelanchor=tk.NW,
+                    relief=tk.SUNKEN,)
 
     def set_subwidget(self, interval: str) -> None:
         """Set the currently visible subwidget to the given interval."""
@@ -252,7 +281,7 @@ class IntervalDisplaySelectorWidget(LabelFrame):
         self.select_interval.set_menu(
             self.intervals[0], *self.intervals)  # type:ignore
 
-    def display_subwidget(self, *_: Any) -> None:
+    def display_subwidget(self, *_: typing.Any) -> None:
         """Change which subwidget is currently being displayed, based on the 
         selected option in the dropdown menu."""
         self.current_subwidget.grid_forget()
@@ -261,43 +290,44 @@ class IntervalDisplaySelectorWidget(LabelFrame):
                 self.current_subwidget = x
         self.current_subwidget.grid(column=0, row=1, columnspan=2)
 
-    def summarize(self) -> list[annotations.NodeDisplayReport]:
+    def summarize(self) -> list[T.NodeDisplayReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
 
 
-class StringFingeringSelectorWidget(LabelFrame):
+class StringFingeringSelector(ttk.LabelFrame):
     """Widget that contains a number of buttons to cycle strings' 
-    fingerings through various states."""
+    fingerings through various states.
+    """
 
     def __init__(self,
-                 master: Tk | Frame | LabelFrame,
-                 callback: Callable[..., Any],
+                 master: "FretboardDiagramApp",
+                 callback: typing.Callable[..., typing.Any],
                  number_of_strings: int) -> None:
 
-        LabelFrame.__init__(self, master)
+        ttk.LabelFrame.__init__(self, master)
         self.config(text="String Fingering Controls",
                     borderwidth=5,
                     labelanchor="nw",
                     relief="sunken")
-        self.subwidgets: list[StringFingeringWidget] = []
+        self.subwidgets: list[StringFingeringSubWidget] = []
 
         padding: int = 175 // number_of_strings
         for x in range(number_of_strings):
-            w = StringFingeringWidget(self, callback, x)
+            w = StringFingeringSubWidget(self, callback, x)
             self.subwidgets.append(w)
-            l = Label(self, text=f"String {x}: ")
-            l.grid(column=0, row=x, sticky=W, pady=padding)
-            w.grid(column=1, row=x, sticky=E, pady=padding)
+            l = ttk.Label(self, text=f"String {x}: ")
+            l.grid(column=0, row=x, sticky=tk.W, pady=padding)
+            w.grid(column=1, row=x, sticky=tk.E, pady=padding)
 
-    def summarize(self) -> list[annotations.FingeringReport]:
+    def summarize(self) -> list[T.FingeringReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
 
 
-class FingerboardGridWidget(LabelFrame):
+class FingerboardGrid(ttk.LabelFrame):
     """A large widget that represents a grid, in the cells of which are shapes
     representing notes, fingers, or intervals.
 
@@ -305,12 +335,12 @@ class FingerboardGridWidget(LabelFrame):
     the controller."""
 
     def __init__(self,
-                 master: Tk | Frame | LabelFrame,
+                 master: "FretboardDiagramApp",
                  diagram: diagrams.GuitarFingeringDiagram) -> None:
 
-        LabelFrame.__init__(self, master)
+        ttk.LabelFrame.__init__(self, master)
         self.config(text="Fretboard Diagram")
-        self.canvas: Canvas = Canvas(
+        self.canvas: tk.Canvas = tk.Canvas(
             self, height=config.CANVAS_SIZE, width=config.CANVAS_SIZE, bg="white")
 
         self.canvas.grid()
@@ -342,8 +372,8 @@ class FingerboardGridWidget(LabelFrame):
         self.canvas.delete("node_text")
         width: int = self.canvas.winfo_width()
         height: int = self.canvas.winfo_height()
-        square_size: tuple[int,
-                           int] = width//len(diagram.grid[0]), height//len(diagram.grid)
+        square_size: tuple[int, int] = (width//len(diagram.grid[0]), 
+                                        height//len(diagram.grid))
 
         for i, string in enumerate(diagram.grid):
             for j, node in enumerate(string):
@@ -355,7 +385,7 @@ class FingerboardGridWidget(LabelFrame):
                     (square_size[1] // 2) + square_size[1] * i
                 )
 
-                if node.shape == kws.CIRCLE:
+                if node.shape == K.CIRCLE:
                     x0, y0 = centre[0] - 15, centre[1] - 15
                     x1, y1 = centre[0] + 15, centre[1] + 15
                     self.canvas.create_oval(x0, y0, x1, y1,
@@ -363,7 +393,7 @@ class FingerboardGridWidget(LabelFrame):
                                             tags="node_shape"
                                             )
 
-                elif node.shape == kws.SQUARE:
+                elif node.shape == K.SQUARE:
                     x0, y0 = centre[0] - 15, centre[1] - 15
                     x1, y1 = centre[0] + 15, centre[1] + 15
                     self.canvas.create_rectangle(x0, y0, x1, y1,
@@ -371,7 +401,7 @@ class FingerboardGridWidget(LabelFrame):
                                                  tags="node_shape"
                                                  )
 
-                elif node.shape == kws.INVERSE_TRIANGLE:
+                elif node.shape == K.INVERSE_TRIANGLE:
                     x0, y0 = centre[0] - 20, centre[1] - 10
                     x1, y1 = centre[0] + 20, centre[1] - 10
                     x2, y2 = centre[0], centre[1] + 20
@@ -380,7 +410,7 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape"
                                                )
 
-                elif node.shape == kws.TRIANGLE:
+                elif node.shape == K.TRIANGLE:
                     x0, y0 = centre[0] + 20, centre[1] + 15
                     x1, y1 = centre[0] - 20, centre[1] + 15
                     x2, y2 = centre[0], centre[1] - 20
@@ -389,7 +419,7 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape"
                                                )
 
-                elif node.shape == kws.DIAMOND:
+                elif node.shape == K.DIAMOND:
                     x0, y0 = centre[0], centre[1] - 15
                     x1, y1 = centre[0] - 15, centre[1]
                     x2, y2 = centre[0], centre[1] + 15
@@ -399,14 +429,14 @@ class FingerboardGridWidget(LabelFrame):
                                                tags="node_shape")
 
                 else:
-                    raise errors.UnknownKeywordError(
+                    raise E.UnknownKeywordError(
                         f"Unknown node setting: shape={node.shape}")
 
-                font = Font(self,
-                            family="Times",
-                            size=node.text_size,
-                            weight="bold"
-                            )
+                font = tkfont.Font(self,
+                                   family="Times",
+                                   size=node.text_size,
+                                   weight="bold"
+                                   )
                 self.canvas.create_text(centre[0],
                                         centre[1],
                                         text=repr(node),
@@ -417,19 +447,21 @@ class FingerboardGridWidget(LabelFrame):
         self.canvas.grid()
 
 
-class RenderingModeSelectorWidget(LabelFrame):
+class RenderingModeSelector(ttk.LabelFrame):
     """A small widget that controls the display type."""
 
-    def __init__(self, master: Tk | Frame | LabelFrame, callback: Callable[..., Any]) -> None:
-        LabelFrame.__init__(self, master)
+    def __init__(self, master: "FretboardDiagramApp",
+                 callback: typing.Callable[..., typing.Any]
+                 ) -> None:
+        ttk.LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Display Mode")
-        self.current_mode = StringVar(self)
-        self.rendering_modes = [kws.INTERVAL,
-                                kws.FINGER,
-                                kws.NOTE_NAME,
-                                kws.FRET]
-        self.select_rendering_mode = OptionMenu(
+        self.current_mode = tk.StringVar(self)
+        self.rendering_modes = [K.INTERVAL,
+                                K.FINGER,
+                                K.NOTE_NAME,
+                                K.FRET]
+        self.select_rendering_mode = ttk.OptionMenu(
             self,
             self.current_mode,
             self.rendering_modes[0],
@@ -442,65 +474,67 @@ class RenderingModeSelectorWidget(LabelFrame):
         """Return a report about the current state of the widget."""
         return self.current_mode.get()
 
-    def change_state(self, *_: Any) -> None:
+    def change_state(self, *_: typing.Any) -> None:
         """Report any change of state to the controller."""
         self.callback(self.current_mode.get())
 
 
-class PositionSelectorWidget(LabelFrame):
+class PositionSelector(ttk.LabelFrame):
     """A small widget that controls the current position."""
 
     def __init__(self,
-                 master: Tk | Frame | LabelFrame,
+                 master: "FretboardDiagramApp",
                  positions: list[int],
-                 callback: Callable[..., Any]
+                 callback: typing.Callable[..., typing.Any]
                  ) -> None:
-        LabelFrame.__init__(self, master)
+        ttk.LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Position")
-        self.position = IntVar(self, value=5)
+        self.position = tk.IntVar(self, value=5)
         self.position_options = positions
-        self.select_position = OptionMenu(self,
-                                          self.position,  # type:ignore
-                                          str(self.position.get()),
-                                          *[str(x)
-                                            for x in positions if 0 < x < 13],
-                                          command=self.change_state)
+        self.select_position = ttk.OptionMenu(self,
+                                              self.position,  # type:ignore
+                                              str(self.position.get()),
+                                              *[str(x)
+                                                for x in positions if 0 < x < 13],
+                                              command=self.change_state)
         self.select_position.grid()
 
-    def change_state(self, *_: Any) -> None:
+    def change_state(self, *_: typing.Any) -> None:
         """Report any change of state to the controller."""
         self.callback(self.report())
 
-    def set_position(self, position: int, positions: Sequence[int]) -> None:
+    def set_position(self, position: int, positions: typing.Sequence[int]) -> None:
         """Set the current position. (Used when the scale has changed in such
         a way that the previous position is no longer legal)."""
         self.position.set(position)
         self.position_options = positions
-        self.select_position.set_menu(str(position), *positions) # type: ignore
+        self.select_position.set_menu(
+            str(position), *positions)  # type: ignore
 
     def report(self) -> int:
         """Report on the current state of the widget."""
         return self.position.get()
 
 
-class InterfaceModeToggleWidget(LabelFrame):
+class InterfaceModeToggle(ttk.LabelFrame):
     """Simple button widget to change the state of the main app."""
 
-    def __init__(self, master: Frame | LabelFrame, callback: Callable[..., Any]) -> None:
-        LabelFrame.__init__(self, master)
+    def __init__(self, master: "FretboardDiagramApp", callback: typing.Callable[..., typing.Any]) -> None:
+        ttk.LabelFrame.__init__(self, master)
         self.callback = callback
         self.config(text="Select Control Mode")
         self.interface_mode_options: list[str] = [
-            kws.SCALE, kws.ARPEGGIO]
+            K.SCALE, K.ARPEGGIO]
         self.current_interface_mode: str = self.interface_mode_options[0]
-        self.interface_mode_toggle: Button = Button(
+        self.interface_mode_toggle: ttk.Button = ttk.Button(
             self, text=self.current_interface_mode, command=self.change_state)
         self.interface_mode_toggle.grid()
 
     def change_state(self) -> None:
         """Cycle to the next state, and use the callback to update the 
-        controller."""
+        controller.
+        """
         i: int = functions.cycle_indices(
             self.interface_mode_options, self.current_interface_mode)
         self.current_interface_mode = self.interface_mode_options[i]
@@ -509,23 +543,23 @@ class InterfaceModeToggleWidget(LabelFrame):
         self.callback()
 
 
-class ArpeggioModeControlPanel(LabelFrame):
+class ArpeggioModeControlPanel(ttk.LabelFrame):
     """A more sophisticated version of the IntervalDisplaySelector that allows
     the user to define which chord will be the focal point of the diagram.
     """
 
-    def __init__(self, master: Frame | LabelFrame, callback: Callable[..., Any]) -> None:
-        LabelFrame.__init__(self, master)
+    def __init__(self, master: "FretboardDiagramApp", callback: typing.Callable[..., typing.Any]) -> None:
+        ttk.LabelFrame.__init__(self, master)
         self.config(text="Arpeggio Display Controls")
         self.callback = callback
 
-        window = LabelFrame(self, text="Select chord type")
+        window = ttk.LabelFrame(self, text="Select chord type")
         self.polyad_options = ["triad", "tetrad"]
         self.current_polyad: str = self.polyad_options[0]
-        self.polyad_toggle = Button(window,
-                                    text=self.current_polyad,
-                                    command=self.toggle_polyad)
-        
+        self.polyad_toggle = ttk.Button(window,
+                                        text=self.current_polyad,
+                                        command=self.toggle_polyad)
+
         # for the select chord dropdown, we want to be able to parse
         # a chord scale and generate the correct chord symbol:
         # 1. Imaj7, 2. iimin7, 3. iiimin7, 4. IVmaj7
@@ -536,12 +570,11 @@ class ArpeggioModeControlPanel(LabelFrame):
         # so maybe the dropdown is just for 1, 2, b3, 4, 5, etc.,
         # and a little display shows that 1 = Dbmaj7 (Imaj7)
 
-        # we need to add some things to be back end in order to get the 
+        # we need to add some things to be back end in order to get the
         # necessary data for this widget.
         #   - generate a chord scale with roman numerals representing degrees
         #       - uppercase = maj 3, lowercase = min3
         #       - use same accidental as numeric interval (b3 > bIII/biii)
-
 
         #       actually, now that I think about it, just use the interval scale
         #       function, then replace any numeral with a roman numeral:
@@ -558,15 +591,11 @@ class ArpeggioModeControlPanel(LabelFrame):
         #                       roman = roman.lower()
         #                   interval_name.replace(char, roman)
 
-
     def toggle_polyad(self) -> None:
         """Cycle the widget into the next polyad configuration."""
         i = functions.cycle_indices(self.polyad_options, self.current_polyad)
         self.current_polyad = self.polyad_options[i]
         self.polyad_toggle.config(text=self.current_polyad)
-
-
-    
 
         # Part 1
         # Select number of notes -triad, tetrad --> Update display
@@ -586,6 +615,7 @@ class ArpeggioModeControlPanel(LabelFrame):
         # the intervals in the chord are shown according to the settings
         # in part 2, but the non-chord tones are displayed opaque or greyed out
 
+
         # in order for the intervals to cycle correctly with the chords, so that
         # the third of the chord (major or minor) will sill be a blue triangle or
         # whatever, we need to regard each chord's root as the tonic of a modal
@@ -595,195 +625,6 @@ class ArpeggioModeControlPanel(LabelFrame):
         # those of the parent scale or the individual chords.
         #       therefore, we can take the settings for the relative perspective
         #       that the user sees in the node display controls
-
-
-class FretboardDiagram(Frame):
-    """Main widget for the fretboard diagram."""
-
-    def __init__(self, master: Frame | Tk):
-        Frame.__init__(self, master)
-
-        # The abstract diagrams model the layout of the grid and its nodes.
-        self.scale_diagram = diagrams.GuitarFingeringDiagram(
-            5, diagrams.standard_fretboard(), 5)
-        self.arpeggio_diagram = diagrams.GuitarFingeringDiagram(
-            5, diagrams.standard_fretboard(), 5)
-        self.current_diagram = self.scale_diagram
-
-        # Default scale data
-        cmaj = data_models.HeptatonicRendering(
-            **interface.render_heptatonic_form(kws.DIATONIC,
-                                               kws.IONIAN,
-                                               "C"))
-        # Set defaults
-        self.current_diagram.define_scale(cmaj.optimal_rendering)
-        self.current_diagram.define_intervals(cmaj.interval_map)
-        self.current_diagram.turn_on_names(cmaj.optimal_rendering)
-
-        # Top bar
-        self.scale_selector = ScaleSelectorWidget(self, self.on_scale_change)
-        self.position_selector = PositionSelectorWidget(self, self.current_diagram.positions(
-            cmaj.optimal_rendering), self.on_position_change)
-        self.rendering_mode_selector = RenderingModeSelectorWidget(
-            self, self.on_rendering_mode_change)
-        self.interface_mode_toggle = InterfaceModeToggleWidget(
-            self, self.on_interface_mode_change)
-        
-        # top bar also needs a toggle to hide the doubled note on the g or b string
-
-        # Left large window (main diagram display)
-        self.fingerboard_grid = FingerboardGridWidget(
-            self, self.current_diagram)
-
-        # Centre narrow window
-        self.fingering_panel = StringFingeringSelectorWidget(
-            self, self.on_fingering_change, self.current_diagram.number_of_strings)
-
-        self.current_main_panel: Frame
-
-        # Frame 4a: Scale Mode Panel (RIGHT, STATE)
-        intervals = [v for k, v in self.current_diagram.interval_map.items()
-                     if k in self.current_diagram.active_names]
-        self.scale_node_selector: IntervalDisplaySelectorWidget = IntervalDisplaySelectorWidget(
-            self, self.on_node_option_change, intervals)
-
-        self.arpeggio_node_selector: ArpeggioModeControlPanel
-
-        # Finish orienting widgets
-        self.scale_selector.grid(column=0, row=0, sticky=W)
-        self.position_selector.grid(column=1, row=0, sticky=W)
-        self.rendering_mode_selector.grid(column=2, row=0, sticky=W)
-        self.interface_mode_toggle.grid(column=3, row=0, sticky=W)
-
-        self.fingerboard_grid.grid(column=0, row=1, columnspan=2)
-        self.fingering_panel.grid(column=2, row=1, sticky=EW)
-        self.scale_node_selector.grid(column=3, row=1, sticky=EW)
-
-        self.grid()
-
-        # Display initial default values
-        self.scale_selector.change_state()
-        for report in self.fingering_panel.summarize():
-            self.current_diagram.apply_fingering(**report)
-
-    def on_fingering_change(self, report: annotations.FingeringReport) -> None:
-        """Receive a report about the change in fingering and modify the 
-        diagram to reflect it.
-        """
-        self.current_diagram.apply_fingering(**report)
-        self.fingerboard_grid.draw_diagram(self.current_diagram)
-
-    def on_node_option_change(self, report: annotations.NodeDisplayReport) -> None:
-        """Receive a report about the change to an interval node's
-        display options and modify the diagram to reflect it.
-
-        This method is only available when the app is in the "Scale" 
-        interface mode.
-        """
-        self.current_diagram.apply_node_display_options(report)
-        self.fingerboard_grid.draw_diagram(self.current_diagram)
-
-    def on_scale_change(self, report: annotations.ScaleformReport) -> None:
-        """Receive a report about the change to the main scale paradigm
-        and modify the diagram to reflect it.
-
-        This method is only available when the app is in the "Scale" 
-        interface mode.
-        """
-        # Whenever the scale, mode, or keynote changes, we have to reassign
-        # the active nodes to reflect the new notes and intervals.
-        current_names: list[str] = list(set(self.current_diagram.active_names))
-        positions: list[int] = self.current_diagram.positions(current_names)
-        i: int = positions.index(self.current_diagram.position)
-        data = data_models.HeptatonicRendering(
-            **interface.render_heptatonic_form(**report))
-
-        # Set the diagram to the new scale.
-        self.current_diagram.define_scale(data.chromatic_rendering)
-        self.current_diagram.define_intervals(data.interval_map)
-        self.current_diagram.turn_on_names(data.chromatic_rendering)
-
-        # Set the new position to the value at the old position's index,
-        # in case the old position's value is no longer valid.
-        positions = self.current_diagram.positions(data.chromatic_rendering)
-        self.on_position_change(positions[i])
-        self.position_selector.set_position(
-            self.current_diagram.position, positions)
-
-        # Configure nodes to display correct scale nomenclature
-        self.current_diagram.clear_overrides()
-        self.current_diagram.override_names({k: v for k, v in
-                                             dict(zip(data.chromatic_rendering,
-                                                      data.optimal_rendering)).items()
-                                             if not k == v})
-
-        # The node selector will restore the same settings for each of the 7
-        # intervals, but the intervals' names will be updated for the new
-        # scale configuration.
-        self.scale_node_selector.rename_intervals(
-            [v for k, v in data.interval_map.items()
-             if k in data.chromatic_rendering])
-        for report_ in self.scale_node_selector.summarize():
-            self.current_diagram.apply_node_display_options(report_)
-        self.scale_node_selector.set_subwidget("1")
-
-        self.fingerboard_grid.draw_diagram(self.current_diagram)
-
-    def on_rendering_mode_change(self, report: str) -> None:
-        """Receive a report about the change to the display mode
-        and modify the diagram to reflect it.
-        """
-        self.current_diagram.apply_rendering_mode(report)
-        self.fingerboard_grid.draw_diagram(self.current_diagram)
-
-    def on_position_change(self, report: int) -> None:
-        """Receive a report about the change to the position
-        and modify the diagram to reflect it.
-
-        This method is only available when the app is in the "Scale" 
-        interface mode.
-        """
-        self.current_diagram.change_position(report,
-                                             self.fingering_panel.summarize(),
-                                             self.scale_node_selector.summarize(),
-                                             self.rendering_mode_selector.report())
-        self.fingerboard_grid.draw_diagram(self.current_diagram)
-
-    def on_interface_mode_change(self) -> None:
-        """Change the state of the main panel, and perform any necessary 
-        changes to the UI to accommodate the change."""
-        if self.interface_mode_toggle.current_interface_mode == kws.ARPEGGIO:
-            functions.enable_widget(self.scale_selector, False)
-            functions.enable_widget(self.scale_node_selector, False)
-            functions.enable_widget(self.position_selector, False)
-
-            # rewrite the main app so that we keep two references to diagrams for the
-            # two different modes, then switch between them depending on the user's
-            # interface selection.
-
-            # Basically, we ALLOW the fingering selector and rendering type selector to
-            # make changes to the main diagram, being ignorant of what interface mode
-            # is active, but we DISALLOW the scale selector, position selector, or
-            # scale node controls to make any changes to the arpeggio diagram.
-
-            # THEREFORE: Whenever we switch modes, we clone the last settings for
-            # FINGERING and RENDERING to the the current diagram.
-
-            # current_scale = interface.render_heptatonic_form(**self.scale_selector.report())
-            # self.current_diagram = self.arpeggio_diagram
-
-        elif self.interface_mode_toggle.current_interface_mode == kws.SCALE:
-            functions.enable_widget(self.scale_selector)
-            functions.enable_widget(self.scale_node_selector)
-            functions.enable_widget(self.position_selector)
-
-            # self.diagram = self.scale_diagram
-
-    def on_arpeggio_change(self, report: annotations.ArpeggioFormReport) -> None:
-        """This method is only available when the app is in the "Arpeggio" 
-        interface mode."""
-
-
 ABSTRACT = """
 
 Arpeggio widget

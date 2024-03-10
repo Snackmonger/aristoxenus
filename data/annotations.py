@@ -3,8 +3,11 @@
 from typing import Mapping, Sequence, TypeAlias, TypedDict, Literal
 
 
-
 GuitarFretboard: TypeAlias = Sequence[Sequence[str]]
+
+###############################################################################
+# Canonical scaleform sets
+###############################################################################
 
 HeptatonicScales = Literal["diatonic",
                            "altered",
@@ -16,8 +19,17 @@ HeptatonicScales = Literal["diatonic",
                            "biseptimal",
                            "paleochromatic"]
 
-ModalNames = Literal['ionian', 'dorian', 'phrygian', 'lydian', 'mixolydian', 'aeolian', 'locrian']
+ModalNames = Literal['ionian', 
+                     'dorian', 
+                     'phrygian', 
+                     'lydian', 
+                     'mixolydian', 
+                     'aeolian', 
+                     'locrian']
 
+###############################################################################
+# Chord permutations
+###############################################################################
 
 class TriadConspectus(TypedDict):
     '''
@@ -45,6 +57,9 @@ TriadInventory: TypeAlias = Sequence[TriadConspectus]
 TetradInventory: TypeAlias = Sequence[TetradConspectus]
 ChordInventory: TypeAlias = TriadInventory | TetradInventory
 
+###############################################################################
+# Data associated with specific callback functions in the GUI
+###############################################################################
 
 class ScaleformReport(TypedDict):
     """Report about a scaleform selection. 
@@ -90,6 +105,9 @@ class ArpeggioFormReport(TypedDict):
     node_display_reports: list[NodeDisplayReport]
 
 
+# This structure is being used in the nomenclature module, but its function
+# is probably better suited to the API data below.
+
 class HeptatonicChord(TypedDict):
     """A representation of a chordform contextualized in its parent scale and 
     modal rotation. 
@@ -104,6 +122,9 @@ class HeptatonicChord(TypedDict):
     interval_names: list[str]
 
 
+###############################################################################
+# Large chunks of data assembled by the API
+###############################################################################
 
 class APIScaleFormResponse(TypedDict):
     """Response from the API containing information about a scaleform and its
@@ -112,10 +133,10 @@ class APIScaleFormResponse(TypedDict):
     scale_name: str
     modal_name: str
     interval_structure: int
-    interval_scale: Sequence[str]
-    interval_map: Mapping[str, str]
+    interval_scale: list[str]
+    interval_map: dict[str, str]
     keynote: str
-    chromatic_rendering: Sequence[str]
-    alphabetic_rendering: Sequence[str]
+    chromatic_rendering: list[str]
+    alphabetic_rendering: list[str]
     optimal_keynote: str
-    optimal_rendering: Sequence[str]
+    optimal_rendering: list[str]

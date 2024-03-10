@@ -85,32 +85,28 @@ def render_heptatonic_form(
         nomenclature.decode_enharmonic(keynote))
 
     # Chromatic rendering will use binomials (the 'absolute' spelling)
-    chromatic_rendering: tuple[str, ...] = tuple(
-        rendering.render_plain(scale_base, binomial_base))
+    chromatic_rendering: list[str] = rendering.render_plain(scale_base, binomial_base)
 
     # Optimal rendering is that which has the fewest accidentals, while
     # still maintaining the alphabetic order (the 'correct' spelling).
-    optimal_rendering: tuple[str, ...] = tuple(
-        nomenclature.best_heptatonic(keynote, scale_base))
+    optimal_rendering: list[str] = nomenclature.best_heptatonic(keynote, scale_base)
 
     # Alphabetic rendering forces the nomenclature to follow the given
     # keynote, even if it makes an awkward spelling. If the keynote was
     # a binomial, use the optimal rendering instead.
-    alphabetic_rendering: tuple[str, ...] = optimal_rendering
+    alphabetic_rendering: list[str] = optimal_rendering
     if not keynote in constants.BINOMIALS:
-        alphabetic_rendering: tuple[str, ...] = tuple(
-            nomenclature.force_heptatonic(keynote, scale_base))
+        alphabetic_rendering = nomenclature.force_heptatonic(keynote, scale_base)
 
     # Interval scale is a list of intervals in the scale, spelled correctly so
     # that there is exactly one each of 12334567, plus any accidentals.
-    interval_scale: tuple[str, ...] = tuple(
-        nomenclature.name_heptatonic_intervals(scale_base))
+    interval_scale: list[str] = nomenclature.name_heptatonic_intervals(scale_base)
     
     # Interval map is a dictionary of the chromatic binomials to the
     # 7 correct interval names, plus 5 supplementary names, which can be used
     # to supply chromatic accidentals to the scale intervals. The interval map
     # for just the scale notes could be dict(zip(optimal_rendering, interval_scale))
-    interval_map = nomenclature.get_interval_map(keynote, scale_base)
+    interval_map: dict[str, str] = nomenclature.get_interval_map(keynote, scale_base)
 
     return annotations.APIScaleFormResponse(scale_name=scale_name,
                                             modal_name=modal_name,

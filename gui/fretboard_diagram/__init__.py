@@ -1,4 +1,4 @@
 
-from .widgets import FretboardDiagram
+from .app import FretboardDiagramApp
 
-__all__ = ["FretboardDiagram"]
+__all__ = ["FretboardDiagramApp"]

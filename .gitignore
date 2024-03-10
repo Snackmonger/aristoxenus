@@ -62,3 +62,10 @@ src/__pycache__/vocabulary.cpython-311.pyc
 gui/__pycache__/callbacks.cpython-311.pyc
 tests/__pycache__/test_chord_symbols.cpython-311.pyc
 tests/__pycache__/test_chord_symbols.cpython-311.pyc
+gui/fretboard_diagram/__pycache__/app.cpython-311.pyc
+tests/__pycache__/test_chord_symbols.cpython-311.pyc
+cli/__pycache__/__init__.cpython-311.pyc
+cli/__pycache__/app.cpython-311.pyc
+__pycache__/cli_demo.cpython-311.pyc
+__pycache__/main.cpython-311.pyc
+tests/__pycache__/test_chord_symbols.cpython-311.pyc

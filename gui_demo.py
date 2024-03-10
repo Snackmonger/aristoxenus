@@ -1,9 +1,8 @@
-from tkinter import Tk
-from gui.fretboard_diagram import FretboardDiagram
+
+from gui.fretboard_diagram import FretboardDiagramApp
 
 
 
-t = Tk()
-x = FretboardDiagram(t)
+x = FretboardDiagramApp()
 x.mainloop()
 

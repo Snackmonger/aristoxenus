@@ -11,7 +11,7 @@ from tests.decorators import test_perf
 def test_chord_symbol_from_interval_names(ch_dict: dict[str, list[str]], verbose: bool = False):
     """Perform a series of tests on the chord symbol generation function to 
     see if the correct symbols are being created."""
-
+    print("\n\nBeginning test of chord symbol generation.")
     @test_perf(verbose)
     def __test_ch_symbol_generation(expected_symbol: str, interval_names: list[str]):
         err = f"# Testing intervals\t{interval_names}"
@@ -85,7 +85,10 @@ chord_tests = {"maj": ["1", "3", "5"],
 
 @test_perf(True)
 def test_generate_chord_names_for_heptatonic():
-
+    """Test that all scales in the heptatonic system generate symbols that 
+    are at least readable (if not sensible).
+    """
+    print("\n\nBeginning test of heptatonic chord scale naming function.")
     for scale in keywords.HEPTATONIC_ORDER:
         triads = heptatonic_chord_scale(scale, keywords.IONIAN, "C")
         tetrads = heptatonic_chord_scale(scale, keywords.IONIAN, "C", 4)
