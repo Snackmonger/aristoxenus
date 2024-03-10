@@ -26,21 +26,24 @@ ACCIDENTAL_SYMBOLS = [SHARP_SYMBOL, FLAT_SYMBOL]
 
 
 SHARPS = tuple(note + SHARP_SYMBOL for note in NATURALS
-                       if note not in HALFSTEPS)
+               if note not in HALFSTEPS)
 
 FLATS = tuple(note + FLAT_SYMBOL for note in NATURALS
-                      if note not in HALFSTEPS.values())
+              if note not in HALFSTEPS.values())
 
 BINOMIALS = tuple(sharp + BINOMIAL_DIVIDER_SYMBOL + flat
-                          for flat in FLATS for sharp in SHARPS
-                          if FLATS.index(flat) == SHARPS.index(sharp))
+                  for flat in FLATS for sharp in SHARPS
+                  if FLATS.index(flat) == SHARPS.index(sharp))
 
 ACCIDENTAL_NOTES = tuple(SHARPS + FLATS)
 
-
 ACCIDENTAL_TYPES = [SHARPS, FLATS, BINOMIALS]
 
+LEGAL_ROOT_NAMES = tuple([n for c in [NATURALS, SHARPS, FLATS] for n in c]
+                          + [n + SHARP_SYMBOL for n in HALFSTEPS]
+                          + [n + FLAT_SYMBOL for n in HALFSTEPS.values()])
+
 # Chord voicings
-DROP_2 = (1,) # c e g b -> c g b e 
-DROP_3 = (1, 2) # c e g b -> c b e g
-DROP_2_AND_4 = (1, 3) # c e g b -> c g e b 
+DROP_2 = (1,)  # c e g b -> c g b e
+DROP_3 = (1, 2)  # c e g b -> c b e g
+DROP_2_AND_4 = (1, 3)  # c e g b -> c g e b

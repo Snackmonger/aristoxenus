@@ -16,7 +16,7 @@ from src import (nomenclature,
 def __remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
     root: str
-    for note in sorted(nomenclature.legal_chord_names(), key=len, reverse=True):
+    for note in sorted(constants.LEGAL_ROOT_NAMES, key=len, reverse=True):
         if note in chord_symbol:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)

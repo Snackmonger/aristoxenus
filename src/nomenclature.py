@@ -35,7 +35,6 @@ from src import (bitwise,
 __all__ = ["chromatic",
            "enharmonic_decoder",
            "get_enharmonic_equivalents",
-           "legal_chord_names",
            "decode_enharmonic",
            "encode_enharmonic",
            "scientific_octave",
@@ -128,14 +127,6 @@ def get_enharmonic_equivalents(note_name: str) -> list[str]:
     ['C####', 'D##', 'E', 'F###########', 'G#########', 'A#######', 'B#####', 'Cbbbbbbbb', 'Dbbbbbbbbbb', 'Fb', 'Gbbb', 'Abbbbb', 'Bbbbbbbb']
     '''
     return [key for key, value in enharmonic_decoder().items() if value == note_name]
-
-
-def legal_chord_names() -> list[str]:
-    '''
-    Return a list of note names that can function as legal chord root symbols. 
-    '''
-    # Any natural or any natural + 1 accidental
-    return [key for key in enharmonic_decoder() if len(key) <= 2]
 
 
 def __identity(note_name: str) -> str:
@@ -709,6 +700,57 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
     return intervals
 
 
+def twelve_tone_scale_names(note_names: Sequence[str]) -> list[str]:
+    """Return a list that contains the given 7 note names, plus
+    5 more note names that supply the missing chromatic notes.
+    
+    This function is designed to ensure that heptatonic scales that mix sharps
+    and flats, or which begin with an enharmonic halfstep (e.g. Cb), are still
+    able to be contextualized within chromatic scales.
+    """
+    if not len({decode_enharmonic(x) for x in note_names}) == 7:
+        raise errors.HeptatonicScaleError("Function requires a heptatonic scale.")
+    
+    if any([x in constants.BINOMIALS for x in note_names]):
+        raise errors.NoteNameError("Function cannot process binomial note names.")
+    
+    scale: list[str] = list(note_names)
+    chromatic_: list[str] = ["" for _ in range(12)]
+    enharmonic_keynote: str = decode_enharmonic(scale[0])
+    binomial_scale_names: list[str] = [decode_enharmonic(x) for x in scale]
+    accidental_signature: dict[str, int] = count_accidentals(scale)
+    binomial_chromatic: list[str] = utils.shift_list(chromatic(), enharmonic_keynote)
+    accidentals: tuple[str, ...] = constants.SHARPS
+    if accidental_signature[constants.SHARP_SYMBOL] < accidental_signature[constants.FLAT_SYMBOL]:
+        accidentals = constants.FLATS
+
+    for i, note in enumerate(binomial_chromatic):
+        if note in binomial_scale_names:
+            chromatic_[i] = scale[binomial_scale_names.index(note)]
+        elif note in constants.BINOMIALS:
+            chromatic_[i] = accidentals[constants.BINOMIALS.index(note)]
+        elif note in constants.NATURALS:
+            chromatic_[i] = note
+
+    return chromatic_    
+                
+
+def count_accidentals(note_names: Sequence[str]) -> dict[str, int]:
+    """Return the total number of accidentals of each type in a given list of
+    note names.
+    """
+    if any(x in constants.BINOMIALS for x in note_names):
+        raise errors.NoteNameError("Function cannot process binomial note names.")
+    sharps = 0
+    flats = 0
+    for note in note_names:
+        for count, accidental in [(sharps, constants.SHARP_SYMBOL), 
+                                  (flats, constants.FLAT_SYMBOL)]:
+            count += note.count(accidental)
+    return {constants.SHARP_SYMBOL: sharps, constants.FLAT_SYMBOL: flats}
+
+
+
 def interval_identity(item: str) -> int:
     """Return the numeric part of a numerical interval symbol.
 
@@ -735,7 +777,7 @@ def get_interval_map(tonal_centre: str,
     centre is a binomial, it will resolve into the best names. If the binomial
     flag is set to True, then the note names will simply be the binomials.
     """
-    if tonal_centre not in legal_chord_names():
+    if tonal_centre not in constants.LEGAL_ROOT_NAMES:
         tonal_centre = decode_enharmonic(tonal_centre)
     real_names: Sequence[str]
 
@@ -745,6 +787,11 @@ def get_interval_map(tonal_centre: str,
         real_names = force_heptatonic(tonal_centre, scale)
 
     tonal_centre = real_names[0]
+
+    # TODO: Notes like Cb Fb E# and B# cause an error here because the 
+    # ``get_accidentals`` function just returns the standard 5 accidentals.
+    # NOTE: I wrote ``twelve_tone_scale_names`` to solve this, but this function
+    # has to be rewritten a bit to accommodate the new data.
     binomial_names: Sequence[str] = [decode_enharmonic(x) for x in real_names] 
     accidental_chromatic: Sequence[str] = utils.shift_list(
         chromatic(get_accidentals(tonal_centre)), tonal_centre)

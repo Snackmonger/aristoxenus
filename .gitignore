@@ -1,4 +1,4 @@
-.vscode/settings.json
+.vscode
 src/__pycache__/__init__.cpython-311.pyc
 src/__pycache__/nomenclature.cpython-311.pyc
 tests/__pycache__/__init__.cpython-311.pyc
@@ -45,12 +45,10 @@ gui/__pycache__/config.cpython-311.pyc
 gui/fretboard_diagram/__pycache__/config.cpython-311.pyc
 gui/fretboard_diagram/__pycache__/functions.cpython-311.pyc
 src/models/__pycache__/data_structures.cpython-311.pyc
-.gitignore
 src/models/__pycache__/data_structures.cpython-311.pyc
 data/__pycache__/data_models.cpython-311.pyc
 tests/__pycache__/decorators.cpython-311.pyc
 tests/__pycache__/test_chord_symbols.cpython-311.pyc
-
 src/__pycache__/base_structures.cpython-311.pyc
 src/__pycache__/bit_manipulation.cpython-311.pyc
 src/__pycache__/constants.cpython-311.pyc
@@ -69,3 +67,4 @@ cli/__pycache__/app.cpython-311.pyc
 __pycache__/cli_demo.cpython-311.pyc
 __pycache__/main.cpython-311.pyc
 tests/__pycache__/test_chord_symbols.cpython-311.pyc
+.gitignore
