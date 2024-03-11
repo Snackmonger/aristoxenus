@@ -1,0 +1,83 @@
+
+import doctest
+from typing import Optional
+
+from src import (bitwise,
+                 nomenclature,
+                 permutation,
+                 parsing,
+                 interface)
+
+from data import (keywords,
+                  annotations)
+
+from tests.decorators import test_perf
+from tests.test_data import chord_tests
+
+
+def do_doctests(verbose: bool = False) -> None:
+    """Run the tests in the core modules' docstrings."""
+    doctest.testmod(bitwise, verbose=verbose)
+    doctest.testmod(nomenclature, verbose=verbose)
+    doctest.testmod(permutation, verbose=verbose)
+    doctest.testmod(parsing, verbose=verbose)
+
+
+@test_perf(True)
+def test_chord_symbol_from_interval_names(
+    ch_dict: Optional[dict[str, list[str]]] = None,
+    verbose: bool = False
+) -> None:
+    """Perform a series of tests on the chord symbol generation function to 
+    see if the correct symbols are being created.
+    """
+    @test_perf(verbose)
+    def __test_ch_symbol_generation(expected_symbol: str, interval_names: list[str]):
+        err = f"# Testing intervals\t{interval_names}"
+        x = parsing.parse_interval_names_as_chord_symbol(interval_names)
+        test_passed = x == expected_symbol
+        err += f"\n# Expected symbol\t{expected_symbol}"
+        err += f"\n# Actual symbol\t\t{x}"
+        err += f"\n# Test passed\t\t{test_passed}"
+        err += "\n#######################################################"
+        if not test_passed or verbose:
+            print(err)
+
+        return test_passed
+
+    if not ch_dict:
+        ch_dict = chord_tests
+    print("\n\nBeginning test of chord symbol generation.")
+    test_total = 0
+    for k, v in ch_dict.items():
+        x = __test_ch_symbol_generation(k, v)
+        if x:
+            test_total += 1
+    print(f"Passed {test_total}/{len(ch_dict)} tests.")
+
+
+@test_perf(True)
+def test_generate_chord_names_for_heptatonic():
+    """Test that all scales in the heptatonic system generate symbols that 
+    are at least readable (if not sensible).
+    """
+    print("\n\nBeginning test of heptatonic chord scale naming function.")
+    for scale in keywords.HEPTATONIC_ORDER:
+        triads = interface.heptatonic_chord_scale(scale, keywords.IONIAN, "C")
+        tetrads = interface.heptatonic_chord_scale(
+            scale, keywords.IONIAN, "C", 4)
+        print("##################################################")
+        print(f"# Now trying {scale} scale")
+        for i in range(7):
+            triad: annotations.HeptatonicChord = triads[i]
+            tetrad: annotations.HeptatonicChord = tetrads[i]
+            root = triad["root"]
+            triad_stem = parsing.parse_interval_names_as_chord_symbol(
+                triad["interval_names"])
+            tetrad_stem = parsing.parse_interval_names_as_chord_symbol(
+                tetrad["interval_names"])
+
+            pad1 = 20 - len(root+triad_stem)
+            pad2 = 20 - len(root+tetrad_stem)
+            print(
+                f"# {triad['numeric_degree']}\t::{' '*pad1}{root + triad_stem}{' '*pad2}{root + tetrad_stem}")

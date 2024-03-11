@@ -17,7 +17,6 @@ display note names for most functions.
 '''
 
 from typing import Callable, Sequence
-from dataclasses import dataclass
 
 from data import (constants,
                   keywords,
@@ -776,6 +775,7 @@ def get_interval_map(tonal_centre: str,
     if tonal_centre not in constants.LEGAL_ROOT_NAMES:
         tonal_centre = decode_enharmonic(tonal_centre)
 
+    accidentals = get_accidentals(tonal_centre)
     if tonal_centre in constants.BINOMIALS:
         real_names = best_heptatonic(tonal_centre, scale)
     else:
@@ -786,10 +786,21 @@ def get_interval_map(tonal_centre: str,
             chromatic(), decode_enharmonic(tonal_centre)), interval_symbols))
     
     if not binomial:
+        if accidentals == constants.BINOMIALS:
+            accidentals = constants.SHARPS
         for note_name in real_names:
             if (n := decode_enharmonic(note_name)) in mapping:
                 v = mapping.pop(n)
                 mapping[note_name] = v
+
+        for note_name in constants.BINOMIALS:
+            if note_name in mapping:
+                i = constants.BINOMIALS.index(note_name)
+                note_name_ = accidentals[i]
+                v = mapping.pop(note_name)
+                mapping[note_name_] = v
+
+
     return mapping
 
     # tonal_centre = real_names[0]
@@ -821,92 +832,3 @@ def get_interval_map(tonal_centre: str,
 
     # return dict(zip(special_chromatic, interval_symbols))
 
-
-def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
-                           mode: annotations.ModalNames,
-                           keynote: str,
-                           number_of_notes: int | str = 3,
-                           base_step: int | str = 2
-                           ) -> list[annotations.HeptatonicChord]:
-    '''
-    Create chords from the nomenclaturally-correct form of the given scale 
-    and return a list of dictionaries representing the chords built from each 
-    degree of that scale, spelled according to the nomenclature of the parent 
-    scale.
-
-    Parameters
-    ----------
-    scale : annotations.HeptatonicScales
-        A name representing a canonical scale base.
-    mode : annotations.ModalNames
-        A name representing a degree of scalar rotation.
-    keynote : str
-        A name representing the tonal centre of the scale.
-    number_of_notes : int | str, optional
-        The number of notes in the chord, by default 3. This can be expressed
-        with an integer, or a keyword representing a chord type (e.g. "triad")
-    base_step : int | str, optional
-        The number of scale steps between chord tones, by default 2. This can
-        be expressed with an integer or a keyword representing a step type 
-        (e.g. "tertial"). Note that the number of steps starts at 0, so that
-        2 == tertial.
-
-    Return
-    ------
-    list of dict of
-        degree: str               : The root interval in the parent scale.
-        root: str                 : The root note of the chord.
-        notes: list[str]          : The spelling of the notes of the chord.
-        interval_structure: int   : A number representing the chord structure.
-        interval_names: list[str] : The spelling of the intervals of the chord.
-
-    Examples
-    --------
-    >>> x = heptatonic_chord_scale("diatonic", "ionian", "C", 4)
-    >>> x[0]
-    {'numeric_degree': '1', 'root': 'C', 'notes': ['C', 'E', 'G', 'B'], 'interval_structure': 2193, 'interval_names': ['1', '3', '5', '7']}
-
-    '''
-    if isinstance(number_of_notes, str):
-        number_of_notes = decode_numeric_keyword(number_of_notes)
-    if isinstance(base_step, str):
-        base_step = decode_numeric_keyword(base_step)
-
-    base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale]
-    rotations: int = keywords.MODAL_NAME_SERIES.index(mode)
-    interval_structure: int = bitwise.get_modal_form(base, rotations)
-    note_names: list[str] = best_heptatonic(keynote,
-                                            interval_structure)
-    parent_interval_names: list[str] = name_heptatonic_intervals(
-        interval_structure)
-    chords: dict[str, int] = permutation.chordify(interval_structure,
-                                                  number_of_notes,
-                                                  base_step)
-    collection: list[annotations.HeptatonicChord] = []
-
-    for i, note in enumerate(note_names):
-        new_notes: list[str] = utils.shift_list(note_names, note)
-        interval_names: list[str] = name_heptatonic_intervals(
-            new_notes)
-        upper_octave: list[str] = []
-        for interval_name in interval_names:
-            for char in interval_name:
-                if char.isdigit():
-                    upper_octave.append(
-                        interval_name.replace(char, str(int(char)+7)))
-        interval_names += upper_octave
-        new_notes += new_notes
-
-        if number_of_notes > len(new_notes):
-            number_of_notes = len(new_notes)
-
-        chord = new_notes[::base_step][:number_of_notes]
-        chord_intervals = interval_names[::base_step][:number_of_notes]
-        x = annotations.HeptatonicChord(numeric_degree=parent_interval_names[i],
-                                        root=note,
-                                        notes=chord,
-                                        interval_structure=list(
-                                            chords.values())[i],
-                                        interval_names=chord_intervals)
-        collection.append(x)
-    return collection

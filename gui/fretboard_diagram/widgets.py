@@ -1,5 +1,5 @@
 
-"""Widgets that make up the tkinter GUI of the FingeringDiagram app."""
+"""Widgets that make up the GUI of the Fingering Diagram app."""
 import typing
 import tkinter as tk
 from tkinter import (

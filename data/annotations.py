@@ -105,8 +105,11 @@ class ArpeggioFormReport(TypedDict):
     node_display_reports: list[NodeDisplayReport]
 
 
-# This structure is being used in the nomenclature module, but its function
-# is probably better suited to the API data below.
+
+###############################################################################
+# Data assembled for return through the API
+###############################################################################
+
 
 class HeptatonicChord(TypedDict):
     """A representation of a chordform contextualized in its parent scale and 
@@ -121,10 +124,6 @@ class HeptatonicChord(TypedDict):
     interval_structure: int
     interval_names: list[str]
 
-
-###############################################################################
-# Large chunks of data assembled by the API
-###############################################################################
 
 class APIScaleFormResponse(TypedDict):
     """Response from the API containing information about a scaleform and its

@@ -7,7 +7,7 @@ ARISTOXENUS MUSIC THEORY REFERNCE GUIDE
 Abstract Concepts
 =================
 
-Pitch height
+Pitch Height
 ------------
 In English, and many other languages, the multiplication of a frequency is expressed in terms of height, and the division of frequency
 is expressed in terms of depth. This is a type of widespread, but not universal metaphor.
@@ -17,9 +17,9 @@ referred to what English speakers think of as the 'highest' pitch of the system,
 referred to what English speakers think of as the 'lowest' pitch. 
 The philosopher and historian Plutarch of Chaeroneia (mid 1st- early 2nd century A.D.) has this to say about the idea of high and low pitch:
     Or is it a ridiculous thing to allot 'first' and 'middle' and 'last' to positions, when we observe that the note *hypate* is 
-    the highest and first (τὸν ἀνωτάτω καὶ πρῶτον) on the lyre, but the low and last (τὸν κάτω καὶ τὸν τελευταῖον) on the auloi; 
-    or, moreover, that the note *mese* sounds sharper than hypate and heavier than *nete*, in whatever position of the lyre someone 
-    might place it, as long as the tuning is consistent? [#]_
+    the highest and first (τὸν ἀνωτάτω καὶ πρῶτον, *ton anotato kai proton*) on the lyre, but the low and last (τὸν κάτω καὶ τὸν τελευταῖον, 
+    *ton kato kai ton teleutaion*) on the auloi; or, moreover, that the note *mese* sounds sharper than hypate and heavier than *nete*, 
+    in whatever position of the lyre someone might place it, as long as the tuning is consistent? [#]_
 
 In more modern times, it has sometimes been assumed that the tendency to conceptualize pitch in terms of height is actually reflective
 of innate human perceptual associations. Since the 1970s, renewed scholarly interest in the question has cast doubts on some of those
@@ -43,18 +43,15 @@ even though a note might be called 'high', they did not extend this description 
 in Greek until around the 10th century (although they are rarely used in inconsistent ways before then). So, even while some terms relating to height were used by the Greeks in their note names, they do not seem to have
 extended this concept to other types of musical metaphorical language.
 
-Notes are characterized as 'sharp' and 'heavy' in the Greek system. The note called 'lowest' is the 'sharpest' in the Greek system, which we would call 'highest'. Conversely, the note
-called 'highest' is the 'heaviest' in the Greek system, which we would call 'lowest'. When the Greeks referred to changes of pitch, they did not call that 'ascent/descent' as we do, 
-but they also did not refer to it as 'sharpening/weighting' as the terms 'sharp' and 'heavy' might suggest. Instead, they refer to the increase of pitch as a 'tightening', and to the decrease
-of pitch as a 'loosening', again deriving the terminology from the strings of the lyre.
+Notes are characterized as 'sharp' and 'heavy' in the Greek system. The note called 'lowest' (*nete*) is the 'sharpest' (*oxytaton*) in the Greek system, which we would call 'highest'. Conversely, the note
+called 'highest' (*hypate*) is the 'heaviest' (*barytaton*) in the Greek system, which we would call 'lowest'. When the Greeks referred to changes of pitch, they did not use the terms 'ascent / descent' as we do. 
+Since they called notes 'sharp' and 'heavy', one might expect that 'ascent' and 'descent' should be 'sharpening' and 'heavy-ing', but instead, they referred to the increase of pitch as a 'tightening' (*epitasis*), and to the decrease
+of pitch as a 'loosening' (*aniesis*), again deriving the terminology from the strings of the lyre.
 
 .. [#]  Plut. *Platonicae Quaestiones*, 1008e.
 .. [#]  See, e.g. Smith-Sera 1992, Martino-Marks 1999, Shayan 2011, Dolscheid-Shayan-Majid-Cassanto 2013, Dolscheid 2017, Majid 2018, Dolscheid 2020.
 .. [#]  Nicomachus of Gerasa, *Harmonicum Enchiridion*, 12.1.
 
-Next Topic
-----------
-This is the beginning of the next topic. Does it get added under the previous one in the table of contents?
 
 Glossary
 ========

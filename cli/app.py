@@ -34,6 +34,10 @@ _state = CLI_State()
 def aristoxenus(context: click.Context) -> None:
     """
     [yellow u]Aristoxenus Library Command-Line Interface[/yellow u]
+
+    The Aristoxenus library is a suite of musical functions and tools, and
+    some of these can be accessed without much difficulty from the
+    command-line. 
     """
     context.obj = _state
 
@@ -47,40 +51,23 @@ def fretboard_diagram() -> None:
 
 
 @aristoxenus.command()
-@click.option("--scale",
+@click.option("--scale", "-s",
               type=click.Choice(K.HEPTATONIC_ORDER, case_sensitive=False),
               prompt=True,
               help="The name of the parent scale.")
-@click.option("--mode",
+@click.option("--mode", "-m",
               type=click.Choice(K.MODAL_NAME_SERIES, case_sensitive=False),
               prompt=True,
               help="The name of the modal rotation.")
-@click.option("--keynote",
+@click.option("--keynote", "-k",
               type=click.Choice(C.LEGAL_ROOT_NAMES, case_sensitive=False),
               prompt=True,
               help="The name of the note to use as the tonal centre.")
-@click.option("--save", "-s",
-              flag_value=True,
-              default=False,
-              help="Save the result in memory.")
-@click.pass_obj
-def heptatonic_form(state: CLI_State,
-                    scale: T.HeptatonicScales,
+def heptatonic_form(scale: T.HeptatonicScales,
                     mode: T.ModalNames,
-                    keynote: str,
-                    save: bool) -> None:
+                    keynote: str
+                    ) -> None:
     """Get details about a heptatonic scale form."""
     data_ = I.render_heptatonic_form(scale, mode, keynote)
 
-    for k, v in data_.items():
-        click.echo((k, v))
-
-    if save:
-        click.echo("Save flag!")
-        state.scale = data_
-
-
-@aristoxenus.command()
-@click.pass_obj
-def current_state(state: CLI_State) -> None:
-    print(state.scale)
+    rich.print(data_)
