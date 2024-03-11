@@ -158,8 +158,9 @@ class FingeringNode:
         self.text_size: int = text_size
 
     def __repr__(self) -> str:
+        repr_ = ""
         if not self.is_active:
-            return str()
+            return repr_
 
         match self.rendering_mode:
             case keywords.FRET:

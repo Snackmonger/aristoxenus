@@ -305,7 +305,7 @@ Harmonic Scale
 Biseptimal scale
     C D E F G A# B 
 
-    Placeholder name for now... Named for the fact that the scale enharmonically seems to have a b7 and natural 7.
+    Our own designation, derived from the fact that the scale enharmonically seems to have a b7 and natural 7.
 
 Paleochromatic Scale
     C Db E F Gb A B
@@ -355,7 +355,7 @@ Interval structures can be expressed as modal symbols.
 The point of reference for each modal name is the parallel mode of the diatonic scale, and every modifier is understood
 as *replacing* the corresponding note of the diatonic mode. If the modifier symbol is
 already present in the underlying diatonic mode, no replacement will take place. In this 
-context, the modifier symbols can never be used to make a scale other than a heptatonic scale. E.g.:
+context, the modifier symbols will always be resolved into heptatonic structures. E.g.:
 
     - aeoliannat3 -> altered aeolian
     - lydianb3 -> harmonic lydian
@@ -366,13 +366,13 @@ program will always identify a collection as 'doriannat7', never 'ionianb3', sin
 and under this paradigm 'doriannat7' means 'altered dorian'.
 
 Modifier symbols are '#', 'b', and 'nat' (= natural) plus a numeral between 2 and 7 (we do
-not allow for a sharp tonic, although it may be conceptually useful). No matter how the user
-attempts to rationalize a modal symbol, the parser will relate it to the canonical scales and
-their modes when seeking a match:
+not allow for a sharp tonic, although it may be conceptually useful). The parser will always relate a modified modal name
+back to its *canonical* scale and mode name, and the modified modal name will be considered an *alias* of the canonical name:
 
     - mixolydianb6 -> altered aeolian
     - lydian#6 -> hemiolic lydian
     - dorian#4nat7 -> harmonic lydian
+
 
 Extended Modal Symbols
 ----------------------

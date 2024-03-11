@@ -439,6 +439,8 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     --------
     >>> best_heptatonic('A#|Bb', 0b101010110101)
     ['Bb', 'C', 'D', 'Eb', 'F', 'G', 'A']
+    >>> best_heptatonic('D#|Eb', 0b101010110101)
+    ['Eb', 'F', 'G', 'Ab', 'Bb', 'C', 'D']
     >>> best_heptatonic('E#', 0b101010110101)
     ['F', 'G', 'A', 'Bb', 'C', 'D', 'E']
     '''
@@ -449,46 +451,32 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     if note_name in constants.NATURALS:
         return force_heptatonic(note_name, interval_structure)
 
-    @dataclass
-    class ScaleSynopsis():
-        '''A synopsis of the accidentals of a scale.'''
-        sharps: int
-        flats: int
-        scale: list[str]
-        mixed: bool
-
     note_index: int = constants.BINOMIALS.index(note_name)
-    sharp_scale = ScaleSynopsis(0, 0, force_heptatonic(
-        constants.SHARPS[note_index], interval_structure), False)
-    flat_scale = ScaleSynopsis(0, 0, force_heptatonic(
-        constants.FLATS[note_index], interval_structure), False)
+    sharps_scale = force_heptatonic(constants.SHARPS[note_index], interval_structure)
+    flats_scale = force_heptatonic(constants.FLATS[note_index], interval_structure)
 
-    synopseis = [sharp_scale, flat_scale]
-    # Count the accidentals in each version.
-    for synopsis in synopseis:
-        for note in synopsis.scale:
-            synopsis.sharps = note.count('#') + synopsis.sharps
-            synopsis.flats = note.count('b') + synopsis.flats
-        if synopsis.sharps > 0 and synopsis.flats > 0:
-            synopsis.mixed = True
-    s_total: int = sharp_scale.sharps + sharp_scale.flats
-    f_total: int = flat_scale.sharps + flat_scale.flats
-
-    # Return the scale with the fewest accidentals.
+    # The best name can be decided by fewest total accidentals
+    f_count = count_accidentals(flats_scale)
+    s_count = count_accidentals(sharps_scale)
+    s_total = s_count["#"] + s_count["b"]
+    f_total = f_count["#"] + f_count["b"]
     if s_total > f_total:
-        return flat_scale.scale
-    if s_total < f_total:
-        return sharp_scale.scale
+        return flats_scale
+    if f_total > s_total:
+        return sharps_scale
 
-    # With both scales having equal accidentals, return the pure one.
-    if s_total == f_total:
-        if sharp_scale.mixed is True and flat_scale.mixed is False:
-            return flat_scale.scale
-        if sharp_scale.mixed is False and flat_scale.mixed is True:
-            return sharp_scale.scale
-
-    # Scales are equivalent, arbitrarily default to sharps
-    return sharp_scale.scale
+    # If accidentals are equal, the best name is the one that does not mix
+    smix = s_count["#"] > 0 and s_count["b"] > 0
+    fmix = f_count["#"] > 0 and f_count["b"] > 0
+    if f_total == s_total:
+        if smix and not fmix:
+            return flats_scale
+        if fmix and not smix:
+            return sharps_scale
+        
+    # By this point, we know that the scales have equal number accidentals,
+    # and both/neither are mixed. Resolve by arbitrarily defaulting to sharps.
+    return sharps_scale
 
 
 def is_abcdefg(note_names: list[str]) -> bool:
@@ -529,8 +517,14 @@ def decode_numeric_keyword(term: str) -> int:
 
     Examples
     --------
-    >>> decode_numeric_keyword('tertial')
+    >>> decode_numeric_keyword('triad')
     3
+    >>> decode_numeric_keyword('tertial')
+    2
+
+    The basal numbers are used to encode steps 
+    in list slices, so tertial => 2.
+
     >>> decode_numeric_keyword('pentad')
     5
     '''
@@ -703,23 +697,26 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
 def twelve_tone_scale_names(note_names: Sequence[str]) -> list[str]:
     """Return a list that contains the given 7 note names, plus
     5 more note names that supply the missing chromatic notes.
-    
+
     This function is designed to ensure that heptatonic scales that mix sharps
     and flats, or which begin with an enharmonic halfstep (e.g. Cb), are still
     able to be contextualized within chromatic scales.
     """
     if not len({decode_enharmonic(x) for x in note_names}) == 7:
-        raise errors.HeptatonicScaleError("Function requires a heptatonic scale.")
-    
+        raise errors.HeptatonicScaleError(
+            "Function requires a heptatonic scale.")
+
     if any([x in constants.BINOMIALS for x in note_names]):
-        raise errors.NoteNameError("Function cannot process binomial note names.")
-    
+        raise errors.NoteNameError(
+            "Function cannot process binomial note names.")
+
     scale: list[str] = list(note_names)
     chromatic_: list[str] = ["" for _ in range(12)]
     enharmonic_keynote: str = decode_enharmonic(scale[0])
     binomial_scale_names: list[str] = [decode_enharmonic(x) for x in scale]
     accidental_signature: dict[str, int] = count_accidentals(scale)
-    binomial_chromatic: list[str] = utils.shift_list(chromatic(), enharmonic_keynote)
+    binomial_chromatic: list[str] = utils.shift_list(
+        chromatic(), enharmonic_keynote)
     accidentals: tuple[str, ...] = constants.SHARPS
     if accidental_signature[constants.SHARP_SYMBOL] < accidental_signature[constants.FLAT_SYMBOL]:
         accidentals = constants.FLATS
@@ -732,23 +729,22 @@ def twelve_tone_scale_names(note_names: Sequence[str]) -> list[str]:
         elif note in constants.NATURALS:
             chromatic_[i] = note
 
-    return chromatic_    
-                
+    return chromatic_
+
 
 def count_accidentals(note_names: Sequence[str]) -> dict[str, int]:
     """Return the total number of accidentals of each type in a given list of
     note names.
     """
     if any(x in constants.BINOMIALS for x in note_names):
-        raise errors.NoteNameError("Function cannot process binomial note names.")
-    sharps = 0
-    flats = 0
+        raise errors.NoteNameError(
+            "Function cannot process binomial note names.")
+    sharps: int = 0
+    flats: int = 0
     for note in note_names:
-        for count, accidental in [(sharps, constants.SHARP_SYMBOL), 
-                                  (flats, constants.FLAT_SYMBOL)]:
-            count += note.count(accidental)
+        sharps += note.count(constants.SHARP_SYMBOL)
+        flats += note.count(constants.FLAT_SYMBOL)
     return {constants.SHARP_SYMBOL: sharps, constants.FLAT_SYMBOL: flats}
-
 
 
 def interval_identity(item: str) -> int:
@@ -764,7 +760,7 @@ def interval_identity(item: str) -> int:
     return int(item[-1])
 
 
-def get_interval_map(tonal_centre: str, 
+def get_interval_map(tonal_centre: str,
                      scale: int = intervallic_canon.DIATONIC_SCALE,
                      binomial: bool = False
                      ) -> dict[str, str]:
@@ -779,36 +775,51 @@ def get_interval_map(tonal_centre: str,
     """
     if tonal_centre not in constants.LEGAL_ROOT_NAMES:
         tonal_centre = decode_enharmonic(tonal_centre)
-    real_names: Sequence[str]
 
     if tonal_centre in constants.BINOMIALS:
         real_names = best_heptatonic(tonal_centre, scale)
     else:
         real_names = force_heptatonic(tonal_centre, scale)
 
-    tonal_centre = real_names[0]
-
-    # TODO: Notes like Cb Fb E# and B# cause an error here because the 
-    # ``get_accidentals`` function just returns the standard 5 accidentals.
-    # NOTE: I wrote ``twelve_tone_scale_names`` to solve this, but this function
-    # has to be rewritten a bit to accommodate the new data.
-    binomial_names: Sequence[str] = [decode_enharmonic(x) for x in real_names] 
-    accidental_chromatic: Sequence[str] = utils.shift_list(
-        chromatic(get_accidentals(tonal_centre)), tonal_centre)
     interval_symbols: Sequence[str] = list(twelve_tone_scale_intervals(scale))
-    special_chromatic: Sequence[str] = []
+    mapping = dict(zip(utils.shift_list(
+            chromatic(), decode_enharmonic(tonal_centre)), interval_symbols))
+    
+    if not binomial:
+        for note_name in real_names:
+            if (n := decode_enharmonic(note_name)) in mapping:
+                v = mapping.pop(n)
+                mapping[note_name] = v
+    return mapping
 
-    for i in range(constants.TONES):
-        note = accidental_chromatic[i]
-        if (b:=decode_enharmonic(note)) in binomial_names:
-            j = binomial_names.index(b)
-            note = real_names[j]
-        special_chromatic.append(note)
+    # tonal_centre = real_names[0]
 
-    if binomial:
-        special_chromatic = utils.shift_list(chromatic(), decode_enharmonic(tonal_centre))
+    # # TODO: Notes like Cb Fb E# and B# cause an error here because the
+    # # ``get_accidentals`` function just returns the standard 5 accidentals.
+    # # NOTE: I wrote ``twelve_tone_scale_names`` to solve this, but this function
+    # # has to be rewritten a bit to accommodate the new data.
+    # binomial_names: Sequence[str] = [decode_enharmonic(x) for x in real_names]
+    # if tonal_centre in ["E#", "Fb", "Cb", "B#"]:
+    #     accidental_chromatic = twelve_tone_scale_names(real_names)
+    # else:
+    #     accidental_chromatic = utils.shift_list(
+    #     chromatic(get_accidentals(tonal_centre)), tonal_centre)
 
-    return dict(zip(special_chromatic, interval_symbols))
+    
+    # special_chromatic: Sequence[str] = []
+
+    # for i in range(constants.TONES):
+    #     note = accidental_chromatic[i]
+    #     if (b := decode_enharmonic(note)) in binomial_names:
+    #         j = binomial_names.index(b)
+    #         note = real_names[j]
+    #     special_chromatic.append(note)
+
+    # if binomial:
+    #     special_chromatic = utils.shift_list(
+    #         chromatic(), decode_enharmonic(tonal_centre))
+
+    # return dict(zip(special_chromatic, interval_symbols))
 
 
 def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
@@ -851,7 +862,7 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
 
     Examples
     --------
-    >>> x = basic_chord_scale("diatonic", "ionian", "C")
+    >>> x = heptatonic_chord_scale("diatonic", "ionian", "C", 4)
     >>> x[0]
     {'numeric_degree': '1', 'root': 'C', 'notes': ['C', 'E', 'G', 'B'], 'interval_structure': 2193, 'interval_names': ['1', '3', '5', '7']}
 
@@ -891,10 +902,11 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales,
 
         chord = new_notes[::base_step][:number_of_notes]
         chord_intervals = interval_names[::base_step][:number_of_notes]
-        x = annotations.HeptatonicChord(numeric_degree=parent_interval_names[i], 
-                                        root=note, 
-                                        notes=chord, 
-                                        interval_structure=list(chords.values())[i], 
+        x = annotations.HeptatonicChord(numeric_degree=parent_interval_names[i],
+                                        root=note,
+                                        notes=chord,
+                                        interval_structure=list(
+                                            chords.values())[i],
                                         interval_names=chord_intervals)
         collection.append(x)
     return collection

@@ -68,3 +68,4 @@ __pycache__/cli_demo.cpython-311.pyc
 __pycache__/main.cpython-311.pyc
 tests/__pycache__/test_chord_symbols.cpython-311.pyc
 .gitignore
+tests/__pycache__/test_chord_symbols.cpython-311.pyc

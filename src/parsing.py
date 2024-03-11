@@ -95,6 +95,8 @@ def parse_chord_symbol(chord_symbol: str) -> int:
     '0b1000000100100010010001'
     >>> bin(parse_chord_symbol('G7b9'))
     '0b10010010010001'
+    >>> bin(parse_chord_symbol('Fmajsus2'))
+    '0b10000101'
     '''
     # Remove contradictory symbol usage of '/'
     # AFAIK, this is the only symbol to conflict with slash notation
@@ -221,7 +223,7 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
     # symbol indicating a 3rd.
     for sus in [chord_symbols.CHORD_SUS_2, chord_symbols.CHORD_SUS_4]:
         if sus in parsed_symbols:
-            structure ^= intervals.DITONE | intervals.HEMIOLION
+            structure &= (~intervals.DITONE & ~intervals.HEMIOLION) - 1
 
     # Handle add/no notation
     for symbol in add_drop:
@@ -229,7 +231,7 @@ def parse_simple_chord_suffix(chord_symbol: str) -> int:
             structure |= chord_symbols.additive[symbol]
 
         elif symbol in chord_symbols.subtractive:
-            structure ^= (chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
+            structure &= (~chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
 
     # if chord_symbol != '':
         # logger.info(f'Parsed: {parsed_symbols}, Unparsed: {chord_symbol}')
@@ -461,6 +463,7 @@ def identify_triad(interval_structure: int
     >>> identify_triad(0b10001001) == {'result': {'canonical_name': 'minor_triad', 'chord_symbol': 'min', 'inversion': 'root_position', 'structure': 'close'}}
     True
     >>> identify_triad(0b111) == {'result': 'no_match'}
+    True
     '''
     if interval_structure.bit_length() > (constants.TONES * 2):
         raise ValueError(interval_structure)

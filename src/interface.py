@@ -106,7 +106,7 @@ def render_heptatonic_form(
     # 7 correct interval names, plus 5 supplementary names, which can be used
     # to supply chromatic accidentals to the scale intervals. The interval map
     # for just the scale notes could be dict(zip(optimal_rendering, interval_scale))
-    interval_map: dict[str, str] = nomenclature.get_interval_map(keynote, scale_base)
+    interval_map: dict[str, str] = nomenclature.get_interval_map(keynote, scale_base, True)
 
     return annotations.APIScaleFormResponse(scale_name=scale_name,
                                             modal_name=modal_name,

@@ -204,9 +204,9 @@ def next_inversion(interval_structure: int, max_bits: int) -> int:
     Examples
     --------
     >>> bin(previous_inversion(0b101010110101, 12))
-    '0b11010101101'
+    '0b10101101011'
     >>> bin(previous_inversion(0b11010101101, 12))
-    '0b10110101011'
+    '0b101010110101'
     '''
     interval_structure = rotate_right(interval_structure, max_bits)
     while interval_structure % 2 == 0:
@@ -233,9 +233,9 @@ def previous_inversion(interval_structure: int, max_bits: int) -> int:
     Examples
     --------
     >>> bin(next_inversion(0b101010110101, 12))
-    '0b10101101011'
+    '0b11010101101'
     >>> bin(next_inversion(0b10101101011, 12))
-    '0b10110101101'
+    '0b101010110101'
     '''
     interval_structure = rotate_left(interval_structure, max_bits)
     while interval_structure % 2 == 0:
