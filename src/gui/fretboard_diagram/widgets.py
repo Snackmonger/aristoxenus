@@ -9,13 +9,13 @@ from tkinter import (
 
 from data import (
     keywords as K,
-    annotations as T,
+    annotations as A,
     errors as E
 )
 
 from src import interface
 from src.models import diagrams
-from gui.fretboard_diagram import (
+from src.gui.fretboard_diagram import (
     config,
     functions
 )
@@ -106,13 +106,13 @@ class StringFingeringSubWidget(ttk.Frame):
                                                     command=self.change_state)
         self.string_toggle.grid()
 
-    def report(self) -> T.FingeringReport:
+    def report(self) -> A.FingeringReport:
         """Return a report about the current state of the widget."""
         # return cast(T.FingeringReport, {
         #     K.STRING: self.string,
         #     K.FINGERING: self.current_fingering}
         # )
-        return T.FingeringReport(
+        return A.FingeringReport(
             string=self.string,
             fingering=self.current_fingering
         )
@@ -215,9 +215,9 @@ class IntervalDisplaySubWidget(ttk.Frame):
         current state to the controller's callback."""
         self.callback(self.report())
 
-    def report(self) -> T.NodeDisplayReport:
+    def report(self) -> A.NodeDisplayReport:
         """Return a report about the current state of the widget."""
-        return T.NodeDisplayReport(interval=self.interval,
+        return A.NodeDisplayReport(interval=self.interval,
                                    shape=self.shape.get(),
                                    size=self.size.get(),
                                    shape_colour=self.colour.get(),
@@ -290,7 +290,7 @@ class IntervalDisplaySelector(ttk.LabelFrame):
                 self.current_subwidget = x
         self.current_subwidget.grid(column=0, row=1, columnspan=2)
 
-    def summarize(self) -> list[T.NodeDisplayReport]:
+    def summarize(self) -> list[A.NodeDisplayReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]
@@ -321,7 +321,7 @@ class StringFingeringSelector(ttk.LabelFrame):
             l.grid(column=0, row=x, sticky=tk.W, pady=padding)
             w.grid(column=1, row=x, sticky=tk.E, pady=padding)
 
-    def summarize(self) -> list[T.FingeringReport]:
+    def summarize(self) -> list[A.FingeringReport]:
         """Return a summary of the current state of all subwidgets
         controlled by this widget."""
         return [x.report() for x in self.subwidgets]

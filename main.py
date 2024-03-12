@@ -5,7 +5,7 @@ a few of the features provided by the library.
 """
 
 # pylint: disable=no-value-for-parameter
-from cli.app import aristoxenus
+from src.cli.app import aristoxenus
 
 
 if __name__ == "__main__":

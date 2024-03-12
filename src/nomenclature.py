@@ -16,20 +16,18 @@ relationships, so the user interface (not yet implemented) will accept and
 display note names for most functions.
 '''
 
-from typing import Callable, Sequence
+from typing import Callable, Optional, Sequence
 
 from data import (constants,
                   keywords,
                   errors,
                   chord_symbols,
-                  annotations,
                   intervallic_canon)
 
 from src import (bitwise,
                  utils,
                  rendering,
-                 temperament,
-                 permutation)
+                 temperament)
 
 __all__ = ["chromatic",
            "enharmonic_decoder",
@@ -51,9 +49,9 @@ __all__ = ["chromatic",
            "get_accidentals",
            "name_heptatonic_intervals",
            "twelve_tone_scale_intervals",
+           "twelve_tone_scale_names",
            "interval_identity",
-           "get_interval_map",
-           "heptatonic_chord_scale"]
+           "get_interval_map"]
 
 
 def chromatic(accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIALS) -> list[str]:
@@ -424,7 +422,7 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     return [encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES)]
 
 
-def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
+def best_heptatonic(note_name: str, interval_structure: Optional[int] = intervallic_canon.DIATONIC_SCALE) -> list[str]:
     '''
     Choose the best set of alphabetic note names for a given heptatonic scale.
 
@@ -451,8 +449,10 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
         return force_heptatonic(note_name, interval_structure)
 
     note_index: int = constants.BINOMIALS.index(note_name)
-    sharps_scale = force_heptatonic(constants.SHARPS[note_index], interval_structure)
-    flats_scale = force_heptatonic(constants.FLATS[note_index], interval_structure)
+    sharps_scale = force_heptatonic(
+        constants.SHARPS[note_index], interval_structure)
+    flats_scale = force_heptatonic(
+        constants.FLATS[note_index], interval_structure)
 
     # The best name can be decided by fewest total accidentals
     f_count = count_accidentals(flats_scale)
@@ -472,7 +472,7 @@ def best_heptatonic(note_name: str, interval_structure: int) -> list[str]:
             return flats_scale
         if fmix and not smix:
             return sharps_scale
-        
+
     # By this point, we know that the scales have equal number accidentals,
     # and both/neither are mixed. Resolve by arbitrarily defaulting to sharps.
     return sharps_scale
@@ -540,7 +540,7 @@ def decode_numeric_keyword(term: str) -> int:
     raise errors.UnknownKeywordError(term)
 
 
-def encode_numeric_keyword(number: int, keyword_type: str) -> str | None:
+def encode_numeric_keyword(number: int, keyword_type: str) -> str:
     '''
     Return a keyword for a given numeral and keyword type.
 
@@ -548,15 +548,16 @@ def encode_numeric_keyword(number: int, keyword_type: str) -> str | None:
     --------
     >>> encode_numeric_keyword(3, 'polyad')
     'triad'
-    >>> encode_numeric_keyword(3, 'basal')
+    >>> encode_numeric_keyword(2, 'basal')
     'tertial'
     >>> encode_numeric_keyword(5, 'tonal')
     'pentatonic'
     '''
-    number = number - 1
+    number = number - 1 if not keyword_type == "basal" else number
     for type_index, label in enumerate(keywords.NUMERATION_INDICES):
         if label == keyword_type:
             return keywords.NUMERATION[number][type_index]
+    raise errors.UnknownKeywordError(keyword_type)
 
 
 def is_scientific(note_name: str) -> bool:
@@ -783,8 +784,8 @@ def get_interval_map(tonal_centre: str,
 
     interval_symbols: Sequence[str] = list(twelve_tone_scale_intervals(scale))
     mapping = dict(zip(utils.shift_list(
-            chromatic(), decode_enharmonic(tonal_centre)), interval_symbols))
-    
+        chromatic(), decode_enharmonic(tonal_centre)), interval_symbols))
+
     if not binomial:
         if accidentals == constants.BINOMIALS:
             accidentals = constants.SHARPS
@@ -800,35 +801,4 @@ def get_interval_map(tonal_centre: str,
                 v = mapping.pop(note_name)
                 mapping[note_name_] = v
 
-
     return mapping
-
-    # tonal_centre = real_names[0]
-
-    # # TODO: Notes like Cb Fb E# and B# cause an error here because the
-    # # ``get_accidentals`` function just returns the standard 5 accidentals.
-    # # NOTE: I wrote ``twelve_tone_scale_names`` to solve this, but this function
-    # # has to be rewritten a bit to accommodate the new data.
-    # binomial_names: Sequence[str] = [decode_enharmonic(x) for x in real_names]
-    # if tonal_centre in ["E#", "Fb", "Cb", "B#"]:
-    #     accidental_chromatic = twelve_tone_scale_names(real_names)
-    # else:
-    #     accidental_chromatic = utils.shift_list(
-    #     chromatic(get_accidentals(tonal_centre)), tonal_centre)
-
-    
-    # special_chromatic: Sequence[str] = []
-
-    # for i in range(constants.TONES):
-    #     note = accidental_chromatic[i]
-    #     if (b := decode_enharmonic(note)) in binomial_names:
-    #         j = binomial_names.index(b)
-    #         note = real_names[j]
-    #     special_chromatic.append(note)
-
-    # if binomial:
-    #     special_chromatic = utils.shift_list(
-    #         chromatic(), decode_enharmonic(tonal_centre))
-
-    # return dict(zip(special_chromatic, interval_symbols))
-

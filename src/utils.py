@@ -58,8 +58,10 @@ def roman_numeral(indian_numeral: int) -> str:
 
     return roman_numeral_
 
-def romanize_intervals(interval_names: Sequence[str]) -> list[str]:
+def romanize_intervals(interval_names: Sequence[str] | str) -> list[str]:
     """Convert Indian numeral interval names to use Roman numerals instead."""
+    if isinstance(interval_names, str):
+        interval_names = [interval_names]
     roman_intervals: list[str] = []
     for interval in interval_names:
         for number in range(1, 8):

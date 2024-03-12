@@ -123,7 +123,19 @@ class HeptatonicChord(TypedDict):
     notes: list[str]
     interval_structure: int
     interval_names: list[str]
+    chord_symbol: str
+    roman_degree: str
 
+class APIChordScaleResponse(TypedDict):
+    """A response from the API containing information about the member chords
+    of a scaleform.
+    """
+    scale: str
+    mode: str
+    keynote: str
+    notes: int
+    step: int
+    chord_scale: list[HeptatonicChord]
 
 class APIScaleFormResponse(TypedDict):
     """Response from the API containing information about a scaleform and its

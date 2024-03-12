@@ -7,7 +7,7 @@ from src import (interface)
 from src.models import diagrams
 from data import (
     data_models as DM,
-    annotations as T,
+    annotations as A,
     keywords as K
 )
 
@@ -99,14 +99,14 @@ class FretboardDiagramApp(ttk.Frame):
         for report in self.fingering_panel.summarize():
             self.current_diagram.apply_fingering(**report)
 
-    def on_fingering_change(self, report: T.FingeringReport) -> None:
+    def on_fingering_change(self, report: A.FingeringReport) -> None:
         """Receive a report about the change in fingering and modify the 
         diagram to reflect it.
         """
         self.current_diagram.apply_fingering(**report)
         self.fingerboard_grid.draw_diagram(self.current_diagram)
 
-    def on_node_option_change(self, report: T.NodeDisplayReport) -> None:
+    def on_node_option_change(self, report: A.NodeDisplayReport) -> None:
         """Receive a report about the change to an interval node's
         display options and modify the diagram to reflect it.
 
@@ -116,7 +116,7 @@ class FretboardDiagramApp(ttk.Frame):
         self.current_diagram.apply_node_display_options(report)
         self.fingerboard_grid.draw_diagram(self.current_diagram)
 
-    def on_scale_change(self, report: T.ScaleformReport) -> None:
+    def on_scale_change(self, report: A.ScaleformReport) -> None:
         """Receive a report about the change to the main scale paradigm
         and modify the diagram to reflect it.
 
@@ -212,6 +212,6 @@ class FretboardDiagramApp(ttk.Frame):
 
             # self.diagram = self.scale_diagram
 
-    def on_arpeggio_change(self, report: T.ArpeggioFormReport) -> None:
+    def on_arpeggio_change(self, report: A.ArpeggioFormReport) -> None:
         """This method is only available when the app is in the "Arpeggio" 
         interface mode."""
