@@ -11,12 +11,11 @@ Example
 +++++++
 
 Major 7th chord 
-
-    Cmaj7           (close-voiced, root position by default)
-    Cmaj7{1}[d2]    (drop 2, first inversion)
-    Cmaj            (close-voiced, root position by default)
-    Cmaj[d24]       (drop 2 and 4, root position by default)
-    Cmaj7(1573)     (explicit BTAS instructions using a chord's known notes, will assume interval degrees)
+    1. Cmaj7           (close-voiced, root position by default)
+    2. Cmaj7{1}[d2]    (drop 2, first inversion)
+    3. Cmaj            (close-voiced, root position by default)
+    4. Cmaj[d24]       (drop 2 and 4, root position by default)
+    5. Cmaj7(1573)     (explicit BTAS instructions using a chord's known notes, will assume interval degrees)
 
 Rules
 +++++
