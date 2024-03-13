@@ -95,7 +95,7 @@ def convert_fretboard_to_relative(diagram: GuitarFretboard,
     diagram = simplify_guitar_fretboard(diagram)
     interval_symbols = list(
         chord_symbols.interval_symbol_prescription.values())
-    chromatic_ = utils.shift_list(nomenclature.chromatic(), tonal_centre)
+    chromatic_ = utils.shift_array(nomenclature.chromatic(), tonal_centre)
     conversion: dict[str, str] = dict(zip(chromatic_, interval_symbols))
     new_string: list[str]
     new_diagram: list[tuple[str, ...]] = []

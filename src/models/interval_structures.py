@@ -10,5 +10,5 @@ class IntervalStructure:
 
     def render_binomial(self, keynote: str) -> tuple[str, ...]:
         keynote = nomenclature.decode_enharmonic(keynote)
-        chromatic = utils.shift_list(nomenclature.chromatic(), keynote)
+        chromatic = utils.shift_array(nomenclature.chromatic(), keynote)
         return rendering.render_plain(self.value, chromatic)

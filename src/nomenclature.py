@@ -388,10 +388,10 @@ def force_heptatonic(note_name: str, interval_structure: int) -> tuple[str, ...]
         raise errors.IntervalStructureError(
             'Operation can only be performed on heptatonic scales in 12 tone style.')
     # Assemble basic alphabetic order to enforce.
-    plain: tuple[str, ...] = utils.shift_list(
+    plain: tuple[str, ...] = utils.shift_array(
         constants.NATURALS, __identity(note_name))
     # Create binomial version of requested scale pattern.
-    binomial: tuple[str, ...] = rendering.render_plain(interval_structure, utils.shift_list(
+    binomial: tuple[str, ...] = rendering.render_plain(interval_structure, utils.shift_array(
         chromatic(constants.BINOMIALS), decode_enharmonic(note_name)))
     # Force each binomial note value to adopt the next alphabetic note name.
     return tuple(encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES))
@@ -616,7 +616,7 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> tuple[str, ...
     if len(binomial_names) != constants.NOTES:
         raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
 
-    chromatic_names: tuple[str, ...] = utils.shift_list(
+    chromatic_names: tuple[str, ...] = utils.shift_array(
         chromatic(constants.BINOMIALS), tonic)
     major_names: tuple[str, ...] = rendering.render_plain(
         intervallic_canon.DIATONIC_SCALE, chromatic_names)
@@ -654,7 +654,7 @@ def twelve_tone_scale_intervals(scale: int) -> tuple[str, ...]:
         raise errors.HeptatonicScaleError(
             "Function requires a heptatonic scale.")
 
-    ch: tuple[str, ...] = utils.shift_list(chromatic(), "C")
+    ch: tuple[str, ...] = utils.shift_array(chromatic(), "C")
     note_names: tuple[str, ...] = rendering.render_plain(scale, ch)
     rendering_: tuple[str, ...] = name_heptatonic_intervals(scale)
     intervals: list[str] = []
@@ -690,7 +690,7 @@ def twelve_tone_scale_names(note_names: Sequence[str]) -> tuple[str, ...]:
     enharmonic_keynote: str = decode_enharmonic(scale[0])
     binomial_scale_names: list[str] = [decode_enharmonic(x) for x in scale]
     accidental_signature: dict[str, int] = count_accidentals(scale)
-    binomial_chromatic: tuple[str, ...] = utils.shift_list(
+    binomial_chromatic: tuple[str, ...] = utils.shift_array(
         chromatic(), enharmonic_keynote)
     accidentals: tuple[str, ...] = constants.SHARPS
     if accidental_signature[constants.SHARP_SYMBOL] < accidental_signature[constants.FLAT_SYMBOL]:
@@ -755,7 +755,7 @@ def get_interval_map(tonal_centre: str, scale: int = intervallic_canon.DIATONIC_
         real_names = force_heptatonic(tonal_centre, scale)
 
     interval_symbols: list[str] = list(twelve_tone_scale_intervals(scale))
-    mapping = dict(zip(utils.shift_list(
+    mapping = dict(zip(utils.shift_array(
         chromatic(), decode_enharmonic(tonal_centre)), interval_symbols))
 
     if not binomial:

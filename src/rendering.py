@@ -99,7 +99,7 @@ def render_scientific(interval_structure: int,
 
     '''
     scientific_range: tuple[str, ...] = nomenclature.scientific_range(accidental_notes)
-    scientific_range = utils.shift_list(scientific_range, starting_note)
+    scientific_range = utils.shift_array(scientific_range, starting_note)
 
     rendering: list[str] = []
     for interval in range(0, interval_structure.bit_length()):

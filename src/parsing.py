@@ -264,9 +264,9 @@ def parse_slash_chord_symbol(chord_symbol: str) -> int:
     bass: str = nomenclature.decode_enharmonic(chord_symbol.split('/')[1])
     root: str = nomenclature.decode_enharmonic(
         remove_chord_prefix(chord_symbol)[0])
-    octave_from_bass: tuple[str, ...] = utils.shift_list(
+    octave_from_bass: tuple[str, ...] = utils.shift_array(
         nomenclature.chromatic(), bass)
-    octave_from_root: tuple[str, ...]  = utils.shift_list(
+    octave_from_root: tuple[str, ...]  = utils.shift_array(
         nomenclature.chromatic(), root)
     main_chord_structure: int = parse_chord_symbol(chord_symbol.split('/')[0])
     chord = rendering.render_plain(main_chord_structure, octave_from_root)
@@ -356,7 +356,7 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
                 previous_bass = nomenclature.decode_enharmonic(current_bass)
 
             else:
-                octave = utils.shift_list(nomenclature.chromatic(
+                octave = utils.shift_array(nomenclature.chromatic(
                     constants.BINOMIALS), previous_bass)
                 distance += octave.index(
                     nomenclature.decode_enharmonic(current_bass))
@@ -667,7 +667,7 @@ def condense_note_names(note_names: Sequence[str]) -> int:
 
     tonic: str = simplified_notes[0]
     chromatic_: tuple[str, ...] = nomenclature.chromatic(constants.BINOMIALS)
-    chromatic_ = utils.shift_list(chromatic_, tonic)
+    chromatic_ = utils.shift_array(chromatic_, tonic)
     interval_map: int = 1
     for note_name in simplified_notes:
         interval_map |= (1 << chromatic_.index(note_name))
@@ -693,7 +693,7 @@ def parse_literal_sequence(note_names: Sequence[str]) -> int:
         of note names. 
     '''
     note_names = [nomenclature.decode_enharmonic(x) for x in note_names]
-    rotandum: tuple[str, ...] = utils.shift_list(
+    rotandum: tuple[str, ...] = utils.shift_array(
         nomenclature.chromatic(), note_names[0])
     interval_structure: int = 1
     distance: int = 0
@@ -701,7 +701,7 @@ def parse_literal_sequence(note_names: Sequence[str]) -> int:
     # Each note defines the octave in which
     # the next note will be contextualized
     for number, note in enumerate(note_names):
-        octave = utils.shift_list(rotandum, note)
+        octave = utils.shift_array(rotandum, note)
         if number < len(note_names) - 1:
             next_note = note_names[number+1]
             distance += octave.index(next_note)

@@ -20,7 +20,7 @@ def chromatic(keynote: str = "C", binomial: bool = False) -> tuple[str, ...]:
     """
     if binomial or keynote not in C.LEGAL_ROOT_NAMES:
         keynote = nomenclature.decode_enharmonic(keynote)
-        return utils.shift_list(nomenclature.chromatic(), keynote)
+        return utils.shift_array(nomenclature.chromatic(), keynote)
     
     if keynote in C.ACCIDENTAL_HALFSTEPS:
         dummy = nomenclature.best_heptatonic(keynote)
@@ -41,7 +41,7 @@ def chromatic(keynote: str = "C", binomial: bool = False) -> tuple[str, ...]:
     if keynote not in notes:
         raise errors.NoteNameError(keynote)
 
-    return utils.shift_list(notes, keynote)
+    return utils.shift_array(notes, keynote)
 
 
 def render_heptatonic_form(scale_name: A.HeptatonicScales, modal_name: A.ModalNames, keynote: str) -> A.APIScaleFormResponse:
@@ -184,7 +184,7 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynot
     collection: list[A.HeptatonicChord] = []
 
     for i, note in enumerate(note_names):
-        new_notes: list[str] = list(utils.shift_list(note_names, note))
+        new_notes: list[str] = list(utils.shift_array(note_names, note))
         interval_names: list[str] = list(nomenclature.name_heptatonic_intervals(
             new_notes))
         upper_octave: list[str] = []

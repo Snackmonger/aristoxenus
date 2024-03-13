@@ -1,0 +1,13 @@
+
+
+Bar Checks ("|")
+----------------
+
+Not necessary, but with bar checks, the program can verify that you have input durations where each measure adds up to the correct length.
+
+:: 
+
+    \relative {
+    g'1 | e1 | c2. c' | g4 c g e | c4 r r2 |
+    }
+
