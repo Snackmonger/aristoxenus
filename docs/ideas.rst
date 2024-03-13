@@ -11,6 +11,7 @@ Example
 +++++++
 
 Major 7th chord 
+
     Cmaj7           (close-voiced, root position by default)
     Cmaj7{1}[d2]    (drop 2, first inversion)
     Cmaj            (close-voiced, root position by default)
