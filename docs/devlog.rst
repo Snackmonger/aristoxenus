@@ -37,7 +37,7 @@ I'd still like to write something that can automatically rank fingerings for 'aw
 ==========
 Sequences
 ---------
-I began to work on the sequences module. Basically this allows us to refer to notes within an interval structure as ordered items in a list,
+I began to sketch out the sequences module. Basically this allows us to refer to notes within an interval structure as ordered items in a list,
 which can repeat or be omitted, and can come in any order. The permutation module is meant to expose the various forms that an interval structure can
 express, then the sequence module assigns an order to the notes in a given form. Eventually, I will write a system for incorporating rhythm and dynamics,
 so that the sequence of notes can also express things like downbeats and tied notes, which the improvisation module will use to decide whether a particular
@@ -86,7 +86,7 @@ using them to simplify operations in some of the other functions, but now this s
 functions anyway... what's the point of the classes, and why should the functions come to depend on them?
 
 The classes gave me an opportunity to learn a little bit about decorators. I am still pretty unconfident with decorator syntax, especially
-understanding how the nested structure affects type hinting, and how we can keep similarly-named parameters from becomming confused. I'm sure 
+understanding how the nested structure affects type hinting, and how we can keep similarly-named parameters from becoming confused. I'm sure 
 I will completely re-write these at some point in the future.
 Eventually the classes will be useful for encapsulating more complex data (for which the functions don't yet exist), so I'll avoid scrapping them,
 hideous though they are.
