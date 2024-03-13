@@ -4,31 +4,23 @@
 Command-line interface application that exposes a 
 few of the features of the library.
 """
-
-from typing import Optional
 import rich_click as click
-import rich
-from rich import theme, console
-
+from rich import console
 
 from data import (keywords as K,
                   annotations as A,
                   constants as C)
-from src import interface as I
-from src.gui.fretboard_diagram.app import FretboardDiagramApp
+from src import (interface as I,
+                 gui)
+from tests import (do_doctests,
+                   test_chord_symbol_from_interval_names)
+
 from . import app_data, views
 
-# Toggle rich markup in docs and help strings.
+# Configure rich console printing
 click.rich_click.USE_RICH_MARKUP = True
+console_ = console.Console(theme=app_data.MAIN_THEME)
 
-
-aristoxenus_theme = theme.Theme({
-    "title": "red u",
-    "emphasis1": "dark_slate_gray2",
-    "emphasis2": "yellow",
-    "warning": "black on white"
-})
-console_ = console.Console(theme=aristoxenus_theme)
 
 @click.group()
 def aristoxenus() -> None:
@@ -41,13 +33,12 @@ def aristoxenus() -> None:
     """
 
 
-
 @aristoxenus.command()
 def fretboard_diagram() -> None:
     """
     Attempt to launch the tkinter [red]Fretboard Diagram Tool[/red].
     """
-    FretboardDiagramApp().mainloop()
+    gui.FretboardDiagramApp().mainloop()
 
 
 @aristoxenus.command()
@@ -60,8 +51,8 @@ def fretboard_diagram() -> None:
 @click.option("--keynote", "-k", prompt=True,
               type=click.Choice(C.LEGAL_ROOT_NAMES, case_sensitive=False),
               help="The name of the note to use as the tonal centre.")
-def heptatonic_form(scale: A.HeptatonicScales, 
-                    mode: A.ModalNames, 
+def heptatonic_form(scale: A.HeptatonicScales,
+                    mode: A.ModalNames,
                     keynote: str
                     ) -> None:
     """Get details about a heptatonic scale form."""
@@ -122,3 +113,15 @@ def chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynote: str,
 def info(topic: str) -> None:
     """Get information about various topics."""
     console_.print(app_data.TOPIC_DATA[topic.lower()])
+
+
+@aristoxenus.command()
+@click.option("--verbose", "-v",
+              help="Get a full report of the tests.",
+              is_flag=True,
+              default=False,
+              show_default=True)
+def do_tests(verbose: bool) -> None:
+    """DEBUG option: Run the tests for the program."""
+    do_doctests(verbose)
+    test_chord_symbol_from_interval_names(verbose=verbose)

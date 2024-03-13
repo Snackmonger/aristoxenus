@@ -1,16 +1,14 @@
 
-from data import (constants, 
-                  keywords, 
-                  intervallic_canon)
+from typing import Sequence
+from data import (constants)
 
 from src import (nomenclature, 
-                 utils,
-                 bitwise)
+                 utils)
 
 
 def render_plain(interval_structure: int, 
-           chromatic_scale: list[str] | None = None
-           ) -> list[str]:
+           chromatic_scale: Sequence[str] | None = None
+           ) -> tuple[str, ...]:
     '''
     Return a human-readable list of strings representing the interval structure
     in the given accidental style.
@@ -49,22 +47,23 @@ def render_plain(interval_structure: int,
     '''
     if chromatic_scale is None:
         chromatic_scale = nomenclature.chromatic(constants.BINOMIALS)
+    chromatic_scale_ = list(chromatic_scale)
     if interval_structure.bit_length() > len(chromatic_scale):
-        chromatic_scale *= 8
+        chromatic_scale_ *= 8
 
     rendering: list[str] = []
     for interval in range(0, interval_structure.bit_length()):
         binary_column: int = 1 << interval
         if (interval_structure & binary_column) == binary_column:
-            rendering.append(chromatic_scale[interval])
+            rendering.append(chromatic_scale_[interval])
 
-    return rendering
+    return tuple(rendering)
 
 
 def render_scientific(interval_structure: int,
-           accidental_notes: list[str] | tuple[str, ...],
+           accidental_notes: Sequence[str],
            starting_note: str
-           ) -> list[str]:
+           ) -> tuple[str, ...]:
     '''
     Return a human-readable rednering of the given interval structure in the 
     given accidental style, in scientific notation.
@@ -99,7 +98,7 @@ def render_scientific(interval_structure: int,
     >>>
 
     '''
-    scientific_range: list[str] = nomenclature.scientific_range(accidental_notes)
+    scientific_range: tuple[str, ...] = nomenclature.scientific_range(accidental_notes)
     scientific_range = utils.shift_list(scientific_range, starting_note)
 
     rendering: list[str] = []
@@ -107,4 +106,4 @@ def render_scientific(interval_structure: int,
         binary_column: int = 1 << interval
         if (interval_structure & binary_column) == binary_column:
             rendering.append(scientific_range[interval])
-    return rendering
+    return tuple(rendering)

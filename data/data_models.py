@@ -14,13 +14,13 @@ class HeptatonicRendering:
     scale_name: str
     modal_name: str
     interval_structure: int
-    interval_scale: list[str]
+    interval_scale: tuple[str, ...]
     interval_map: dict[str, str]
     keynote: str
-    chromatic_rendering: list[str]
-    alphabetic_rendering: list[str]
+    chromatic_rendering: tuple[str, ...]
+    alphabetic_rendering: tuple[str, ...]
     optimal_keynote: str
-    optimal_rendering: list[str]
+    optimal_rendering: tuple[str, ...]
     
 
     @classmethod

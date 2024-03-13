@@ -6,6 +6,7 @@ from data import annotations, data_models
 from src import nomenclature, utils
 
 def chord_scale(data: annotations.APIChordScaleResponse) -> console.Group:
+    """View for the chord scale command in the CLI."""
 
     data_ = data_models.ChordScaleRendering(**data)
     side1 = """[title]Parent scale\nModal rotation\nKeynote\nNumber of notes\nBase step[/title]"""
@@ -16,8 +17,8 @@ def chord_scale(data: annotations.APIChordScaleResponse) -> console.Group:
     def __chord(chord: annotations.HeptatonicChord) -> panel.Panel:
         chord_ = data_models.HeptatonicChordRendering(**chord)
         chord_name = f"\n[title]Chord symbol[/title] {chord_.chord_symbol}\n"
-        notes = f"[title]Note names[/title] {chord_.notes}\n"
-        intervals = f"[title]Intervals[/title] {chord_.interval_names}"
+        notes = f"[title]Note names[/title] {', '.join(chord_.notes)}\n"
+        intervals = f"[title]Intervals[/title] {', '.join(chord_.interval_names)}"
         panel_ = panel.Panel(chord_name + notes + intervals, title=f"[emphasis2]{chord_.roman_degree}[/emphasis2]")
         return panel_
 

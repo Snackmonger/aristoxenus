@@ -69,8 +69,8 @@ def test_generate_chord_names_for_heptatonic():
         print("##################################################")
         print(f"# Now trying {scale} scale")
         for i in range(7):
-            triad: annotations.HeptatonicChord = triads[i]
-            tetrad: annotations.HeptatonicChord = tetrads[i]
+            triad: annotations.HeptatonicChord = triads["chord_scale"][i]
+            tetrad: annotations.HeptatonicChord = tetrads["chord_scale"][i]
             root = triad["root"]
             triad_stem = parsing.parse_interval_names_as_chord_symbol(
                 triad["interval_names"])

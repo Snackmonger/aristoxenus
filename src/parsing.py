@@ -252,10 +252,6 @@ def parse_slash_chord_symbol(chord_symbol: str) -> int:
     -------
     int
         An integer representation of an interval map.
-
-    Examples
-    --------
-    >>> bin(parse_slash_chord_symbol('G/Bb'))
     '''
     if chord_symbol.count('/') != 1:
         raise errors.ChordSymbolError(chord_symbol)
@@ -268,9 +264,9 @@ def parse_slash_chord_symbol(chord_symbol: str) -> int:
     bass: str = nomenclature.decode_enharmonic(chord_symbol.split('/')[1])
     root: str = nomenclature.decode_enharmonic(
         remove_chord_prefix(chord_symbol)[0])
-    octave_from_bass: list[str] = utils.shift_list(
+    octave_from_bass: tuple[str, ...] = utils.shift_list(
         nomenclature.chromatic(), bass)
-    octave_from_root: list[str] = utils.shift_list(
+    octave_from_root: tuple[str, ...]  = utils.shift_list(
         nomenclature.chromatic(), root)
     main_chord_structure: int = parse_chord_symbol(chord_symbol.split('/')[0])
     chord = rendering.render_plain(main_chord_structure, octave_from_root)
@@ -331,7 +327,7 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
     previous_bass: str = ''
     distance: int = 0
     octaves: int = 0
-    octave: list[str] = []
+    octave: tuple[str, ...]
     if constants.POLYCHORD_DIVIDER_SYMBOL not in chord_symbol:
         raise errors.ChordSymbolError(chord_symbol)
 
@@ -428,8 +424,7 @@ def identify_polyad():
     ...
 
 
-def identify_triad(interval_structure: int
-                   ) -> dict[str, str | dict[str, str]]:
+def identify_triad(interval_structure: int) -> dict[str, str | dict[str, str]]:
     '''
     Return the canonical identity of a given triadic interval structure.
 
@@ -497,8 +492,7 @@ def identify_triad(interval_structure: int
     return {'result': 'no_match'}
 
 
-def identify_tetrad(interval_structure: int
-                    ) -> dict[str, str | dict[str, str]]:
+def identify_tetrad(interval_structure: int) -> dict[str, str | dict[str, str]]:
     '''
     Return the canonical identity of a given tetradic interval structure.
 
@@ -672,7 +666,7 @@ def condense_note_names(note_names: Sequence[str]) -> int:
             pass
 
     tonic: str = simplified_notes[0]
-    chromatic_: list[str] = nomenclature.chromatic(constants.BINOMIALS)
+    chromatic_: tuple[str, ...] = nomenclature.chromatic(constants.BINOMIALS)
     chromatic_ = utils.shift_list(chromatic_, tonic)
     interval_map: int = 1
     for note_name in simplified_notes:
@@ -699,7 +693,7 @@ def parse_literal_sequence(note_names: Sequence[str]) -> int:
         of note names. 
     '''
     note_names = [nomenclature.decode_enharmonic(x) for x in note_names]
-    rotandum: list[str] = utils.shift_list(
+    rotandum: tuple[str, ...] = utils.shift_list(
         nomenclature.chromatic(), note_names[0])
     interval_structure: int = 1
     distance: int = 0
@@ -716,8 +710,7 @@ def parse_literal_sequence(note_names: Sequence[str]) -> int:
     return interval_structure
 
 
-def parse_interval_names_as_chord_symbol(interval_names: list[str]
-                                         ) -> str:
+def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
     """Attempt to generate a chord symbol from the given interval names.
 
     This function anticipates that interval names might be unusual enharmonic

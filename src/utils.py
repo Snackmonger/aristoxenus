@@ -9,7 +9,7 @@ from typing import Any, Sequence
 
 def shift_list(list_: Sequence[Any],
                new_first_member: Any
-               ) -> list[Any]:
+               ) -> tuple[Any, ...]:
     '''
     Rotate the given array so that the given item is first.
 
@@ -20,7 +20,7 @@ def shift_list(list_: Sequence[Any],
         array contains a duplicate value, the shift won't work right.
     '''
     list_ = list(list_)
-    return list_[list_.index(new_first_member): ] + list_[ :list_.index(new_first_member)]
+    return tuple(list_[list_.index(new_first_member): ] + list_[ :list_.index(new_first_member)])
 
 
 def roman_numeral(indian_numeral: int) -> str:
@@ -58,7 +58,7 @@ def roman_numeral(indian_numeral: int) -> str:
 
     return roman_numeral_
 
-def romanize_intervals(interval_names: Sequence[str] | str) -> list[str]:
+def romanize_intervals(interval_names: Sequence[str] | str) -> tuple[str, ...]:
     """Convert Indian numeral interval names to use Roman numerals instead."""
     if isinstance(interval_names, str):
         interval_names = [interval_names]
@@ -68,4 +68,8 @@ def romanize_intervals(interval_names: Sequence[str] | str) -> list[str]:
             if (x := str(number)) in interval:
                 roman_interval: str = interval.replace(x, roman_numeral(number))
                 roman_intervals.append(roman_interval)
-    return roman_intervals
+    return tuple(roman_intervals)
+
+
+def convert_to_lilypond(note_names: Sequence[str]) -> list[str]:
+    ...

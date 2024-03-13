@@ -91,3 +91,5 @@ src/gui/fretboard_diagram/__pycache__/widgets.cpython-311.pyc
 src/gui/old/classes.py
 src/gui/old/guitar_diagram_widget.py
 src/gui/old/scale_info_panel.py
+tests/__pycache__/main.cpython-311.pyc
+tests/__pycache__/test_data.cpython-311.pyc

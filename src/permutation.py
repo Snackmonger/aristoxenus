@@ -97,7 +97,7 @@ def chordify(interval_structure: int,
     if not bitwise.validate_interval_structure(interval_structure, 12):
         raise errors.IntervalStructureError(interval_structure)
 
-    interval_names: list[str] = nomenclature.name_heptatonic_intervals(
+    interval_names: tuple[str, ...] = nomenclature.name_heptatonic_intervals(
         interval_structure)
     chord_scale: dict[str, int] = {}
     chord_intervals: list[int] = []
@@ -112,7 +112,7 @@ def chordify(interval_structure: int,
     return chord_scale
 
 
-def chordify_note_names(note_names: list[str] | tuple[str, ...],
+def chordify_note_names(note_names: Sequence[str],
                         notes: int | str = 3,
                         step: int | str = 2
                         ) -> dict[str, tuple[str, ...]]:
@@ -152,11 +152,11 @@ def chordify_note_names(note_names: list[str] | tuple[str, ...],
         step = nomenclature.decode_numeric_keyword(step)
 
     chord_scale: dict[str, tuple[str, ...]] = {}
-    intervals: list[str] = nomenclature.name_heptatonic_intervals(note_names)
-    roman_intervals: list[str] = utils.romanize_intervals(intervals)
+    intervals: tuple[str, ...] = nomenclature.name_heptatonic_intervals(note_names)
+    roman_intervals: tuple[str, ...] = utils.romanize_intervals(intervals)
 
     for i, note_name in enumerate(note_names):
-        base: list[str] = utils.shift_list(note_names, note_name)
+        base: list[str] = list(utils.shift_list(note_names, note_name))
         full_range: list[str] = base * constants.NUMBER_OF_OCTAVES
         chord_form: list[str] = full_range[::step][:notes]
         chord_scale.update({roman_intervals[i]: tuple(chord_form)})

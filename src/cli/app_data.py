@@ -1,3 +1,13 @@
+from rich import theme
+
+
+MAIN_THEME = theme.Theme({
+    "title": "red u",
+    "emphasis1": "dark_slate_gray2",
+    "emphasis2": "yellow",
+    "warning": "black on white"
+})
+
 
 TOPIC_DATA = {"aristoxenus": "Description of the historical figure, Aristoxenus of Tarentum.",
               "author": "Description about the author of this library.",

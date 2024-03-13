@@ -29,6 +29,7 @@ class FretboardDiagramApp(ttk.Frame):
 
     def __init__(self):
         master_ = tk.Tk()
+        master_.title("Aristoxenus Fretboard Diagram Tool")
         ttk.Frame.__init__(self, master_)
 
         # The abstract diagrams model the layout of the grid and its nodes.

@@ -24,7 +24,7 @@ def guitar_fretboard(strings: int = 6,
         tuning = list(map(nomenclature.decode_scientific_enharmonic, tuning))
 
     elif format_ is keywords.PLAIN:
-        all_notes = nomenclature.chromatic() * constants.TONES
+        all_notes = list(nomenclature.chromatic()) * constants.TONES
         tuning = list(map(nomenclature.decode_enharmonic, tuning))
 
     else:

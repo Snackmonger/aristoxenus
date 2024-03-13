@@ -1,9 +1,5 @@
 """Functions that represent the end-points of an API."""
 
-from typing import Optional
-
-from numpy import number
-
 from src import (nomenclature,
                  rendering,
                  bitwise,
@@ -18,7 +14,7 @@ from data import (annotations as A,
                   intervallic_canon as IC)
 
 
-def chromatic(keynote: str = "C", binomial: bool = False) -> list[str]:
+def chromatic(keynote: str = "C", binomial: bool = False) -> tuple[str, ...]:
     """Return a chromatic scale in the given accidental style 
     (default=binomial) and starting at the given keynote (default=C).
     """
@@ -32,7 +28,7 @@ def chromatic(keynote: str = "C", binomial: bool = False) -> list[str]:
 
     accidental_type = nomenclature.get_accidental_keyword(keynote)
 
-    notes: list[str]
+    notes: tuple[str, ...]
     match accidental_type:
         case K.SHARP:
             notes = nomenclature.chromatic(C.SHARPS)
@@ -48,11 +44,7 @@ def chromatic(keynote: str = "C", binomial: bool = False) -> list[str]:
     return utils.shift_list(notes, keynote)
 
 
-def render_heptatonic_form(
-        scale_name: A.HeptatonicScales,
-        modal_name: A.ModalNames,
-        keynote: str
-) -> A.APIScaleFormResponse:
+def render_heptatonic_form(scale_name: A.HeptatonicScales, modal_name: A.ModalNames, keynote: str) -> A.APIScaleFormResponse:
     '''
     Return a collection of data about a given scaleform configuration.
 
@@ -85,29 +77,29 @@ def render_heptatonic_form(
     scale_base: int = IC.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
     modal_rotations: int = K.MODAL_NAME_SERIES.index(modal_name)
     scale_base = bitwise.get_modal_form(scale_base, modal_rotations)
-    binomial_base: list[str] = chromatic(
+    binomial_base: tuple[str, ...] = chromatic(
         nomenclature.decode_enharmonic(keynote), binomial=True)
 
     # Chromatic rendering will use binomials (the 'absolute' spelling)
-    chromatic_rendering: list[str] = rendering.render_plain(
+    chromatic_rendering: tuple[str, ...]= rendering.render_plain(
         scale_base, binomial_base)
 
     # Optimal rendering is that which has the fewest accidentals, while
     # still maintaining the alphabetic order (the 'correct' spelling).
-    optimal_rendering: list[str] = nomenclature.best_heptatonic(
+    optimal_rendering: tuple[str, ...] = nomenclature.best_heptatonic(
         keynote, scale_base)
 
     # Alphabetic rendering forces the nomenclature to follow the given
     # keynote, even if it makes an awkward spelling. If the keynote was
     # a binomial, use the optimal rendering instead.
-    alphabetic_rendering: list[str] = optimal_rendering
+    alphabetic_rendering: tuple[str, ...] = optimal_rendering
     if not keynote in C.BINOMIALS:
         alphabetic_rendering = nomenclature.force_heptatonic(
             keynote, scale_base)
 
     # Interval scale is a list of intervals in the scale, spelled correctly so
     # that there is exactly one each of 12334567, plus any accidentals.
-    interval_scale: list[str] = nomenclature.name_heptatonic_intervals(
+    interval_scale: tuple[str, ...] = nomenclature.name_heptatonic_intervals(
         scale_base)
 
     # Interval map is a dictionary of the chromatic binomials to the
@@ -131,13 +123,7 @@ def render_heptatonic_form(
                                   optimal_rendering=optimal_rendering)
 
 
-def heptatonic_chord_scale(scale: A.HeptatonicScales,
-                           mode: A.ModalNames,
-                           keynote: str,
-                           number_of_notes: int | str = 3,
-                           base_step: int | str = 2,
-                           roman_lower: bool = False
-                           ) -> A.APIChordScaleResponse:
+def heptatonic_chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynote: str, number_of_notes: int | str = 3, base_step: int | str = 2, roman_lower: bool = False) -> A.APIChordScaleResponse:
     '''
     Create chords from the nomenclaturally-correct form of the given scale 
     and return a list of dictionaries representing the chords built from each 
@@ -188,9 +174,9 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales,
     base: int = IC.HEPTATONIC_SYSTEM_BY_NAME[scale]
     rotations: int = K.MODAL_NAME_SERIES.index(mode)
     interval_structure: int = bitwise.get_modal_form(base, rotations)
-    note_names: list[str] = nomenclature.best_heptatonic(keynote,
+    note_names: tuple[str, ...] = nomenclature.force_heptatonic(keynote,
                                                          interval_structure)
-    parent_interval_names: list[str] = nomenclature.name_heptatonic_intervals(
+    parent_interval_names: tuple[str, ...] = nomenclature.name_heptatonic_intervals(
         interval_structure)
     chords: dict[str, int] = permutation.chordify(interval_structure,
                                                   number_of_notes,
@@ -198,9 +184,9 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales,
     collection: list[A.HeptatonicChord] = []
 
     for i, note in enumerate(note_names):
-        new_notes: list[str] = utils.shift_list(note_names, note)
-        interval_names: list[str] = nomenclature.name_heptatonic_intervals(
-            new_notes)
+        new_notes: list[str] = list(utils.shift_list(note_names, note))
+        interval_names: list[str] = list(nomenclature.name_heptatonic_intervals(
+            new_notes))
         upper_octave: list[str] = []
         for interval_name in interval_names:
             for char in interval_name:

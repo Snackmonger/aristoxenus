@@ -30,7 +30,7 @@ def equal_temperament() -> tuple[float, ...]:
     direction: int
     semitones: int
     
-    full_range: list[str] = nomenclature.scientific_range(constants.BINOMIALS)
+    full_range: tuple[str, ...] = nomenclature.scientific_range(constants.BINOMIALS)
     for note in full_range:
         if full_range.index(note) < full_range.index(centre_name):
             direction = constants.FLAT_VALUE

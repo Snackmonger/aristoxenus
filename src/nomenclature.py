@@ -1,22 +1,9 @@
 # pylint:disable=trailing-whitespace, trailing-newlines
 '''
 Functions related to generating and processing musical nomenclatural material.
-
-In general, the Aristoxenus library prefers to treat musical phenomena in 
-mathematical terms using integers and bitwise operations. We defer assigning
-alphabetic nomenclature to the mathematics for as long as possible, since none
-of the mechanics of musical structure, transformation, permutation, harmony, 
-consonance, dissonance, etc. ever depend on the notes having names.
-
-The names are used as the basis from which to render staff notation, since the
-format demands that we refer to notes as sharp or flat in contradistinction to
-natural. Although the computer doesn't care about the names of the notes, most
-people tend to think of note names rather than mathematic intervallic 
-relationships, so the user interface (not yet implemented) will accept and 
-display note names for most functions.
 '''
 
-from typing import Callable, Optional, Sequence
+from typing import Callable, Sequence
 
 from data import (constants,
                   keywords,
@@ -54,18 +41,18 @@ __all__ = ["chromatic",
            "get_interval_map"]
 
 
-def chromatic(accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIALS) -> list[str]:
+def chromatic(accidental_notes: Sequence[str] = constants.BINOMIALS) -> tuple[str, ...]:
     '''
     Return a chromatic octave using the given accidentals.
 
     Examples
     --------
     >>> chromatic(constants.BINOMIALS)
-    ['C', 'C#|Db', 'D', 'D#|Eb', 'E', 'F', 'F#|Gb', 'G', 'G#|Ab', 'A', 'A#|Bb', 'B']
+    ('C', 'C#|Db', 'D', 'D#|Eb', 'E', 'F', 'F#|Gb', 'G', 'G#|Ab', 'A', 'A#|Bb', 'B')
     >>> chromatic(constants.SHARPS)
-    ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    ('C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B')
     >>> chromatic(constants.FLATS)
-    ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+    ('C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B')
     '''
     new_scale: list[str] = []
     accidentals_in_scale: int = 0
@@ -74,7 +61,7 @@ def chromatic(accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIAL
         if note not in constants.HALFSTEPS:
             new_scale.append(accidental_notes[accidentals_in_scale])
             accidentals_in_scale += 1
-    return new_scale
+    return tuple(new_scale)
 
 
 def enharmonic_decoder() -> dict[str, str]:
@@ -88,9 +75,9 @@ def enharmonic_decoder() -> dict[str, str]:
         E.g. {'C#': 'C#|Db', ..., 'Ebb': 'D', ..., 'F###': 'G#|Ab', ...}
     '''
     enharmonic_equivalence_decoder: dict[str, str] = {}
-    chromatic_binomials: list[str] = chromatic(constants.BINOMIALS)
+    chromatic_binomials: tuple[str, ...] = chromatic(constants.BINOMIALS)
     for accidental in constants.ACCIDENTAL_SYMBOLS:
-        dummy_chromatic_binomials: list[str] = chromatic_binomials.copy()
+        dummy_chromatic_binomials: list[str] = list(chromatic_binomials)
         shift_degree = constants.SHARP_VALUE
 
         # Reverse sequence for flats.
@@ -114,16 +101,16 @@ def enharmonic_decoder() -> dict[str, str]:
     return enharmonic_equivalence_decoder
 
 
-def get_enharmonic_equivalents(note_name: str) -> list[str]:
+def get_enharmonic_equivalents(note_name: str) -> tuple[str, ...]:
     '''
     Compile a list of all enharmonic equivalents of a note in sharps or flats.
 
     Examples
     --------
     >>> get_enharmonic_equivalents('E') 
-    ['C####', 'D##', 'E', 'F###########', 'G#########', 'A#######', 'B#####', 'Cbbbbbbbb', 'Dbbbbbbbbbb', 'Fb', 'Gbbb', 'Abbbbb', 'Bbbbbbbb']
+    ('C####', 'D##', 'E', 'F###########', 'G#########', 'A#######', 'B#####', 'Cbbbbbbbb', 'Dbbbbbbbbbb', 'Fb', 'Gbbb', 'Abbbbb', 'Bbbbbbbb')
     '''
-    return [key for key, value in enharmonic_decoder().items() if value == note_name]
+    return tuple(key for key, value in enharmonic_decoder().items() if value == note_name)
 
 
 def __identity(note_name: str) -> str:
@@ -210,25 +197,20 @@ def encode_enharmonic(note_value: str, note_name: str) -> str:
             'Target note name must be from the naturals.')
 
     note_value = decode_enharmonic(note_value)
-    options: list[str] = get_enharmonic_equivalents(note_value)
+    options: tuple[str, ...] = get_enharmonic_equivalents(note_value)
     homonymous_options: list[str] = [
         option for option in options if __is_homonymous(option, note_name)]
     return sorted(homonymous_options, key=len)[0]
 
 
-def scientific_octave(accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIALS,
-                      octave: int = 0
-                      ) -> list[str]:
+def scientific_octave(accidental_notes: Sequence[str] = constants.BINOMIALS, octave: int = 0) -> tuple[str, ...]:
     '''
     Return a scientific chromatic scale in the given style and octave.        
     '''
-    return [note + str(octave) for note in chromatic(accidental_notes)]
+    return tuple(note + str(octave) for note in chromatic(accidental_notes))
 
 
-def encode_scientific_enharmonic(note_value: str,
-                                 note_name: str,
-                                 position: str
-                                 ) -> str:
+def encode_scientific_enharmonic(note_value: str, note_name: str, position: str) -> str:
     '''
     Return a note name that represents the given note name from the perspective of a
     higher or lower note name.
@@ -256,12 +238,12 @@ def encode_scientific_enharmonic(note_value: str,
 
     match position:
         case keywords.BELOW:
-            octave = scientific_range()[i-11: i+1]
+            octave = list(scientific_range()[i-11: i+1])
             octave.reverse()
             symbol = constants.SHARP_SYMBOL
 
         case keywords.ABOVE:
-            octave = scientific_range()[i: i+12]
+            octave = list(scientific_range()[i: i+12])
             symbol = constants.FLAT_SYMBOL
 
         case _:
@@ -286,7 +268,7 @@ def decode_scientific_enharmonic(note_name: str) -> str:
     'D#|Eb8'
     '''
     # A scientific binomial is already the requested note name.
-    scientific_chromatic_binomials: list[str] = scientific_range(
+    scientific_chromatic_binomials: tuple[str, ...] = scientific_range(
         constants.BINOMIALS)
     if note_name in scientific_chromatic_binomials:
         return note_name
@@ -321,22 +303,18 @@ def decode_scientific_enharmonic(note_name: str) -> str:
     return scientific_chromatic_binomials[index]
 
 
-def scientific_range(accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIALS) -> list[str]:
+def scientific_range(accidental_notes: Sequence[str] = constants.BINOMIALS) -> tuple[str, ...]:
     '''
     Return a full range (C0 - B8) of scientific notation for a given accidental.
     '''
     full_range: list[str] = []
     for octave in range(constants.NUMBER_OF_OCTAVES):
-        new_octave = scientific_octave(accidental_notes, octave)
+        new_octave = list(scientific_octave(accidental_notes, octave))
         full_range += new_octave
-    return full_range
+    return tuple(full_range)
 
 
-def convert_frequency_to_note(frequency: float,
-                              accidental_notes: list[str] | tuple[str, ...] = constants.BINOMIALS,
-                              temperament_: Callable[..., tuple[float, ...]
-                                                     ] = temperament.equal_temperament
-                              ) -> str:
+def convert_frequency_to_note(frequency: float, accidental_notes: Sequence[str] = constants.BINOMIALS, temperament_: Callable[..., tuple[float, ...]] = temperament.equal_temperament) -> str:
     '''
     Return a scientific note name for a given frequency and accidental style.
 
@@ -368,10 +346,7 @@ def convert_frequency_to_note(frequency: float,
     raise errors.AristoxenusValueError(frequency)
 
 
-def convert_note_to_frequency(note_name: str,
-                              temperament_: Callable[..., tuple[float, ...]
-                                                     ] = temperament.equal_temperament
-                              ) -> float:
+def convert_note_to_frequency(note_name: str,temperament_: Callable[..., tuple[float, ...]] = temperament.equal_temperament) -> float:
     '''
     Return a frequency for a given scientific note name of any accidental style.
 
@@ -390,7 +365,7 @@ def convert_note_to_frequency(note_name: str,
     return dict(zip(scientific_range(constants.BINOMIALS), temperament_()))[note_name]
 
 
-def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
+def force_heptatonic(note_name: str, interval_structure: int) -> tuple[str, ...]:
     '''
     Force a heptatonic scale pattern to conform to ABCDEFG nomenclature.
 
@@ -403,7 +378,7 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
     Examples
     --------
     >>> force_heptatonic('B#', 0b101010110101)
-    ['B#', 'C##', 'D##', 'E#', 'F##', 'G##', 'A##']
+    ('B#', 'C##', 'D##', 'E#', 'F##', 'G##', 'A##')
 
     '''
     if note_name in constants.BINOMIALS:
@@ -413,16 +388,16 @@ def force_heptatonic(note_name: str, interval_structure: int) -> list[str]:
         raise errors.IntervalStructureError(
             'Operation can only be performed on heptatonic scales in 12 tone style.')
     # Assemble basic alphabetic order to enforce.
-    plain: list[str] = utils.shift_list(
+    plain: tuple[str, ...] = utils.shift_list(
         constants.NATURALS, __identity(note_name))
     # Create binomial version of requested scale pattern.
-    binomial: list[str] = rendering.render_plain(interval_structure, utils.shift_list(
+    binomial: tuple[str, ...] = rendering.render_plain(interval_structure, utils.shift_list(
         chromatic(constants.BINOMIALS), decode_enharmonic(note_name)))
     # Force each binomial note value to adopt the next alphabetic note name.
-    return [encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES)]
+    return tuple(encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES))
 
 
-def best_heptatonic(note_name: str, interval_structure: Optional[int] = intervallic_canon.DIATONIC_SCALE) -> list[str]:
+def best_heptatonic(note_name: str, interval_structure: int = intervallic_canon.DIATONIC_SCALE) -> tuple[str, ...]:
     '''
     Choose the best set of alphabetic note names for a given heptatonic scale.
 
@@ -435,11 +410,11 @@ def best_heptatonic(note_name: str, interval_structure: Optional[int] = interval
     Examples
     --------
     >>> best_heptatonic('A#|Bb', 0b101010110101)
-    ['Bb', 'C', 'D', 'Eb', 'F', 'G', 'A']
+    ('Bb', 'C', 'D', 'Eb', 'F', 'G', 'A')
     >>> best_heptatonic('D#|Eb', 0b101010110101)
-    ['Eb', 'F', 'G', 'Ab', 'Bb', 'C', 'D']
+    ('Eb', 'F', 'G', 'Ab', 'Bb', 'C', 'D')
     >>> best_heptatonic('E#', 0b101010110101)
-    ['F', 'G', 'A', 'Bb', 'C', 'D', 'E']
+    ('F', 'G', 'A', 'Bb', 'C', 'D', 'E')
     '''
     # Convert sharps and flats to binomials.
     note_name = decode_enharmonic(note_name)
@@ -478,7 +453,7 @@ def best_heptatonic(note_name: str, interval_structure: Optional[int] = interval
     return sharps_scale
 
 
-def is_abcdefg(note_names: list[str]) -> bool:
+def is_abcdefg(note_names: Sequence[str]) -> bool:
     '''
     Check if a given collection of note names adheres to the heptatonic 
     ABCDEFG nomenclature, in which each alphebetic name appears once and
@@ -609,7 +584,7 @@ def get_accidental_keyword(note_name: str) -> str:
     return keywords.BINOMIAL
 
 
-def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
+def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> tuple[str, ...]:
     '''For a given collection of note names, return the Indian numerals describing
     the pattern's relation to the diatonic scale.
 
@@ -629,9 +604,9 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     Examples
     --------
     >>> name_heptatonic_intervals(['C', 'D', 'Eb', 'Fb', 'Gbb', 'Ab', 'Bb']) 
-    ['1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7']
+    ('1', '2', 'b3', 'b4', 'bb5', 'b6', 'b7')
     >>> name_heptatonic_intervals(['C', 'D#', 'E', 'F', 'G#', 'A#', 'B']) 
-    ['1', '#2', '3', '4', '#5', '#6', '7']
+    ('1', '#2', '3', '4', '#5', '#6', '7')
     '''
     if isinstance(scale_data, int):
         scale_data = rendering.render_plain(scale_data)
@@ -641,9 +616,9 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
     if len(binomial_names) != constants.NOTES:
         raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
 
-    chromatic_names: list[str] = utils.shift_list(
+    chromatic_names: tuple[str, ...] = utils.shift_list(
         chromatic(constants.BINOMIALS), tonic)
-    major_names: list[str] = rendering.render_plain(
+    major_names: tuple[str, ...] = rendering.render_plain(
         intervallic_canon.DIATONIC_SCALE, chromatic_names)
     intervals_: list[str] = []
 
@@ -660,10 +635,10 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> list[str]:
 
         intervals_.append((accidental * difference) + str(index + 1))
 
-    return intervals_
+    return tuple(intervals_)
 
 
-def twelve_tone_scale_intervals(scale: int) -> list[str]:
+def twelve_tone_scale_intervals(scale: int) -> tuple[str, ...]:
     """Return a list that consists of the 7 correctly-spelled intervals of any
     heptatonic scale, plus 5 more intervals that fill in the chromatic notes.
 
@@ -671,17 +646,17 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
     --------
     >>> from data.intervallic_canon import HEMIOLIC_SCALE, DIATONIC_SCALE
     >>> print(twelve_tone_scale_intervals(DIATONIC_SCALE))
-    ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7']
+    ('1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7')
     >>> print(twelve_tone_scale_intervals(HEMIOLIC_SCALE))
-    ['1', 'b2', '2', '#2', '3', '4', 'b5', '5', '#5', '6', 'b7', '7']
+    ('1', 'b2', '2', '#2', '3', '4', 'b5', '5', '#5', '6', 'b7', '7')
     """
     if not bitwise.validate_interval_structure(scale, 12, 7):
         raise errors.HeptatonicScaleError(
             "Function requires a heptatonic scale.")
 
-    ch: list[str] = utils.shift_list(chromatic(), "C")
-    note_names: list[str] = rendering.render_plain(scale, ch)
-    rendering_: list[str] = name_heptatonic_intervals(scale)
+    ch: tuple[str, ...] = utils.shift_list(chromatic(), "C")
+    note_names: tuple[str, ...] = rendering.render_plain(scale, ch)
+    rendering_: tuple[str, ...] = name_heptatonic_intervals(scale)
     intervals: list[str] = []
     for i, n in enumerate(ch):
         if n in note_names:
@@ -691,10 +666,10 @@ def twelve_tone_scale_intervals(scale: int) -> list[str]:
             intervals.append(
                 list(chord_symbols.interval_symbol_prescription.values())[i])
 
-    return intervals
+    return tuple(intervals)
 
 
-def twelve_tone_scale_names(note_names: Sequence[str]) -> list[str]:
+def twelve_tone_scale_names(note_names: Sequence[str]) -> tuple[str, ...]:
     """Return a list that contains the given 7 note names, plus
     5 more note names that supply the missing chromatic notes.
 
@@ -715,7 +690,7 @@ def twelve_tone_scale_names(note_names: Sequence[str]) -> list[str]:
     enharmonic_keynote: str = decode_enharmonic(scale[0])
     binomial_scale_names: list[str] = [decode_enharmonic(x) for x in scale]
     accidental_signature: dict[str, int] = count_accidentals(scale)
-    binomial_chromatic: list[str] = utils.shift_list(
+    binomial_chromatic: tuple[str, ...] = utils.shift_list(
         chromatic(), enharmonic_keynote)
     accidentals: tuple[str, ...] = constants.SHARPS
     if accidental_signature[constants.SHARP_SYMBOL] < accidental_signature[constants.FLAT_SYMBOL]:
@@ -729,7 +704,7 @@ def twelve_tone_scale_names(note_names: Sequence[str]) -> list[str]:
         elif note in constants.NATURALS:
             chromatic_[i] = note
 
-    return chromatic_
+    return tuple(chromatic_)
 
 
 def count_accidentals(note_names: Sequence[str]) -> dict[str, int]:
@@ -760,10 +735,7 @@ def interval_identity(item: str) -> int:
     return int(item[-1])
 
 
-def get_interval_map(tonal_centre: str,
-                     scale: int = intervallic_canon.DIATONIC_SCALE,
-                     binomial: bool = False
-                     ) -> dict[str, str]:
+def get_interval_map(tonal_centre: str, scale: int = intervallic_canon.DIATONIC_SCALE, binomial: bool = False) -> dict[str, str]:
     """A dictionary containing a mapping of 12 unique note names to 12 unique
     interval names, following the logic of ``twelve_tone_scale_intervals``.
 
@@ -782,7 +754,7 @@ def get_interval_map(tonal_centre: str,
     else:
         real_names = force_heptatonic(tonal_centre, scale)
 
-    interval_symbols: Sequence[str] = list(twelve_tone_scale_intervals(scale))
+    interval_symbols: list[str] = list(twelve_tone_scale_intervals(scale))
     mapping = dict(zip(utils.shift_list(
         chromatic(), decode_enharmonic(tonal_centre)), interval_symbols))
 
