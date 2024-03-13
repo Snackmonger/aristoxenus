@@ -26,14 +26,14 @@ Curly Braces
     Annotate the inversion of the chord. We should accept classical-style voicings (e.g. {64} or {6/4}) or simple chars (e.g. {2})
 
     Triads
-        53, 5/3, r, R = root position 
-        63, 6/3, 1, f = first inversion
-        64, 6/4, 2, s = second inversion
+        1. 53, 5/3, r, R = root position 
+        2. 63, 6/3, 1, f = first inversion
+        3. 64, 6/4, 2, s = second inversion
 
     If the triad annotations are applied to tetrads, we assume that they have these meanings:
-        753, 7/5/3      (short form: 7)
-        653, 6/5/3      (short form: 65, 6/5)
-        643, 6/4/3      (short form: 43, 4/3)
+        1. 753, 7/5/3      (short form: 7)
+        2. 653, 6/5/3      (short form: 65, 6/5)
+        3. 643, 6/4/3      (short form: 43, 4/3)
 
     The tetrads also have 642, 6/4/2 = third inversion (short form: 24, 2/4)
 
@@ -45,9 +45,9 @@ Square Brackets
 Parentheses
     Annotate the explicit structure of a chord based on the intervals indicated in its base symbol (relative intervals). The parentheses 
 
-    Cmaj7(1537) -> C G E B
-    Cmin7(1537) -> C G Eb Bb
-    Cmaj7(1537) -> C G E B
+        1. Cmaj7(1537) -> C G E B
+        2. Cmin7(1537) -> C G Eb Bb
+        3. Cmaj7(1537) -> C G E B
 
 PROBLEM: What happens when we want to put an 11 or 13 in a chord?
 
