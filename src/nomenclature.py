@@ -556,7 +556,7 @@ def encode_numeric_keyword(number: int, keyword_type: str) -> str:
     number = number - 1 if not keyword_type == "basal" else number
     for type_index, label in enumerate(keywords.NUMERATION_INDICES):
         if label == keyword_type:
-            return keywords.NUMERATION[number][type_index]
+            return str(keywords.NUMERATION[number][type_index])
     raise errors.UnknownKeywordError(keyword_type)
 
 

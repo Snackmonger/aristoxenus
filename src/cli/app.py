@@ -10,10 +10,11 @@ import rich_click as click
 import rich
 from rich import theme, console
 
-from src import interface as I
+
 from data import (keywords as K,
                   annotations as A,
                   constants as C)
+from src import interface as I
 from src.gui.fretboard_diagram.app import FretboardDiagramApp
 from . import app_data, views
 
@@ -22,35 +23,23 @@ click.rich_click.USE_RICH_MARKUP = True
 
 
 aristoxenus_theme = theme.Theme({
-    "title": "orange1 u",
-    "emphasis1": "cyan",
-    "emphasis2": "light_green",
-    "warning": "black on yellow"
+    "title": "red u",
+    "emphasis1": "dark_slate_gray2",
+    "emphasis2": "yellow",
+    "warning": "black on white"
 })
 console_ = console.Console(theme=aristoxenus_theme)
 
-class CLI_State:
-    """
-    Persistent values used by the CLI.
-    """
-    start: str = "fuck"
-    scale: A.APIScaleFormResponse
-
-
-_state = CLI_State()
-
-
 @click.group()
-@click.pass_context
-def aristoxenus(context: click.Context) -> None:
+def aristoxenus() -> None:
     """
     [yellow u]Aristoxenus Command-Line Interface[/yellow u]
 
     This is a hobby project, so this CLI is mostly just used for debugging
     and testing. If you stumbled on this repository on GitHub, then welcome 
-    and enjoy a few of the basic functions of Aristoxenus.
+    and enjoy a few of the basic functions of Aristoxenus!
     """
-    context.obj = _state
+
 
 
 @aristoxenus.command()
@@ -83,12 +72,13 @@ def heptatonic_form(scale: A.HeptatonicScales,
 @aristoxenus.command()
 @click.option("--keynote", "-k", type=str, prompt=True,
               help="The keynote of the chromatic scale. Must be a legal root name.")
-@click.option("--accidental_type", "-a", required=False, prompt=False,
-              type=click.Choice(["sharps", "flats", "binomials"], case_sensitive=False),
-              help="The type of accidental used in the chromatic scale.")
-def chromatic(keynote: str, accidental_type: Optional[str] = None) -> None:
+@click.option("--binomial", "-b",
+              required=False, prompt=False,
+              type=bool, show_default=True,
+              help="Render the scale with binomial names.")
+def chromatic(keynote: str, binomial: bool) -> None:
     """Print a chromatic scale starting on a given keynote."""
-    data = I.chromatic(keynote, accidental_type)
+    data = I.chromatic(keynote, binomial)
     console_.print(data)
 
 
@@ -125,12 +115,10 @@ def chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynote: str,
     console_.print(views.chord_scale(data))
 
 
-
-
-
 @aristoxenus.command()
 @click.option("--topic", "-t", help="The topic you want information about.",
               prompt=True,
               type=click.Choice(list(app_data.TOPIC_DATA), case_sensitive=False))
 def info(topic: str) -> None:
+    """Get information about various topics."""
     console_.print(app_data.TOPIC_DATA[topic.lower()])

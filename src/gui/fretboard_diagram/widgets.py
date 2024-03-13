@@ -60,7 +60,7 @@ class ScaleSelector(ttk.LabelFrame):
         self.select_mode = ttk.OptionMenu(
             self, self.mode, self.mode.get(), *K.MODAL_NAME_SERIES, command=self.change_state)
         self.select_key = ttk.OptionMenu(
-            self, self.key, self.key.get(), *interface.chromatic(), command=self.change_state)
+            self, self.key, self.key.get(), *interface.chromatic(binomial=True), command=self.change_state)
 
         self.select_scale.grid(column=0, row=0)
         self.select_scale.config(width=15)

@@ -13,33 +13,24 @@ from src import (nomenclature,
 
 from data import (annotations as A,
                   chord_symbols as CS,
-                  constants as C,
+                  constants as C, errors,
                   keywords as K,
                   intervallic_canon as IC)
 
 
-def chromatic(keynote: str = "C", accidental_type: Optional[str] = None) -> list[str]:
+def chromatic(keynote: str = "C", binomial: bool = False) -> list[str]:
     """Return a chromatic scale in the given accidental style 
     (default=binomial) and starting at the given keynote (default=C).
     """
-    # NOTE: Technically, if user specified accidental_type="binomial"
-    # then this check would defy the request. But if the user submitted
-    # a note like B# or Fb, assume that they actually want the sharps/flats.
+    if binomial or keynote not in C.LEGAL_ROOT_NAMES:
+        keynote = nomenclature.decode_enharmonic(keynote)
+        return utils.shift_list(nomenclature.chromatic(), keynote)
+    
     if keynote in C.ACCIDENTAL_HALFSTEPS:
         dummy = nomenclature.best_heptatonic(keynote)
         return nomenclature.twelve_tone_scale_names(dummy)
 
-    if keynote not in C.LEGAL_ROOT_NAMES:
-        keynote = nomenclature.decode_enharmonic(keynote)
-
-    if not accidental_type:
-        accidental_type = nomenclature.get_accidental_keyword(keynote)
-
-    # Catch fuzzy keyword
-    keys = [K.BINOMIAL, K.FLAT, K.SHARP]
-    for k in keys:
-        if accidental_type == k + "s":
-            accidental_type = accidental_type[:-1]
+    accidental_type = nomenclature.get_accidental_keyword(keynote)
 
     notes: list[str]
     match accidental_type:
@@ -48,11 +39,11 @@ def chromatic(keynote: str = "C", accidental_type: Optional[str] = None) -> list
         case K.FLAT:
             notes = nomenclature.chromatic(C.FLATS)
         case _:
-            keynote = nomenclature.decode_enharmonic(keynote)
-            notes = nomenclature.chromatic(C.BINOMIALS)
+            dummy = nomenclature.best_heptatonic(keynote)
+            return nomenclature.twelve_tone_scale_names(dummy)
 
     if keynote not in notes:
-        raise ValueError(f"Unknown keynote: {keynote}")
+        raise errors.NoteNameError(keynote)
 
     return utils.shift_list(notes, keynote)
 
@@ -95,7 +86,7 @@ def render_heptatonic_form(
     modal_rotations: int = K.MODAL_NAME_SERIES.index(modal_name)
     scale_base = bitwise.get_modal_form(scale_base, modal_rotations)
     binomial_base: list[str] = chromatic(
-        nomenclature.decode_enharmonic(keynote))
+        nomenclature.decode_enharmonic(keynote), binomial=True)
 
     # Chromatic rendering will use binomials (the 'absolute' spelling)
     chromatic_rendering: list[str] = rendering.render_plain(
@@ -144,7 +135,8 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales,
                            mode: A.ModalNames,
                            keynote: str,
                            number_of_notes: int | str = 3,
-                           base_step: int | str = 2
+                           base_step: int | str = 2,
+                           roman_lower: bool = False
                            ) -> A.APIChordScaleResponse:
     '''
     Create chords from the nomenclaturally-correct form of the given scale 
@@ -168,6 +160,9 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales,
         be expressed with an integer or a keyword representing a step type 
         (e.g. "tertial"). Note that the number of steps starts at 0, so that
         2 == tertial.
+    roman_lower : bool, default=False
+        Flag that decides whether to use lower-case Roman numerals for 
+        minor chords (e.g. iimin7 vs IImin7)
 
     Return
     ------
@@ -224,7 +219,7 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales,
             chord_intervals)
         chord_symbol = note + chord_base
         roman_degree = utils.romanize_intervals(parent_interval_names[i])[0]
-        if CS.CHORD_FLAT_3 in chord_intervals:
+        if CS.CHORD_FLAT_3 in chord_intervals and roman_lower:
             roman_degree = roman_degree.lower()
         roman_degree += chord_base
         x = A.HeptatonicChord(numeric_degree=parent_interval_names[i],
@@ -249,6 +244,6 @@ def parse_chord_symbol(symbol: str) -> str:
     root = parsing.remove_chord_prefix(symbol)[0]
     root = nomenclature.decode_enharmonic(root)
     result = parsing.parse_chord_symbol(symbol)
-    binomial_chromatic = chromatic(root)
+    binomial_chromatic = chromatic(root, binomial=True)
     note_names = rendering.render_plain(result, binomial_chromatic)
     return ", ".join(note_names)
