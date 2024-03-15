@@ -1,77 +1,29 @@
-'''
-Sequences module pertains to the ordering of notes from a given structure
-in diachronic context.
-'''
 
-from src import nomenclature, rendering
+from typing import Sequence
 
-
-
-class NoteSequence():
-    '''
-    -- a basic way of ordering notes --
-    '''
-
-    def __init__(self,
-                 structure: int,
-                 keynote: str = 'C',
-                 order: tuple[int, ...] | None = None
-                 ) -> None:
-        
-        self.structure = structure
-        self.note_set: list[str]
-        
-        if order is None: 
-            self.order_ = tuple(range(structure.bit_count()))
-        else:
-            self.order_ = order
-
-        if not nomenclature.is_scientific(keynote):
-            keynote += '0'
-
-        accidentals = nomenclature.get_accidentals(keynote)
-        self.note_set = rendering.render_scientific(structure, accidentals, keynote)
-        
-
-    @property
-    def order(self) -> tuple[int, ...]:
-        return self.order_
-        
-
-    @order.setter
-    def order(self, order: tuple[int, ...]) -> None:
-        note_set: list[str] = []
-        for number in order:
-            note_set.append(self.note_set[number])
-        self.note_set = note_set
-
-
-    @property
-    def keynote(self) -> str:
-        return self.keynote_
+def build_cluster_contour(sequence: Sequence[Sequence[str]], pattern: Sequence[bool]) -> list[list[str]]:
+    """Take a sequence of note clusters and apply the given reversal pattern.
     
+    Examples
+    --------
+    >>> from data.permutation_data import RISING_FALLING, FALLING_FALLING, RISING_RISING, FALLING_RISING
+    >>> x = [["C", "E", "G"], ["D", "F", "A"], ["E", "G", "B"], ["F", "A", "C"], ["G", "B", "D"], ["A", "C", "E"], ["B", "D", "F"]]
+    >>> for y in [RISING_FALLING, FALLING_FALLING, RISING_RISING, FALLING_RISING]:
+    ...     print(build_cluster_contour(x, y))
+    [['C', 'E', 'G'], ['A', 'F', 'D'], ['E', 'G', 'B'], ['C', 'A', 'F'], ['G', 'B', 'D'], ['E', 'C', 'A'], ['B', 'D', 'F']]
+    [['G', 'E', 'C'], ['A', 'F', 'D'], ['B', 'G', 'E'], ['C', 'A', 'F'], ['D', 'B', 'G'], ['E', 'C', 'A'], ['F', 'D', 'B']]
+    [['C', 'E', 'G'], ['D', 'F', 'A'], ['E', 'G', 'B'], ['F', 'A', 'C'], ['G', 'B', 'D'], ['A', 'C', 'E'], ['B', 'D', 'F']]
+    [['G', 'E', 'C'], ['D', 'F', 'A'], ['B', 'G', 'E'], ['F', 'A', 'C'], ['D', 'B', 'G'], ['A', 'C', 'E'], ['F', 'D', 'B']]
+    """
+    pattern_ = list(pattern)
+    while len(pattern_) < len(sequence):
+        pattern_ += pattern_
 
-    @keynote.setter
-    def keynote(self, keynote: str) -> None:
-        if keynote in nomenclature.enharmonic_decoder():
-            self.keynote_ = keynote
-
+    new_sequence: list[list[str]] = []
+    for i, cluster in enumerate(sequence):
+        new_cluster = list(cluster)
+        if pattern_[i]:
+            new_cluster = list(reversed(cluster))
+        new_sequence.append(new_cluster)
+    return new_sequence
         
-
-    
-
-
-
-
-
-
-
-class Order():
-
-
-    def __init__(self):
-        ...
-
-
-
-    

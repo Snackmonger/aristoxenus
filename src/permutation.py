@@ -2,51 +2,16 @@
 Functions relating to permuting different types of interval structures.
 '''
 from typing import Sequence
-from data import (annotations, chord_symbols, 
+from data import (annotations,
                   constants,
                   errors,
                   intervallic_canon,
-                  keywords)
+                  keywords,
+                  permutation_data)
 
 from src import (bitwise,
-                 nomenclature, parsing,
+                 nomenclature,
                  utils)
-
-
-def extend_structure(interval_structure: int,
-                     extensions: int = constants.NUMBER_OF_OCTAVES
-                     ) -> int:
-    '''
-    Extend a 12-bit interval structure to the range of n identical octaves.
-
-    Parameters
-    ----------
-    interval_structure : int
-        An integer of no more than 12 bits representing an interval structure.
-    extensions : int, default=9
-        A number of octaves to extend the structure over.
-
-    Returns
-    -------
-    int
-        An n*12-bit interval structure, with the original 12-bit structure 
-        repeating every 12 bits.
-
-    Examples
-    --------
-    >>> bin(extend_structure(0b101010110101, 2))
-    '0b101010110101101010110101'
-    >>> bin(extend_structure(0b101010110101, 3))
-    '0b101010110101101010110101101010110101'
-    '''
-    if not bitwise.validate_interval_structure(interval_structure, 12):
-        raise errors.IntervalStructureError(interval_structure)
-
-    compound_structure: int = interval_structure
-    for transposed_octave in range(1, extensions):
-        compound_structure |= bitwise.transpose_interval(
-            interval_structure, transposed_octave, echo=True)
-    return compound_structure
 
 
 def chordify(interval_structure: int,
@@ -92,7 +57,7 @@ def chordify(interval_structure: int,
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
     if isinstance(step, str):
-        step = nomenclature.decode_numeric_keyword(step) 
+        step = nomenclature.decode_numeric_keyword(step)
 
     if not bitwise.validate_interval_structure(interval_structure, 12):
         raise errors.IntervalStructureError(interval_structure)
@@ -106,8 +71,10 @@ def chordify(interval_structure: int,
     # Grab the intervals for each mode and use them to derive chords
     for i, inversion in enumerate(bitwise.inversions(interval_structure, 12)):
         full_range = extend_structure(inversion)
-        chord_intervals = list(bitwise.iterate_intervals(full_range))[::step][:notes]
-        chord_scale.update({interval_names[i]: bitwise.reduce_(chord_intervals)})
+        chord_intervals = list(bitwise.iterate_intervals(full_range))[
+            ::step][:notes]
+        chord_scale.update(
+            {interval_names[i]: bitwise.reduce_(chord_intervals)})
 
     return chord_scale
 
@@ -118,7 +85,7 @@ def chordify_note_names(note_names: Sequence[str],
                         ) -> dict[str, tuple[str, ...]]:
     '''
     Return a dict of chords for the given scale and structural principles.
-    
+
     This dictionary is intended for chords in plain notation,
     and will not properly create chords in scientific notation.
 
@@ -144,15 +111,14 @@ def chordify_note_names(note_names: Sequence[str],
     '''
     if len(note_names) != 7:
         raise errors.HeptatonicScaleError(note_names)
-
-    # Convert keywords to ints
     if isinstance(notes, str):
         notes = nomenclature.decode_numeric_keyword(notes)
     if isinstance(step, str):
         step = nomenclature.decode_numeric_keyword(step)
 
     chord_scale: dict[str, tuple[str, ...]] = {}
-    intervals: tuple[str, ...] = nomenclature.name_heptatonic_intervals(note_names)
+    intervals: tuple[str, ...] = nomenclature.name_heptatonic_intervals(
+        note_names)
     roman_intervals: tuple[str, ...] = utils.romanize_intervals(intervals)
 
     for i, note_name in enumerate(note_names):
@@ -162,35 +128,6 @@ def chordify_note_names(note_names: Sequence[str],
         chord_scale.update({roman_intervals[i]: tuple(chord_form)})
 
     return chord_scale
-
-
-def analyse_chordification(chord_scale: dict[str, list[str] | int]) -> dict[str, list[str] | int]:
-    fixed_names: dict[str, list[str] | int] = {}
-    use_structure: int
-    use_symbol: str
-    number_of_notes: int = 0
-    for interval_symbol, chord_structure in chord_scale.items():
-        use_symbol = interval_symbol
-        if isinstance(chord_structure, list):
-            use_structure = parsing.parse_literal_sequence(chord_structure)
-        else:
-            use_structure = chord_structure
-        
-        number_of_notes = use_structure.bit_count()
-        if bitwise.has_interval(use_structure, intervallic_canon.HEMIOLION):
-            use_symbol = interval_symbol.lower()
-
-
-        if number_of_notes == 3:
-            for name, triad in intervallic_canon.triads.items():
-                if triad == use_structure:
-                    symbol = chord_symbols.triads_symbols[name]
-
-
-    # blaaah too tired... keep working here
-    return fixed_names
-
-        
 
 
 def spread_triad(chord_structure: int) -> int:
@@ -216,7 +153,7 @@ def spread_triad(chord_structure: int) -> int:
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
         raise errors.IntervalStructureError(chord_structure)
 
-    return drop_voicing(chord_structure, constants.DROP_2)
+    return drop_voicing(chord_structure, permutation_data.DROP_2)
 
 
 def drop_voicing(chord_structure: int,
@@ -269,11 +206,11 @@ def drop_voicing(chord_structure: int,
 
     Examples
     --------
-    >>> bin(drop_voicing(0b100010010001, constants.DROP_2))
+    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_2))
     '0b10000100010000001'
-    >>> bin(drop_voicing(0b100010010001, constants.DROP_3))
+    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_3))
     '0b10010000100000000001'
-    >>> bin(drop_voicing(0b100010010001, constants.DROP_2_AND_4))
+    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_2_AND_4))
     '0b100000010000000010000001'
     '''
     intervals = list(bitwise.iterate_intervals(chord_structure))
@@ -353,7 +290,7 @@ def tetrad_variants() -> annotations.TetradInventory:
 
     variants: annotations.TetradInventory = []
     inversion_names = [keywords.numbered_inversions[x] for x in range(4)]
-    
+
     for name, tetrad in tetrads.items():
         inversions: tuple[int, ...] = bitwise.inversions(
             tetrad, constants.TONES)
@@ -364,14 +301,14 @@ def tetrad_variants() -> annotations.TetradInventory:
             drop_2={},
             drop_3={},
             drop_2_and_4={}
-            )
+        )
         for i, inversion in enumerate(inversions):
             # We iterate the inversions THEN generate the drop voicings.
             # See `permutation.drop_voicing` for info.
             inversion_name: str = inversion_names[i]
-            drop2: int = drop_voicing(inversion, constants.DROP_2)
-            drop3: int = drop_voicing(inversion, constants.DROP_3)
-            drop24: int = drop_voicing(inversion, constants.DROP_2_AND_4)
+            drop2: int = drop_voicing(inversion, permutation_data.DROP_2)
+            drop3: int = drop_voicing(inversion, permutation_data.DROP_3)
+            drop24: int = drop_voicing(inversion, permutation_data.DROP_2_AND_4)
 
             innerdict[keywords.CLOSE].update({inversion_name: inversion})
             innerdict[keywords.DROP_2].update({inversion_name: drop2})
@@ -381,5 +318,4 @@ def tetrad_variants() -> annotations.TetradInventory:
         variants.append(innerdict)
 
     return tuple(variants)
-
 

@@ -6,13 +6,14 @@ from src import (bitwise,
                  nomenclature,
                  permutation,
                  parsing,
-                 interface)
+                 interface,
+                 sequences)
 
 from data import (keywords,
                   annotations)
 
 from tests.decorators import test_perf
-from tests.test_data import chord_tests
+from tests import test_data
 
 
 def do_doctests(verbose: bool = False) -> None:
@@ -21,11 +22,12 @@ def do_doctests(verbose: bool = False) -> None:
     doctest.testmod(nomenclature, verbose=verbose)
     doctest.testmod(permutation, verbose=verbose)
     doctest.testmod(parsing, verbose=verbose)
+    doctest.testmod(sequences, verbose=verbose)
 
 
 @test_perf(True)
 def test_chord_symbol_from_interval_names(
-    ch_dict: Optional[dict[str, list[str]]] = None,
+    chords: Optional[dict[str, list[str]]] = None,
     verbose: bool = False
 ) -> None:
     """Perform a series of tests on the chord symbol generation function to 
@@ -33,27 +35,27 @@ def test_chord_symbol_from_interval_names(
     """
     @test_perf(verbose)
     def __test_ch_symbol_generation(expected_symbol: str, interval_names: list[str]):
-        err = f"# Testing intervals\t{interval_names}"
+        report = f"# Testing intervals\t{interval_names}"
         x = parsing.parse_interval_names_as_chord_symbol(interval_names)
         test_passed = x == expected_symbol
-        err += f"\n# Expected symbol\t{expected_symbol}"
-        err += f"\n# Actual symbol\t\t{x}"
-        err += f"\n# Test passed\t\t{test_passed}"
-        err += "\n#######################################################"
+        report += f"\n# Expected symbol\t{expected_symbol}"
+        report += f"\n# Actual symbol\t\t{x}"
+        report += f"\n# Test passed\t\t{test_passed}"
+        report += "\n#######################################################"
         if not test_passed or verbose:
-            print(err)
+            print(report)
 
         return test_passed
 
-    if not ch_dict:
-        ch_dict = chord_tests
+    if not chords:
+        chords = test_data.chord_tests
     print("\n\nBeginning test of chord symbol generation.")
     test_total = 0
-    for k, v in ch_dict.items():
-        x = __test_ch_symbol_generation(k, v)
-        if x:
+    for k, v in chords.items():
+        result = __test_ch_symbol_generation(k, v)
+        if result:
             test_total += 1
-    print(f"Passed {test_total}/{len(ch_dict)} tests.")
+    print(f"Passed {test_total}/{len(chords)} tests.")
 
 
 @test_perf(True)

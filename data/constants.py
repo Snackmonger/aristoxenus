@@ -43,7 +43,3 @@ ACCIDENTAL_HALFSTEPS = [n + SHARP_SYMBOL for n in HALFSTEPS] + \
 LEGAL_ROOT_NAMES = tuple([n for c in [NATURALS, SHARPS, FLATS]
                          for n in c] + ACCIDENTAL_HALFSTEPS)
 
-# Chord voicings
-DROP_2 = (1,)  # c e g b -> c g b e
-DROP_3 = (1, 2)  # c e g b -> c b e g
-DROP_2_AND_4 = (1, 3)  # c e g b -> c g e b

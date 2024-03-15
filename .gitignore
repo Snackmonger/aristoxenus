@@ -93,3 +93,10 @@ src/gui/old/guitar_diagram_widget.py
 src/gui/old/scale_info_panel.py
 tests/__pycache__/main.cpython-311.pyc
 tests/__pycache__/test_data.cpython-311.pyc
+src/__pycache__/sequences.cpython-311.pyc
+data/__pycache__/permutation_data.cpython-311.pyc
+src/fileout/__pycache__/__init__.cpython-311.pyc
+src/fileout/__pycache__/functions.cpython-311.pyc
+src/models/__pycache__/interval_structures.cpython-311.pyc
+src/models/__pycache__/shorthand.cpython-311.pyc
+src/models/__pycache__/interval_structures.cpython-311.pyc

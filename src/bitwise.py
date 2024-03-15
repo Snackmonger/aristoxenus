@@ -1,19 +1,10 @@
 '''
 Miscellania pertaining to bitwise operations.
-
-Notes
------
-We treat musical relationships as intervals, not as notes. All intervals are 
-by definition distances between pitches. The least significant bit represents 
-the lowest pitch of the strcuture. Since the lowest pitch of the structure is 
-the pitch from which other intervals are calculated, every interval (and 
-therefore every compound interval structure) must be an odd number. 
-    
 '''
 import functools
 from typing import Generator
 
-from data import constants
+from data import constants, errors
 
 def validate_interval(interval: int) -> bool:
     '''
@@ -373,3 +364,39 @@ def get_modal_form(interval_structure: int, rotations: int) -> int:
     for _ in range(rotations):
         interval_structure = next_inversion(interval_structure, 12)
     return interval_structure
+
+
+def extend_structure(interval_structure: int,
+                     extensions: int = constants.NUMBER_OF_OCTAVES
+                     ) -> int:
+    '''
+    Extend a 12-bit interval structure to the range of n identical octaves.
+
+    Parameters
+    ----------
+    interval_structure : int
+        An integer of no more than 12 bits representing an interval structure.
+    extensions : int, default=9
+        A number of octaves to extend the structure over.
+
+    Returns
+    -------
+    int
+        An n*12-bit interval structure, with the original 12-bit structure 
+        repeating every 12 bits.
+
+    Examples
+    --------
+    >>> bin(extend_structure(0b101010110101, 2))
+    '0b101010110101101010110101'
+    >>> bin(extend_structure(0b101010110101, 3))
+    '0b101010110101101010110101101010110101'
+    '''
+    if not validate_interval_structure(interval_structure, 12):
+        raise errors.IntervalStructureError(interval_structure)
+
+    compound_structure: int = interval_structure
+    for transposed_octave in range(1, extensions):
+        compound_structure |= transpose_interval(
+            interval_structure, transposed_octave, echo=True)
+    return compound_structure
