@@ -1,4 +1,6 @@
+"""Data used in tests."""
 
+# Expected symbol : input intervals
 chord_tests = {"maj": ["1", "3", "5"],
           "min": ["1", "b3", "5"],
           "majb5": ["1", "3", "b5"],

@@ -1,3 +1,5 @@
+"""Decorators involved in tests."""
+
 import time
 from typing import TypeVar, ParamSpec, Callable
 
