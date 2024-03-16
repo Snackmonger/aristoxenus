@@ -90,7 +90,6 @@ The internal symbol generation uses 1:1 symbols wherever possible, partly to avo
     - "C#maj#5" unambiguously means "a major chord built from C#, but override the fifth with a #5"
     - "Emajb5" unambiguously means "a major chord built from E, but override the fifth with a b5"
 
-
 Tetrads 
 +++++++
 

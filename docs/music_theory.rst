@@ -4,6 +4,7 @@ ARISTOXENUS MUSIC THEORY REFERNCE GUIDE
 
 .. contents:: Table of Contents
 
+
 Abstract Concepts
 =================
 

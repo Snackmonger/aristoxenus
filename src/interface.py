@@ -152,12 +152,24 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynot
 
     Return
     ------
-    list of dict of
-        degree: str               : The root interval in the parent scale.
-        root: str                 : The root note of the chord.
-        notes: list[str]          : The spelling of the notes of the chord.
-        interval_structure: int   : A number representing the chord structure.
-        interval_names: list[str] : The spelling of the intervals of the chord.
+    dict {
+        scale: str
+        mode: str
+        keynote: str
+        notes: int
+        step: int
+        chord_scale: list[
+            dict {
+                numeric_degree: str
+                root: str
+                notes: list[str]
+                interval_structure: int
+                interval_names: list[str]
+                chord_symbol: str
+                roman_degree: str
+                }
+            ]
+        }
 
     Examples
     --------
