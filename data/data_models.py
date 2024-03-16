@@ -1,4 +1,4 @@
-"""Dataclasses and similar things for modelling data in easy ways."""
+"""Dataclasses that correspond to API responses, or segments thereof."""
 
 from dataclasses import dataclass
 

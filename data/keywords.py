@@ -246,7 +246,7 @@ HEPTAD = 'heptad'
 OCTAD = 'octad'
 ENNEAD = 'nonad'
 DECAD = 'decad'
-HENDECAD = 'undecad'
+HENDECAD = 'hendecad'
 DUODECAD = 'duodecad'
 
 # Tonal numbers

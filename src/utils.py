@@ -3,10 +3,7 @@ Miscellaneous functions.
 '''
 
 from typing import Any, Sequence
-
-from data import constants
-from data.errors import NoteNameError
-
+from itertools import chain
 
 
 
@@ -71,3 +68,8 @@ def romanize_intervals(interval_names: Sequence[str] | str) -> tuple[str, ...]:
                 roman_intervals.append(roman_interval)
     return tuple(roman_intervals)
 
+
+
+def flatten(iterable: Sequence[Sequence[Any]]) -> Sequence[Any]:
+    """Flatten an array of arrays."""
+    return list(chain.from_iterable(iterable))

@@ -216,6 +216,7 @@ class GuitarFingeringDiagram:
         # A table of nodes that can be turned on/off and change appearance.
         self.grid: list[list[FingeringNode]] = self.new_grid()
 
+
     def new_grid(self) -> list[list[FingeringNode]]:
         """Create an array of FingeringNodes based on the information in the 
         ``fretboard``, ``position``, and ``width`` attributes."""
