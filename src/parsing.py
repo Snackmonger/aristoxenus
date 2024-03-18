@@ -423,7 +423,6 @@ def parse_polychord_symbol(chord_symbol: str) -> int:
 def identify_polyad():
     ...
 
-
 def identify_triad(interval_structure: int) -> dict[str, str | dict[str, str]]:
     '''
     Return the canonical identity of a given triadic interval structure.

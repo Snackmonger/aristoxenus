@@ -109,8 +109,6 @@ def render_heptatonic_form(scale_name: A.HeptatonicScales, modal_name: A.ModalNa
     interval_map: dict[str, str] = nomenclature.get_interval_map(
         keynote, scale_base, True)
 
-    # NOTE: if the above flag is False, then the scale notes will have their 'real' names.
-
     return A.APIScaleFormResponse(scale_name=scale_name,
                                   modal_name=modal_name,
                                   interval_structure=scale_base,

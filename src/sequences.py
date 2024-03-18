@@ -79,7 +79,7 @@ eighth_note_triplet = 3/24 # = 1/8
 sixteenth_note_triplet = 3/48 # = 1/16
 
 def find_strong_beat(rhythm: Sequence[int], accent_pattern: Sequence[bool]) -> tuple[bool, ...]:
-    
+    ...
     # 0 = beat 1, 0.25 = beat 2, 0.5 = beat 3, 0.75 = beat 4
     # 1-e-and-a == 0, 0.0625, 0.125, 0.1875
 
@@ -177,3 +177,4 @@ def analyse_adherence(seq) -> None:
     Beat 3 is halfway in 4/4 but only a quarter in 12/8.
     
     """
+    ...
