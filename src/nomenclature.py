@@ -144,7 +144,7 @@ def __is_homonymous(note_one: str, note_two: str) -> bool:
 def decode_enharmonic(note_name: str) -> str:
     '''
     Return the binomial form of a given note name with up to 12 accidentals.
-
+    
     Examples
     --------
     >>> decode_enharmonic('B#')
@@ -346,7 +346,7 @@ def convert_frequency_to_note(frequency: float, accidental_notes: Sequence[str] 
     raise errors.AristoxenusValueError(frequency)
 
 
-def convert_note_to_frequency(note_name: str,temperament_: Callable[..., tuple[float, ...]] = temperament.equal_temperament) -> float:
+def convert_note_to_frequency(note_name: str, temperament_: Callable[..., tuple[float, ...]] = temperament.equal_temperament) -> float:
     '''
     Return a frequency for a given scientific note name of any accidental style.
 
@@ -379,22 +379,18 @@ def force_heptatonic(note_name: str, interval_structure: int) -> tuple[str, ...]
     --------
     >>> force_heptatonic('B#', 0b101010110101)
     ('B#', 'C##', 'D##', 'E#', 'F##', 'G##', 'A##')
-
     '''
     if note_name in constants.BINOMIALS:
         raise errors.NoteNameError(
-            'Operation can only be performed on naturals, sharps, or flats.')
-    if interval_structure.bit_count() != constants.NOTES or interval_structure.bit_length() > constants.TONES:
-        raise errors.IntervalStructureError(
-            'Operation can only be performed on heptatonic scales in 12 tone style.')
-    # Assemble basic alphabetic order to enforce.
-    plain: tuple[str, ...] = utils.shift_array(
+            'Function requires naturals, sharps, or flats.')
+    if not bitwise.validate_interval_structure(interval_structure, 12, 7):
+        raise errors.HeptatonicScaleError(
+            "Function requires a heptatonic scale.")
+    basic_order: tuple[str, ...] = utils.shift_array(
         constants.NATURALS, __identity(note_name))
-    # Create binomial version of requested scale pattern.
-    binomial: tuple[str, ...] = rendering.render_plain(interval_structure, utils.shift_array(
+    binomial_version: tuple[str, ...] = rendering.render_plain(interval_structure, utils.shift_array(
         chromatic(constants.BINOMIALS), decode_enharmonic(note_name)))
-    # Force each binomial note value to adopt the next alphabetic note name.
-    return tuple(encode_enharmonic(binomial[i], plain[i]) for i in range(constants.NOTES))
+    return tuple(encode_enharmonic(binomial_version[i], basic_order[i]) for i in range(constants.NOTES))
 
 
 def best_heptatonic(note_name: str, interval_structure: int = intervallic_canon.DIATONIC_SCALE) -> tuple[str, ...]:
@@ -549,19 +545,26 @@ def is_scientific(note_name: str) -> bool:
     return note_name[-1].isnumeric()
 
 
-def get_accidentals(note_name: str) -> tuple[str, ...]:
-    '''Return the accidental group to which the given note name belongs.
+def get_accidentals(symbol: str) -> tuple[str, ...]:
+    '''Return the accidental group to which the given note name or 
+    keyword belongs.
 
     Examples
     --------
     >>> get_accidentals("C#")
     ('C#', 'D#', 'F#', 'G#', 'A#')
     '''
-    if constants.BINOMIAL_DIVIDER_SYMBOL in note_name:
-        return constants.BINOMIALS
-    if constants.SHARP_SYMBOL in note_name:
+    if symbol == keywords.SHARP:
         return constants.SHARPS
-    if constants.FLAT_SYMBOL in note_name:
+    if symbol == keywords.FLAT:
+        return constants.FLATS
+    if symbol == keywords.BINOMIAL:
+        return constants.BINOMIALS
+    if constants.BINOMIAL_DIVIDER_SYMBOL in symbol:
+        return constants.BINOMIALS
+    if constants.SHARP_SYMBOL in symbol:
+        return constants.SHARPS
+    if constants.FLAT_SYMBOL in symbol:
         return constants.FLATS
     return constants.BINOMIALS
 
@@ -614,7 +617,8 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> tuple[str, ...
     tonic: str = decode_enharmonic(scale_data[0])
     binomial_names: list[str] = [decode_enharmonic(x) for x in scale_data]
     if len(binomial_names) != constants.NOTES:
-        raise errors.HeptatonicScaleError('Only works on heptatonic scales.')
+        raise errors.HeptatonicScaleError(
+            "Function requires a heptatonic scale.")
 
     chromatic_names: tuple[str, ...] = utils.shift_array(
         chromatic(constants.BINOMIALS), tonic)
@@ -639,8 +643,13 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> tuple[str, ...
 
 
 def twelve_tone_scale_intervals(scale: int) -> tuple[str, ...]:
-    """Return a list that consists of the 7 correctly-spelled intervals of any
+    """
+    Return a list that consists of the 7 correctly-spelled intervals of any
     heptatonic scale, plus 5 more intervals that fill in the chromatic notes.
+
+    The purpose of this function is to ensure that the more unusual scale
+    structures are able to keep their unusual intervals with their correct
+    relative names. 
 
     Examples
     --------
@@ -673,9 +682,9 @@ def twelve_tone_scale_names(note_names: Sequence[str]) -> tuple[str, ...]:
     """Return a list that contains the given 7 note names, plus
     5 more note names that supply the missing chromatic notes.
 
-    This function is designed to ensure that heptatonic scales that mix sharps
-    and flats, or which begin with an enharmonic halfstep (e.g. Cb), are still
-    able to be contextualized within chromatic scales.
+    The purpose of this function is to ensure that heptatonic scales that mix 
+    sharps and flats, or which begin with an enharmonic halfstep (e.g. Cb), are 
+    still able to be contextualized within chromatic scales.
     """
     if not len({decode_enharmonic(x) for x in note_names}) == 7:
         raise errors.HeptatonicScaleError(
@@ -736,14 +745,25 @@ def interval_identity(item: str) -> int:
 
 
 def get_interval_map(tonal_centre: str, scale: int = intervallic_canon.DIATONIC_SCALE, binomial: bool = False) -> dict[str, str]:
-    """A dictionary containing a mapping of 12 unique note names to 12 unique
-    interval names, following the logic of ``twelve_tone_scale_intervals``.
+    """Return a mapping of the correct note names and interval names for the 
+    given heptatonic scale form, along with 5 additional names representing 
+    the missing chromatic steps.
 
-    The names will be based on the premise that the tonal centre will be
-    used to force a heptatonic scale, and the missing 5 notes will be drawn
-    from the chromatic notes of that centre's accidental type. If the tonal 
-    centre is a binomial, it will resolve into the best names. If the binomial
-    flag is set to True, then the note names will simply be the binomials.
+    This function is designed to ensure that scales that use mixed or multiple
+    accidentals will be able to reference chromatic notes with logical names.
+    
+    If the binomial flag is set to True, then the note names will simply be the 
+    binomials. Otherwise, binomial keynotes will be resolved into their optimal 
+    scale names.
+
+    Parameters
+        tonal_centre: A valid keynote name.
+        scale: An integer representing a heptatonic scale.
+        binomial: Flag that makes the final result binomial.
+    Returns
+        dict {
+            note_name: interval_name
+        }
     """
     if tonal_centre not in constants.LEGAL_ROOT_NAMES:
         tonal_centre = decode_enharmonic(tonal_centre)

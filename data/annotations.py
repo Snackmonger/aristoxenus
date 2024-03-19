@@ -1,15 +1,14 @@
 """Type aliases to make the syntax of type hints easier to read."""
 
-from typing import Mapping, Sequence, TypeAlias, TypedDict, Literal
+from typing import Sequence, TypeAlias, TypedDict, Literal
 
 
-GuitarFretboard: TypeAlias = Sequence[Sequence[str]]
 
 ###############################################################################
 # Canonical scaleform sets
 ###############################################################################
 
-HeptatonicScales = Literal["diatonic",
+HeptatonicScales: TypeAlias = Literal["diatonic",
                            "altered",
                            "hemitonic",
                            "hemiolic",
@@ -19,7 +18,7 @@ HeptatonicScales = Literal["diatonic",
                            "biseptimal",
                            "paleochromatic"]
 
-ModalNames = Literal['ionian', 
+ModalNames: TypeAlias = Literal['ionian', 
                      'dorian', 
                      'phrygian', 
                      'lydian', 
@@ -58,57 +57,15 @@ TetradInventory: TypeAlias = Sequence[TetradConspectus]
 ChordInventory: TypeAlias = TriadInventory | TetradInventory
 
 ###############################################################################
-# Data associated with specific callback functions in the GUI
-###############################################################################
-
-class ScaleformReport(TypedDict):
-    """Report about a scaleform selection. 
-
-    Used by the GUI to handle the state of the scale selector widget.
-    """
-    scale_name: HeptatonicScales
-    modal_name: ModalNames
-    keynote: str
-
-
-class FingeringReport(TypedDict):
-    """Report about the fingering of a string on a guitar.
-
-    Used by the GUI to handle the state of the string fingering widgets.
-    """
-    string: int
-    fingering: str
-
-
-class NodeDisplayReport(TypedDict):
-    """Report about the display options for nodes in the guitar fingering
-    diagram.
-
-    Used by the GUI to handle the state of the node display widgets.
-    """
-    interval: str
-    shape: str
-    size: int
-    shape_colour: str
-    text_colour: str
-    text_size: int
-
-
-class ArpeggioFormReport(TypedDict):
-    """Report about an arpeggio selection.
-
-    Used by the GUI to handle the state of the arpeggio selector widget.
-    """
-    number_of_notes: int  # triad, tetrad
-    base_interval: int  # tertial, quartal
-    current_rotation: int  # keeps the chord's intervals synched
-    node_display_reports: list[NodeDisplayReport]
-
-
-
-###############################################################################
 # Data assembled for return through the API
 ###############################################################################
+
+
+class APIChordSymbolResponse(TypedDict):
+    """A response from the API containing information about a chord symbol."""
+    chord_symbol: str
+    note_names: tuple[str, ...]
+    interval_structure: int
 
 
 class HeptatonicChord(TypedDict):

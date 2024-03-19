@@ -7,7 +7,7 @@ from src import (bitwise,
                  permutation,
                  parsing,
                  interface,
-                 sequences)
+                 sequences, utils)
 
 from data import (keywords,
                   annotations)
@@ -83,3 +83,5 @@ def test_generate_chord_names_for_heptatonic():
             pad2 = 20 - len(root+tetrad_stem)
             print(
                 f"# {triad['numeric_degree']}\t::{' '*pad1}{root + triad_stem}{' '*pad2}{root + tetrad_stem}")
+
+

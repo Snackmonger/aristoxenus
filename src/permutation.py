@@ -13,7 +13,6 @@ from src import (bitwise,
                  nomenclature,
                  utils)
 
-
 def chordify(interval_structure: int,
              notes: int | str = 3,
              step: int | str = 2
@@ -70,7 +69,7 @@ def chordify(interval_structure: int,
 
     # Grab the intervals for each mode and use them to derive chords
     for i, inversion in enumerate(bitwise.inversions(interval_structure, 12)):
-        full_range = extend_structure(inversion)
+        full_range = bitwise.extend_structure(inversion)
         chord_intervals = list(bitwise.iterate_intervals(full_range))[
             ::step][:notes]
         chord_scale.update(

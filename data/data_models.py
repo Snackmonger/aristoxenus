@@ -6,6 +6,10 @@ from data import annotations
 from src import interface
 
 
+__all__ = ["HeptatonicRendering",
+           "ChordScaleRendering",
+           "HeptatonicChordRendering"]
+
 @dataclass
 class HeptatonicRendering:
     """Simple structure with the same keys as  

@@ -2,6 +2,7 @@
 
 # General musical terms
 NOTE_NAME = 'note_name'
+NOTE_NAMES = "note_names"
 FREQUENCY = 'frequency'
 SHARP = 'sharp'
 FLAT = 'flat'
@@ -120,54 +121,6 @@ DIMINISHED_SEVENTH = 'diminished_7'
 AUGMENTED_SEVENTH = 'augmented_7'
 AUGMENTED_MAJOR_SEVENTH = 'augmented_major_7'
 DOMINANT_SEVENTH_FLAT_FIVE = 'dominant_7_flat_5'
-
-# Fingering terms
-FINGERING = "fingering"
-CURRENT_FINGERING = "current_fingering"
-FINGER = "finger"
-INDEX = "index"
-MIDDLE = "middle"
-RING = "ring"
-PINKY = "pinky"
-MIXED = "mixed"
-
-# Instrument terms
-FRET = "fret"
-FRETBOARD = "fretboard"
-STRING = "string"
-TUNING = "tuning"
-STANDARD = 'standard'
-STANDARD_7_STRING = 'standard_7_string'
-STANDARD_8_STRING = 'standard_8_string'
-DROP_D = 'drop_d'
-OPEN_D = "open_d"
-OPEN_G = "open_g"
-
-# Graphics display options
-# ------------------------
-# Diagram node control options
-SHAPE = "shape"
-SHAPE_SIZE = "size"
-TEXT_SIZE = "text_size"
-COLOUR = "colour"
-SHAPE_COLOUR = "shape_colour"
-TEXT_COLOUR = "text_colour"
-RENDERING_MODE = "rendering_mode"
-# Shape terms
-CIRCLE = "circle"
-TRIANGLE = "triangle"
-INVERSE_TRIANGLE = "inverse_triangle"
-SQUARE = "square"
-DIAMOND = "diamond"
-# Colour terms
-BLACK = "black"
-RED = "red"
-BLUE = "blue"
-GREEN = "green"
-ORANGE = "orange"
-PURPLE = "purple"
-YELLOW = "yellow"
-WHITE = "white"
 
 # API terms
 # ---------
@@ -303,8 +256,5 @@ NUMERATION_INDICES = (POLYAD, TONAL, BASAL, CARDINAL, ORDINAL, UPLE)
 # List of chord inversion terms
 numbered_inversions = tuple([ROOT+'_'+POSITION] + [NUMERATION[
     x][4]+'_'+INVERSION for x in range(11)])
-
-
-
 
 
