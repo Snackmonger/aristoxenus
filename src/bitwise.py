@@ -165,7 +165,6 @@ def transpose_interval(interval: int, octave: int = 1, echo: bool = False) -> in
     return ((interval + modifier) << constants.TONES * octave) + 1
 
 
-
 def rotate_left(collection: int, max_bits: int) -> int:
     '''Rotate the bit collection left 1 time.'''
     return (collection << 1 ) & (2 ** max_bits- 1) | (collection & (2 ** max_bits - 1)) >> (max_bits - 1)

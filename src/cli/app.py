@@ -11,7 +11,7 @@ from data import (keywords as K,
                   annotations as A,
                   constants as C)
 from src import (interface as I,
-                 gui)
+                 )
 from tests import (do_doctests,
                    test_chord_symbol_from_interval_names)
 
@@ -32,21 +32,12 @@ def aristoxenus() -> None:
     and enjoy a few of the basic functions of Aristoxenus!
     """
 
-
-@aristoxenus.command()
-def fretboard_diagram() -> None:
-    """
-    Attempt to launch the tkinter [red]Fretboard Diagram Tool[/red].
-    """
-    gui.FretboardDiagramApp().mainloop()
-
-
 @aristoxenus.command()
 @click.option("--scale", "-s", help="The name of the parent scale.",
-              type=click.Choice(K.HEPTATONIC_ORDER, case_sensitive=False),
+              type=click.Choice(K.HEPTATONIC_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--mode", "-m", help="The name of the modal rotation.",
-              type=click.Choice(K.MODAL_NAME_SERIES, case_sensitive=False),
+              type=click.Choice(K.MODAL_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--keynote", "-k", prompt=True,
               type=click.Choice(C.LEGAL_ROOT_NAMES, case_sensitive=False),
@@ -85,10 +76,10 @@ def parse_chord(symbol: str) -> None:
 
 @aristoxenus.command()
 @click.option("--scale", "-s", help="The name of the parent scale.",
-              type=click.Choice(K.HEPTATONIC_ORDER, case_sensitive=False),
+              type=click.Choice(K.HEPTATONIC_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--mode", "-m", help="The name of the modal rotation.",
-              type=click.Choice(K.MODAL_NAME_SERIES, case_sensitive=False),
+              type=click.Choice(K.MODAL_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--keynote", "-k", prompt=True,
               help="The name of the note to use as the tonal centre.",

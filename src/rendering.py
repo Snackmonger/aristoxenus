@@ -41,8 +41,6 @@ def render_plain(interval_structure: int,
     ['C', 'D', 'E', 'F', 'G', 'A', 'B']
     >>> render_plain(0b10000100010000001, nomenclature.chromatic())
     ['C', 'G', 'B', 'E']
-    >>> render_plain(0b10000000010000001, utils.shift_list(nomenclature.chromatic(), 'D#|Eb'))
-    ['D#|Eb', 'G#|Ab', ]
     
     '''
     if chromatic_scale is None:

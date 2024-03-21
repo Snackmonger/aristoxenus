@@ -10,8 +10,8 @@ def chord_scale(data: annotations.APIChordScaleResponse) -> console.Group:
 
     data_ = data_models.ChordScaleRendering(**data)
     side1 = """[title]Parent scale\nModal rotation\nKeynote\nNumber of notes\nBase step[/title]"""
-    polyad = nomenclature.encode_numeric_keyword(data_.notes, "polyad")
-    basal = nomenclature.encode_numeric_keyword(data_.step, "basal")
+    polyad = utils.encode_numeration(data_.notes, "polyad")
+    basal = utils.encode_numeration(data_.step, "basal")
     side2 = f"""[emphasis2]{data_.scale}\n{data_.mode}\n{data_.keynote}\n{polyad}\n{basal}[/emphasis2]"""
 
     def __chord(chord: annotations.HeptatonicChord) -> panel.Panel:

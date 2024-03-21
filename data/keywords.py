@@ -1,6 +1,9 @@
 '''String literals used as dictionary or interface keywords in the program.'''
 
 # General musical terms
+from src import utils
+
+
 NOTE_NAME = 'note_name'
 NOTE_NAMES = "note_names"
 FREQUENCY = 'frequency'
@@ -44,7 +47,7 @@ AEOLIAN = 'aeolian'
 LOCRIAN = 'locrian'
 
 # Canonical order of mode names
-MODAL_NAME_SERIES = (
+MODAL_SERIES = (
     IONIAN,
     DORIAN,
     PHRYGIAN,
@@ -65,7 +68,7 @@ BISEPTIMAL = 'biseptimal'
 PALEOCHROMATIC = 'paleochromatic'
 
 # Internal canonical order of scale types
-HEPTATONIC_ORDER = (
+HEPTATONIC_SERIES = (
     DIATONIC,
     ALTERED,
     HEMITONIC,
@@ -122,12 +125,6 @@ AUGMENTED_SEVENTH = 'augmented_7'
 AUGMENTED_MAJOR_SEVENTH = 'augmented_major_7'
 DOMINANT_SEVENTH_FLAT_FIVE = 'dominant_7_flat_5'
 
-# API terms
-# ---------
-RESULT = 'result'
-RESPONSE = 'response'
-NO_MATCH = 'no_match'
-
 # Numeration terms
 # ----------------
 CARDINAL = 'cardinal'
@@ -137,124 +134,8 @@ POLYAD = 'polyad'
 TONAL = 'tonal'
 BASAL = 'basal'
 
-# Cardinal numbers
-ONE = 'one'
-TWO = 'two'
-THREE = 'three'
-FOUR = 'four'
-FIVE = 'five'
-SIX = 'six'
-SEVEN = 'seven'
-EIGHT = 'eight'
-NINE = 'nine'
-TEN = 'ten'
-ELEVEN = 'eleven'
-TWELVE = 'twelve'
-THIRTEEN = 'thirteen'
-FOURTEEN = 'fourteen'
-FIFTEEN = 'fifteen'
-
-# Ordinal numbers
-FIRST = 'first'
-SECOND = 'second'
-THIRD = 'third'
-FOURTH = 'fourth'
-FIFTH = 'fifth'
-SIXTH = 'sixth'
-SEVENTH = 'seventh'
-EIGHTH = 'eighth'
-NINTH = 'ninth'
-TENTH = 'tenth'
-ELEVENTH = 'eleventh'
-TWELFTH = 'twelfth'
-THIRTEENTH = 'thirteenth'
-FOURTEENTH = 'fourteenth'
-FIFTEENTH = 'fifteenth'
-
-# -Uples
-SINGLE = 'single'
-DOUBLE = 'double'
-TRIPLE = 'triple'
-QUADRUPLE = 'quadruple'
-QUINTUPLE = 'quintuple'
-SEXTUPLE = 'sextuple'
-SEPTUPLE = 'septuple'
-OCTUPLE = 'octuple'
-NONUPLE = 'nonuple'
-DECUPLE = 'decuple'
-HENDECUPLE = 'undecuple'
-DUODECUPLE = 'duopdecuple'
-TREDECUPLE = 'tredecuple'
-QUATTUORDECUPLE = 'quattuordecuple'
-QUINDECUPLE = 'quindecuple'
-
-# Polyads
-MONAD = 'monad'
-DYAD = 'dyad'
-TRIAD = 'triad'
-TETRAD = 'tetrad'
-PENTAD = 'pentad'
-HEXAD = 'hexad'
-HEPTAD = 'heptad'
-OCTAD = 'octad'
-ENNEAD = 'nonad'
-DECAD = 'decad'
-HENDECAD = 'hendecad'
-DUODECAD = 'duodecad'
-
-# Tonal numbers
-MONOTONIC = 'monotonic'
-DITONIC = 'ditonic'
-TRITONIC = 'tritonic'
-TETRATONIC = 'tetratonic'
-PENTATONIC = 'pentatonic'
-HEXATONIC = 'hexatonic'
-HEPTATONIC = 'heptatonic'
-OCTATONIC = 'octatonic'
-ENNEATONIC = 'enneatonic'
-DECATONIC = 'decatonic'
-HENDECATONIC = 'hendecatonic'
-DUODECATONIC = 'duodecatonic'
-
-# Basal structures
-PRIMAL = 'primal'
-SECUNDAL = 'secundal'
-TERTIAL = 'tertial'
-QUARTAL = 'quartal'
-QUINTAL = 'quintal'
-SEXTAL = 'sextal'
-SEPTIMAL = 'septimal'
-OCTONAL = 'octonal'
-NONAL = 'nonal'
-DECIMAL = 'decimal'
-UNDECIMAL = 'undecimal'
-DUODECIMAL = 'duodecimal'
-
-# Groups of number words
-# polyad, tonal, basal, cardinal, ordinal, -uple
-NUMERATION = (
-    (MONAD, MONOTONIC, PRIMAL, ONE, FIRST, SINGLE),
-    (DYAD, DITONIC, SECUNDAL, TWO, SECOND, DOUBLE),
-    (TRIAD, TRITONIC, TERTIAL, THREE, THIRD, TRIPLE),
-    (TETRAD, TETRATONIC, QUARTAL, FOUR, FOURTH, QUADRUPLE),
-    (PENTAD, PENTATONIC, QUINTAL, FIVE, FIFTH, QUINTUPLE),
-    (HEXAD, HEXATONIC, SEXTAL, SIX, SIXTH, SEXTUPLE),
-    (HEPTAD, HEPTATONIC, SEPTIMAL, SEVEN, SEVENTH, SEPTUPLE),
-    (OCTAD, OCTATONIC, OCTONAL, EIGHT, EIGHTH, OCTUPLE),
-    (ENNEAD, ENNEATONIC, NONAL, NINE, NINTH, NONUPLE),
-    (DECAD, DECATONIC, DECIMAL, TEN, TENTH, DECUPLE),
-    (HENDECAD, HENDECATONIC, UNDECIMAL, ELEVEN, ELEVENTH, HENDECUPLE),
-    (DUODECAD, DUODECATONIC, DUODECIMAL, TWELVE, TWELFTH, DUODECUPLE),
-    (None, None, None, THIRTEEN, THIRTEENTH, TREDECUPLE),
-    (None, None, None, FOURTEEN, FOURTEENTH, QUATTUORDECUPLE),
-    (None, None, None, FIFTEEN, FIFTEENTH, QUINDECUPLE)
-)
-
-# Column names for the numeration matrix above
-NUMERATION_INDICES = (POLYAD, TONAL, BASAL, CARDINAL, ORDINAL, UPLE)
-
 # List of chord inversion terms
-numbered_inversions = tuple([ROOT+'_'+POSITION] + [NUMERATION[
-    x][4]+'_'+INVERSION for x in range(11)])
+NUMBERED_INVERSIONS = tuple([ROOT+'_'+POSITION] + [
+    utils.encode_numeration(x, ORDINAL) + '_' + INVERSION for x in range(1, 12)])
 
 

@@ -23,7 +23,7 @@ def do_doctests(verbose: bool = False) -> None:
     doctest.testmod(permutation, verbose=verbose)
     doctest.testmod(parsing, verbose=verbose)
     doctest.testmod(sequences, verbose=verbose)
-
+    doctest.testmod(utils, verbose=verbose)
 
 @test_perf(True)
 def test_chord_symbol_from_interval_names(
@@ -64,7 +64,7 @@ def test_generate_chord_names_for_heptatonic():
     are at least readable (if not sensible).
     """
     print("\n\nBeginning test of heptatonic chord scale naming function.")
-    for scale in keywords.HEPTATONIC_ORDER:
+    for scale in keywords.HEPTATONIC_SERIES:
         triads = interface.heptatonic_chord_scale(scale, keywords.IONIAN, "C")
         tetrads = interface.heptatonic_chord_scale(
             scale, keywords.IONIAN, "C", 4)

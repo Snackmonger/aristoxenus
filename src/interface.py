@@ -1,6 +1,7 @@
 """Functions that represent the end-points of an API."""
 
-from typing import Optional
+from typing import Literal, Optional
+
 from data import (
     annotations as A,
     chord_symbols as CS,
@@ -17,28 +18,27 @@ from src import (
     parsing
 )
 
-from src.nomenclature import (
-    decode_enharmonic,
-    encode_enharmonic,
-    force_heptatonic,
-    best_heptatonic,
-    name_heptatonic_intervals,
-    get_interval_map
-)
+# from src.nomenclature import (
+#     decode_enharmonic,
+#     encode_enharmonic,
+#     force_heptatonic,
+#     best_heptatonic,
+#     name_heptatonic_intervals,
+#     get_interval_map
+# )
 
-
-__all__ = [
-    "chromatic",
-    "render_heptatonic_form",
-    "heptatonic_chord_scale",
-    "decode_enharmonic",
-    "encode_enharmonic",
-    "force_heptatonic",
-    "best_heptatonic",
-    "name_heptatonic_intervals",
-    "get_interval_map",
-    "parse_chord_symbol"
-]
+# __all__ = [
+#     "chromatic",
+#     "render_heptatonic_form",
+#     "heptatonic_chord_scale",
+#     "decode_enharmonic",
+#     "encode_enharmonic",
+#     "force_heptatonic",
+#     "best_heptatonic",
+#     "name_heptatonic_intervals",
+#     "get_interval_map",
+#     "parse_chord_symbol"
+# ]
 
 
 def convert_frequency_to_note_name(frequency: float, accidental_type: str) -> str:
@@ -153,7 +153,7 @@ def render_heptatonic_form(scale_name: A.HeptatonicScales, modal_name: A.ModalNa
         optimal_rendering: Sequence[str]
     '''
     scale_base: int = IC.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
-    modal_rotations: int = K.MODAL_NAME_SERIES.index(modal_name)
+    modal_rotations: int = K.MODAL_SERIES.index(modal_name)
     scale_base = bitwise.get_modal_form(scale_base, modal_rotations)
     binomial_base: tuple[str, ...] = chromatic(
         nomenclature.decode_enharmonic(keynote), binomial=True)
@@ -241,12 +241,12 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynot
 
     '''
     if isinstance(number_of_notes, str):
-        number_of_notes = nomenclature.decode_numeric_keyword(number_of_notes)
+        number_of_notes = utils.decode_numeration(number_of_notes)
     if isinstance(base_step, str):
-        base_step = nomenclature.decode_numeric_keyword(base_step)
+        base_step = utils.decode_numeration(base_step)
 
     base: int = IC.HEPTATONIC_SYSTEM_BY_NAME[scale]
-    rotations: int = K.MODAL_NAME_SERIES.index(mode)
+    rotations: int = K.MODAL_SERIES.index(mode)
     interval_structure: int = bitwise.get_modal_form(base, rotations)
     note_names: tuple[str, ...] = nomenclature.force_heptatonic(keynote,
                                                                 interval_structure)
@@ -274,6 +274,7 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynot
             number_of_notes = len(new_notes)
 
         chord = new_notes[::base_step][:number_of_notes]
+        binomial_notes = [nomenclature.decode_enharmonic(x) for x in chord]
         chord_intervals = interval_names[::base_step][:number_of_notes]
         chord_base = parsing.parse_interval_names_as_chord_symbol(
             chord_intervals)
@@ -281,16 +282,23 @@ def heptatonic_chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynot
         roman_degree = utils.romanize_intervals(parent_interval_names[i])[0]
         if CS.CHORD_FLAT_3 in chord_intervals and roman_lower:
             roman_degree = roman_degree.lower()
-        roman_degree += chord_base
+        roman_chord = roman_degree + chord_base
+
+        # TODO: The chord should also have a 'neutral' name, so that
+        # weird contextual spellings like G7bb3b5 also have mis-spelled
+        # alternatives like G7b5sus2
         x = A.HeptatonicChord(
             numeric_degree=parent_interval_names[i],
+            roman_degree=roman_degree,
             root=note,
             notes=chord,
+            binomial_notes=binomial_notes,
             interval_structure=list(
                 chords.values())[i],
             interval_names=chord_intervals,
             chord_symbol=chord_symbol,
-            roman_degree=roman_degree)
+            roman_chord=roman_chord
+            )
         collection.append(x)
 
     return A.APIChordScaleResponse(scale=scale,
@@ -325,3 +333,110 @@ def parse_chord_symbol(symbol: str) -> A.APIChordSymbolResponse:
     return {K.CHORD_SYMBOL: symbol,
             K.INTERVAL_STRUCTURE: result,
             K.NOTE_NAMES: note_names}
+
+
+def render_plain(interval_structure: int, keynote: str) -> tuple[str, ...]:
+    """
+    Take an integer representing an interval structure and return a set of 
+    note names in plain notation (i.e. without scientific numerals) beginning
+    at the given keynote. 
+
+    Args:
+        interval_structure: An integer representing an interval structure.
+        keynote: A note name to serve as the basis of the rendered form.
+
+    Returns:
+        A sequence of note names representing the interval structure.
+    """
+    accidentals: tuple[str, ...] = nomenclature.get_accidentals(keynote)
+    binomial: bool = accidentals == C.BINOMIALS
+    ch_: tuple[str, ...] = chromatic(keynote, binomial)
+    return rendering.render_plain(interval_structure, ch_)
+
+
+class Chord:
+    def __init__(self):
+        self.interval_structure: int
+
+    def invert(self) -> "Chord":
+        ...
+
+
+class ConverterMixin:
+    """Mixin that adds static methods for conversions offered by the program."""
+
+    @staticmethod
+    def decode_enharmonic(note_name: str) -> str:
+        return nomenclature.decode_enharmonic(note_name=note_name)
+
+    @staticmethod
+    def encode_enharmonic(note_value: str, note_name: str) -> str:
+        return nomenclature.encode_enharmonic(note_value=note_value, note_name=note_name)
+
+    @staticmethod
+    def decode_numeration(keyword: str) -> int:
+        return utils.decode_numeration(keyword=keyword)
+
+    @staticmethod
+    def encode_numeration(number: int, category: str) -> str:
+        return utils.encode_numeration(number=number, category=category)
+
+
+class ScaleStructure:
+    ...
+
+
+FORMATTING_TYPES = [K.PLAIN,
+                    K.BINOMIAL,
+                    K.SCIENTIFIC,
+                    K.SCIENTIFIC+"_"+K.BINOMIAL]
+
+
+class HeptatonicStructure(ScaleStructure):
+    def __init__(self,
+                 scale_name: A.HeptatonicScales,
+                 modal_name: A.ModalNames,
+                 keynote: str):
+        self.scale_name: A.HeptatonicScales = scale_name
+        self.modal_name: A.ModalNames = modal_name
+        self.keynote: str = keynote
+
+        data = render_heptatonic_form(scale_name, modal_name, keynote)
+        self.interval_structure: int = data[K.INTERVAL_STRUCTURE]
+        self.interval_scale: tuple[str, ...] = data[K.INTERVAL_SCALE]
+        self.interval_map: dict[str, str] = data[K.INTERVAL_MAP]
+        self.chromatic_rendering: tuple[str, ...] = data[K.CHROMATIC_RENDERING]
+        self.alphabetic_rendering: tuple[str, ...] = data[K.ALPHABETIC_RENDERING]
+        self.optimal_keynote: str = data[K.OPTIMAL_KEYNOTE]
+        self.optimal_rendering: tuple[str, ...] = data[K.OPTIMAL_RENDERING]
+        self.scientific_map: dict[str, str] = nomenclature.heptatonic_range(self.alphabetic_rendering)
+
+
+    def negative_harmony(self) -> "HeptatonicStructure":
+        ...
+
+    def define_octave(self, octave: int) -> None:
+        """Set the octave in which the lowest note will start."""
+
+
+    def chord_scale(self,
+                      relative_degree: int,
+                      notes: int = 3,
+                      formatting: str = "plain"
+                      ) -> A.HeptatonicChord:
+        """Return a chord from the chord scale of the instance's scaleform.
+        
+        Args:
+            relative_degree: The scale degree from which to build the chord
+            notes: The number of notes in the chord (default=3)
+            formatting: A keyword indicating how to display the chord.
+            
+        Returns:
+
+        """
+        if not 0 < relative_degree < 8:
+            raise ValueError(f"Requested degree must be between 1 and 7. Got value: {relative_degree}")
+        if not 2 < notes < 8:
+            raise ValueError(f"Number of notes must be between 2 and 7, inclusive. Got value: {notes}")
+        chord_scale = heptatonic_chord_scale(self.scale_name, self.modal_name, self.keynote, number_of_notes=notes)
+        return chord_scale["chord_scale"][relative_degree-1]

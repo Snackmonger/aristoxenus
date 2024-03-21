@@ -16,13 +16,24 @@ from src import (nomenclature,
 def remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
     root: str
+    # Case 1: Radical is a note name (e.g. Gb, A#, F)
     for note in sorted(constants.LEGAL_ROOT_NAMES, key=len, reverse=True):
         if note in chord_symbol:
             root = note
             chord_symbol = chord_symbol.removeprefix(note)
             return root, chord_symbol
+    
+    # Case 2: Radical is an interval name (e.g. bIII, V, vii)
+    roman_intervals = list(utils.romanize_intervals([str(x) for x in range(1, 8)]))
+    roman_intervals += [x.lower() for x in roman_intervals]
+    roman_intervals.sort(key=len, reverse=True)
+    for interval in roman_intervals:
+        if interval in chord_symbol:
+            root = chord_symbol[:chord_symbol.index(interval)+len(interval)]
+            chord_symbol = chord_symbol.removeprefix(root)
+            return root, chord_symbol
 
-    raise errors.ChordNameError('Unknown note name.')
+    raise errors.ChordNameError(f'Unknown note name: {chord_symbol}.')
 
 
 def parse_chord_symbol(chord_symbol: str) -> int:
@@ -561,22 +572,22 @@ def parse_interval_structure_as_chord_symbol(interval_structure: int) -> str:
     of the chord rather than a specific voicing. Thus, a drop2 maj7 and a
     drop3 maj7 will both return 'maj7', etc. 
     '''
-    symbol_elements: list[str] = []
-    canonical_form: int
-    # Check against common structures before trying to generate
-    # a symbol procedurally. This will cover 90% of chords.
-    for number_of_notes, function in [(3, identify_triad),
-                                      (4, identify_tetrad)]:
-        if interval_structure.bit_count() == number_of_notes:
-            attempt = function(interval_structure)
-            if isinstance(result := attempt[keywords.RESULT], dict):
-                return result[keywords.CHORD_SYMBOL]
-    interval_12_tone = nomenclature.twelve_tone_scale_intervals(
-        interval_structure)
-    chord_intervals = rendering.render_plain(
-        interval_structure, interval_12_tone)
+    # symbol_elements: list[str] = []
+    # canonical_form: int
+    # # Check against common structures before trying to generate
+    # # a symbol procedurally. This will cover 90% of chords.
+    # for number_of_notes, function in [(3, identify_triad),
+    #                                   (4, identify_tetrad)]:
+    #     if interval_structure.bit_count() == number_of_notes:
+    #         attempt = function(interval_structure)
+    #         if isinstance(result := attempt[keywords.RESULT], dict):
+    #             return result[keywords.CHORD_SYMBOL]
+    # interval_12_tone = nomenclature.twelve_tone_scale_intervals(
+    #     interval_structure)
+    # chord_intervals = rendering.render_plain(
+    #     interval_structure, interval_12_tone)
 
-    return parse_interval_names_as_chord_symbol(chord_intervals)
+    # return parse_interval_names_as_chord_symbol(chord_intervals)
 
 
 def parse_as_jazz_chord(chord_symbol: str, config: dict[str, str | int | bool | float]) -> int:

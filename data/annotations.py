@@ -78,9 +78,11 @@ class HeptatonicChord(TypedDict):
     numeric_degree: str
     root: str
     notes: list[str]
+    binomial_notes: list[str]
     interval_structure: int
     interval_names: list[str]
     chord_symbol: str
+    roman_chord: str
     roman_degree: str
 
 class APIChordScaleResponse(TypedDict):
