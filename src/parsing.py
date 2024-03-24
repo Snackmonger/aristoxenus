@@ -75,42 +75,41 @@ def parse_chord_symbol(chord_symbol: str) -> int:
         Em7add9 -> (int) ->  E, G, B, D, F#
         Em7maj9nob3 -> (int) -> E, G#, B, D, F#
 
-    Examples
-    --------
-    >>> bin(parse_chord_symbol('Cmaj7'))
-    '0b100010010001'
-    >>> bin(parse_chord_symbol('CM7'))
-    '0b100010010001'
-    >>> bin(parse_chord_symbol('CΔ7'))
-    '0b100010010001'
-    >>> bin(parse_chord_symbol('Cmaj#5'))
-    '0b100010001'
-    >>> bin(parse_chord_symbol('Caug'))
-    '0b100010001'
-    >>> bin(parse_chord_symbol('C+'))
-    '0b100010001'
-    >>> bin(parse_chord_symbol('Ebm7b5'))
-    '0b10001001001'
-    >>> bin(parse_chord_symbol('Ebmin7b5'))
-    '0b10001001001'
-    >>> bin(parse_chord_symbol('Eb-7b5'))
-    '0b10001001001'
-    >>> bin(parse_chord_symbol('Ebdimb7'))
-    '0b10001001001'
-    >>> bin(parse_chord_symbol('C6/9'))
-    '0b100001010010001'
-    >>> bin(parse_chord_symbol('F#dim7'))
-    '0b1001001001'
-    >>> bin(parse_chord_symbol('Gm13'))
-    '0b1000100100010010001001'
-    >>> bin(parse_chord_symbol('Asus2add11'))
-    '0b100000000010000101'
-    >>> bin(parse_chord_symbol('Fmaj13no11'))
-    '0b1000000100100010010001'
-    >>> bin(parse_chord_symbol('G7b9'))
-    '0b10010010010001'
-    >>> bin(parse_chord_symbol('Fmajsus2'))
-    '0b10000101'
+    Examples:
+        >>> bin(parse_chord_symbol('Cmaj7'))
+        '0b100010010001'
+        >>> bin(parse_chord_symbol('CM7'))
+        '0b100010010001'
+        >>> bin(parse_chord_symbol('CΔ7'))
+        '0b100010010001'
+        >>> bin(parse_chord_symbol('Cmaj#5'))
+        '0b100010001'
+        >>> bin(parse_chord_symbol('Caug'))
+        '0b100010001'
+        >>> bin(parse_chord_symbol('C+'))
+        '0b100010001'
+        >>> bin(parse_chord_symbol('Ebm7b5'))
+        '0b10001001001'
+        >>> bin(parse_chord_symbol('Ebmin7b5'))
+        '0b10001001001'
+        >>> bin(parse_chord_symbol('Eb-7b5'))
+        '0b10001001001'
+        >>> bin(parse_chord_symbol('Ebdimb7'))
+        '0b10001001001'
+        >>> bin(parse_chord_symbol('C6/9'))
+        '0b100001010010001'
+        >>> bin(parse_chord_symbol('F#dim7'))
+        '0b1001001001'
+        >>> bin(parse_chord_symbol('Gm13'))
+        '0b1000100100010010001001'
+        >>> bin(parse_chord_symbol('Asus2add11'))
+        '0b100000000010000101'
+        >>> bin(parse_chord_symbol('Fmaj13no11'))
+        '0b1000000100100010010001'
+        >>> bin(parse_chord_symbol('G7b9'))
+        '0b10010010010001'
+        >>> bin(parse_chord_symbol('Fmajsus2'))
+        '0b10000101'
     '''
     # Remove contradictory symbol usage of '/'
     # AFAIK, this is the only symbol to conflict with slash notation
@@ -616,34 +615,9 @@ def parse_interval_structure_as_chord_symbol(interval_structure: int) -> str:
         >>> parse_interval_structure_as_chord_symbol(0b1000100010010010001)
         '9#11'
     '''
-    # TODO: THis function is a prone to error in converting the octaves
-    # and definitely needs a more thorough rewrite...
     lower_octave: list[str] = list(nomenclature.twelve_tone_scale_intervals())
-    upper_octave: list[str] = []
-    for x in lower_octave:
-        mods = ""
-        interval = ""
-        for char in x:
-            if char.isdigit():
-                interval += char
-            else:
-                mods += char
-        interval = mods + str(int(interval) + constants.NOTES)
-        for error, correction in {"b12": "#11",
-                                  "#12": "b13",
-                                  "12": "5",
-                                  "8": "1", 
-                                  "10": "3",
-                                  "b10": "b3",
-                                  "bb10": "bb3", 
-                                  "#10": "#3", 
-                                  "14": "7", 
-                                  "b14": "b7",
-                                  }.items():
-            if interval == error:
-                interval = correction
-        upper_octave.append(interval)
-    
+    upper_octave: list[str] = ['1', 'b9', '9', '#9', '3', '11', '#11', '5', 'b13', '13', 'b7', '7']
+
     result = rendering.render_plain(
         interval_structure, lower_octave + upper_octave)
     return parse_interval_names_as_chord_symbol(result)

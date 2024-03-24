@@ -30,7 +30,7 @@ class HeptatonicStructure(ScaleStructure, ConverterMixin, ParserMixin):
         self.keynote: str = keynote
 
         # Populate details.
-        data = interface.render_heptatonic_form( keynote, scale_name, modal_name)
+        data = interface.render_heptatonic_form(keynote, scale_name, modal_name)
         self.interval_structure: int = data[keywords.INTERVAL_STRUCTURE]
         self.interval_scale: tuple[str, ...] = data[keywords.INTERVAL_SCALE]
         self.interval_map: dict[str, str] = data[keywords.INTERVAL_MAP]
@@ -48,7 +48,8 @@ class HeptatonicStructure(ScaleStructure, ConverterMixin, ParserMixin):
         Args:
             start:  The relative degree (1 to 7) that will begin the sequence.
             end:    The relative degree (1 to 7) that will end the sequence.
-            direction: 
+            descending: Flag to decide whether to reverse the array.
+            octaves: The number of octaves that the segment will span.
             
         """
         # Adjust for 0 index

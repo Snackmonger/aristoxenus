@@ -1,3 +1,4 @@
+from typing import Sequence
 from data import (
     constants,
     errors,
@@ -23,8 +24,79 @@ class ParserMixin:
             chord_symbol : A chord symbol with note name, extensions, and modifiers.
         Returns:
             int : An interval structure derived from the chord name.
+        Examples:
+            >>> bin(parse_chord_symbol('Cmaj7'))
+            '0b100010010001'
+            >>> bin(parse_chord_symbol('CM7'))
+            '0b100010010001'
+            >>> bin(parse_chord_symbol('CΔ7'))
+            '0b100010010001'
+            >>> bin(parse_chord_symbol('Cmaj#5'))
+            '0b100010001'
+            >>> bin(parse_chord_symbol('Caug'))
+            '0b100010001'
+            >>> bin(parse_chord_symbol('C+'))
+            '0b100010001'
+            >>> bin(parse_chord_symbol('Ebm7b5'))
+            '0b10001001001'
+            >>> bin(parse_chord_symbol('Ebmin7b5'))
+            '0b10001001001'
+            >>> bin(parse_chord_symbol('Eb-7b5'))
+            '0b10001001001'
+            >>> bin(parse_chord_symbol('Ebdimb7'))
+            '0b10001001001'
+            >>> bin(parse_chord_symbol('C6/9'))
+            '0b100001010010001'
+            >>> bin(parse_chord_symbol('F#dim7'))
+            '0b1001001001'
+            >>> bin(parse_chord_symbol('Gm13'))
+            '0b1000100100010010001001'
+            >>> bin(parse_chord_symbol('Asus2add11'))
+            '0b100000000010000101'
+            >>> bin(parse_chord_symbol('Fmaj13no11'))
+            '0b1000000100100010010001'
+            >>> bin(parse_chord_symbol('G7b9'))
+            '0b10010010010001'
+            >>> bin(parse_chord_symbol('Fmajsus2'))
+            '0b10000101'
         """
         return parsing.parse_chord_symbol(chord_symbol=chord_symbol)
+
+    @staticmethod
+    def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
+        """Attempt to generate a chord symbol from the given interval names.
+
+        Args:
+            interval_names: An array of strings consisting of numbers from 1 to 15,
+            possibly modified by the '#' or 'b' symbol.
+        Returns:
+            str : A chord symbol representing the intervals.
+        Examples:
+            >>> parse_interval_names_as_chord_symbol(["1","3","5"])
+            'maj'
+            >>> parse_interval_names_as_chord_symbol(["1","b3","5"])
+            'min'
+            >>> parse_interval_names_as_chord_symbol(["1","b3","b5", "b7"])
+            'min7b5'
+            >>> parse_interval_names_as_chord_symbol(["1","b3","b5", "bb7"])
+            'dim7'
+            >>> parse_interval_names_as_chord_symbol(["1","3","5","7","9"])
+            'maj9'
+            >>> parse_interval_names_as_chord_symbol(["1","b3","b5", "bb7", "9", "11"])
+            'dim11'
+            >>> parse_interval_names_as_chord_symbol(["1","3","7","9"])
+            'maj9no5'
+            >>> parse_interval_names_as_chord_symbol(["1","bb3","5"])
+            'susbb3'
+            >>> parse_interval_names_as_chord_symbol(["1","bb3","#5","7"])
+            'maj7susbb3#5'
+        """
+        return parsing.parse_interval_names_as_chord_symbol(interval_names=interval_names)
+
+    @staticmethod
+    def parse_interval_structure_as_chord_symbol(interval_structure: int) -> str:
+
+        return parsing.parse_interval_structure_as_chord_symbol(interval_structure=interval_structure)
 
 
 class ConverterMixin:
