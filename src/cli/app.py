@@ -7,9 +7,9 @@ few of the features of the library.
 import rich_click as click
 from rich import console
 
-from data import (keywords as K,
-                  annotations as A,
-                  constants as C)
+from data import (keywords as keywords,
+                  annotations as annotations,
+                  constants as constants)
 from src import (interface as I,
                  )
 from tests import (do_doctests,
@@ -34,20 +34,20 @@ def aristoxenus() -> None:
 
 @aristoxenus.command()
 @click.option("--scale", "-s", help="The name of the parent scale.",
-              type=click.Choice(K.HEPTATONIC_SERIES, case_sensitive=False),
+              type=click.Choice(keywords.HEPTATONIC_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--mode", "-m", help="The name of the modal rotation.",
-              type=click.Choice(K.MODAL_SERIES, case_sensitive=False),
+              type=click.Choice(keywords.MODAL_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--keynote", "-k", prompt=True,
-              type=click.Choice(C.LEGAL_ROOT_NAMES, case_sensitive=False),
+              type=click.Choice(constants.LEGAL_ROOT_NAMES, case_sensitive=False),
               help="The name of the note to use as the tonal centre.")
-def heptatonic_form(scale: A.HeptatonicScales,
-                    mode: A.ModalNames,
+def heptatonic_form(scale: annotations.HeptatonicScales,
+                    mode: annotations.ModalNames,
                     keynote: str
                     ) -> None:
     """Get details about a heptatonic scale form."""
-    data = I.render_heptatonic_form(scale, mode, keynote)
+    data = I.render_heptatonic_form(keynote, scale, mode)
     console_.print(data)
 
 
@@ -76,21 +76,21 @@ def parse_chord(symbol: str) -> None:
 
 @aristoxenus.command()
 @click.option("--scale", "-s", help="The name of the parent scale.",
-              type=click.Choice(K.HEPTATONIC_SERIES, case_sensitive=False),
+              type=click.Choice(keywords.HEPTATONIC_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--mode", "-m", help="The name of the modal rotation.",
-              type=click.Choice(K.MODAL_SERIES, case_sensitive=False),
+              type=click.Choice(keywords.MODAL_SERIES, case_sensitive=False),
               prompt=True)
 @click.option("--keynote", "-k", prompt=True,
               help="The name of the note to use as the tonal centre.",
-              type=click.Choice(C.LEGAL_ROOT_NAMES, case_sensitive=False))
+              type=click.Choice(constants.LEGAL_ROOT_NAMES, case_sensitive=False))
 @click.option("--notes", "-n",
               help="The number of notes to include in the structure.",
               required=False, type=int, default=3, show_default=True)
 @click.option("--steps", "-st",
               help="How many steps between notes (start at 0, so tertial=2)",
               required=False, type=int, default=2, show_default=True)
-def chord_scale(scale: A.HeptatonicScales, mode: A.ModalNames, keynote: str,
+def chord_scale(scale: annotations.HeptatonicScales, mode: annotations.ModalNames, keynote: str,
                 notes: int, steps: int) -> None:
     """Get details about a heptatonic scale form."""
     data = I.heptatonic_chord_scale(scale, mode, keynote, notes, steps)

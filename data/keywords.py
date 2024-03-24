@@ -83,11 +83,11 @@ HEPTATONIC_SERIES = (
 PREFERRED_NAME = 'preferred_name'
 CANONICAL_NAME = 'canonical_name'
 CANONICAL_FORM = 'canonical_form'
-CHROMATIC_RENDERING = 'chromatic_rendering'
+BINOMIAL_RENDERING = 'binomial_rendering'
 TWELVE_TONE_INTERVALS = "twelve_tone_intervals"
-ALPHABETIC_RENDERING = 'alphabetic_rendering'
-OPTIMAL_RENDERING = 'optimal_rendering'
-OPTIMAL_KEYNOTE = 'optimal_keynote'
+FORCED_RENDERING = 'forced_rendering'
+BEST_RENDERING = 'best_rendering'
+BEST_KEYNOTE = 'best_keynote'
 RECOGNIZED_NAMES = 'recognized_names'
 
 # Chord terms

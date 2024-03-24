@@ -588,7 +588,7 @@ def name_heptatonic_intervals(scale_data: Sequence[str] | int) -> tuple[str, ...
     return tuple(intervals_)
 
 
-def twelve_tone_scale_intervals(scale: int) -> tuple[str, ...]:
+def twelve_tone_scale_intervals(scale: int = intervallic_canon.DIATONIC_SCALE) -> tuple[str, ...]:
     """
     Return a list that consists of the 7 correctly-spelled intervals of any
     heptatonic scale, plus 5 more intervals that fill in the chromatic notes.

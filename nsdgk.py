@@ -1,14 +1,23 @@
-from src.interface import HeptatonicStructure
+from data import constants
+from src import bitwise
+from src import interface
+from src.interface import render_plain
+from src.models.heptatonic import HeptatonicStructure
 from rich import print
-
-my_scale = HeptatonicStructure("hemiolic", "lydian", "D")
-
-
-for degree in range(1, 8):
-    print(my_scale.chord_scale(degree, notes=4))
+from src.parsing import parse_polychord_symbol, remove_chord_prefix, parse_heptatonic_scale_structure
 
 
-from src.parsing import remove_chord_prefix
+from data.intervallic_canon import *
 
 
-print(remove_chord_prefix("bbVIImaj7b13"))
+my_scale = HeptatonicStructure("D", "diatonic", "lydian")
+
+print(parse_heptatonic_scale_structure(DIATONIC_SCALE))
+
+print(parse_heptatonic_scale_structure(bitwise.next_inversion(DIATONIC_SCALE, 12)))
+
+
+# for i, inversion in enumerate(bitwise.inversions(DIATONIC_SCALE, 12)):
+#     key = constants.NATURALS[i]
+#     scale = interface.render_plain(inversion, key)
+#     print(scale)

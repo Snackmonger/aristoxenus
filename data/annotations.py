@@ -106,7 +106,7 @@ class APIScaleFormResponse(TypedDict):
     interval_scale: tuple[str, ...]
     interval_map: dict[str, str]
     keynote: str
-    chromatic_rendering: tuple[str, ...]
-    alphabetic_rendering: tuple[str, ...]
-    optimal_keynote: str
-    optimal_rendering: tuple[str, ...]
+    binomial_rendering: tuple[str, ...]
+    forced_rendering: tuple[str, ...]
+    best_keynote: str
+    best_rendering: tuple[str, ...]

@@ -1,5 +1,5 @@
 
-from typing import Sequence
+from typing import Optional, Sequence
 from data import (constants)
 
 from src import (nomenclature, 
@@ -14,26 +14,22 @@ def render_plain(interval_structure: int,
     in the given accidental style.
 
     Parameters
-    ----------
-    interval_structure : int
-        An integer representing the interval collection to be rendered.
-    chromatic_scale : list[str], optional
-        The 12-note chromatic scale you want to use to render the structure.
-        Pass either the sharps, flats, binomials, or a custom group of mixed
-        accidentals. Default is binomials.
+        interval_structure : An integer representing the interval collection to
+        be rendered.
+        chromatic_scale : The 12-note chromatic scale you want to use to render
+        the structure. Pass either the sharps, flats, binomials, or a custom 
+        group of mixed accidentals. Default is the binomials.
 
     Returns
-    -------
-    list[str]
         A rendering of the given interval structure in the given chromatic
         accidental style.
 
     Notes
-    -----
-    If the number of notes in the interval structure exceeds those of the 
-    chromatic scale, we extend the scale to accommodate the extra notes.
-    The resulting structure will make no distinction between octaves. Use 
-    this function when you want to display a basic abstract structure quickly.
+        If the number of notes in the interval structure exceeds those of the
+        chromatic scale, we extend the scale to accommodate the extra notes.
+        The resulting structure will make no distinction between octaves. Use
+        this function when you want to display a basic abstract structure 
+        quickly.
 
     Examples
     --------
@@ -59,46 +55,27 @@ def render_plain(interval_structure: int,
 
 
 def render_scientific(interval_structure: int,
-           accidental_notes: Sequence[str],
-           starting_note: str
+           scientific_range: Optional[Sequence[str]] = None
            ) -> tuple[str, ...]:
     '''
     Return a human-readable rednering of the given interval structure in the 
     given accidental style, in scientific notation.
 
-
     Parameters
-    ----------
-    interval_structure : int
-        An integer representing the interval collection to be rendered.
-    accidental_notes : list[str]
-        A list of 5 note names, either the sharps, the flats, or the 
-        binomials.
-    starting_note : str
-        A note name in scientific notation that will serve as the lowest note 
-        of the rendered structure.
+        interval_structure : An interval structure of any bit length and bit count.
+        scientific_range : An array of scientific note names to use as the 
+        basis of the rendering. Must be at least as long as the interval structure.
 
     Returns
-    -------
-    list[str]
-        A list of note names in scientific notation representing the given
+        A tuple of note names in scientific notation representing the given
         interval structure.
-
-    Raises
-    ------
-    ValueError
-        -If the accidentals are not sharps, flats, or binomials.
-        -If the starting note is not a legal scientific note name for the
-        requested accidental type.
 
     Examples
     --------
     >>>
 
     '''
-    scientific_range: tuple[str, ...] = nomenclature.scientific_range(accidental_notes)
-    scientific_range = utils.shift_array(scientific_range, starting_note)
-
+    scientific_range = scientific_range or nomenclature.scientific_range()
     rendering: list[str] = []
     for interval in range(0, interval_structure.bit_length()):
         binary_column: int = 1 << interval
