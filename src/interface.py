@@ -318,13 +318,6 @@ def render_plain(interval_structure: int, keynote: str) -> tuple[str, ...]:
     return rendering.render_plain(interval_structure, ch_)
 
 
-class Chord:
-    def __init__(self):
-        self.interval_structure: int
-
-    def invert(self) -> "Chord":
-        ...
-
 
 
 FORMATTING_TYPES = [keywords.PLAIN,

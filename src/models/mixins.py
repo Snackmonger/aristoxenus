@@ -5,10 +5,24 @@ from data import (
     keywords
 )
 from src import (
+    interface,
     nomenclature,
     parsing,
     utils
 )
+
+
+class MaterialMixin:
+    """Mixin that adds static methods for generating raw musical material 
+    from precursor constants.
+    """
+    @staticmethod
+    def legal_root_names() -> tuple[str, ...]:
+        return constants.LEGAL_ROOT_NAMES
+
+    @staticmethod
+    def chromatic(keynote: str, binomial: bool = False) -> tuple[str, ...]:
+        return interface.chromatic(keynote=keynote, binomial=binomial)
 
 
 class ParserMixin:
