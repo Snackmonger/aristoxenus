@@ -2,13 +2,8 @@ import rewrites
 from tests.test_data import chord_tests
 from data.intervallic_canon import *
 
-for x, y in chord_tests.items():
-    if set(y) != set( (z := rewrites.parse_chord_suffix(x)) ):
-        print(f"Tested {x}")
-        print(f"Expected {y}")
-        print(f"Got {z}")
 
-from src.nomenclature import encode_intervals_as_notes
+print(rewrites.parse_slash_chord_symbol("Gmaj7#11/B"))
 
-
-print(encode_intervals_as_notes(["1", "b2", "bb3", "b5", "7"], "D#"))
+# 2024-03-27 05:17:54.448 | INFO     | rewrites:parse_chord_symbol:79 - G, maj7#11
+# {'chord_symbol': 'Gmaj7#11/B', 'interval_names': ('3', '5', '7', '#11', '1'), 'note_names': ('B', 'B#', 'D', 'F#', 'G'), 'interval_structure': 395}

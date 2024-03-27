@@ -783,15 +783,21 @@ def encode_intervals_as_notes(interval_names: Sequence[str], keynote: str) -> tu
         else:
             numeral = utils.extract_number(interval_name)
             accidentals = interval_name.replace(str(numeral), "")
+            logger.info(numeral)
+            
+            # Reduce intervals to a single octave.
+            while numeral > constants.NOTES:
+                logger.info(numeral)
+                numeral -= constants.NOTES
+            
             i = natural_intervals.index(str(numeral))
             diatonic_name = diatonic_names[i]
             name = diatonic_name + accidentals
             final_names.append(name)
-
     for i, name in enumerate(final_names):
         accidentals = 0
-        accidentals -= 1 * name.count(constants.FLAT_SYMBOL)
-        accidentals += 1 * name.count(constants.SHARP_SYMBOL)
+        accidentals += constants.FLAT_VALUE * name.count(constants.FLAT_SYMBOL)
+        accidentals += constants.SHARP_VALUE * name.count(constants.SHARP_SYMBOL)
         if accidentals > 0:
             symbol = constants.SHARP_SYMBOL
         elif accidentals < 0: 
@@ -799,7 +805,6 @@ def encode_intervals_as_notes(interval_names: Sequence[str], keynote: str) -> tu
         else:
             symbol = str()
         final_names[i] = __identity(name) + (symbol * abs(accidentals))
-
     return tuple(final_names)
 
 
