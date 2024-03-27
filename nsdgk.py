@@ -1,11 +1,14 @@
+import rewrites
+from tests.test_data import chord_tests
+from data.intervallic_canon import *
 
-from data import intervallic_canon
-from src.models import heptatonic
+for x, y in chord_tests.items():
+    if set(y) != set( (z := rewrites.parse_chord_suffix(x)) ):
+        print(f"Tested {x}")
+        print(f"Expected {y}")
+        print(f"Got {z}")
 
-x = heptatonic.HeptatonicStructure("Eb")
-# y = heptatonic.Chord.from_parent_scale(x, 1)
-y = heptatonic.Chord.from_interval_structure(intervallic_canon.DITONE | intervallic_canon.TRITONE | intervallic_canon.COMPOUND_DITONE, "Eb")
+from src.nomenclature import encode_intervals_as_notes
 
-for _ in range(7):
-    print(y)
-    y = y.invert(1)
+
+print(encode_intervals_as_notes(["1", "b2", "bb3", "b5", "7"], "D#"))

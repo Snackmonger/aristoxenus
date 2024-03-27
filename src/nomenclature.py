@@ -3,7 +3,10 @@
 Functions related to generating and processing musical nomenclatural material.
 '''
 
+from hashlib import sha1
 from typing import Callable, Sequence
+
+from loguru import logger
 
 from data import (constants,
                   keywords,
@@ -759,4 +762,45 @@ def heptatonic_range(heptatonic_names: Sequence[str]) -> dict[str, str]:
         if name in binomial_version:
             mapping[scientific_chromatic] = dict(zip(binomial_version, twelve_tones))[name]
     return mapping
+    
+
+def encode_intervals_as_notes(interval_names: Sequence[str], keynote: str) -> tuple[str, ...]:
+    """Return a list of note names that correspond to the given note names,
+    as considered from the given keynote.
+
+    The names will respect the enharmonic-equivalences implied in the interval
+    names, so that #2 in C is D#, and b3 is Eb.
+    """
+    diatonic_names = force_heptatonic(keynote)
+    interval_names = utils.order_interval_names(interval_names)
+    natural_intervals = [str(x) for x in range(1, 8)]
+    final_names: list[str] = []
+    
+    for interval_name in interval_names:
+        if interval_name in natural_intervals:
+            i = natural_intervals.index(interval_name)
+            final_names.append(diatonic_names[i])
+        else:
+            numeral = utils.extract_number(interval_name)
+            accidentals = interval_name.replace(str(numeral), "")
+            i = natural_intervals.index(str(numeral))
+            diatonic_name = diatonic_names[i]
+            name = diatonic_name + accidentals
+            final_names.append(name)
+
+    for i, name in enumerate(final_names):
+        accidentals = 0
+        accidentals -= 1 * name.count(constants.FLAT_SYMBOL)
+        accidentals += 1 * name.count(constants.SHARP_SYMBOL)
+        if accidentals > 0:
+            symbol = constants.SHARP_SYMBOL
+        elif accidentals < 0: 
+            symbol = constants.FLAT_SYMBOL
+        else:
+            symbol = str()
+        final_names[i] = __identity(name) + (symbol * abs(accidentals))
+
+    return tuple(final_names)
+
+
     

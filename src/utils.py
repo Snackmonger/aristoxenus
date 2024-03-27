@@ -6,6 +6,8 @@ from typing import Any, Optional, Sequence
 from itertools import chain
 import csv
 
+from loguru import logger
+
 from data import errors, keywords
 
 
@@ -164,9 +166,22 @@ def decode_numeration(keyword: str) -> int:
         errors.UnknownKeywordError: If the term is not a known keyword.
 
     Returns:
-        An integer between 1 and 15. If the keyword is "basal", then 
+        An integer between 1 and 15. If the keyword is a basal word, then 
         its number will be 1 lower than the name suggests. (This is so it
         can be used to slice lists starting at 0)
+
+    Examples:
+        >>> decode_numeration("triad")
+        3
+        >>> decode_numeration("thirteenth")
+        13
+        >>> decode_numeration("sextuple")
+        6
+
+        Note: the words in the basal category are 1 less than their etymology:
+        >>> decode_numeration("tertial")
+        2
+
     """
     file = "data/numeration.csv"
     value: Optional[int] = None
@@ -182,3 +197,26 @@ def decode_numeration(keyword: str) -> int:
     if not value:
         raise errors.UnknownKeywordError(keyword)
     return value
+
+
+def order_interval_names(interval_names: Sequence[str]) -> tuple[str, ...]:
+    """Take an array of interval names and ensure that they follow the order
+    of their numerals, regardless of the accidentals.
+    """
+    interval_names = list(interval_names)
+    interval_names.sort(key=extract_number)
+    return tuple(interval_names)
+
+def extract_number(number_symbol: str) -> int:
+    """Take a string that contains numeric digits, and return an integer made 
+    up of those digits.
+    
+    This function is meant to be used for interval names, so we only ever expect
+    that digits will all come together in sequence (e.g. "#11" > 11). It can parse 
+    other symbols like "12oclockand54minutes", but it would return 1254.
+    """
+    number = ""
+    for char in number_symbol:
+        if char.isdigit():
+            number += char
+    return int(number)
