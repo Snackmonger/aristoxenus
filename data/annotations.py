@@ -27,7 +27,7 @@ ModalNames: TypeAlias = Literal['ionian',
                      'locrian']
 
 ###############################################################################
-# Chord permutations
+# Chord data
 ###############################################################################
 
 class TriadConspectus(TypedDict):
@@ -56,6 +56,14 @@ TriadInventory: TypeAlias = Sequence[TriadConspectus]
 TetradInventory: TypeAlias = Sequence[TetradConspectus]
 ChordInventory: TypeAlias = TriadInventory | TetradInventory
 
+class ChordData(TypedDict):
+    """Information implied in a chord symbol."""
+    chord_symbol: str
+    note_names: tuple[str, ...]
+    interval_names: tuple[str, ...]
+    interval_structure: int
+
+
 ###############################################################################
 # Data assembled for return through the API
 ###############################################################################
@@ -77,7 +85,7 @@ class HeptatonicChord(TypedDict):
     """
     numeric_degree: str
     root: str
-    notes: list[str]
+    note_names: list[str]
     binomial_notes: list[str]
     interval_structure: int
     interval_names: list[str]

@@ -188,10 +188,9 @@ def decode_numeration(keyword: str) -> int:
     with open(file, newline="") as numdata:
         reader = csv.DictReader(numdata)
         for i, row in enumerate(reader):
-            if keyword in row:
+            if keyword in row.values():
                 value = i
-                assert reader.fieldnames
-                if reader.fieldnames[i] == "basal":
+                if row["basal"] != keyword:
                     value += 1
 
     if not value:

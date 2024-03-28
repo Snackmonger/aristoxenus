@@ -1,5 +1,5 @@
-from loguru import logger
 from typing import Sequence
+from loguru import logger
 from data import (
     chord_symbols,
     intervallic_canon as intervallic_canon,
@@ -17,14 +17,18 @@ from src import (
 )
 
 
-class UnfinishedFunctionError(Exception):
-    """Error that reminds the programmer that a particular bit of logic hasn't
-    been written completely.
+def split_chord_symbol(chord_symbol: str) -> tuple[str, str]:
+    """Return the root and suffix of a chord symbol.
+
+    This function only works on simple chords (i.e. not slash chords
+    or polychords).
     """
+    # NOTE: If the symbol radical is something other than a note name or Roman
+    # numeral, then it is likely to be misunderstood and will probably lead to
+    # a mis-parsed chord.
+    # E.g. "Kmin7b5" > 1, b5, b7, because "i" counts as a Roman  numeral, so
+    # the parser thinks that the radical is "Kmi" and the suffix is "n7b5".
 
-
-def remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
-    '''For a given chord symbol, return a tuple containing: (root, all other symbols).'''
     root: str
     # Case 1: Radical is a note name (e.g. Gb, A#, F)
     for note in sorted(constants.LEGAL_ROOT_NAMES, key=len, reverse=True):
@@ -40,6 +44,8 @@ def remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     roman_intervals.sort(key=len, reverse=True)
     for interval in roman_intervals:
         if interval in chord_symbol:
+            # Get from the beginning to the end of the numeral, in case it
+            # is modified by accidental symbols.
             root = chord_symbol[:chord_symbol.index(interval)+len(interval)]
             chord_symbol = chord_symbol.removeprefix(root)
             return root, chord_symbol
@@ -47,233 +53,174 @@ def remove_chord_prefix(chord_symbol: str) -> tuple[str, str]:
     raise errors.ChordNameError(f'Unknown note name: {chord_symbol}.')
 
 
-def parse_chord_symbol(chord_symbol: str) -> tuple[int, tuple[str, ...]]:
+def parse_chord_symbol(chord_symbol: str) -> annotations.ChordData:
+    """
+    Return a set of data representing the information implied in a chord
+    symbol.
 
-    # TODO: update docstring for new return type, likewise the companion
-    # functions.
-    '''
-    Return an integer representing an interval map of a given chord symbol.
+    Args:
+        chord_symbol: A chord symbol, expressed as a string.
 
-    Parameters:
-        chord_symbol : A chord symbol with note name, extensions, and 
-        modifiers.
-
-    Returns
-        int : An integer representation of an interval structure derived 
-        from the chord name.
-
-    Raises:
-        ChordNameError : If the root is not a recognized symbol.
-
-    Notes:
-        A variety of standard forms are supported. Apart from the chord's root
-        name, any other unrecognized symbols are simply ignored. If the 
-        function does not raise an error because of a malformed root note, it 
-        will always return, at minimum, a p5 (that is, 129 = 0b10000001). 
-
-        The parser will treat all 'add' and 'no' notations last (even if they 
-        are not written last in the chord symbol), so they can be used to make 
-        explicit statements and corrections about a chord's structure.
-
-        Em7add9 -> (int) ->  E, G, B, D, F#
-        Em7maj9nob3 -> (int) -> E, G#, B, D, F#
+    Returns:
+        dict {
+            chord_symbol: str
+            interval_names: tuple[str, ...]
+            note_names: tuple[str, ...]
+            interval_structure: int
+        }
 
     Examples:
-        >>> bin(parse_chord_symbol('Cmaj7')[0])
+        >>> x = parse_chord_symbol('Cmaj7')
+        >>> bin(x["interval_structure"])
         '0b100010010001'
-        >>> bin(parse_chord_symbol('CM7')[0])
+        >>> x["note_names"]
+        ('C', 'E', 'G', 'B')
+        >>> x["interval_names"]
+        ('1', '3', '5', '7')
+        >>> x = parse_chord_symbol('CM7')
+        >>> bin(x["interval_structure"])
         '0b100010010001'
-        >>> bin(parse_chord_symbol('CΔ7')[0])
+        >>> x = parse_chord_symbol('CΔ7')
+        >>> bin(x["interval_structure"])
         '0b100010010001'
-        >>> bin(parse_chord_symbol('Cmaj#5')[0])
+        >>> x = parse_chord_symbol('Cmaj#5')
+        >>> bin(x["interval_structure"])
         '0b100010001'
-        >>> bin(parse_chord_symbol('Caug')[0])
+        >>> x["note_names"]
+        ('C', 'E', 'G#')
+        >>> x["interval_names"]
+        ('1', '3', '#5')
+        >>> bin(parse_chord_symbol('Caug')["interval_structure"])
         '0b100010001'
-        >>> bin(parse_chord_symbol('C+')[0])
+        >>> bin(parse_chord_symbol('C+')["interval_structure"])
         '0b100010001'
-        >>> bin(parse_chord_symbol('Ebm7b5')[0])
+        >>> bin(parse_chord_symbol('Ebm7b5')["interval_structure"])
         '0b10001001001'
-        >>> bin(parse_chord_symbol('Ebmin7b5')[0])
+        >>> bin(parse_chord_symbol('Ebmin7b5')["interval_structure"])
         '0b10001001001'
-        >>> bin(parse_chord_symbol('Eb-7b5')[0])
+        >>> bin(parse_chord_symbol('Eb-7b5')["interval_structure"])
         '0b10001001001'
-        >>> bin(parse_chord_symbol('Ebdimb7')[0])
+        >>> bin(parse_chord_symbol('Ebdimb7')["interval_structure"])
         '0b10001001001'
-        >>> bin(parse_chord_symbol('C6/9')[0])
+        >>> bin(parse_chord_symbol('C6/9')["interval_structure"])
         '0b100001010010001'
-        >>> bin(parse_chord_symbol('F#dim7')[0])
+        >>> bin(parse_chord_symbol('F#dim7')["interval_structure"])
         '0b1001001001'
-        >>> bin(parse_chord_symbol('Gm13')[0])
+        >>> bin(parse_chord_symbol('Gm13')["interval_structure"])
         '0b1000100100010010001001'
-        >>> bin(parse_chord_symbol('Asus2add11')[0])
+        >>> bin(parse_chord_symbol('Asus2add11')["interval_structure"])
         '0b100000000010000101'
-        >>> bin(parse_chord_symbol('Fmaj13no11')[0])
+        >>> bin(parse_chord_symbol('Fmaj13no11')["interval_structure"])
         '0b1000000100100010010001'
-        >>> bin(parse_chord_symbol('G7b9')[0])
+        >>> bin(parse_chord_symbol('G7b9')["interval_structure"])
         '0b10010010010001'
-        >>> bin(parse_chord_symbol('Fmajsus2')[0])
+        >>> bin(parse_chord_symbol('Fmajsus2')["interval_structure"])
         '0b10000101'
-        >>> bin(parse_chord_symbol('Gmaj7susbb3b5')[0])
+        >>> bin(parse_chord_symbol('Gmaj7susbb3b5')["interval_structure"])
         '0b100001000101'
-    '''
-    # Remove contradictory symbol usage of '/'
-    # AFAIK, this is the only symbol to conflict with slash notation
-    if '6/9' in chord_symbol:
-        chord_symbol = chord_symbol.replace('6/9', '69')
+    """
+    # Pre-filter unorthodox symbols that could.
+    chord_symbol = chord_symbol.replace("6/9", "69")
 
-    # Delegate special structures to auxiliary functions. These types of chord
-    # symbols use explicit note names to identify structural features, and so
-    # they cannot be parsed purely based on the chord suffix.
-    if constants.POLYCHORD_DIVIDER_SYMBOL in chord_symbol:
-        return parse_polychord_symbol(chord_symbol)
     if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
         return parse_slash_chord_symbol(chord_symbol)
 
-    # Root note is not needed beyond this point.
-    chord_symbol = remove_chord_prefix(chord_symbol)[1]
+    root, suffix = split_chord_symbol(chord_symbol)
+    interval_names = parse_chord_suffix(suffix)
+    if root in constants.LEGAL_ROOT_NAMES:
+        note_names = nomenclature.encode_intervals_as_notes(
+            interval_names, root)
+    else:
+        note_names = utils.romanize_intervals(interval_names)
+    interval_structure = convert_interval_names_to_integer(interval_names)
 
-    return parse_simple_chord_suffix(chord_symbol)
+    return annotations.ChordData(
+        chord_symbol=chord_symbol,
+        interval_names=interval_names,
+        note_names=note_names,
+        interval_structure=interval_structure
+    )
 
 
-def parse_simple_chord_suffix(chord_symbol: str) -> tuple[int, tuple[str, ...]]:
-    """Generate an interval map from the parts of a chord symbol
-    that do not refer to note names (e.g. "min7b5", "maj7", "7b5", etc.).
+def parse_chord_suffix(chord_symbol: str) -> tuple[str, ...]:
+    """Return a list of interval names implied in a chord suffix.
 
-    This is an auxiliary function. Most requests are probably best directed
-    towards ``parse_chord_symbol``.
-
-    Args:
-        chord_symbol : All chord suffixes except the root name.
-    Returns:
-        int : An integer representing an interval map.
-    Notes:
-        This function attempts to be able to parse most of the common ways of
-        expressing chord structures, so that many different symbols will be
-        able to generate the same integer result. For more information about
-        the chord symbols generated by the program and the chord symbols that
-        the program is able to recognize, see the /docs/style_guide.rst.
+    The names will respect the enharmonic-equivalences implied in the chord
+    symbol, so that #2 is distinct from b3, etc.
     """
-    # NOTE: Rewrite this function.
-    # ----------------------------
-    # 1. The main function should just return a list of interval names. We can use this
-    # to make the list of enharmonicaly-correct note names as well as the integer.
+    suspensions = [chord_symbols.CHORD_SUS_2,
+                   chord_symbols.CHORD_SUS_4,
+                   chord_symbols.CHORD_SUS_DOUBLE_FLAT_3,
+                   chord_symbols.CHORD_SUS_SHARP_3]
 
-    # 2. The integer conversion part of the function is actually very basic and
-    # should be its own function.
-
-    # 3. We also need a function that can translate interval names into note names,
-    # while respecting their alphabetic enharmonic values. Assume that every chord
-    # comes from a heptatonic scale until we know otherwise, then just supplement
-    # with notes from the twelve_tone_intervals/notes.
-
-    # Chord parsing interface
-    # -----------------------
-    # parse_chord_symbol(chord_symbol: str)
-    #   -   This function should be the top-level dispatcher, and it should
-    #       return a typed mapping of the integer, the interval names, and
-    #       the note names.
-    #   -   This function therefore will consolidate the three types
-    #       of information.
-    # parse_slash_chord_symbol(ch)
-    #   -   This function gets called by the dispatcher if the chord matches.
-    #   -   It needs to be able to take a base chord and get an answer from
-    #       the main dispatcher, then relate that chord to the inversion
-    #       indicated in the notation, then return it to the dispatcher that
-    #       originally called it.
-    # parse_polychord_symbol(ch)
-    #   -   This function is the hardest to conceptualize in the new framework.
-    #   -   We need to be able to parse all the subchords in the symbol, but
-    #       doing so means that they will each be contextualized as their own
-    #       individual forms as they pass through the dispatcher. Thus, the second
-    #       chord should be contextualized within the structure of the first, but it
-    #       will have intervals that relate to itself, rather than its context
-    #       within the structure of the first chord.
-    #
-    # Further concerns
-    # ----------------
-    # The polychord parser worked well when we were just returning an integer,
-    # since we can basically just left shift it as much as we want to compound
-    # structures together. But when we deal with interval names, do we really
-    # want to be thinking in terms of major 22nds and so on?
-    #
-    # Possible solution: Simplify the polychord structure in general.
-    # Instead of being able to compound infinitely many chords, just
-    # limit it to two.
-    # When we generate the note names and intervals for the chord, we can
-
-    # Dummy structure is a P5. This gets removed if the chord has an
-    # alteration or a 'no5' suffix. If no symbol gets recognized,
-    # this P5 is returned as a default.
-    structure: int = intervallic_canon.DIAPENTE
-    parsed_symbols: list[str] = [chord_symbols.CHORD_5]
+    def __remove(affix: str) -> None:
+        nonlocal chord_symbol
+        chord_symbol = chord_symbol.replace(affix, "")
+    parsed_symbols: set[str] = set(["1", "5"])
+    subtractive: set[str] = set()
 
     # Remove all 'add'/'no' modifiers to see what the base symbol is.
-    add_drop: list[str] = []
     for add in chord_symbols.additive:
         if add in chord_symbol:
-            chord_symbol = chord_symbol.replace(add, '')
-            add_drop.append(add)
-    for drop in chord_symbols.subtractive:
-        if drop in chord_symbol:
-            chord_symbol = chord_symbol.replace(drop, '')
-            add_drop.append(drop)
+            interval = add.replace(chord_symbols.CHORD_ADD, "")
+            parsed_symbols.add(interval)
+            __remove(add)
+    for no in chord_symbols.subtractive:
+        if no in chord_symbol:
+            subtractive.add(no)
+            __remove(no)
 
     # No suffix = major triad: C, D, E, etc.
     if len(chord_symbol) == 0:
-        parsed_symbols += [chord_symbols.CHORD_3, chord_symbols.CHORD_5]
+        parsed_symbols.add(chord_symbols.CHORD_3)
 
     # Powerchord suffix: D5, E5, F5, etc.,
     # (implies a p5 and p8).
     if chord_symbol == chord_symbols.CHORD_5:
         chord_symbol = ""
-        parsed_symbols.append(chord_symbols.CHORD_8)
+        parsed_symbols.add(chord_symbols.CHORD_8)
 
-    # Parse prototypical prefixes, e.g. maj11, min9, 13, etc.,
-    # and create an explicit list of implicit intervals.
-    for extension, extended_structure in {
-        chord_symbols.CHORD_7: ['1'],  # dummy value: 7 is idiomatic
-        chord_symbols.CHORD_9: [chord_symbols.CHORD_9],
-
-        chord_symbols.CHORD_11: [chord_symbols.CHORD_9,
-                                 chord_symbols.CHORD_11],
-
-        chord_symbols.CHORD_13: [chord_symbols.CHORD_9,
+    prefix_modifiers = {
+        chord_symbols.CHORD_7: {'1'},  # dummy value; 7 is idiomatic
+        chord_symbols.CHORD_9: {chord_symbols.CHORD_9},
+        chord_symbols.CHORD_11: {chord_symbols.CHORD_9,
+                                 chord_symbols.CHORD_11},
+        chord_symbols.CHORD_13: {chord_symbols.CHORD_9,
                                  chord_symbols.CHORD_11,
-                                 chord_symbols.CHORD_13]
-    }.items():
+                                 chord_symbols.CHORD_13}}
+
+    # Parse the implicit meanings in prototypical prefixes.
+    for extension, extended_structure in prefix_modifiers.items():
         for symbol in chord_symbols.CHORD_SYMBOL_LIST:
             if chord_symbol.startswith(symbol + extension):
-                parsed_symbols += extended_structure
+                parsed_symbols |= extended_structure
 
                 # maj7 (or variant) -> maj, maj7, plus extensions
                 if symbol in chord_symbols.CHORD_MAJOR_SYMBOL_LIST:
-                    chord_symbol = chord_symbol.removeprefix(
-                        symbol + extension)
-                    parsed_symbols.append(chord_symbols.CHORD_7)
+                    __remove(symbol + extension)
+                    parsed_symbols.add(chord_symbols.CHORD_7)
                     if chord_symbols.CHORD_SUS not in chord_symbol:
-                        parsed_symbols.append(chord_symbols.CHORD_3)
+                        parsed_symbols.add(chord_symbols.CHORD_3)
 
                 # dim7 (or variant) -> dim, bb7, plus extensions
                 if symbol == chord_symbols.CHORD_DIM:
-                    chord_symbol = chord_symbol.removeprefix(
-                        symbol + extension)
-                    parsed_symbols += [chord_symbols.CHORD_FLAT_3,
+                    __remove(symbol + extension)
+                    parsed_symbols |= {chord_symbols.CHORD_FLAT_3,
                                        chord_symbols.CHORD_FLAT_5,
-                                       chord_symbols.CHORD_DOUBLE_FLAT_7]
+                                       chord_symbols.CHORD_DOUBLE_FLAT_7}
 
                 # min7 (or variant): ensure that b7 is present
                 # if not explicit (e.g. Em11). If symbol has a '7',
                 # remove it so it doesn't get interpreted as natural.
                 if symbol in chord_symbols.CHORD_MINOR_SYMBOL_LIST:
-                    parsed_symbols += [chord_symbols.CHORD_FLAT_7]
-                    chord_symbol = chord_symbol.replace(
-                        chord_symbols.CHORD_7, "")
+                    parsed_symbols.add(chord_symbols.CHORD_FLAT_7)
+                    __remove(chord_symbols.CHORD_7)
 
         # 7 (or variant) -> maj, b7, plus extensions
         if chord_symbol.startswith(extension):
-            parsed_symbols += extended_structure + \
-                [chord_symbols.CHORD_FLAT_7, chord_symbols.CHORD_3]
-            chord_symbol = chord_symbol.removeprefix(extension)
+            parsed_symbols |= extended_structure | {
+                chord_symbols.CHORD_FLAT_7, chord_symbols.CHORD_3}
+            __remove(extension)
 
     # First element is another number: C2, C4, C6, etc.
     # implies major triad plus colour tone (different from sus2,
@@ -282,52 +229,24 @@ def parse_simple_chord_suffix(chord_symbol: str) -> tuple[int, tuple[str, ...]]:
                    chord_symbols.CHORD_2,
                    chord_symbols.CHORD_4]:
         if chord_symbol.startswith(symbol):
-            parsed_symbols.append(chord_symbols.CHORD_3)
+            parsed_symbols.add(chord_symbols.CHORD_3)
 
-    # By now, we should have an explicit list of all previously implicit
-    # intervals, plus any explicit intervals remaining in the chord symbol.
-    # (start with longest values to avoid misparsing a subsymbol).
-    for symbol_element, interval in sorted(
-        chord_symbols.symbol_elements.items(),
-        key=lambda key: len(key[0]),
-        reverse=True
-    ):
-        # Add intervals to structure
-        if symbol_element in chord_symbol or symbol_element in parsed_symbols:
-            structure |= interval
-            chord_symbol = chord_symbol.replace(symbol_element, '')
-            if symbol_element not in parsed_symbols:
-                parsed_symbols.append(symbol_element)
+    # All remaining sub-symbols in the chord symbol should
+    # be plain interval names. Anything that can't be reconciled
+    # with the known interval names and aliases will be left out.
+    pairs = chord_symbols.symbol_elements.items()
+    pairs = sorted(pairs, key=lambda key: len(key[0]), reverse=True)
+    for symbol_element, interval in pairs:
+        if symbol_element in chord_symbol:
+            parsed_symbols.add(symbol_element)
+            __remove(symbol_element)
 
-    # Check if a symbol overrides the implicit p5 of a chord.
-    for symbol in chord_symbols.CHORD_ALTERED_FIFTH_SYMBOL_LIST:
-        if symbol in parsed_symbols:
-            structure ^= (intervallic_canon.DIAPENTE - 1)  # 1 = tonic
-
-    # If the chord indicated sus, assume that this symbol overrides any
-    # symbol indicating a 3rd and remove any thirds.
-    suspensions = [chord_symbols.CHORD_SUS_2,
-                   chord_symbols.CHORD_SUS_4,
-                   chord_symbols.CHORD_SUS_DOUBLE_FLAT_3,
-                   chord_symbols.CHORD_SUS_SHARP_3]
-    for sus in suspensions:
-        if sus in parsed_symbols:
-            structure &= (~intervallic_canon.DITONE & ~intervallic_canon.HEMIOLION) - 1
-
-    # Handle add/no notation
-    for symbol in add_drop:
-        if symbol in chord_symbols.additive:
-            structure |= chord_symbols.additive[symbol]
-
-        elif symbol in chord_symbols.subtractive:
-            structure &= (~chord_symbols.subtractive[symbol] - 1)  # 1 = tonic
-
-    # Clean the list of parsed symbols so that every non-numeric symbol is
-    # replaced with a valid interval name. We want to keep the contextual
-    # information of the chord's nomenclature that gets lost in the conversion
-    # to an integer expression. This helps us know which alphabetic names will
-    # describe the collection. E.g. 100000101 could be sus2 or susbb3, therefore
-    # C, D, G vs. C Ebb G.
+    # The only things that we should expect to remain in the chord symbol
+    # are malformed symbols or symbols from systems that haven't been
+    # incorporated to the Aristoxenus lists.
+    # logger.info(f"Symbols parsed: {parsed_symbols}, remaining chord data: {chord_symbol}")
+    # Filter all the parsed symbols to ensure that they are interval names
+    # and not special symbols (e.g. "maj")
     interval_names: set[str] = set("1")
     for symbol in parsed_symbols:
         if symbol in chord_symbols.CHORD_MAJOR_SYMBOL_LIST:
@@ -349,157 +268,92 @@ def parse_simple_chord_suffix(chord_symbol: str) -> tuple[int, tuple[str, ...]]:
         else:
             interval_names.add(symbol)
 
-    for add in add_drop:
-        if add in chord_symbols.additive:
-            interval_names |= {add.replace(chord_symbols.CHORD_ADD, "")}
-        if add in chord_symbols.subtractive and (name := add.replace(chord_symbols.CHORD_NO, "")) in interval_names:
-            interval_names.remove(name)
-
+    # If there's any altered fifth, assume that it
+    # overrides the implied perfect fifth.
     for symbol in chord_symbols.CHORD_ALTERED_FIFTH_SYMBOL_LIST + [chord_symbols.CHORD_NO + chord_symbols.CHORD_5]:
         if symbol in interval_names and chord_symbols.CHORD_5 in interval_names:
             interval_names.remove(chord_symbols.CHORD_5)
 
-    return (structure, utils.order_interval_names(list(interval_names)))
+    # If the chord indicated sus, assume that this symbol overrides any
+    # symbol indicating a 3rd and remove any thirds.
+    for sus in suspensions:
+        if sus in parsed_symbols:
+            interval_names.discard(chord_symbols.CHORD_3)
+            interval_names.discard(chord_symbols.CHORD_FLAT_3)
+
+    # Clean up final result by applying "no" modifiers to remove
+    # any unwanted intervals.
+    for no in subtractive:
+        if (interval := no.replace(chord_symbols.CHORD_NO, "")) in parsed_symbols:
+            interval_names -= {interval}
+
+    return utils.order_interval_names(list(interval_names))
 
 
-def parse_slash_chord_symbol(chord_symbol: str) -> tuple[int, tuple[str, ...]]:
-    '''
-    Parse a chord in 'slash' notation (e.g.: G/Bb, Cm7/Eb).   
+def convert_interval_names_to_integer(interval_names: Sequence[str]) -> int:
+    """Return an integer representing a binary mapping of the given interval
+    names.
+    """
+    structure = 1
+    elements = chord_symbols.symbol_elements.items()
+    elements = sorted(elements, key=lambda x: len(x[0]), reverse=True)
+    for symbol_element, interval in elements:
+        if symbol_element in interval_names:
+            structure |= interval
+    return structure
 
-    Parameters:
-        chord_symbol : A chord in slash notation
+
+def parse_slash_chord_symbol(chord_symbol: str) -> annotations.ChordData:
+    """
+    Return information parsed from a given slash chord symbol. 
+
+    The slash chord will be rotated to the inversion implied by its bass note,
+    rather than simply superimposed over that bass in its root form. If the
+    bass note is not a chord tone, then it will be added to the chord in the 
+    lower octave, and the chord will be rotated to an 'inversion' beginning
+    with that note.
+
+    Args:
+        chord_symbol: _description_
 
     Returns:
-        int : An integer representation of an interval map.
-
-    Examples:
-        >>> bin(parse_slash_chord_symbol("Gmaj/B")[0])
-        '0b100001001'
-        >>> bin(parse_slash_chord_symbol("Fmin7b5/Eb")[0])
-        '0b100100101'
-        >>> bin(parse_slash_chord_symbol("Ab7b5/A")[0])
-        '0b101000101001'
-    '''
+        _description_
+    """
     if chord_symbol.count('/') != 1:
         raise errors.ChordSymbolError(chord_symbol)
+
     main, bass = chord_symbol.split("/")
-    chord_structure, interval_names = parse_chord_symbol(main)
-    root, _ = remove_chord_prefix(main)
-    root = nomenclature.decode_enharmonic(root)
-    bass = nomenclature.decode_enharmonic(bass)
+    main_chord_data: annotations.ChordData = parse_chord_symbol(main)
+    root, _ = split_chord_symbol(main)
+    root_enh = nomenclature.decode_enharmonic(root)
+    bass_enh = nomenclature.decode_enharmonic(bass)
     ch_binomials = nomenclature.chromatic()
-    octave = utils.shift_array(ch_binomials, root)
-    bass_interval = nomenclature.twelve_tone_scale_intervals()[
-        octave.index(bass)]
-    chord_note_names = list(rendering.render_plain(chord_structure, octave))
-    if bass_interval not in interval_names:
-        interval_names = utils.order_interval_names(
-            list(interval_names) + [bass_interval])
+    octave = utils.shift_array(ch_binomials, root_enh)
+    chord_note_names: list[str] = list(main_chord_data[keywords.NOTE_NAMES])
     if bass not in chord_note_names:
-        octave = utils.shift_array(ch_binomials, bass)
-        chord_note_names.append(bass)
-        chord_note_names = [x for x in octave if x in chord_note_names]
-
-    interval_names = utils.shift_array(interval_names, bass_interval)
-    chord_note_names = utils.shift_array(chord_note_names, bass)
-    return parse_literal_sequence(chord_note_names), interval_names
-
-
-def parse_polychord_symbol(chord_symbol: str) -> tuple[int, tuple[str, ...]]:
-    '''
-    Parse a chord in 'polychord' notation.
-
-    Parameters:
-        chord_symbol : A compound symbol consisting of two or more chord 
-        symbols separated by the '@' symbol. 
-
-    Returns:
-        int : An interval structure corresponding to the given polychord 
-        symbol.
-
-    Notes:
-        A polychord is entered as a sequence of chord symbols separated by 
-        the '@' symbol. Each successive note name in the polychord will be 
-        understood as referring to the note name in the previous name's first 
-        octave. 
-
-        The '^' symbol can be substituted for a chord symbol in the polychord, 
-        indicating that the following chord is to be shifted an octave higher 
-        than normal. The symbol can also be compounded to indicate a shift of 
-        multiple octaves, e.g. '^^^' means 'shift the next chord 3 octaves up'.
-
-    Examples
-        >>> chord = 'Cmaj7@Ebm7b5'
-        >>> x = parse_polychord_symbol(chord)[0]
-        >>> bin(x)
-        '0b10101011011001'
-        >>> rendering.render_plain(x)
-        ('C', 'D#|Eb', 'E', 'F#|Gb', 'G', 'A', 'B', 'C#|Db')
-
-        This notation can be useful as a shorthand for a scale configuration:
-        >>> chord = 'Cmaj7@Dmin'
-        >>> x = parse_polychord_symbol(chord)[0]
-        >>> bin(x)
-        '0b101010110101'
-        >>> rendering.render_plain(x)
-        ('C', 'D', 'E', 'F', 'G', 'A', 'B')
-
-        The notation can use the "^" symbol to indicate that the next chord 
-        should begin in the next octave, not the current octave. The symbol
-        can be combined multiple times to increase the gap to the overnext
-        octave or farther:
-        >>> chord = "Cmaj7b13@Emin7b5@^^@Bbmin7#11"
-        >>> x = parse_polychord_symbol(chord)[0]
-        >>> bin(x)
-        '0b10000000100100010010000000000000100000100110010010001'
-        >>> rendering.render_plain(x)
-        ('C', 'E', 'G', 'A#|Bb', 'B', 'D', 'G#|Ab', 'A#|Bb', 'C#|Db', 'F', 'G#|Ab', 'E')
-    '''
-    compiled_structure: int = 1
-    subchord_structure: int = 1
-    current_bass: str = ''
-    previous_bass: str = ''
-    distance: int = 0
-    octaves: int = 0
-    octave: tuple[str, ...]
-    if constants.POLYCHORD_DIVIDER_SYMBOL not in chord_symbol:
-        raise errors.ChordSymbolError(chord_symbol)
-
-    # Break up the symbol and parse each subchord. For every chord that isn't
-    # the first chord, transpose the resulting structure into the range of the
-    # previous one.
-    for subchord_symbol in chord_symbol.split('@'):
-
-        # The polychord octave symbol means 'transpose the next chord so that
-        # it begins in the next octave instead of the current octave.'
-        # The symbol can also be compounded to transpose multiple octaves.
-        if constants.POLYCHORD_OCTAVE_SYMBOL in subchord_symbol:
-            octaves = subchord_symbol.count(constants.POLYCHORD_OCTAVE_SYMBOL)
-            distance += octaves * 12
-
+        if bass_enh not in [nomenclature.decode_enharmonic(x) for x in chord_note_names]:
+            chord_note_names.append(bass)
+            i = octave.index(bass_enh)
+            bass_interval = nomenclature.twelve_tone_scale_intervals()[i]
         else:
-            current_bass, chord_symbol = remove_chord_prefix(subchord_symbol)
-            subchord_structure, interval_names = parse_chord_symbol(
-                subchord_symbol)
-            if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
-                current_bass = chord_symbol.split(
-                    constants.SLASH_CHORD_DIVIDER_SYMBOL)[-1]
+            i = [nomenclature.decode_enharmonic(
+                x) for x in chord_note_names].index(bass_enh)
+            bass = chord_note_names[i]
+            bass_interval = main_chord_data["interval_names"][i]
+    else:
+        i = chord_note_names.index(bass)
+        bass_interval = main_chord_data["interval_names"][i]
 
-            # First symbol
-            if previous_bass == '':
-                compiled_structure |= subchord_structure
-                previous_bass = nomenclature.decode_enharmonic(current_bass)
+    intervals = list(
+        set(list(main_chord_data["interval_names"]) + [bass_interval]))
+    intervals = utils.order_interval_names(intervals)
+    chord_note_names = list(utils.shift_array(sorted(chord_note_names), bass))
+    intervals = utils.shift_array(intervals, bass_interval)
 
-            else:
-                octave = utils.shift_array(nomenclature.chromatic(
-                    constants.BINOMIALS), previous_bass)
-                distance += octave.index(
-                    nomenclature.decode_enharmonic(current_bass))
-                previous_bass = nomenclature.decode_enharmonic(current_bass)
-                compiled_structure |= (subchord_structure << distance)
-    interval_names = rendering.render_plain(
-        compiled_structure, nomenclature.twelve_tone_scale_intervals())
-    return compiled_structure, interval_names
+    return annotations.ChordData(chord_symbol=chord_symbol,
+                                 interval_names=intervals,
+                                 note_names=tuple(chord_note_names),
+                                 interval_structure=parse_literal_sequence(chord_note_names))
 
 
 def parse_heptatonic_scale_structure(interval_structure: int) -> tuple[str, str]:

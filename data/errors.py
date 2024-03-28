@@ -64,3 +64,8 @@ class UnknownKeywordError(AristoxenusException):
     ''' 
     Error indicating that the passed keyword was not recognized in context.    
     '''
+
+class UnfinishedFunctionError(Exception):
+    """Error that reminds the programmer that a particular bit of logic hasn't
+    been written completely.
+    """

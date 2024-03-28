@@ -3,25 +3,21 @@ from typing import Sequence
 from data import (
     annotations,
     constants,
-    errors,
     keywords
 )
 from src import (
     bitwise,
     interface,
     nomenclature,
-    parsing,
-    rendering,
     utils
 )
-from src.models.bases import ScaleStructure
 from src.models.mixins import (
     ConverterMixin,
     MaterialMixin, 
     ParserMixin
 )
 
-class HeptatonicStructure(ScaleStructure, ConverterMixin, ParserMixin, MaterialMixin):
+class HeptatonicStructure(ConverterMixin, ParserMixin, MaterialMixin):
     def __init__(self, 
                  keynote: str,
                  scale_name: annotations.HeptatonicScales = keywords.DIATONIC,

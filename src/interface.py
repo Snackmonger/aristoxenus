@@ -255,7 +255,7 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales, mode: annotation
             numeric_degree=parent_interval_names[i],
             roman_degree=roman_degree,
             root=note,
-            notes=chord,
+            note_names=chord,
             binomial_notes=binomial_notes,
             interval_structure=list(
                 chords.values())[i],
@@ -271,32 +271,6 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales, mode: annotation
                                    notes=number_of_notes,
                                    step=base_step,
                                    chord_scale=collection)
-
-
-def parse_chord_symbol(symbol: str) -> annotations.APIChordSymbolResponse:
-    """
-    For the given chord symbol, return a list of note names and an integer
-    representing the chord's interval structure.
-
-    Args:
-        symbol: A chord symbol, e.g. "C", "Dmin7b5", "Faug7b9", "Gbdim11"
-    Returns:
-        dict {
-            note_names: The notes of the chord.
-            interval_structure: An integer representing the structure.
-        }
-    Raises:
-        ChordNameError: If the symbol's root is not a legal note name.
-    """
-    root = parsing.remove_chord_prefix(symbol)[0]
-    root = nomenclature.decode_enharmonic(root)
-    result = parsing.parse_chord_symbol(symbol)
-    binomial_chromatic = chromatic(root, binomial=True)
-    note_names = rendering.render_plain(result, binomial_chromatic)
-
-    return {keywords.CHORD_SYMBOL: symbol,
-            keywords.INTERVAL_STRUCTURE: result,
-            keywords.NOTE_NAMES: note_names}
 
 
 def render_plain(interval_structure: int, keynote: str) -> tuple[str, ...]:

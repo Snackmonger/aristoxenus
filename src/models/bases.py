@@ -1,7 +1,8 @@
-from typing import Sequence
+from typing import Protocol, Sequence
 from data import (
     errors
 )
+from data.annotations import ChordData
 from src import (
     bitwise,
     nomenclature,
@@ -16,8 +17,8 @@ from .mixins import (
 )
 
 
-class ScaleStructure:
-    def chord_scale(self, relative_degree: int, notes: int = 3):
+class ScaleStructure(Protocol):
+    def chord_scale(self, relative_degree: int, notes: int = 3) -> ChordData:
         raise NotImplementedError
 
 
@@ -89,7 +90,7 @@ class Chord(ParserMixin, MaterialMixin, ConverterMixin):
         data = scale_structure.chord_scale(relative_degree, notes)
         chord = cls()
         chord.base_chord = data["chord_symbol"]
-        chord.notes = data["notes"]
+        chord.notes = data["note_names"]
         chord.interval_structure = data["interval_structure"]
         chord.intervals = data["interval_names"]
         return chord

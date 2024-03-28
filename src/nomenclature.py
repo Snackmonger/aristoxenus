@@ -783,11 +783,9 @@ def encode_intervals_as_notes(interval_names: Sequence[str], keynote: str) -> tu
         else:
             numeral = utils.extract_number(interval_name)
             accidentals = interval_name.replace(str(numeral), "")
-            logger.info(numeral)
             
             # Reduce intervals to a single octave.
             while numeral > constants.NOTES:
-                logger.info(numeral)
                 numeral -= constants.NOTES
             
             i = natural_intervals.index(str(numeral))
