@@ -1,6 +1,6 @@
 """Functions that test various parts of the program."""
 import doctest
-from typing import Optional
+from typing import Mapping, Optional, Sequence
 
 from src import (bitwise,
                  nomenclature,
@@ -44,18 +44,48 @@ def test_chord_symbol_from_interval_names(
         report += "\n#######################################################"
         if not test_passed or verbose:
             print(report)
-
         return test_passed
 
     if not chords:
         chords = test_data.chord_tests
-    print("\n\nBeginning test of chord symbol generation.")
+    print("\n\nBeginning test of interval names -> chord symbol.")
     test_total = 0
     for k, v in chords.items():
         result = __test_ch_symbol_generation(k, v)
         if result:
             test_total += 1
     print(f"Passed {test_total}/{len(chords)} tests.")
+
+
+@test_perf(True)
+def test_generate_intervals_from_chord_symbol(chords: Optional[Mapping[str, Sequence[str]]] = None, verbose: bool = False) -> None:
+    """Perform a series of tests on the chord symbol recognition function to 
+    see if the correct intervals are being returned.
+    """
+
+    @test_perf(verbose)
+    def __test_ch_interval_generation(chord_symbol: str, expected_intervals: Sequence[str]) -> bool:
+        report = f"# Testing chord symbol\t{chord_symbol}"
+        x = list(parsing.parse_chord_suffix(chord_symbol=chord_symbol))
+        test_passed = x == expected_intervals
+        report += f"\n# Expected intervals\t{expected_intervals}"
+        report += f"\n# Actual intervals\t\t{x}"
+        report += f"\n# Test passed\t\t{test_passed}"
+        report += "\n#######################################################"
+        if not test_passed or verbose:
+            print(report)
+        return test_passed
+    
+    if not chords:
+        chords = test_data.chord_tests
+    print("\n\nBeginning test of chord symbol -> interval names.")
+    test_total = 0
+    for k, v in chords.items():
+        result = __test_ch_interval_generation(k, v)
+        if result:
+            test_total += 1
+    print(f"Passed {test_total}/{len(chords)} tests.")
+
 
 
 @test_perf(True)

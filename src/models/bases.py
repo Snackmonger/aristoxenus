@@ -1,8 +1,6 @@
-from typing import Protocol, Sequence
-from data import (
-    errors
-)
-from data.annotations import ChordData
+from typing import Sequence
+
+
 from src import (
     bitwise,
     nomenclature,
@@ -15,11 +13,6 @@ from .mixins import (
     MaterialMixin,
     ParserMixin
 )
-
-
-class ScaleStructure(Protocol):
-    def chord_scale(self, relative_degree: int, notes: int = 3) -> ChordData:
-        raise NotImplementedError
 
 
 class Chord(ParserMixin, MaterialMixin, ConverterMixin):
@@ -79,63 +72,48 @@ class Chord(ParserMixin, MaterialMixin, ConverterMixin):
     def __init__(self) -> None:
         self.base_chord: str
         self.interval_structure: int
-        self.notes: tuple[str, ...]
-        self.intervals: tuple[str, ...]
+        self.note_names: tuple[str, ...]
+        self.interval_names: tuple[str, ...]
 
     def __repr__(self) -> str:
-        return ", ".join(self.notes) + " : " + ", ".join(self.intervals) + " : " + bin(self.interval_structure)
-
-    @classmethod
-    def from_parent_scale(cls, scale_structure: ScaleStructure, relative_degree: int, notes: int = 3) -> "Chord":
-        data = scale_structure.chord_scale(relative_degree, notes)
-        chord = cls()
-        chord.base_chord = data["chord_symbol"]
-        chord.notes = data["note_names"]
-        chord.interval_structure = data["interval_structure"]
-        chord.intervals = data["interval_names"]
-        return chord
+        return f"<<{self.base_chord}>> [{' '.join(self.interval_names)} == {' '.join(self.note_names)}]"
 
     @classmethod
     def from_interval_structure(cls, interval_structure: int, keynote: str = "C") -> "Chord":
-        if keynote not in cls.legal_root_names():
-            raise errors.NoteNameError
-        chromatics = interface.chromatic(keynote)
-        chord = cls()
-        chord.base_chord = keynote + \
-            cls.parse_interval_structure_as_chord_symbol(interval_structure)
-        chord.notes = interface.render_plain(
+        chord_notes = interface.render_plain(
             interval_structure=interval_structure, keynote=keynote)
-        chord.interval_structure = interval_structure
-        intervals: list[str] = []
-        for i, x in enumerate(chromatics):
-            if x in chord.notes:
-                intervals.append(nomenclature.twelve_tone_scale_intervals()[i])
-        chord.intervals = tuple(intervals)
-        return chord
+        return cls.from_note_names(chord_notes)
 
     @classmethod
     def from_note_names(cls, note_names: Sequence[str]) -> "Chord":
-        chord = cls()
-        chord.interval_structure = parsing.parse_literal_sequence(
+        new = cls()
+        new.interval_structure = parsing.parse_literal_sequence(
             note_names=note_names)
-        chord.base_chord = note_names[0] + \
+        new.base_chord = note_names[0] + \
             cls.parse_interval_structure_as_chord_symbol(
-                chord.interval_structure)
-        chord.intervals = rendering.render_plain(
-            chord.interval_structure, nomenclature.twelve_tone_scale_intervals())
-        chord.notes = tuple(note_names)
-        return chord
+                new.interval_structure)
+        new.interval_names = rendering.render_plain(
+            new.interval_structure, nomenclature.twelve_tone_scale_intervals())
+        new.note_names = tuple(note_names)
+        return new
 
     @classmethod
     def from_chord_symbol(cls, chord_symbol: str) -> "Chord":
-        ...
+        new = cls()
+        data = parsing.parse_chord_symbol(chord_symbol=chord_symbol)
+        new.note_names = data["note_names"]
+        new.interval_structure = data["interval_structure"]
+        new.interval_names = data["interval_names"]
+        new.base_chord = chord_symbol
+        return new
 
     def __copy(self) -> "Chord":
         """Return a deep copy of this instance."""
         new = self.__class__()
-        new.notes = self.notes
+        new.note_names = self.note_names
         new.interval_structure = self.interval_structure
-        new.intervals = self.intervals
+        new.interval_names = self.interval_names
+        new.base_chord = self.base_chord
         return new
 
     def variants(self) -> tuple[int]:
@@ -146,8 +124,8 @@ class Chord(ParserMixin, MaterialMixin, ConverterMixin):
     def invert(self, inversion: int) -> "Chord":
         """Return a new instance of self in the given inversion."""
         new = self.__copy()
-        new.notes = self.notes[inversion:] + self.notes[:inversion]
-        new.intervals = self.intervals[inversion:] + self.intervals[:inversion]
+        new.note_names = self.note_names[inversion:] + self.note_names[:inversion]
+        new.interval_names = self.interval_names[inversion:] + self.interval_names[:inversion]
         structure = self.interval_structure
         size = 12 if structure.bit_length() <= 12 else 24
         for _ in range(inversion):

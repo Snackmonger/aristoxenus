@@ -14,6 +14,7 @@ from src import (interface as I,
                  )
 from tests import (do_doctests,
                    test_chord_symbol_from_interval_names)
+from tests.functions import test_generate_intervals_from_chord_symbol
 
 from . import app_data, views
 
@@ -116,3 +117,4 @@ def do_tests(verbose: bool) -> None:
     """DEBUG option: Run the tests for the program."""
     do_doctests(verbose)
     test_chord_symbol_from_interval_names(verbose=verbose)
+    test_generate_intervals_from_chord_symbol(verbose=verbose)
