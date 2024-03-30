@@ -17,31 +17,6 @@ from src import (
     parsing
 )
 
-# from src.nomenclature import (
-#     decode_enharmonic,
-#     encode_enharmonic,
-#     force_heptatonic,
-#     best_heptatonic,
-#     name_heptatonic_intervals,
-#     get_interval_map
-# )
-
-# __all__ = [
-#     "chromatic",
-#     "render_heptatonic_form",
-#     "heptatonic_chord_scale",
-#     "decode_enharmonic",
-#     "encode_enharmonic",
-#     "force_heptatonic",
-#     "best_heptatonic",
-#     "name_heptatonic_intervals",
-#     "get_interval_map",
-#     "parse_chord_symbol"
-# ]
-
-
-
-
 
 def chromatic(keynote: str = "C", binomial: bool = False) -> tuple[str, ...]:
     """Return a chromatic scale starting at the given keynote. 
@@ -102,19 +77,18 @@ def render_heptatonic_form(keynote: str, scale_name: annotations.HeptatonicScale
 
     Returns
     -------
-    dict[str, str|tuple[str, ...]|list[str]]
-        A dictionary containing information about the rendering under the 
-        following keys:
+    dict{
         scale_name: str
         modal_name: str
         interval_structure: int
-        interval_scale: Sequence[str]
-        interval_map: Mapping[str, str]
+        interval_scale: tuple[str, ...]
+        interval_map: dict[str, str]
         keynote: str
-        chromatic_rendering: Sequence[str]
-        alphabetic_rendering: Sequence[str]
+        chromatic_rendering: tuple[str, ...]
+        alphabetic_rendering: tuple[str, ...]
         optimal_keynote: str
-        optimal_rendering: Sequence[str]
+        optimal_rendering: tuplr[str, ...]
+        }
     '''
     scale_base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
     modal_rotations: int = keywords.MODAL_SERIES.index(modal_name)
@@ -271,30 +245,3 @@ def heptatonic_chord_scale(scale: annotations.HeptatonicScales, mode: annotation
                                    notes=number_of_notes,
                                    step=base_step,
                                    chord_scale=collection)
-
-
-def render_plain(interval_structure: int, keynote: str) -> tuple[str, ...]:
-    """
-    Take an integer representing an interval structure and return a set of 
-    note names in plain notation (i.e. without scientific numerals) beginning
-    at the given keynote. 
-
-    Args:
-        interval_structure: An integer representing an interval structure.
-        keynote: A note name to serve as the basis of the rendered form.
-
-    Returns:
-        A sequence of note names representing the interval structure.
-    """
-    accidentals: tuple[str, ...] = nomenclature.get_accidentals(keynote)
-    binomial: bool = accidentals == constants.BINOMIALS
-    ch_: tuple[str, ...] = chromatic(keynote, binomial)
-    return rendering.render_plain(interval_structure, ch_)
-
-
-
-
-FORMATTING_TYPES = [keywords.PLAIN,
-                    keywords.BINOMIAL,
-                    keywords.SCIENTIFIC,
-                    keywords.SCIENTIFIC+"_"+keywords.BINOMIAL]

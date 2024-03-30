@@ -8,14 +8,14 @@ from src import (
     rendering,
     interface
 )
-from .mixins import (
-    ConverterMixin,
-    MaterialMixin,
-    ParserMixin
+from .components import (
+    Converter,
+    Nomenclator,
+    Parser
 )
 
 
-class Chord(ParserMixin, MaterialMixin, ConverterMixin):
+class Chord(Parser, Nomenclator, Converter):
 
     """
     PROTOTYPE

@@ -4,6 +4,7 @@ from data import (
     errors,
     keywords
 )
+from data.annotations import ChordData
 from src import (
     interface,
     nomenclature,
@@ -12,9 +13,9 @@ from src import (
 )
 
 
-class MaterialMixin:
-    """Mixin that adds static methods for generating raw musical material 
-    from precursor constants.
+class Nomenclator:
+    """Class that provides static methods for generating raw musical material
+    from precursor constants. Can be used on its own or as a mixin.
     """
     @staticmethod
     def legal_root_names() -> tuple[str, ...]:
@@ -23,56 +24,28 @@ class MaterialMixin:
     @staticmethod
     def chromatic(keynote: str, binomial: bool = False) -> tuple[str, ...]:
         return interface.chromatic(keynote=keynote, binomial=binomial)
+    
 
-
-class ParserMixin:
-    """Mixin that adds static methods for symbol parsing offered by the 
-    program."""
+class Parser:
+    """Class that provides static methods for symbol parsing offered by the 
+    program. Can be used on its own or as a mixin."""
 
     @staticmethod
-    def parse_chord_symbol(chord_symbol: str) -> int:
+    def parse_chord_symbol(chord_symbol: str) -> ChordData:
         """
          Return an integer representing an interval map of a given chord symbol.
 
-        Args:
+        Parameters:
             chord_symbol : A chord symbol with note name, extensions, and modifiers.
         Returns:
-            int : An interval structure derived from the chord name.
+            dict {
+                chord_symbol: str
+                note_names: tuple[str, ...]
+                interval_names: tuple[str, ...]
+                interval_structure: int
+            }
         Examples:
-            >>> bin(parse_chord_symbol('Cmaj7'))
-            '0b100010010001'
-            >>> bin(parse_chord_symbol('CM7'))
-            '0b100010010001'
-            >>> bin(parse_chord_symbol('CΔ7'))
-            '0b100010010001'
-            >>> bin(parse_chord_symbol('Cmaj#5'))
-            '0b100010001'
-            >>> bin(parse_chord_symbol('Caug'))
-            '0b100010001'
-            >>> bin(parse_chord_symbol('C+'))
-            '0b100010001'
-            >>> bin(parse_chord_symbol('Ebm7b5'))
-            '0b10001001001'
-            >>> bin(parse_chord_symbol('Ebmin7b5'))
-            '0b10001001001'
-            >>> bin(parse_chord_symbol('Eb-7b5'))
-            '0b10001001001'
-            >>> bin(parse_chord_symbol('Ebdimb7'))
-            '0b10001001001'
-            >>> bin(parse_chord_symbol('C6/9'))
-            '0b100001010010001'
-            >>> bin(parse_chord_symbol('F#dim7'))
-            '0b1001001001'
-            >>> bin(parse_chord_symbol('Gm13'))
-            '0b1000100100010010001001'
-            >>> bin(parse_chord_symbol('Asus2add11'))
-            '0b100000000010000101'
-            >>> bin(parse_chord_symbol('Fmaj13no11'))
-            '0b1000000100100010010001'
-            >>> bin(parse_chord_symbol('G7b9'))
-            '0b10010010010001'
-            >>> bin(parse_chord_symbol('Fmajsus2'))
-            '0b10000101'
+            
         """
         return parsing.parse_chord_symbol(chord_symbol=chord_symbol)
 
@@ -80,7 +53,7 @@ class ParserMixin:
     def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
         """Attempt to generate a chord symbol from the given interval names.
 
-        Args:
+        Parameters:
             interval_names: An array of strings consisting of numbers from 1 to 15,
             possibly modified by the '#' or 'b' symbol.
         Returns:
@@ -109,27 +82,38 @@ class ParserMixin:
 
     @staticmethod
     def parse_interval_structure_as_chord_symbol(interval_structure: int) -> str:
+        """Attempt to generate a chord symbol from the given interval 
+        structure, expressed as an integer.
+        """
 
         return parsing.parse_interval_structure_as_chord_symbol(interval_structure=interval_structure)
 
 
-class ConverterMixin:
-    """Mixin that adds static methods for conversions offered by the program."""
+class Converter:
+    """Class that provides static methods for conversions offered by the 
+    program. Can be used on its own or as a mixin.
+    """
 
     @staticmethod
     def decode_enharmonic(note_name: str) -> str:
         """Decode a real note name, possibly with many accidentals, back into
         a neutral binomial form.
 
-        Args:
+        Parameters:
             note_name: The name of a note, with up to 11 accidentals.
+        Raises:
+            NoteNameError: If the input is invalid.
         Returns:
             An enharmonically-equivalent note with a neutral binomial name.
         Examples:
         >>> decode_enharmonic('B#')
         'C'
+        >>> decode_enharmonic('Cb')
+        'B'
         >>> decode_enharmonic('A######')
         'D#|Eb'
+        >>> decode_enharmonic('Bbbb')
+        'G#|Ab'
         """
         return nomenclature.decode_enharmonic(note_name=note_name)
 
@@ -138,9 +122,11 @@ class ConverterMixin:
         """Encode a note name so that it has the enharmonic value of one note
         and the alphabetic name of another.
 
-        Args:
+        Parameters:
             note_value: The enharmonic value, either binomial or real.
             note_name: The target name, one of the natural note names.
+        Raises:
+            NoteNameError: If any of the inputs is invalid.
         Return:
             A note name that has the given value and alphabetic identity.
         Notes:
@@ -173,12 +159,10 @@ class ConverterMixin:
         """
         Decode a numeric keyword into the number it represents.
 
-        Args:
+        Parameters:
             term: A numeric keyword term, e.g. "tertial", "pentad"
-
         Raises:
-            errors.UnknownKeywordError: If the term is not a known keyword.
-
+            UnknownKeywordError: If the term is not a known keyword.
         Returns:
             An integer between 1 and 15. If the keyword is "basal", then 
             its number will be 1 lower than the name suggests. (This is so it
@@ -191,12 +175,11 @@ class ConverterMixin:
         """
         Encode a number as a keyword for the given category.
 
-        Args:
+        Parameters:
             category: A category of numerical words, e.g. "ordinal", "cardinal"
             number: The number to encode. If the category is "basal", the number
                     represents a list slice, and so should be 1 less than the name
                     suggests (tertial=2).
-
         Returns:
             A string representing the number in the given category.
         """
@@ -207,8 +190,8 @@ class ConverterMixin:
         """Return a note name in scientific notation corresponding to the given 
         frequency.
 
-        Parameters
-            frequency:          The hertz value of the frequency.
+        Parameters:
+            frequency:          The Hertz value of the frequency.
             accidental_type:    "sharp", "flat", or "binomial"
         Raises
             UnknownKeywordError:    If the accidental type is not a legal option.
@@ -233,7 +216,7 @@ class ConverterMixin:
         Parameters
             note_name : A note name of any accidental type, in scientific notation.
         Returns
-            float : A frequency, rounded to three places.
+            float : A frequency expressed in Hertz, rounded to three places.
         Raises
             NoteNameError : If the note name does not exist or is not in scientific
                             notation.

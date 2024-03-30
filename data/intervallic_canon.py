@@ -18,7 +18,9 @@ COMPOUND_HEMIOLION = 0b10000000001
 COMPOUND_DITONE = 0b100000000001
 DIAPASON = 0b1000000000001
 
-# Common triads: structures that are compounds of 2 intervals.
+# COMMON TRIADS
+# -------------
+# Structures that are compounds of 2 intervals.
 MAJOR_TRIAD = DITONE | DIAPENTE
 MINOR_TRIAD = HEMIOLION | DIAPENTE
 MINOR_FLAT_5 = HEMIOLION | TRITONE
@@ -40,23 +42,21 @@ TRIADS = {keywords.MAJOR_TRIAD: MAJOR_TRIAD,
           keywords.SUS4_TRIAD: SUS4_TRIAD
           }
 
-# Common tetrads: structures that are compounds of 3 intervals, which can be
-# expressed as a triad and another interval, or as compounds of 2 triads.
-# Some of the named tetrads are actually inversions of the others (Am7 = C6,
-# etc.), but it's often nomenclaturally conventient to treat them separately.
-
+# COMMON TETRADS
+# --------------
+# Structures that are compounds of three intervals.
+MAJOR_SEVENTH = MAJOR_TRIAD | COMPOUND_DITONE
+MINOR_SEVENTH = MINOR_TRIAD | COMPOUND_HEMIOLION
+MAJOR_SIXTH = MAJOR_TRIAD | COMPOUND_TONE
+MINOR_SIXTH = MINOR_TRIAD | COMPOUND_TONE
+MINOR_MAJOR_SEVENTH = MINOR_TRIAD | COMPOUND_DITONE
+DOMINANT_SEVENTH = MAJOR_TRIAD | COMPOUND_HEMIOLION
+MINOR_SEVEN_FLAT_FIVE = MINOR_FLAT_5 | COMPOUND_HEMIOLION
+DIMINISHED_SEVENTH = MINOR_FLAT_5 | COMPOUND_TONE
+AUGMENTED_SEVENTH = MAJOR_SHARP_5 | COMPOUND_HEMIOLION
 # augmented triad + major 6 is an inversion of minmaj7
-MAJOR_SEVENTH = MAJOR_TRIAD | COMPOUND_DITONE                          # Cmaj@Emin
-MINOR_SEVENTH = MINOR_TRIAD | COMPOUND_HEMIOLION                       # Cmin@Ebmaj
-MAJOR_SIXTH = MAJOR_TRIAD | COMPOUND_TONE                              # Cmaj@Am
-MINOR_SIXTH = MINOR_TRIAD | COMPOUND_TONE                              # Cm@Amb5
-MINOR_MAJOR_SEVENTH = MINOR_TRIAD | COMPOUND_DITONE                    # Cmin@Ebmaj#5
-DOMINANT_SEVENTH = MAJOR_TRIAD | COMPOUND_HEMIOLION                    # Cmaj@Emb5
-MINOR_SEVEN_FLAT_FIVE = MINOR_FLAT_5 | COMPOUND_HEMIOLION              # Cdim@Ebmin
-DIMINISHED_SEVENTH = MINOR_FLAT_5 | COMPOUND_TONE                      # Cdim@Ebmb5
-AUGMENTED_SEVENTH = MAJOR_SHARP_5 | COMPOUND_HEMIOLION                 # Caug@Emajb5
-AUGMENTED_MAJOR_SEVENTH = MAJOR_SHARP_5 | COMPOUND_DITONE              # Caug@Emaj
-DOMINANT_SEVENTH_FLAT_FIVE = MAJOR_FLAT_5 | COMPOUND_HEMIOLION         # Cmajb5@Gbmajb5
+AUGMENTED_MAJOR_SEVENTH = MAJOR_SHARP_5 | COMPOUND_DITONE
+DOMINANT_SEVENTH_FLAT_FIVE = MAJOR_FLAT_5 | COMPOUND_HEMIOLION
 
 TETRADS = {keywords.MAJOR_SEVENTH: MAJOR_SEVENTH,
            keywords.MINOR_SEVENTH: MINOR_SEVENTH,
@@ -71,10 +71,8 @@ TETRADS = {keywords.MAJOR_SEVENTH: MAJOR_SEVENTH,
            keywords.MINOR_SEVEN_FLAT_FIVE: MINOR_SEVEN_FLAT_FIVE
            }
 
-# Heptatonic scale forms: these serve as the canonical interval structures that
-# heptatonic modes will be considered to be inversions of. Heptatonic scales can be
-# expressed as a polychord consisting of a tetrad and a triad (or vice-versa) separated
-# by a b2, 2, or #2.
+# HEPTATONIC SCALES
+# -----------------
 DIATONIC_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_TONE | COMPOUND_DITONE
 ALTERED_SCALE = HEMITONE | HEMIOLION | DITONE | TRITONE | COMPOUND_HEMITONE | COMPOUND_HEMIOLION
 HEMITONIC_SCALE = HEMITONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_TONE | COMPOUND_DITONE
@@ -85,10 +83,7 @@ HARMONIC_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_HEMITONE | CO
 BISEPTIMAL_SCALE = TONE | DITONE | DIATESSARON | DIAPENTE | COMPOUND_HEMIOLION | COMPOUND_DITONE
 PALEOCHROMATIC_SCALE = HEMITONE | DITONE | DIATESSARON | TRITONE | COMPOUND_TONE | COMPOUND_DITONE
 
-# This is the order scales will be compared. Scales that arent simply rotations of one of these
-# will be expressed as a variant of one of these, with this order being the preference. Thus, if
-# a scale can be expressed as diatonic +1 modification (or a mode of same), it will be, otherwise,
-# we check if it can be expressed as altered +1, and so on until a suitable match is found.
+# The canonical order in which heptatonic scales will searched.
 HEPTATONIC_ORDER = (DIATONIC_SCALE,
                     ALTERED_SCALE,
                     HEMITONIC_SCALE,

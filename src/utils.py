@@ -8,7 +8,7 @@ import csv
 
 from loguru import logger
 
-from data import errors, keywords
+from data import errors
 
 
 def shift_array(array: Sequence[Any], new_first_member: Any) -> tuple[Any, ...]:
@@ -145,9 +145,9 @@ def encode_numeration(number: int, category: str) -> str:
         A string representing the number in the given category.
     """
     file = "data/numeration.csv"
-    number = number if category == keywords.BASAL else number - 1
+    number = number if category == 'basal' else number - 1
     keyword = ""
-    with open(file, newline="") as numdata:
+    with open(file, newline="", encoding="utf8") as numdata:
         reader = csv.DictReader(numdata)
         rows = list(reader)
         keyword = rows[number][category]
@@ -184,18 +184,14 @@ def decode_numeration(keyword: str) -> int:
 
     """
     file = "data/numeration.csv"
-    value: Optional[int] = None
-    with open(file, newline="") as numdata:
+    with open(file, newline="", encoding="utf8") as numdata:
         reader = csv.DictReader(numdata)
         for i, row in enumerate(reader):
             if keyword in row.values():
-                value = i
                 if row["basal"] != keyword:
-                    value += 1
-
-    if not value:
-        raise errors.UnknownKeywordError(keyword)
-    return value
+                    return i + 1
+                return i
+    raise errors.UnknownKeywordError(keyword)
 
 
 def order_interval_names(interval_names: Sequence[str]) -> tuple[str, ...]:
@@ -219,3 +215,22 @@ def extract_number(number_symbol: str) -> int:
         if char.isdigit():
             number += char
     return int(number)
+
+
+def encode_greek_notation(index: int, style: str) -> str:
+    """Return the Greek musical symbol at the given index in the given style.
+    
+    Parameters:
+        index: The inventory number of the symbol.
+        style: "vocal" or "instrumental"
+    Return:
+        str: A unicode (utf-8) symbol representing a Greek musical symbol.
+    """
+    file = "data/greek_notation.csv"
+    with open(file, newline="", encoding="utf8") as greek_data:
+        reader = csv.DictReader(greek_data)
+        for i, row in enumerate(reader):
+            if index == i:
+                return row[style]
+    raise IndexError(index)
+

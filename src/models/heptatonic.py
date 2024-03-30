@@ -11,13 +11,13 @@ from src import (
     nomenclature,
     utils
 )
-from src.models.mixins import (
-    ConverterMixin,
-    MaterialMixin, 
-    ParserMixin
+from src.models.components import (
+    Converter,
+    Nomenclator, 
+    Parser
 )
 
-class HeptatonicStructure(ConverterMixin, ParserMixin, MaterialMixin):
+class HeptatonicStructure(Converter, Parser, Nomenclator):
     def __init__(self, 
                  keynote: str,
                  scale_name: annotations.HeptatonicScales = keywords.DIATONIC,
@@ -104,7 +104,7 @@ class HeptatonicStructure(ConverterMixin, ParserMixin, MaterialMixin):
                     ) -> annotations.HeptatonicChord:
         """Return a chord from the chord scale of the instance's scaleform.
 
-        Args:
+        Parameters:
             relative_degree: The scale degree from which to build the chord
             notes: The number of notes in the chord (default=3)
             formatting: A keyword indicating how to display the chord.
