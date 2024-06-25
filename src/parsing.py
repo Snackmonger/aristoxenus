@@ -17,8 +17,9 @@ from src import (
 )
 
 
-def split_chord_symbol(chord_symbol: str) -> tuple[str, str]:
-    """Return the root and suffix of a chord symbol.
+def __split_chord_symbol(chord_symbol: str) -> tuple[str, str]:
+    """
+    Auxliliary function. Return the root and suffix of a chord symbol.
 
     This function only works on simple chords (i.e. not slash chords
     or polychords).
@@ -117,13 +118,13 @@ def parse_chord_symbol(chord_symbol: str) -> annotations.ChordData:
         >>> bin(parse_chord_symbol('Gmaj7susbb3b5')["interval_structure"])
         '0b100001000101'
     """
-    # Pre-filter unorthodox symbols that could.
+    # Pre-filter unorthodox symbols that could mess up the parser.
     chord_symbol = chord_symbol.replace("6/9", "69")
 
     if constants.SLASH_CHORD_DIVIDER_SYMBOL in chord_symbol:
         return parse_slash_chord_symbol(chord_symbol)
 
-    root, suffix = split_chord_symbol(chord_symbol)
+    root, suffix = __split_chord_symbol(chord_symbol)
     interval_names = parse_chord_suffix(suffix)
     if root in constants.LEGAL_ROOT_NAMES:
         note_names = nomenclature.encode_intervals_as_notes(
@@ -243,6 +244,7 @@ def parse_chord_suffix(chord_symbol: str) -> tuple[str, ...]:
     # are malformed symbols or symbols from systems that haven't been
     # incorporated to the Aristoxenus lists.
     # logger.info(f"Symbols parsed: {parsed_symbols}, remaining chord data: {chord_symbol}")
+
     # Filter all the parsed symbols to ensure that they are interval names
     # and not special symbols (e.g. "maj")
     interval_names: set[str] = set("1")
@@ -291,6 +293,9 @@ def parse_chord_suffix(chord_symbol: str) -> tuple[str, ...]:
 def convert_interval_names_to_integer(interval_names: Sequence[str]) -> int:
     """Return an integer representing a binary mapping of the given interval
     names.
+
+    >>> bin(convert_interval_names_to_integer(["1", "3", "5"]))
+    '0b10010001'
     """
     structure = 1
     elements = chord_symbols.symbol_elements.items()
@@ -322,7 +327,7 @@ def parse_slash_chord_symbol(chord_symbol: str) -> annotations.ChordData:
 
     main, bass = chord_symbol.split("/")
     main_chord_data: annotations.ChordData = parse_chord_symbol(main)
-    root, _ = split_chord_symbol(main)
+    root, _ = __split_chord_symbol(main)
     root_enh = nomenclature.decode_enharmonic(root)
     bass_enh = nomenclature.decode_enharmonic(bass)
     ch_binomials = nomenclature.get_chromatic_octave()
@@ -394,8 +399,7 @@ def parse_heptatonic_scale_structure(interval_structure: int) -> tuple[str, str]
 
     # Function would continue after this, but for testing, just abort anything
     # that doesn't pass.
-    raise errors.HeptatonicScaleError(
-        "Cannot find scale <REMOVE THIS ERROR LATER>")
+    raise errors.UnfinishedFunctionError("CANNOT IDENTIFY SCALE")
 
 
 def identify_polyad(interval_structure: int) -> dict[str, str | dict[str, str]]:
@@ -573,7 +577,8 @@ def parse_interval_structure_as_chord_symbol(interval_structure: int) -> str:
     '''
     lower_octave: list[str] = list(nomenclature.twelve_tone_scale_intervals())
     upper_octave: list[str] = ['1', 'b9', '9', '#9',
-                               '3', '11', '#11', '5', 'b13', '13', 'b7', '7']
+                               '3', '11', '#11', '5', 
+                               'b13', '13', 'b7', '7']
 
     result = rendering.render_plain(
         interval_structure, lower_octave + upper_octave)

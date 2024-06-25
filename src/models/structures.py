@@ -79,6 +79,7 @@ class Chord(Parser, Nomenclator, Converter):
         self.interval_structure: int
         self.note_names: tuple[str, ...]
         self.interval_names: tuple[str, ...]
+        self.parent_is_known: bool
 
     def __repr__(self) -> str:
         return f"<<{self.base_chord}>> [{' '.join(self.interval_names)} == {' '.join(self.note_names)}]"
@@ -163,17 +164,20 @@ class HeptatonicStructure(Converter, Parser, Nomenclator):
 
         # Populate details.
         data = interface.render_heptatonic_form(
-            keynote, scale_name, modal_name)
+            keynote, 
+            scale_name, 
+            modal_name
+        )
         self.interval_structure: int = data[keywords.INTERVAL_STRUCTURE]
         self.interval_scale: tuple[str, ...] = data[keywords.INTERVAL_SCALE]
         self.interval_map: dict[str, str] = data[keywords.INTERVAL_MAP]
-        self.binomial_rendering: tuple[str,
-                                       ...] = data[keywords.BINOMIAL_RENDERING]
+        self.binomial_rendering: tuple[str, ...] = data[keywords.BINOMIAL_RENDERING]
         self.forced_rendering: tuple[str, ...] = data[keywords.FORCED_RENDERING]
         self.best_keynote: str = data[keywords.BEST_KEYNOTE]
         self.best_rendering: tuple[str, ...] = data[keywords.BEST_RENDERING]
         self.scientific_map: dict[str, str] = nomenclature.heptatonic_range(
-            self.forced_rendering)
+            self.forced_rendering
+        )
 
     def scale_segment(self, start: int, end: int, descending: bool = False, octaves: int = 1) -> tuple[str, ...]:
         """Return a segment of the scale running from a starting degree to 
