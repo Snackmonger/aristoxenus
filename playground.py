@@ -1,5 +1,5 @@
-from src import utils
+from src import interface
 
-x = utils.encode_greek_notation(25, "vocal")
 
-print(x)
+
+print(interface.infer_chromatic("B#"))

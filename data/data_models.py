@@ -12,7 +12,7 @@ __all__ = ["HeptatonicRendering",
 
 @dataclass
 class HeptatonicRendering:
-    """Simple structure with the same keys as  
+    """Simple structure with the same keys as 
     ``annotations.APIScaleFormResponse``.
     """
     scale_name: str
@@ -21,10 +21,10 @@ class HeptatonicRendering:
     interval_scale: tuple[str, ...]
     interval_map: dict[str, str]
     keynote: str
-    chromatic_rendering: tuple[str, ...]
-    alphabetic_rendering: tuple[str, ...]
-    optimal_keynote: str
-    optimal_rendering: tuple[str, ...]
+    binomial_rendering: tuple[str, ...]
+    forced_rendering: tuple[str, ...]
+    best_keynote: str
+    best_rendering: tuple[str, ...]
     
 
     @classmethod

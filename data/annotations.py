@@ -85,10 +85,10 @@ class HeptatonicChord(TypedDict):
     """
     numeric_degree: str
     root: str
-    note_names: list[str]
-    binomial_notes: list[str]
+    note_names: tuple[str, ...]
+    binomial_notes: tuple[str, ...]
     interval_structure: int
-    interval_names: list[str]
+    interval_names: tuple[str, ...]
     chord_symbol: str
     roman_chord: str
     roman_degree: str

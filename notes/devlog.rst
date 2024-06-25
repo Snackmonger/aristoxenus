@@ -5,6 +5,15 @@ Aristoxenus Library DevLog
 .. contents:: Table of Contents
 
 
+22/06/2024
+==========
+A long while since I've worked on this project! 
+
+The GUI must be moved to a separate library, for which Aristoxenus serves as a back-end. This means that we
+must decide what kind of interface to expose, so I have been thinking about which functions and classes 
+are really necessary for the program to be most effective.
+
+
 08/02/2024
 ==========
 The diagram GUI has occupied most of my attention this week. It really seems to be coming along well, all things considered, but I couldn't say that it's very pretty yet. 
@@ -26,7 +35,7 @@ with some other projects for the last couple months, but I've learned a bit more
 I've also gained some valuable experience working with separation of responsibilities, so I can start thinking a bit more about how the various parts of the program
 that already exist can work together best. 
 
-I started working out some of the details of the diagram classes for guitar fingerings, and I'm pleased that they already makes working with diagrams easier. Soon I'd like
+I started working out some of the details of the diagram classes for guitar fingerings, and I'm pleased that they already make working with diagrams easier. Soon I'd like
 to make tkinter display some fancier-looking diagrams using these classes; their nodes should be able to highlight in different colours, and we should be able to show arpeggios with the 
 related scale notes greyed-out (but still visible) or completely invisible.
 

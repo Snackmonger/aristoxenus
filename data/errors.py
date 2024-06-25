@@ -5,9 +5,11 @@ by Aristoxenus can be caught under the heading of the common parent error
 ```AristoxenusException```.
 """
 
+
 class AristoxenusException(Exception):
     """Parent exception of all errors deliberately raised by the Aristoxenus 
     library."""
+
 
 class AristoxenusValueError(AristoxenusException):
     """Error that indicates that the given value is faulty.
@@ -19,7 +21,7 @@ class AristoxenusValueError(AristoxenusException):
 
 class AristoxenusIndexError(AristoxenusException):
     """Error that indicates that a sequence index does not exist.
-    
+
     This error is used in places where the sequence is not an interval 
     sequence.
     """
@@ -32,6 +34,7 @@ class IntervalStructureError(AristoxenusException):
     This error is used in places where the bitcount or bitlength of an 
     interval structure is incorrect.
     """
+
 
 class NoteNameError(AristoxenusException):
     ''' 
@@ -64,6 +67,7 @@ class UnknownKeywordError(AristoxenusException):
     ''' 
     Error indicating that the passed keyword was not recognized in context.    
     '''
+
 
 class UnfinishedFunctionError(Exception):
     """Error that reminds the programmer that a particular bit of logic hasn't

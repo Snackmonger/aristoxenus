@@ -54,7 +54,8 @@ MODAL_SERIES = (
     LYDIAN,
     MIXOLYDIAN,
     AEOLIAN,
-    LOCRIAN)
+    LOCRIAN
+)
 
 # Internal scale names
 DIATONIC = 'diatonic'
@@ -77,7 +78,8 @@ HEPTATONIC_SERIES = (
     AUGMENTED,
     HARMONIC,
     BISEPTIMAL,
-    PALEOCHROMATIC)
+    PALEOCHROMATIC
+)
 
 # Internal scale processing terms
 PREFERRED_NAME = 'preferred_name'

@@ -2,15 +2,20 @@
 import doctest
 from typing import Mapping, Optional, Sequence
 
-from src import (bitwise,
-                 nomenclature,
-                 permutation,
-                 parsing,
-                 interface,
-                 sequences, utils)
+from src import (
+    bitwise,
+    nomenclature,
+    permutation,
+    parsing,
+    interface,
+    sequences, 
+    utils
+)
 
-from data import (keywords,
-                  annotations)
+from data import (
+    keywords,
+    annotations
+)
 
 from tests.decorators import test_perf
 from tests import test_data

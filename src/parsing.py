@@ -44,8 +44,6 @@ def split_chord_symbol(chord_symbol: str) -> tuple[str, str]:
     roman_intervals.sort(key=len, reverse=True)
     for interval in roman_intervals:
         if interval in chord_symbol:
-            # Get from the beginning to the end of the numeral, in case it
-            # is modified by accidental symbols.
             root = chord_symbol[:chord_symbol.index(interval)+len(interval)]
             chord_symbol = chord_symbol.removeprefix(root)
             return root, chord_symbol
@@ -327,7 +325,7 @@ def parse_slash_chord_symbol(chord_symbol: str) -> annotations.ChordData:
     root, _ = split_chord_symbol(main)
     root_enh = nomenclature.decode_enharmonic(root)
     bass_enh = nomenclature.decode_enharmonic(bass)
-    ch_binomials = nomenclature.chromatic()
+    ch_binomials = nomenclature.get_chromatic_octave()
     octave = utils.shift_array(ch_binomials, root_enh)
     chord_note_names: list[str] = list(main_chord_data[keywords.NOTE_NAMES])
     if bass not in chord_note_names:
@@ -380,7 +378,7 @@ def parse_heptatonic_scale_structure(interval_structure: int) -> tuple[str, str]
     # 9 scales in 7 modes = 63 forms that are easily identifiable with a
     # canonical name.
     for heptatonic_supertype in intervallic_canon.HEPTATONIC_ORDER:
-        supertype_modes: tuple[int, ...] = bitwise.inversions(
+        supertype_modes: tuple[int, ...] = bitwise.get_inversions(
             heptatonic_supertype, constants.TONES)
         if interval_structure in supertype_modes:
             parent = intervallic_canon.HEPTATONIC_SYSTEM_BY_NUMBER[heptatonic_supertype]
@@ -658,7 +656,7 @@ def condense_note_names(note_names: Sequence[str]) -> int:
 
     simplified_notes: list[str] = []
     for note_name in note_names:
-        if note_name in nomenclature.chromatic():
+        if note_name in nomenclature.get_chromatic_octave():
             pass
         elif not note_name.isalpha():
             note_name = note_name[:-1]
@@ -668,7 +666,7 @@ def condense_note_names(note_names: Sequence[str]) -> int:
             pass
 
     tonic: str = simplified_notes[0]
-    chromatic_: tuple[str, ...] = nomenclature.chromatic(constants.BINOMIALS)
+    chromatic_: tuple[str, ...] = nomenclature.get_chromatic_octave(constants.BINOMIALS)
     chromatic_ = utils.shift_array(chromatic_, tonic)
     interval_map: int = 1
     for note_name in simplified_notes:
@@ -696,7 +694,7 @@ def parse_literal_sequence(note_names: Sequence[str]) -> int:
     '''
     note_names = [nomenclature.decode_enharmonic(x) for x in note_names]
     rotandum: tuple[str, ...] = utils.shift_array(
-        nomenclature.chromatic(), note_names[0])
+        nomenclature.get_chromatic_octave(), note_names[0])
     interval_structure: int = 1
     distance: int = 0
 

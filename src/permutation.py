@@ -2,16 +2,20 @@
 Functions relating to permuting different types of interval structures.
 '''
 from typing import Sequence
-from data import (annotations,
-                  constants,
-                  errors,
-                  intervallic_canon,
-                  keywords,
-                  permutation_data)
+from data import (
+    annotations,
+    constants,
+    errors,
+    intervallic_canon,
+    keywords,
+    permutation_data
+)
 
-from src import (bitwise,
-                 nomenclature,
-                 utils)
+from src import (
+    bitwise,
+    nomenclature,
+    utils
+)
 
 def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2) -> dict[str, int]:
     '''
@@ -65,12 +69,12 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     full_range: int
 
     # Grab the intervals for each mode and use them to derive chords
-    for i, inversion in enumerate(bitwise.inversions(interval_structure, 12)):
+    for i, inversion in enumerate(bitwise.get_inversions(interval_structure, 12)):
         full_range = bitwise.extend_structure(inversion)
         chord_intervals = list(bitwise.iterate_intervals(full_range))[
             ::step][:notes]
         chord_scale.update(
-            {interval_names[i]: bitwise.reduce_(chord_intervals)})
+            {interval_names[i]: bitwise.reduce_intervals(chord_intervals)})
 
     return chord_scale
 
@@ -207,7 +211,7 @@ def drop_voicing(chord_structure: int, drop_notes: Sequence[int]) -> int:
     intervals = list(bitwise.iterate_intervals(chord_structure))
     for interval in drop_notes:
         intervals[interval] = bitwise.transpose_interval(intervals[interval])
-    return bitwise.reduce_(intervals)
+    return bitwise.reduce_intervals(intervals)
 
 
 def triad_variants() -> annotations.TriadInventory:
@@ -231,8 +235,8 @@ def triad_variants() -> annotations.TriadInventory:
     variants: list[annotations.TriadConspectus] = []
     for name, triad in triads.items():
         open_triad = spread_triad(triad)
-        close_inversions = bitwise.inversions(triad, constants.TONES)
-        open_inversions = bitwise.inversions(open_triad, constants.TONES*2)
+        close_inversions = bitwise.get_inversions(triad, constants.TONES)
+        open_inversions = bitwise.get_inversions(open_triad, constants.TONES*2)
         inversion_names = [keywords.NUMBERED_INVERSIONS[x] for x in range(3)]
         variants.append(annotations.TriadConspectus(canonical_name=name,
                                                     canonical_form=triad,
@@ -283,7 +287,7 @@ def tetrad_variants() -> annotations.TetradInventory:
     inversion_names = [keywords.NUMBERED_INVERSIONS[x] for x in range(4)]
 
     for name, tetrad in tetrads.items():
-        inversions: tuple[int, ...] = bitwise.inversions(
+        inversions: tuple[int, ...] = bitwise.get_inversions(
             tetrad, constants.TONES)
         innerdict = annotations.TetradConspectus(
             canonical_name=name,

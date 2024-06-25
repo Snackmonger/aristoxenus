@@ -61,7 +61,7 @@ def heptatonic_form(scale: annotations.HeptatonicScales,
               help="Render the scale with binomial names.")
 def chromatic(keynote: str, binomial: bool) -> None:
     """Print a chromatic scale starting on a given keynote."""
-    data = I.chromatic(keynote, binomial)
+    data = I.infer_chromatic(keynote, binomial)
     console_.print(data)
 
 

@@ -23,7 +23,7 @@ class Nomenclator:
 
     @staticmethod
     def chromatic(keynote: str, binomial: bool = False) -> tuple[str, ...]:
-        return interface.chromatic(keynote=keynote, binomial=binomial)
+        return interface.infer_chromatic(keynote=keynote, binomial=binomial)
     
 
 class Parser:
