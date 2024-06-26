@@ -37,7 +37,7 @@ def render_plain(
     """
 
     if chromatic_scale is None:
-        chromatic_scale = nomenclature.get_chromatic_octave(constants.BINOMIALS)
+        chromatic_scale = nomenclature.generate_chromatic_octave(constants.BINOMIALS)
     chromatic_scale_ = list(chromatic_scale)
     if interval_structure.bit_length() > len(chromatic_scale):
         chromatic_scale_ *= 8

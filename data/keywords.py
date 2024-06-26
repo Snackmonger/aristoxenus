@@ -47,7 +47,7 @@ AEOLIAN = 'aeolian'
 LOCRIAN = 'locrian'
 
 # Canonical order of mode names
-MODAL_SERIES = (
+MODAL_SERIES_KEYS = (
     IONIAN,
     DORIAN,
     PHRYGIAN,
@@ -69,7 +69,7 @@ BISEPTIMAL = 'biseptimal'
 PALEOCHROMATIC = 'paleochromatic'
 
 # Internal canonical order of scale types
-HEPTATONIC_SERIES = (
+HEPTATONIC_ORDER_KEYS = (
     DIATONIC,
     ALTERED,
     HEMITONIC,

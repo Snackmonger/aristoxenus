@@ -33,7 +33,7 @@ class HeptatonicRendering:
                    mode: annotations.ModalNames, 
                    note_name: str) -> "HeptatonicRendering":
         """Alternate constructor to mirror interface parameters."""
-        data = interface.render_heptatonic_form(note_name, scale, mode)
+        data = interface.heptatonic_form(note_name, scale, mode)
         return cls(**data)
     
 

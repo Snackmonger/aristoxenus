@@ -163,7 +163,7 @@ class HeptatonicStructure(Converter, Parser, Nomenclator):
         self.keynote: str = keynote
 
         # Populate details.
-        data = interface.render_heptatonic_form(
+        data = interface.heptatonic_form(
             keynote, 
             scale_name, 
             modal_name

@@ -99,7 +99,7 @@ def test_generate_chord_names_for_heptatonic():
     are at least readable (if not sensible).
     """
     print("\n\nBeginning test of heptatonic chord scale naming function.")
-    for scale in keywords.HEPTATONIC_SERIES:
+    for scale in keywords.HEPTATONIC_ORDER_KEYS:
         triads = interface.heptatonic_chord_scale(scale, keywords.IONIAN, "C")
         tetrads = interface.heptatonic_chord_scale(
             scale, keywords.IONIAN, "C", 4)

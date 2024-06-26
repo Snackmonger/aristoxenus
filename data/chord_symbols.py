@@ -74,17 +74,25 @@ CHORD_FLAT_14 = constants.FLAT_SYMBOL + CHORD_14
 # Groups of chord symbols that serve as bases for extended chords (maj9,
 # dim11, etc.) that have nonexplicit structures (e.g. maj13 also implies
 # 9 and 11)
-CHORD_MAJOR_SYMBOL_LIST = [CHORD_MAJ,
-                           CHORD_MAJ_DELTA,
-                           CHORD_M_UPPER]
-CHORD_MINOR_SYMBOL_LIST = [CHORD_MIN,
-                           CHORD_M_LOWER,
-                           CHORD_MINUS]
-CHORD_AUGMENTED_SYMBOL_LIST = [CHORD_AUG,
-                               CHORD_PLUS,
-                               CHORD_AUG_5]
-CHORD_DIMINISHED_SYMBOL_LIST = [CHORD_DIM, CHORD_DIM_5]
-
+CHORD_MAJOR_SYMBOL_LIST = [
+    CHORD_MAJ,
+    CHORD_MAJ_DELTA,
+    CHORD_M_UPPER
+]
+CHORD_MINOR_SYMBOL_LIST = [
+    CHORD_MIN,
+    CHORD_M_LOWER,
+    CHORD_MINUS
+]
+CHORD_AUGMENTED_SYMBOL_LIST = [
+    CHORD_AUG,
+    CHORD_PLUS,
+    CHORD_AUG_5
+]
+CHORD_DIMINISHED_SYMBOL_LIST = [
+    CHORD_DIM,
+    CHORD_DIM_5
+]
 CHORD_SYMBOL_LIST = CHORD_MAJOR_SYMBOL_LIST + \
     CHORD_MINOR_SYMBOL_LIST + \
     CHORD_AUGMENTED_SYMBOL_LIST + \
@@ -93,10 +101,13 @@ CHORD_SYMBOL_LIST = CHORD_MAJOR_SYMBOL_LIST + \
 # Chord symbols for which we normally expect NOT to have a p5
 CHORD_ALTERED_FIFTH_SYMBOL_LIST = CHORD_AUGMENTED_SYMBOL_LIST + \
     CHORD_DIMINISHED_SYMBOL_LIST + \
-    [CHORD_FLAT_5, CHORD_SHARP_5]
+    [
+        CHORD_FLAT_5,
+        CHORD_SHARP_5
+    ]
 
-# Mapping of interval values to interval names.
-basic_symbols = {
+# Mapping of interval values to known interval names.
+INTERVAL_TO_POSSIBLE_SYMBOLS_MAP = {
     interval.HEMITONE: [CHORD_FLAT_2],
     interval.TONE: [CHORD_2, CHORD_SUS_2, CHORD_SUS_DOUBLE_FLAT_3, CHORD_DOUBLE_FLAT_3],
     interval.HEMIOLION: [CHORD_SHARP_2, CHORD_FLAT_3] + CHORD_MINOR_SYMBOL_LIST,
@@ -121,25 +132,25 @@ basic_symbols = {
     bitwise.transpose_interval(interval.COMPOUND_HEMIOLION): [CHORD_SHARP_13, CHORD_FLAT_14],
     bitwise.transpose_interval(interval.COMPOUND_DITONE): [CHORD_14],
     bitwise.transpose_interval(interval.DIAPASON): [CHORD_15],
-    interval.MAJOR_SHARP_5: CHORD_AUGMENTED_SYMBOL_LIST,
-    interval.MINOR_FLAT_5: CHORD_DIMINISHED_SYMBOL_LIST,
+    interval.MAJOR_SHARP_5_CH: CHORD_AUGMENTED_SYMBOL_LIST,
+    interval.MINOR_FLAT_5_CH: CHORD_DIMINISHED_SYMBOL_LIST,
 }
 
 # Mapping of interval names to interval values.
-symbol_elements = {
-    symbol: interval for interval, symbols in basic_symbols.items() for symbol in symbols}
+SYMBOL_TO_INTERVAL_MAP = {
+    symbol: interval for interval, symbols in INTERVAL_TO_POSSIBLE_SYMBOLS_MAP.items() for symbol in symbols}
 
-# Mapping of add2, add11, etc. to the indicated interval value.
-additive = {
-    CHORD_ADD + symbol: interval for symbol, interval in symbol_elements.items()}
+# Mapping of add2, add11, etc. keys to the indicated interval value.
+ADD_SYMBOLS = {
+    CHORD_ADD + symbol: interval for symbol, interval in SYMBOL_TO_INTERVAL_MAP.items()}
 
-# mapping of no3, no5, etc. to the indicated interval value.
-subtractive = {
-    CHORD_NO + symbol: interval for symbol, interval in symbol_elements.items()}
+# Mapping of no3, no5, etc. keys to the indicated interval value.
+DROP_SYMBOLS = {
+    CHORD_NO + symbol: interval for symbol, interval in SYMBOL_TO_INTERVAL_MAP.items()}
 
 # A listing of prescribed interval names, to be used in chord symbols when the
-# chord is not associated with a known parent scale.
-chord_symbol_prescription = {
+# chord is not associated with a known parent scale. 
+DEFAULT_CHORD_INTERVAL_TO_SYMBOL_MAP = {
     interval.HEMITONE: CHORD_FLAT_2,
     interval.TONE: CHORD_2,
     interval.HEMIOLION: CHORD_MIN,
@@ -166,10 +177,10 @@ chord_symbol_prescription = {
     bitwise.transpose_interval(interval.DIAPASON): CHORD_15,
 }
 
-
-# A listing of prescribed interval names, to be used in describing
-# scales that are not heptatonic.
-interval_symbol_prescription = {
+# A listing of default interval names, to be used in describing
+# scales that are not heptatonic. Similar to above, but without
+# 'maj' and 'min' for thirds, and convering only one octave.
+DEFAULT_SCALE_INTERVAL_TO_SYMBOL_MAP = {
     interval.UNISON: '1',
     interval.HEMITONE: CHORD_FLAT_2,
     interval.TONE: CHORD_2,
@@ -184,25 +195,26 @@ interval_symbol_prescription = {
     interval.COMPOUND_DITONE: CHORD_7
 }
 
-
-triads_symbols = {keywords.MAJOR_TRIAD: CHORD_MAJ,
-          keywords.MINOR_TRIAD: CHORD_MIN,
-          keywords.MINOR_FLAT_5: CHORD_MIN + CHORD_FLAT_5,
-          keywords.MAJOR_FLAT_5: CHORD_MAJ + CHORD_FLAT_5,
-          keywords.MAJOR_SHARP_5: CHORD_MAJ + CHORD_SHARP_5,
-          keywords.SUS2_TRIAD: CHORD_SUS_2,
-          keywords.SUS4_TRIAD: CHORD_SUS_4
-          }
-
-tetrads_symbols = {keywords.MAJOR_SEVENTH: CHORD_MAJ_7,
-           keywords.MINOR_SEVENTH: CHORD_MIN + CHORD_7,
-           keywords.MAJOR_SIXTH: CHORD_MAJ + CHORD_6,
-           keywords.MINOR_SIXTH: CHORD_MIN + CHORD_6,
-           keywords.MINOR_MAJOR_SEVENTH: CHORD_MIN + CHORD_MAJ_7,
-           keywords.DOMINANT_SEVENTH: CHORD_7,
-           keywords.DOMINANT_SEVENTH_FLAT_FIVE: CHORD_7 + CHORD_FLAT_5,
-           keywords.DIMINISHED_SEVENTH: CHORD_DIM_7,
-           keywords.AUGMENTED_MAJOR_SEVENTH: CHORD_MAJ_7 + CHORD_SHARP_5,
-           keywords.AUGMENTED_SEVENTH: CHORD_7 + CHORD_SHARP_5,
-           keywords.MINOR_SEVEN_FLAT_FIVE: CHORD_MIN + CHORD_7 + CHORD_FLAT_5
-           }
+# Chord name : chord symbol
+TRIADS_KEY_TO_SYMBOL_MAP = {
+    keywords.MAJOR_TRIAD: CHORD_MAJ,
+    keywords.MINOR_TRIAD: CHORD_MIN,
+    keywords.MINOR_FLAT_5: CHORD_MIN + CHORD_FLAT_5,
+    keywords.MAJOR_FLAT_5: CHORD_MAJ + CHORD_FLAT_5,
+    keywords.MAJOR_SHARP_5: CHORD_MAJ + CHORD_SHARP_5,
+    keywords.SUS2_TRIAD: CHORD_SUS_2,
+    keywords.SUS4_TRIAD: CHORD_SUS_4
+}
+TETRADS_KEY_TO_SYMBOL_MAP = {
+    keywords.MAJOR_SEVENTH: CHORD_MAJ_7,
+    keywords.MINOR_SEVENTH: CHORD_MIN + CHORD_7,
+    keywords.MAJOR_SIXTH: CHORD_MAJ + CHORD_6,
+    keywords.MINOR_SIXTH: CHORD_MIN + CHORD_6,
+    keywords.MINOR_MAJOR_SEVENTH: CHORD_MIN + CHORD_MAJ_7,
+    keywords.DOMINANT_SEVENTH: CHORD_7,
+    keywords.DOMINANT_SEVENTH_FLAT_FIVE: CHORD_7 + CHORD_FLAT_5,
+    keywords.DIMINISHED_SEVENTH: CHORD_DIM_7,
+    keywords.AUGMENTED_MAJOR_SEVENTH: CHORD_MAJ_7 + CHORD_SHARP_5,
+    keywords.AUGMENTED_SEVENTH: CHORD_7 + CHORD_SHARP_5,
+    keywords.MINOR_SEVEN_FLAT_FIVE: CHORD_MIN + CHORD_7 + CHORD_FLAT_5
+}

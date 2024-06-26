@@ -128,9 +128,9 @@ def romanize_intervals(interval_names: Sequence[str] | str) -> tuple[str, ...]:
     
     :Example:
     >>> romanize_intervals("b3")
-    ("bIII")
+    ('bIII',)
     >>> romanize_intervals(["#5", "b6"])
-    ("#V", "bVI")
+    ('#V', 'bVI')
     """
     if isinstance(interval_names, str):
         interval_names = [interval_names]
@@ -165,21 +165,21 @@ def encode_numeration(number: int, category: str) -> str:
 
     :Example:
     >>> encode_numeration(3, "polyad")
-    "triad"
+    'triad'
     >>> encode_numeration(2, "basal")
-    "tertial"
+    'tertial'
     >>> encode_numeration(3, "cardinal")
-    "three"
+    'three'
     >>> encode_numeration(3, "ordinal")
-    "third"
+    'third'
     >>> encode_numeration(3, "uple")
-    "triple"
+    'triple'
     >>> encode_numeration(3, "tonal")
-    "tritonic"
+    'tritonic'
     >>> encode_numeration(5, "tonal")
-    "pentatonic"
+    'pentatonic'
     >>> encode_numeration(7, "tonal")
-    "heptatonic"
+    'heptatonic'
     """
     file = "data/numeration.csv"
     number = number if category == 'basal' else number - 1

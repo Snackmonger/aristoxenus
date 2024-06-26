@@ -230,7 +230,7 @@ def triad_variants() -> annotations.TriadInventory:
                 second_inversion: int}
             open: dict{ same as above }
     '''
-    triads = intervallic_canon.TRIADS
+    triads = intervallic_canon.TRIADS_KEY_TO_VALUE_MAP
 
     variants: list[annotations.TriadConspectus] = []
     for name, triad in triads.items():
@@ -281,7 +281,7 @@ def tetrad_variants() -> annotations.TetradInventory:
     >>> bin(x[3]['close']['third_inversion'])
     '0b10001001001'
     '''
-    tetrads = intervallic_canon.TETRADS
+    tetrads = intervallic_canon.TETRADS_KEY_TO_VALUE_MAP
 
     variants: annotations.TetradInventory = []
     inversion_names = [keywords.NUMBERED_INVERSIONS[x] for x in range(4)]

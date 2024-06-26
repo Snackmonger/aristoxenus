@@ -24,7 +24,7 @@ from src import (
 )
 
 
-def render_heptatonic_form(
+def heptatonic_form(
         keynote: str,
         scale_name: annotations.HeptatonicScales = keywords.DIATONIC,
         modal_name: annotations.ModalNames = keywords.IONIAN
@@ -61,7 +61,7 @@ def render_heptatonic_form(
             The best names for the scale notes, using the best keynote.
 
     :Example:
-    >>> scale = interface.render_heptatonic_form("Eb", "diatonic", "locrian")
+    >>> scale = interface.heptatonic_form("Eb", "diatonic", "locrian")
     >>> scale['scale_name'] 
     'diatonic'
     >>> scale['modal_name']
@@ -82,11 +82,11 @@ def render_heptatonic_form(
     >>> scale['best_rendering']
     ('D#', 'E', 'F#', 'G#', 'A', 'B', 'C#')
     """
-    scale_base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale_name]
-    modal_rotations: int = keywords.MODAL_SERIES.index(modal_name)
+    scale_base: int = intervallic_canon.HEPTATONIC_ORDER_KEY_TO_VALUE_MAP[scale_name]
+    modal_rotations: int = keywords.MODAL_SERIES_KEYS.index(modal_name)
     scale_base = bitwise.get_rotation(scale_base, modal_rotations)
     binomial_base: tuple[str, ...] = utils.shift_array(
-        nomenclature.get_chromatic_octave(),
+        nomenclature.generate_chromatic_octave(),
         nomenclature.decode_enharmonic(keynote)
     )
 
@@ -199,8 +199,8 @@ def heptatonic_chord_scale(
     if isinstance(base_step, str):
         base_step = utils.decode_numeration(base_step)
 
-    base: int = intervallic_canon.HEPTATONIC_SYSTEM_BY_NAME[scale]
-    rotations: int = keywords.MODAL_SERIES.index(mode)
+    base: int = intervallic_canon.HEPTATONIC_ORDER_KEY_TO_VALUE_MAP[scale]
+    rotations: int = keywords.MODAL_SERIES_KEYS.index(mode)
     interval_structure: int = bitwise.get_rotation(base, rotations)
     note_names: tuple[str, ...] = nomenclature.force_heptatonic(keynote,
                                                                 interval_structure)
