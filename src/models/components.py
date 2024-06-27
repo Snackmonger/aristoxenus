@@ -1,12 +1,11 @@
 from typing import Sequence
-from data import (
+from src.data import (
     constants,
     errors,
     keywords
 )
-from data.annotations import ChordData
-from src import (
-    interface,
+from src.data.annotations import ChordData
+from src.functions import (
     nomenclature,
     parsing,
     utils
@@ -20,11 +19,6 @@ class Nomenclator:
     @staticmethod
     def legal_root_names() -> tuple[str, ...]:
         return constants.LEGAL_ROOT_NAMES
-
-    @staticmethod
-    def chromatic(keynote: str, binomial: bool = False) -> tuple[str, ...]:
-        return interface.infer_chromatic(keynote=keynote, binomial=binomial)
-    
 
 class Parser:
     """Class that provides static methods for symbol parsing offered by the 

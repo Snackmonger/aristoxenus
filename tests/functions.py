@@ -1,22 +1,20 @@
 """Functions that test various parts of the program."""
 import doctest
 from typing import Mapping, Optional, Sequence
-
-from src import (
+from src.functions import interface
+from src.functions import (
     bitwise,
     nomenclature,
     permutation,
     parsing,
-    interface,
     sequences, 
     utils
 )
 
-from data import (
+from src.data import (
     keywords,
     annotations
 )
-
 from tests.decorators import test_perf
 from tests import test_data
 

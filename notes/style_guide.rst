@@ -44,7 +44,7 @@ Triads
 ++++++
 
 - Major 3 is indicated with 'maj' suffix.
-- Minor 3 is indicated with lowercase 'min' suffix.
+- Minor 3 is indicated with 'min' suffix.
 
 - A chord that replaces the 3 with a 2 or 4 is indicated with the 'sus' suffix, plus the appropriate numeral
 

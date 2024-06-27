@@ -1,16 +1,15 @@
 from typing import Sequence
-
-from data import (
+from src.data import (
     annotations,
     constants,
     keywords
 )
-from src import (
+from src.functions import (
     bitwise,
+    interface,
     nomenclature,
     parsing,
     rendering,
-    interface,
     utils
 )
 from src.models.components import (
