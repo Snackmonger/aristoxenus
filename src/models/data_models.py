@@ -2,8 +2,8 @@
 
 from dataclasses import dataclass
 
-from src.data import annotations
-from src.functions import interface
+from data import annotations
+from functions import api
 
 __all__ = ["HeptatonicRendering",
            "ChordScaleRendering",
@@ -11,8 +11,31 @@ __all__ = ["HeptatonicRendering",
 
 @dataclass
 class HeptatonicRendering:
-    """Simple structure with the same keys as 
-    ``annotations.APIScaleFormResponse``.
+    """
+    Dataclass that matches the dict ``data.annotations.APIScaleFormResponse``,
+    which is returned from ``src.functions.api.heptatonic_form``.
+
+    scale_name: str
+        The canonical scale base.
+    modal_name: str
+        The canonical modal rotation from the base.
+    interval_structure: int
+        The unique integer expression of this scale form.
+    interval_scale: tuple[str, ...]
+        An array of interval names using Indian numerals.
+    interval_map: dict[str, str]
+        A chromatic scale that respects the scaleform's unique interval 
+        names.
+    keynote: str
+        The real keynote of the scaleform.
+    binomial_rendering: tuple[str, ...]
+        The binomial names of the scaleform's notes.
+    forced_rendering: tuple[str, ...]
+        The names for the scale notes, using the real keynote.
+    best_keynote: str
+        The best name for the given keynote.
+    best_rendering: tuple[str, ...]
+        The best names for the scale notes, using the best keynote.
     """
     scale_name: str
     modal_name: str
@@ -32,17 +55,17 @@ class HeptatonicRendering:
                    mode: annotations.ModalNames, 
                    note_name: str) -> "HeptatonicRendering":
         """Alternate constructor to mirror interface parameters."""
-        data = interface.heptatonic_form(note_name, scale, mode)
+        data = api.heptatonic_scale_form(note_name, scale, mode)
         return cls(**data)
     
 
 @dataclass
 class ChordScaleRendering:
     """Simple structure with the same keys as  
-    ``annotations.APIChordScaleResponse``.
+    ``data.annotations.APIChordScaleResponse``.
     """
-    scale: str
-    mode: str
+    scale_name: str
+    modal_name: str
     keynote: str
     notes: int
     step: int
@@ -57,7 +80,7 @@ class ChordScaleRendering:
                    notes: int = 3,
                    step: int = 2) -> "ChordScaleRendering":
         """Alternate constructor to mirror interface parameters."""
-        data = interface.heptatonic_chord_scale(scale, mode, note_name, notes, step)
+        data = api.heptatonic_chord_scale(note_name, scale, mode,  notes, step)
         return cls(**data)
     
 

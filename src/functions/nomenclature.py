@@ -1,13 +1,6 @@
 # pylint:disable=trailing-whitespace, trailing-newlines, line-too-long, too-many-return-statements
 '''
 Functions related to generating and processing musical nomenclatural material.
-
-Aristoxenus generates all nomenclatural material used in the program except for
-a small number of constants. This module was created out of a desire to avoid 
-having to type out tables of note name conversions manually, and it also helps 
-to ensure that the program is able to characterize note and interval names for 
-unusual scales in the most efficient way. Mostly, the user should not need to 
-use any of the functions in this module directly.
 '''
 import re
 from typing import Optional, Sequence
@@ -457,6 +450,8 @@ def force_heptatonic(note_name: str, interval_structure: int = intervallic_canon
     :Example:
     >>> force_heptatonic('B#', 0b101010110101)
     ('B#', 'C##', 'D##', 'E#', 'F##', 'G##', 'A##')
+    >>> force_heptatonic('G##', 0b101010110101)
+    ('G##', 'A##', 'B##', 'C##', 'D##', 'E##', 'F###')
     """
     if note_name in constants.BINOMIALS:
         raise errors.NoteNameError(
@@ -489,6 +484,8 @@ def best_heptatonic(note_name: str, interval_structure: int = intervallic_canon.
     ('Eb', 'F', 'G', 'Ab', 'Bb', 'C', 'D')
     >>> best_heptatonic('E#', 0b101010110101)
     ('F', 'G', 'A', 'Bb', 'C', 'D', 'E')
+    >>> best_heptatonic('E##', 0b101010110101)
+    ('F#', 'G#', 'A#', 'B', 'C#', 'D#', 'E#')
     """
     note_name = decode_enharmonic(note_name)
     # Naturals' default names will always be the best.
@@ -981,3 +978,5 @@ def encode_intervals_as_note_names(interval_names: Sequence[str], keynote: str) 
             symbol = str()
         final_names[i] = get_note_identity(name) + (symbol * abs(accidentals))
     return tuple(final_names)
+
+

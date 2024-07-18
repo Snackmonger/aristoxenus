@@ -764,6 +764,9 @@ def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
     'maj7susbb3#5'
     """
     ###########################################################################
+    # June 29, 2024: 'bb7' moved to 'alt7' category to avoid collision of 
+    # flat symbol and chord root accidental when no normal3 (e.g. 'Abb7sus2')
+    #
     # March 24, 2024:
     # The function does a pretty good job of naming the common chords in root
     # position, but in order to spell chords from weird heptatonic scales,
@@ -771,17 +774,25 @@ def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
     # voice chords. It will always parse a chord as if it were a root position
     # expression, e.g. a 2nd inv min7 with intervals 1, 4, b6 gives sus4addb6.
     #
+    # In a few cases, the presence of a symbol in one slot triggers the
+    # removal of another, so we don't wind up with 'majmaj7' and 'dim7b5'.
+    # For a full account of the chord symbol prescription, see the notes at
+    # notes/style_guide.rst.
+    #
+    # Chord nomenclature overview
+    # ---------------------------
     # The formal sequence of suffixes is taken to be:
     #
     # - root                A note name or Roman interval symbol.
     # - normal3             maj, min
-    # - primary_suffix      7, maj7, bb7, dim7
+    # - primary_suffix      7, maj7, dim7
     # - secondary_suffix    6, b6, #6
     # - sus                 sus2, sus4, susbb3, sus#3
     # - alt5                #5, b5
     # - add                 addX, where X is an interval name
     # - no3                 only appears if there is no 3 and no sus
     # - no5                 only appears if there is no 5 and no alt5
+    # - alt7                bb7; only appears if there is a sus or no3
     # - extensions          intervals that can't be added to the primary suffix
     #
     # Examples:
@@ -792,10 +803,6 @@ def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
     # F#min11b5     [F#]-[min]-[11]-[b5]    [root]-[normal3]-[primary]-[alt5]
     # Abmaj9susbb3  [Ab]-[maj9]-[susbb3]    [root]-[primary]-[sus]
     #
-    # In a few cases, the presence of a symbol in one slot triggers the
-    # removal of another, so we don't wind up with 'majmaj7' and 'dim7b5'.
-    # For a full account of the chord symbol prescription, see the notes at
-    # notes/style_guide.rst.
     ###########################################################################
     interval_names_ = list(interval_names)
     parsed_symbols: list[str] = []
@@ -806,6 +813,7 @@ def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
     secondary_suffix: str = ""
     sus: str = ""
     alt5: str = ""
+    alt7: str = ""
     add: str = ""
     no5: str = ""
     no3: str = ""
@@ -816,13 +824,13 @@ def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
                                      chord_symbols.CHORD_FLAT_5,
                                      chord_symbols.CHORD_DOUBLE_FLAT_7]
     primary_suffixes: list[str] = [chord_symbols.CHORD_FLAT_7,
-                                   chord_symbols.CHORD_7,
-                                   chord_symbols.CHORD_DOUBLE_FLAT_7]
+                                   chord_symbols.CHORD_7]
     secondary_suffixes: list[str] = [chord_symbols.CHORD_6,
                                      chord_symbols.CHORD_FLAT_6,
                                      chord_symbols.CHORD_SHARP_6]
     altered_fifths: list[str] = [chord_symbols.CHORD_FLAT_5,
                                  chord_symbols.CHORD_SHARP_5]
+    altered_sevenths: list[str] = [chord_symbols.CHORD_DOUBLE_FLAT_7]
     suspensions: list[str] = [chord_symbols.CHORD_2,
                               chord_symbols.CHORD_4,
                               chord_symbols.CHORD_DOUBLE_FLAT_3,
@@ -861,7 +869,8 @@ def parse_interval_names_as_chord_symbol(interval_names: Sequence[str]) -> str:
         add += chord_symbols.CHORD_ADD + secondary_suffix
         secondary_suffix = ""
     # Change 7s in the primary suffix from literal to idiomatic values.
-    # 7 => maj7, b7 => 7, bb7 => dim7 or bb7
+    # 7 => maj7, b7 => 7, bb7 => dim7 if dim, else bb7 falls through to
+    # an add.
     if chord_symbols.CHORD_DOUBLE_FLAT_7 in primary_suffix:
         # Dim7 chord gets special nomenclature.
         if all(x in parsed_symbols + interval_names_ for x in diminished_symbols):

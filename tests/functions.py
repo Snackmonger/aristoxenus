@@ -1,13 +1,13 @@
 """Functions that test various parts of the program."""
 import doctest
 from typing import Mapping, Optional, Sequence
-from src.functions import interface
+from src.models import sequences
 from src.functions import (
+    api,
     bitwise,
     nomenclature,
     permutation,
     parsing,
-    sequences, 
     utils
 )
 
@@ -98,9 +98,8 @@ def test_generate_chord_names_for_heptatonic():
     """
     print("\n\nBeginning test of heptatonic chord scale naming function.")
     for scale in keywords.HEPTATONIC_ORDER_KEYS:
-        triads = interface.heptatonic_chord_scale(scale, keywords.IONIAN, "C")
-        tetrads = interface.heptatonic_chord_scale(
-            scale, keywords.IONIAN, "C", 4)
+        triads = api.heptatonic_chord_scale("C", scale, keywords.IONIAN)
+        tetrads = api.heptatonic_chord_scale("C", scale, keywords.IONIAN, 4)
         print("##################################################")
         print(f"# Now trying {scale} scale")
         for i in range(7):
@@ -112,9 +111,9 @@ def test_generate_chord_names_for_heptatonic():
             tetrad_stem = parsing.parse_interval_names_as_chord_symbol(
                 tetrad["interval_names"])
 
-            pad1 = 20 - len(root+triad_stem)
-            pad2 = 20 - len(root+tetrad_stem)
+            pad1 = 20 - len(root + triad_stem)
+            pad2 = 20 - len(root + tetrad_stem)
             print(
-                f"# {triad['numeric_degree']}\t::{' '*pad1}{root + triad_stem}{' '*pad2}{root + tetrad_stem}")
+                f"# {triad['numeric_degree']}\t::{' ' * pad1}{root + triad_stem}{' ' * pad2}{root + tetrad_stem}")
 
 

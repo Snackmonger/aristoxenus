@@ -22,6 +22,9 @@ class AristoxenusValueError(AristoxenusException):
 
 class AristoxenusIndexError(AristoxenusException):
     """Error that indicates that an array index does not exist.
+
+    This error appears in contexts where we are getting the indices of
+    an interval structure (i.e. the bits of an integer).
     """
 
 
@@ -37,12 +40,16 @@ class IntervalStructureError(AristoxenusException):
 class NoteNameError(AristoxenusException):
     ''' 
     Error indicating that an unrecognized note name was passed.
+
+    A name might raise this error because the note is completely unknown,
+    e.g. "Mb", or else because a function expects one format (e.g. binomial,
+    scientific) and a different format was passed.
     '''
 
 
 class HeptatonicScaleError(AristoxenusException):
     '''
-    Error indicating that a scale does not conform to the heptatonic scale 
+    Error indicating that a scale does not conform to a heptatonic scale 
     pattern or nomenclature.
     '''
 
@@ -50,7 +57,8 @@ class HeptatonicScaleError(AristoxenusException):
 class ChordNameError(AristoxenusException):
     '''
     Error indicating that the alphabetical note name in a chord is not one of 
-    the note names in the list returned from `nomenclature.legal_chord_names`.
+    the note names in the list returned from 
+    ``functions.nomenclature.legal_chord_names``.
     '''
 
 
@@ -58,6 +66,9 @@ class ChordSymbolError(AristoxenusException):
     ''' 
     Error indicating that one or more of the suffixes of a chord symbol are 
     incompatible with the parser.
+
+    Known chord symbols are defined in ``data.chord_symbols``, and a full 
+    style guide for chord nomenclature can be found in ``notes.style_guide``.
     '''
 
 
@@ -68,6 +79,7 @@ class UnknownKeywordError(AristoxenusException):
 
 
 class UnfinishedFunctionError(AristoxenusException):
-    """Error that reminds the programmer that a particular bit of logic hasn't
-    been written completely.
+    """
+    Error that reminds the programmer that he hasn't finished writing a 
+    particular bit of logic completely.
     """

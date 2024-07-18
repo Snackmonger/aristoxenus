@@ -24,34 +24,41 @@ def chordify(interval_structure: int, notes: int | str = 3, step: int | str = 2)
     ----------
     interval_structure : int
         An integer not exceeding 12 bits representing the parent scale
-    notes : int or str, default=3
+    notes : int | str, optional
         The number of notes to include, or a keyword denoting the same 
-        (e.g. 'triad'). 
-    step : int or str, default=2
+        (e.g. 'triad'), by default 3
+    step : int | str, optional
         The number of steps between chord tones, or a keyword denoting 
-        the same (e.g. 'tertial'). The steps start on 0, so 2=tertial.
+        the same (e.g. 'tertial'). The steps start on 0, so 2=tertial, 
+        by default 2
 
     Returns
     -------
-    list[int]
-        A list of chords built from each degree of the scale, according to the
-        given structural principles, expressed as integers.
+    dict[str, int]
+        A mapping of each interval name in the scale to the chord built from
+        that degree.
 
-    # Examples
-    # --------
-    # >>> chordify(0b101010110101)
-    # [145, 137, 137, 145, 145, 137, 73]
+    Raises
+    ------
+    errors.IntervalStructureError
+        If the interval structure exceeds 12 bits.
 
-    # This translates to the diatonic triads
-    # (dim, min, maj, maj, min, min, maj)
+    Examples
+    --------
+    The triads of the diatonic scale:
+    >>> from src.data.intervallic_canon import DIATONIC_SCALE
+    >>> chordify(DIATONIC_SCALE)
+    {'1': 145, '2': 137, '3': 137, '4': 145, '5': 145, '6': 137, '7': 73}
+    >>> chordify(DIATONIC_SCALE, 3)
+    {'1': 145, '2': 137, '3': 137, '4': 145, '5': 145, '6': 137, '7': 73}
 
-    # >>> chordify(0b101010110101, 4, 3)
-    # [67617, 33825, 33825, 67649, 66593, 33825, 33825]
-    # >>> chordify(0b101010110101, 'tetrad', 'quartal')
-    # [67617, 33825, 33825, 67649, 66593, 33825, 33825]
-
-    # This translates to quartal voicings of the diatonic tetrads.
+    The tetrads of the diatonic scale, quartal voicing:
+    >>> chordify(DIATONIC_SCALE, 4, 3)
+    {'1': 67617, '2': 33825, '3': 33825, '4': 67649, '5': 66593, '6': 33825, '7': 33825}
+    >>> chordify(0b101010110101, 'tetrad', 'quartal')
+    {'1': 67617, '2': 33825, '3': 33825, '4': 67649, '5': 66593, '6': 33825, '7': 33825}
     '''
+    
     # Convert keywords to ints
     if isinstance(notes, str):
         notes = utils.decode_numeration(notes)
@@ -149,7 +156,7 @@ def spread_triad(chord_structure: int) -> int:
     if not bitwise.validate_interval_structure(chord_structure, 12, 3):
         raise errors.IntervalStructureError(chord_structure)
 
-    return drop_voicing(chord_structure, permutation_data.DROP_2)
+    return drop_voicing(chord_structure, permutation_data.DROP_2_VOICING)
 
 
 def drop_voicing(chord_structure: int, drop_notes: Sequence[int]) -> int:
@@ -200,11 +207,11 @@ def drop_voicing(chord_structure: int, drop_notes: Sequence[int]) -> int:
 
     Examples
     --------
-    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_2))
+    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_2_VOICING))
     '0b10000100010000001'
-    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_3))
+    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_3_VOICING))
     '0b10010000100000000001'
-    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_2_AND_4))
+    >>> bin(drop_voicing(0b100010010001, permutation_data.DROP_2_AND_4_VOICING))
     '0b100000010000000010000001'
     '''
     intervals = list(bitwise.iterate_intervals(chord_structure))
@@ -300,9 +307,9 @@ def tetrad_variants() -> annotations.TetradInventory:
             # We iterate the inversions THEN generate the drop voicings.
             # See `permutation.drop_voicing` for info.
             inversion_name: str = inversion_names[i]
-            drop2: int = drop_voicing(inversion, permutation_data.DROP_2)
-            drop3: int = drop_voicing(inversion, permutation_data.DROP_3)
-            drop24: int = drop_voicing(inversion, permutation_data.DROP_2_AND_4)
+            drop2: int = drop_voicing(inversion, permutation_data.DROP_2_VOICING)
+            drop3: int = drop_voicing(inversion, permutation_data.DROP_3_VOICING)
+            drop24: int = drop_voicing(inversion, permutation_data.DROP_2_AND_4_VOICING)
 
             innerdict[keywords.CLOSE].update({inversion_name: inversion})
             innerdict[keywords.DROP_2].update({inversion_name: drop2})

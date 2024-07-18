@@ -52,6 +52,7 @@ class Movement:
                         etc.)
     
     """
+
     def __init__(self) -> None:
         self.chronemes: list[Chroneme]
 

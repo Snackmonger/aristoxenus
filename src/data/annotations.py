@@ -2,8 +2,6 @@
 
 from typing import Sequence, TypeAlias, TypedDict, Literal
 
-
-
 ###############################################################################
 # Canonical scaleform sets
 ###############################################################################
@@ -97,11 +95,11 @@ class APIChordScaleResponse(TypedDict):
     """A response from the API containing information about the member chords
     of a scaleform.
     """
-    scale: str
-    mode: str
+    scale_name: str
+    modal_name: str
     keynote: str
-    notes: int
-    step: int
+    number_of_notes: int
+    base_step: int
     chord_scale: list[HeptatonicChord]
 
 class APIScaleFormResponse(TypedDict):

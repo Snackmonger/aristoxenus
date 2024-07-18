@@ -10,12 +10,15 @@ from src.functions import (
 
 
 def equal_temperament() -> tuple[float, ...]:
-    """
+    '''
     Return a list of frequencies corresponding to the range of the scientific 
     chromatic scales (C0 - B8).
 
-    :return: A list of 108 frequencies, rounded to three decimal places.
-    """
+    Returns
+    -------
+    tuple[float, ...]
+        A list of 108 frequencies, rounded to three decimal places.
+    '''
     centre_name: str = constants.CENTRAL_REFERENCE_NOTE_NAME
     centre_freq: int = constants.CENTRAL_REFERENCE_NOTE_FREQUENCY
     limit: int = constants.FREQUENCY_DECIMAL_LIMIT

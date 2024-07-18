@@ -1,18 +1,18 @@
 from typing import Sequence
-from src.data import (
+from data import (
     annotations,
     constants,
     keywords
 )
-from src.functions import (
+from functions import (
+    api,
     bitwise,
-    interface,
     nomenclature,
     parsing,
     rendering,
     utils
 )
-from src.models.components import (
+from models.components import (
     Converter,
     Nomenclator,
     Parser
@@ -162,7 +162,7 @@ class HeptatonicStructure(Converter, Parser, Nomenclator):
         self.keynote: str = keynote
 
         # Populate details.
-        data = interface.heptatonic_form(
+        data = api.heptatonic_scale_form(
             keynote, 
             scale_name, 
             modal_name
@@ -260,7 +260,7 @@ class HeptatonicStructure(Converter, Parser, Nomenclator):
         if not 2 < notes < 8:
             raise ValueError(
                 f"Number of notes must be between 2 and 7, inclusive. Got value: {notes}")
-        chord_scale = interface.heptatonic_chord_scale(
+        chord_scale = api.heptatonic_chord_scale(
             self.scale_name, self.modal_name, self.keynote, number_of_notes=notes)
         chord = Chord()
         ch_ = chord_scale["chord_scale"][relative_degree-1]

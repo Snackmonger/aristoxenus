@@ -21,10 +21,8 @@ SLASH_CHORD_DIVIDER_SYMBOL = '/'
 POLYCHORD_DIVIDER_SYMBOL = '@'
 POLYCHORD_OCTAVE_SYMBOL = '^'
 ACCIDENTAL_SYMBOLS = [SHARP_SYMBOL, FLAT_SYMBOL]
-# Note: we want to use the real flat/sharp symbols, but
-# we want to keep being able to recognize pound sign and lowercase b...
 
-
+# Accidental sets
 SHARPS = tuple(note + SHARP_SYMBOL for note in NATURALS
                if note not in HALFSTEPS)
 
@@ -34,12 +32,12 @@ FLATS = tuple(note + FLAT_SYMBOL for note in NATURALS
 BINOMIALS = tuple(sharp + BINOMIAL_DIVIDER_SYMBOL + flat
                   for flat in FLATS for sharp in SHARPS
                   if FLATS.index(flat) == SHARPS.index(sharp))
-
 ACCIDENTAL_NOTES = tuple(SHARPS + FLATS)
 ACCIDENTAL_TYPES = [SHARPS, FLATS, BINOMIALS]
 ACCIDENTAL_HALFSTEPS = [n + SHARP_SYMBOL for n in HALFSTEPS] + \
     [n + FLAT_SYMBOL for n in HALFSTEPS.values()]
 
+# Summary of all 'real' root names
 LEGAL_ROOT_NAMES = tuple([n for c in [NATURALS, SHARPS, FLATS]
                          for n in c] + ACCIDENTAL_HALFSTEPS)
 
