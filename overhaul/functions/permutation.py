@@ -55,7 +55,6 @@ def get_heptatonic_double_octave(interval_structure: Sequence[int]) -> tuple[int
 
 def get_heptatonic_chord_scale_tertial(interval_structure: Sequence[int], keynote: tuple[int, int], notes: int):
     chords: list[tuple[tuple[str, ...], tuple[str, ...], tuple[int, ...]]] = []
-    octave = False
     note_names = get_heptatonic_scale_notes(interval_structure, *keynote)
     for i in range(7):
         root = note_names[i]
@@ -63,10 +62,9 @@ def get_heptatonic_chord_scale_tertial(interval_structure: Sequence[int], keynot
         modal_names = get_heptatonic_scale_notes(modal_pattern, *decode_note_name(root))
         interval_pattern = get_heptatonic_interval_symbols(modal_pattern)
         if notes > 4:
-            modal_pattern = get_heptatonic_double_octave(modal_pattern)
             modal_names += modal_names
-            octave = True
-            interval_pattern = get_heptatonic_interval_symbols(modal_pattern, octave)
+            interval_pattern = get_heptatonic_interval_symbols(modal_pattern, True)
+            modal_pattern = get_heptatonic_double_octave(modal_pattern)
         chords.append((modal_names[::2][:notes], 
                        interval_pattern[::2][:notes], 
                        modal_pattern[::2][:notes]))

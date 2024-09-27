@@ -147,7 +147,7 @@ def decode_note_name(note_name: str) -> tuple[int, int]:
         name = name.groupdict()
         accidentals: int = name["accidentals"].count(
             "#") - name["accidentals"].count("b")
-        return NATURAL_NAMES.index(name["name"]), accidentals
+        return NATURAL_NAMES.index(name["note_name"]), accidentals
     raise errors.UnknownSymbolError(f"Unknown note name symbol: {note_name}")
 
 
