@@ -126,6 +126,7 @@ HEPTATONIC_SUPPLEMENT = {
 NATURAL_MAP = tuple(
     (HEPTATONIC_SCALES[DIATONIC][i], NATURAL_NAMES[i]) for i in range(7)
 )
+
 #######################
 # Chord Voicing Forms #
 #######################
