@@ -807,10 +807,17 @@ def name_chord(
     DOM7 = [CHORD_3, CHORD_FLAT_7]
     EXTENSIONS = [CHORD_9, CHORD_11, CHORD_13]
 
-    parsed = set(interval_names)
+    parse = set(interval_names)
+
+    # A chord symbol is made up of a series of suffixes, each of which
+    # implies something about the chord's structure. Not all suffixes
+    # will be present (and in fact cannot all be present simultaneously).
+    # They have been ordered with a view to making the resulting symbols
+    # easier to read, including a few unusual chord structures implied
+    # in some of the more exotic parent scales.
     normal3: str = ""
-    primary_suffix: str = ""
-    secondary_suffix: str = ""
+    primary: str = ""
+    secondary: str = ""
     sus: str = ""
     alt5: str = ""
     alt7: str = ""
@@ -818,8 +825,12 @@ def name_chord(
     no5: str = ""
     no3: str = ""
     extensions: str = ""
-    parsed.discard(str(1))
 
+    # Any note that has been accounted for by the parsing process is
+    # discarded so it can't be misinterpreted later.
+    parse.discard(str(1))
+
+    # Convenience functions
     def has_third() -> Optional[str]:
         for x in [CHORD_3, CHORD_FLAT_3]:
             if x in interval_names:
@@ -852,96 +863,140 @@ def name_chord(
             return tuple(candidates)
         return None
 
+    # Pre-handle special cases.
+    # Diminished chord implies specific structure.
     if is_dim():
         normal3 = dim_symbol
-        primary_suffix = CHORD_7
-        parsed.difference_update(set(DIM7))
+        primary = CHORD_7
+        parse.difference_update(set(DIM7))
     else:
-        if CHORD_DOUBLE_FLAT_7 in parsed:
+        # Exotic chords are allowed to have bb7 in our system, but since the
+        # bb accidental might conflict with the note name in a 7th chord
+        # (e.g. 'Bbb7'), we compel it to take the alt7 slot instead of the
+        # primary 7 slot.
+        if CHORD_DOUBLE_FLAT_7 in parse:
             alt7 = CHORD_DOUBLE_FLAT_7
-            parsed.discard(CHORD_DOUBLE_FLAT_7)
+            parse.discard(CHORD_DOUBLE_FLAT_7)
+        # A chord with an altered 5th must always have an explicit alt5 symbol,
+        # unless it's diminished.
         if (n := has_alt5()):
             alt5 = n
-            parsed.discard(n)
+            parse.discard(n)
+        # A chord with no 5th must have an explicit no5 symbol, unless it's
+        # diminished.
         elif not has_p5():
             no5 = CHORD_NO + CHORD_5
         else:
-            parsed.discard(CHORD_5)
-
+            # The fifth is implied in any other chord and has no symbol.
+            parse.discard(CHORD_5)
+    # Dominant chord implies specific structure.
     if is_dom():
-        primary_suffix = CHORD_7
-        parsed.difference_update(set(DOM7))
+        primary = CHORD_7
+        parse.difference_update(set(DOM7))
 
+    # Main chord parsing is mostly a 1:1 symbol matching, with a few
+    # exceptions.
+    # Chords in our system are always given an explicit symbol for
+    # their third, unless they are one of the implicit symbols
+    # above, or they have a suspension in place of a third.
     if (n := has_third()):
         if is_dim() or is_dom():
             pass
         elif n == CHORD_3:
             normal3 = maj_symbol
-            if CHORD_7 in parsed:
-                primary_suffix = CHORD_7
-                parsed.discard(CHORD_7)
+            # A 7 symbol in a major chord implies a natural 7
+            if CHORD_7 in parse:
+                primary = CHORD_7
+                parse.discard(CHORD_7)
         elif n == CHORD_FLAT_3:
             normal3 = min_symbol
-            if CHORD_7 in parsed:
-                parsed.discard(CHORD_7)
-                primary_suffix = maj_symbol + CHORD_7
-            if CHORD_FLAT_7 in parsed:
-                parsed.discard(CHORD_FLAT_7)
-                primary_suffix = CHORD_7
-        parsed.discard(n)
+            # A 7 symbol in most chords implies a flat 7, so
+            # the natural 7 requires a special symbol.
+            if CHORD_7 in parse:
+                parse.discard(CHORD_7)
+                primary = maj_symbol + CHORD_7
+            if CHORD_FLAT_7 in parse:
+                parse.discard(CHORD_FLAT_7)
+                primary = CHORD_7
+        parse.discard(n)
+    # Our system allows for sus chords with notes that could technically be
+    # considered thirds. We categorize #3 and bb3 as 'sus' chords a) because
+    # they cannot reasonably be labeled major or minor, b) so that their
+    # accidental cannot stand next to the root note (i.e. Dsusbb3 is less
+    # ambiguous than Dbb3).
     elif (candidates := has_sus()):
+        # Normally, we expect to have only one medial note (a third or a
+        # suspended note). If there's more than one note that could stand
+        # as a suspension, treat the first as a suspension, and any others
+        # as additions (e.g. 1, 2, 4, 5 -> sus2add4).
         candidates = list(candidates)
         main = candidates.pop(0)
         sus = CHORD_SUS + main
-        parsed.discard(main)
+        parse.discard(main)
         for x in candidates:
             if x:
                 add += CHORD_ADD + x
-                parsed.discard(x)
-        if CHORD_7 in parsed:
-            parsed.discard(CHORD_7)
-            primary_suffix = maj_symbol + CHORD_7
-        elif CHORD_FLAT_7 in parsed:
-            parsed.discard(CHORD_FLAT_7)
-            primary_suffix = CHORD_7
+                parse.discard(x)
+        if CHORD_7 in parse:
+            parse.discard(CHORD_7)
+            primary = maj_symbol + CHORD_7
+        elif CHORD_FLAT_7 in parse:
+            parse.discard(CHORD_FLAT_7)
+            primary = CHORD_7
+    # Any chord without a medial must have an explicit no3 symbol
     else:
         no3 = CHORD_NO + CHORD_3
 
+    # Our system treats primary extension symbols as implying all previous
+    # extensions in the series, i.e. a 13 chord includes 7, 9, 11, 13.
+    # If this series is interrupted by a missing or altered note, then the
+    # primary extension is the last continuous extension, and any following
+    # natural extensions are treated as additions (e.g. C9#11add13).
     largest: str = ""
-    if primary_suffix:
+    if primary:
         checked: list[str] = []
         for i, extension in enumerate(EXTENSIONS):
             prev = EXTENSIONS[i - 1] if i > 0 else None
-            if extension in parsed:
+            if extension in parse:
                 if not prev or prev in checked:
                     largest = extension
-                    parsed.discard(extension)
+                    parse.discard(extension)
                     checked.append(extension)
                 else:
                     add += CHORD_ADD + extension
-                    parsed.discard(extension)
+                    parse.discard(extension)
                     checked.append(extension)
         if largest:
-            primary_suffix = primary_suffix.replace(CHORD_7, largest)
+            primary = primary.replace(CHORD_7, largest)
 
-    if CHORD_6 in parsed:
-        secondary_suffix = CHORD_6
-        parsed.discard(CHORD_6)
+    # The secondary suffix does not imlicitly absorb any other intervals,
+    # so that 1, 3, 5, 6, 9, 11, 13 -> maj6add9add11add13
+    if CHORD_6 in parse:
+        secondary = CHORD_6
+        parse.discard(CHORD_6)
 
-    if secondary_suffix and primary_suffix:
-        add += CHORD_ADD + secondary_suffix
-        secondary_suffix = ""
+    # If the primary suffix already exists, treat the 6 as an addition.
+    if secondary and primary:
+        add += CHORD_ADD + secondary
+        secondary = ""
 
-    for extension in list(parsed):
+    # Any extension with an accidental can simply be suffixed on its own.
+    # Natural extensions may encounter ambiguities and must be treated as
+    # additions (e.g. Emaj#11 vs Emajadd11)
+    for extension in list(parse):
         if not any([SHARP_SYMBOL in extension, FLAT_SYMBOL in extension]):
             add += CHORD_ADD + extension
-            parsed.discard(extension)
+            parse.discard(extension)
 
-    extensions = "".join(parsed)
+    # By this point, the list of intervals only contains non-chord tone
+    # extensions with accidentals.
+    extensions = "".join(parse)
+
+    # Most suffixes will be empty strings in any given chord.
     symbols: list[str] = [
         normal3,
-        primary_suffix,
-        secondary_suffix,
+        primary,
+        secondary,
         sus,
         no3,
         no5,
@@ -1024,6 +1079,10 @@ def name_intervals(chord_symbol: str) -> tuple[str, ...]:
     ('1', 'bb3', '5', 'bb7')
     '''
     intervals: set[str] = {str(1), CHORD_5}
+    # Regex sorts elements into three broad categories. The main symbol
+    # generally defines the third and may imply something about the 7.
+    # The extension is the 7th or any natural note that is allowed to replace
+    # The modification is any other interval symbol, or an add, or a no.
     match = re.search(RE_PARSE_CHORD_SYMBOL, chord_symbol)
     if match is None:
         raise ArgumentError(f"Unable to parse chord symbol: {chord_symbol}")
@@ -1102,6 +1161,7 @@ def name_intervals(chord_symbol: str) -> tuple[str, ...]:
                     interval = CHORD_FLAT_7
                 intervals.add(interval)
 
+    # Check modifications
     sub: list[str] = []
     # Special chords in our system might have sus bb3, #3.
     for sus in sus_intervals:
@@ -1123,9 +1183,11 @@ def name_intervals(chord_symbol: str) -> tuple[str, ...]:
                 intervals.add(CHORD_DOUBLE_FLAT_7)
                 modifications.replace(CHORD_DOUBLE_FLAT_7, '')
 
+    # Most remaining symbols will be a bare interval name, an addition, or
+    # a subtraction.
     for number in (13, 11, 9, 6, 5, 4, 3, 2):
-        for acc in [SHARP_SYMBOL, FLAT_SYMBOL, '']:
-            interval = acc + str(number)
+        for accidental in [SHARP_SYMBOL, FLAT_SYMBOL, '']:
+            interval = accidental + str(number)
             if (n := CHORD_ADD + interval) in modifications:
                 intervals.add(interval)
                 modifications = modifications.replace(n, '')
@@ -1138,10 +1200,14 @@ def name_intervals(chord_symbol: str) -> tuple[str, ...]:
                 if interval in [CHORD_SHARP_5, CHORD_FLAT_5]:
                     intervals.remove(CHORD_5)
 
+    # Augmented symbols are either main or modification, e.g. Caug7 vs. C7aug
     for aug in CHORD_AUGMENTED_SYMBOLS:
         if aug in modifications:
             intervals.discard(CHORD_5)
             intervals.add(CHORD_SHARP_5)
+
+    # Subtractions always treated last, in case they depend on an implication
+    # in a preceding symbol.
     for s in sub:
         if s in intervals:
             intervals.remove(s)

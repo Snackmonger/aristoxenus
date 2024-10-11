@@ -3,7 +3,7 @@ Type hint annotations used in the program.
 '''
 from typing import TypedDict
 
-class HeptatonicScaleFormAPIResponse(TypedDict):
+class HeptatonicScaleForm(TypedDict):
     '''
     Dictionary mapping the response from ``heptatonic_scale_form``
     API endpoint.
@@ -17,7 +17,7 @@ class HeptatonicScaleFormAPIResponse(TypedDict):
     recommended_keynote: str
     recommended_rendering: tuple[str, ...]
 
-class Chord(TypedDict):
+class SimpleChord(TypedDict):
     '''
     Dictionary of chord structure information.
     '''
@@ -29,18 +29,18 @@ class TriadProfile(TypedDict):
     ''' 
     Dictionary of triad variants.
     '''
-    close_voicing: Chord
-    open_voicing: Chord
+    close_voicing: SimpleChord
+    open_voicing: SimpleChord
 
 class TetradProfile(TypedDict):
     ''' 
     Dictionary of tetrad variants.
     '''
-    close_voicing: Chord
-    drop_2_voicing: Chord
-    drop_3_voicing: Chord
-    drop_2_and_3_voicing: Chord
-    drop_2_and_4_voicing: Chord
+    close_voicing: SimpleChord
+    drop_2_voicing: SimpleChord
+    drop_3_voicing: SimpleChord
+    drop_2_and_3_voicing: SimpleChord
+    drop_2_and_4_voicing: SimpleChord
 
 class TetradInversions(TypedDict):
     ''' 
@@ -67,7 +67,7 @@ class TriadInversions(TypedDict):
     first_inversion: TriadProfile
     second_inversion: TriadProfile
 
-class HeptatonicChordScaleAPIResponse(TypedDict):
+class HeptatonicChordScale(TypedDict):
     '''
     Dictionary mapping the response from ``heptatonic_chord_scale``
     API endpoint.

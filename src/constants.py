@@ -1,4 +1,5 @@
 '''Constants used in the program.'''
+
 ##############
 # Raw Values #
 ##############
@@ -15,8 +16,7 @@ SHARP_SYMBOL = '#'
 ############
 # Keywords #
 ############
-
-# Internal Heptatonic Scale Names
+# Internal heptatonic scale names
 DIATONIC = 'diatonic'
 ALTERED = 'altered'
 HEMITONIC = 'hemitonic'
@@ -40,23 +40,12 @@ HEPTATONIC_ORDER_KEYS = (
     PALEOCHROMATIC
 )
 
-# Other Scale Names
+# Other heptatonic scale names
 ENIGMATIC = 'enigmatic'
 NEAPOLITAN_MAJOR = 'neapolitan_major'
 NEAPOLITAN_MINOR = 'neapolitan_minor'
 HUNGARIAN = 'hungarian'
 HARMONIC_MINOR = 'harmonic_minor'
-
-# Internal scale processing terms
-PREFERRED_NAME = 'preferred_name'
-CANONICAL_NAME = 'canonical_name'
-CANONICAL_FORM = 'canonical_form'
-BINOMIAL_RENDERING = 'binomial_rendering'
-TWELVE_TONE_INTERVALS = "twelve_tone_intervals"
-FORCED_RENDERING = 'forced_rendering'
-BEST_RENDERING = 'best_rendering'
-BEST_KEYNOTE = 'best_keynote'
-RECOGNIZED_NAMES = 'recognized_names'
 
 # Modal names
 IONIAN = 'ionian'
@@ -97,31 +86,26 @@ ACCIDENTALS = 'accidentals'
 EXTENSION = 'extension'
 MODIFICATION = 'modification'
 MAIN = 'main'
-SUFFIX = 'suffix'
-PRIMARY_SUFFIX = 'primary_suffix'
-ADD_SUFFIX = 'add_suffix'
-NO_SUFFIX = 'no_suffix'
-SUS_SUFFIX = 'sus_suffix'
 
 ##############
 # Scaleforms #
 ##############
 HEPTATONIC_SCALES = {
-    DIATONIC: [0, 2, 4, 5, 7, 9, 11],
-    ALTERED: [0, 1, 3, 4, 6, 8, 10],
-    HEMITONIC: [0, 1, 4, 5, 7, 9, 11],
-    HEMIOLIC: [0, 3, 4, 5, 7, 9, 11],
-    DIMINISHED: [0, 2, 4, 5, 6, 9, 11],
-    AUGMENTED: [0, 2, 4, 6, 7, 9, 11],
-    BISEPTIMAL: [0, 2, 4, 5, 7, 10, 11],
-    PALEOCHROMATIC: [0, 1, 4, 5, 6, 9, 11]
+    DIATONIC: (0, 2, 4, 5, 7, 9, 11),
+    ALTERED: (0, 1, 3, 4, 6, 8, 10),
+    HEMITONIC: (0, 1, 4, 5, 7, 9, 11),
+    HEMIOLIC: (0, 3, 4, 5, 7, 9, 11),
+    DIMINISHED: (0, 2, 4, 5, 6, 9, 11),
+    AUGMENTED: (0, 2, 4, 6, 7, 9, 11),
+    BISEPTIMAL: (0, 2, 4, 5, 7, 10, 11),
+    PALEOCHROMATIC: (0, 1, 4, 5, 6, 9, 11)
 }
 HEPTATONIC_SUPPLEMENT = {
-    ENIGMATIC: [0, 1, 4, 6, 8, 10, 11],
-    NEAPOLITAN_MINOR: [0, 1, 3, 5, 7, 8, 11],
-    NEAPOLITAN_MAJOR: [0, 1, 3, 5, 7, 9, 11],
-    HUNGARIAN: [0, 2, 3, 6, 7, 8, 11],
-    HARMONIC_MINOR: [0, 2, 3, 5, 7, 8, 11]
+    ENIGMATIC: (0, 1, 4, 6, 8, 10, 11),
+    NEAPOLITAN_MINOR: (0, 1, 3, 5, 7, 8, 11),
+    NEAPOLITAN_MAJOR: (0, 1, 3, 5, 7, 9, 11),
+    HUNGARIAN: (0, 2, 3, 6, 7, 8, 11),
+    HARMONIC_MINOR: (0, 2, 3, 5, 7, 8, 11)
 }
 NATURAL_MAP = tuple(
     (HEPTATONIC_SCALES[DIATONIC][i], NATURAL_NAMES[i]) for i in range(7)
@@ -130,10 +114,10 @@ NATURAL_MAP = tuple(
 #######################
 # Chord Voicing Forms #
 #######################
-DROP_2_VOICING = (1,)           # 1573 c e g b -> c g b e
-DROP_2_AND_4_VOICING = (1, 3)   # 1537 c e g b -> c g e b
-DROP_2_AND_3_VOICING = (2,)     # 1375 c e g b -> c e b g
-DROP_3_VOICING = (1, 2)         # 1735 c e g b -> c b e g
+DROP_2_VOICING: tuple[int, ...] = (1,)           # 1573 c e g b -> c g b e
+DROP_2_AND_4_VOICING: tuple[int, ...] = (1, 3)   # 1537 c e g b -> c g e b
+DROP_2_AND_3_VOICING: tuple[int, ...] = (2,)     # 1375 c e g b -> c e b g
+DROP_3_VOICING: tuple[int, ...] = (1, 2)         # 1735 c e g b -> c b e g
 
 #################
 # Chord Symbols #

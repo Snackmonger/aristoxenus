@@ -3,16 +3,18 @@ The functions in this module simplify the process of using the
 functions of the Aristoxenus library by organizing their outputs into
 logical groups.
 '''
+from typing import Literal
 from src.annotations import (
-    Chord,
-    HeptatonicChordScaleAPIResponse,
-    HeptatonicScaleFormAPIResponse,
+    SimpleChord,
+    HeptatonicChordScale,
+    HeptatonicScaleForm,
     TetradInversions,
     TetradProfile,
     TriadInversions,
     TriadProfile
 )
 from src.constants import (
+    CLOSE,
     DIATONIC,
     DROP_2_AND_3_VOICING,
     DROP_2_AND_4_VOICING,
@@ -36,13 +38,14 @@ from src.functions import (
     rotate_chord,
     rotate_interval_structure
 )
+from src.structures import ChordData
 
 
 def heptatonic_scale_form(
     keynote: str = "C",
     scale_name: str = DIATONIC,
     modal_name: str = IONIAN
-) -> HeptatonicScaleFormAPIResponse:
+) -> HeptatonicScaleForm:
     '''
     Return a collection of note and interval names for a given scale form.
 
@@ -152,7 +155,7 @@ def heptatonic_scale_form(
         keynote, interval_structure)
     recommended_keynote = recommended_rendering[0]
 
-    return HeptatonicScaleFormAPIResponse(
+    return HeptatonicScaleForm(
         keynote=keynote,
         scale_name=scale_name,
         modal_name=modal_name,
@@ -166,9 +169,9 @@ def heptatonic_scale_form(
 
 def heptatonic_chord_scale(
     keynote: str = 'C',
-    scale_name: str = 'diatonic',
-    modal_name: str = 'ionian'
-) -> HeptatonicChordScaleAPIResponse:
+    scale_name: str = DIATONIC,
+    modal_name: str = IONIAN
+) -> HeptatonicChordScale:
     '''
     Return a complete report about the given scale's standard chords.
 
@@ -183,16 +186,7 @@ def heptatonic_chord_scale(
 
     Returns
     -------
-    HeptatonicChordScaleAPIResponse
-        _description_
-
-    Raises
-    ------
-    ArgumentError
-        _description_
-    ArgumentError
-        _description_
-    ArgumentError
+    HeptatonicChordScale
         _description_
 
     >>> from src.api import heptatonic_chord_scale
@@ -200,25 +194,10 @@ def heptatonic_chord_scale(
     >>> from pprint import pprint
     >>> pprint(x)
     '''
-    if (n := HEPTATONIC_SCALES.get(scale_name)) or (
-            n := HEPTATONIC_SUPPLEMENT.get(scale_name)):
-        base_scale = n
-    else:
-        raise ArgumentError(f"Unable to resolve scale name: {scale_name}")
-
-    if modal_name in MODAL_SERIES_KEYS:
-        modal_rotations = MODAL_SERIES_KEYS.index(modal_name)
-    else:
-        raise ArgumentError(f"Unable to resolve modal name: {modal_name}")
-
-    if (n := decode_note_name(keynote)):
-        note = n
-    else:
-        raise ArgumentError(f"Unable to resolve keynote: {keynote}")
-
-    interval_structure = rotate_interval_structure(
-        base_scale, modal_rotations)
-    interval_names = get_heptatonic_interval_symbols(interval_structure)
+    scale_data = heptatonic_scale_form(keynote, scale_name, modal_name)
+    interval_structure = scale_data['interval_structure']
+    interval_names = scale_data['interval_scale']
+    note = decode_note_name(keynote)
     roman_names = romanize_intervals(interval_names)
 
     close_triads = chordify_heptatonic_tertial(interval_structure, note, 3)
@@ -234,8 +213,8 @@ def heptatonic_chord_scale(
         roman = roman_names[i]
 
         triad_rootpos = TriadProfile(
-            close_voicing=Chord(**vars(close_triads[i])),
-            open_voicing=Chord(**vars(
+            close_voicing=SimpleChord(**vars(close_triads[i])),
+            open_voicing=SimpleChord(**vars(
                 drop_voicing(close_triads[i], DROP_2_VOICING)))
         )
         triad_inversions: list[TriadProfile] = []
@@ -243,9 +222,9 @@ def heptatonic_chord_scale(
         for inversion in inversions:
             triad_inversions.append(
                 TriadProfile(
-                    close_voicing=Chord(**vars(
+                    close_voicing=SimpleChord(**vars(
                         rotate_chord(close_triads[i], inversion))),
-                    open_voicing=Chord(**vars(drop_voicing(
+                    open_voicing=SimpleChord(**vars(drop_voicing(
                         rotate_chord(close_triads[i], inversion), DROP_2_VOICING)))
                 )
             )
@@ -262,14 +241,14 @@ def heptatonic_chord_scale(
             )
         )
         tetrads_rootpos = TetradProfile(
-            close_voicing=Chord(**vars(close_tetrads[i])),
-            drop_2_voicing=Chord(**vars(drop_voicing(
+            close_voicing=SimpleChord(**vars(close_tetrads[i])),
+            drop_2_voicing=SimpleChord(**vars(drop_voicing(
                 close_tetrads[i], DROP_2_VOICING))),
-            drop_3_voicing=Chord(**vars(drop_voicing(
+            drop_3_voicing=SimpleChord(**vars(drop_voicing(
                 close_tetrads[i], DROP_3_VOICING))),
-            drop_2_and_3_voicing=Chord(**vars(drop_voicing(
+            drop_2_and_3_voicing=SimpleChord(**vars(drop_voicing(
                 close_tetrads[i], DROP_2_AND_3_VOICING))),
-            drop_2_and_4_voicing=Chord(**vars(drop_voicing(
+            drop_2_and_4_voicing=SimpleChord(**vars(drop_voicing(
                 close_tetrads[i], DROP_2_AND_4_VOICING)))
         )
         inversions = (1, 2, 3)
@@ -277,15 +256,15 @@ def heptatonic_chord_scale(
         for inversion in inversions:
             tetrad_inversions.append(
                 TetradProfile(
-                    close_voicing=Chord(**vars(
+                    close_voicing=SimpleChord(**vars(
                         rotate_chord(close_tetrads[i], inversion))),
-                    drop_2_voicing=Chord(**vars(drop_voicing(rotate_chord(
+                    drop_2_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
                         close_tetrads[i], inversion), DROP_2_VOICING))),
-                    drop_3_voicing=Chord(**vars(drop_voicing(rotate_chord(
+                    drop_3_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
                         close_tetrads[i], inversion), DROP_3_VOICING))),
-                    drop_2_and_3_voicing=Chord(**vars(drop_voicing(rotate_chord(
+                    drop_2_and_3_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
                         close_tetrads[i], inversion), DROP_2_AND_3_VOICING))),
-                    drop_2_and_4_voicing=Chord(**vars(drop_voicing(rotate_chord(
+                    drop_2_and_4_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
                         close_tetrads[i], inversion), DROP_2_AND_4_VOICING)))
                 )
             )
@@ -302,10 +281,78 @@ def heptatonic_chord_scale(
             )
         )
 
-    return HeptatonicChordScaleAPIResponse(
+    return HeptatonicChordScale(
         keynote=keynote,
         scale_name=scale_name,
         modal_name=modal_name,
         triads=tuple(triads),
         tetrads=tuple(tetrads)
     )
+
+
+def tertial_chord_from_heptatonic_scale(
+        keynote: str = 'C',
+        scale_name: str = DIATONIC,
+        modal_name: str = IONIAN,
+        chord_degree: Literal[1, 2, 3, 4, 5, 6, 7] = 1,
+        chord_size: Literal[3, 4, 5, 6, 7] = 3,
+        chord_inversion: int = 0,
+        chord_voicing: Literal['open', 'close',
+                               'd2', 'd3', 'd23', 'd24'] = CLOSE
+) -> SimpleChord:
+    '''
+    Create a single chord from a given parent scale's chord scale.
+
+    Parameters
+    ----------
+    keynote : str, optional
+        The keynote of the parent scale, by default 'C'
+    scale_name : str, optional
+        The name of the parent scale, by default 'diatonic'
+    modal_name : str, optional
+        The name of the parent mode, by default 'ionian'
+    chord_degree : int, optional
+        What degree of the parent scale to derive the chord from, by default 1
+    chord_size : Literal[3, 4], optional
+        How many notes should be in the derived chord, by default 3
+    chord_inversion : int, optional
+        Which inversion the chord should present, by default 0
+    chord_voicing : Literal['open', 'close','d2', 'd3', 'd23', 'd24'], optional
+        Which voicing of notes should the chord present, by default CLOSE
+
+    Returns
+    -------
+    SimpleChord
+        A dictionary of basic chord data without reference to the parent scale.
+    '''
+    scale = heptatonic_scale_form(keynote, scale_name, modal_name)
+    voicing: tuple[int, ...] = tuple()
+    if chord_voicing not in ['open', 'close', 'd2', 'd3', 'd23', 'd24']:
+        chord_voicing = CLOSE
+
+    if chord_size not in range(3, 8):
+        chord_size = 3
+
+    if chord_voicing in ['d3', 'd24', 'd23'] and chord_size == 3:
+        chord_voicing = 'd2'
+
+    if chord_degree not in range(1, 8):
+        chord_degree = 1
+
+    if chord_inversion not in range(chord_size):
+        chord_inversion = 0
+
+    chord: ChordData = chordify_heptatonic_tertial(
+        scale['interval_structure'], decode_note_name(keynote), chord_size)[chord_degree]
+    chord = rotate_chord(chord, chord_inversion)
+    if chord_voicing == CLOSE:
+        return SimpleChord(**vars(chord))
+    voicings = {
+        'open': DROP_2_VOICING,
+        'd2': DROP_2_VOICING,
+        'd3': DROP_3_VOICING,
+        'd23': DROP_2_AND_3_VOICING,
+        'd24': DROP_2_AND_4_VOICING
+    }
+    voicing = voicings[chord_voicing]
+    return SimpleChord(**vars(drop_voicing(chord, voicing)))
