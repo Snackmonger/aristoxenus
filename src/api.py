@@ -173,7 +173,10 @@ def heptatonic_chord_scale(
     modal_name: str = IONIAN
 ) -> HeptatonicChordScale:
     '''
-    Return a complete report about the given scale's standard chords.
+    Return a complete report about the given scale's chords.
+    
+    These will include triads and tetrads in tertial, sus2,
+    and sus4 form, as well as their inversions and voicings.
 
     Parameters
     ----------
@@ -285,8 +288,8 @@ def heptatonic_chord_scale(
         keynote=keynote,
         scale_name=scale_name,
         modal_name=modal_name,
-        triads=tuple(triads),
-        tetrads=tuple(tetrads)
+        tertial_triads=tuple(triads),
+        tertial_tetrads=tuple(tetrads)
     )
 
 

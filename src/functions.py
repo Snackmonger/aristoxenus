@@ -587,6 +587,8 @@ def chordify_heptatonic_tertial(
     tuple[ChordData, ...]
         A tuple of ChordData representing the requested chord scale.
     '''
+    if number_of_notes > 7:
+        raise ArgumentError("Chords can be generated with a maximum of 7 notes.")
     chords: list[ChordData] = []
     note_names = get_heptatonic_scale_notes(parent_structure, *keynote)
 
@@ -615,6 +617,46 @@ def chordify_heptatonic_tertial(
         )
     return tuple(chords)
 
+
+def chordify_heptatonic_sus(
+        parent_structure: Sequence[int], 
+        keynote: tuple[int, int], 
+        number_of_notes: int,
+        sus: int
+        ) -> tuple[ChordData, ...]:
+    if number_of_notes > 7:
+        raise ArgumentError("Chords can be generated with a maximum of 7 notes.")
+    if not sus in (2, 4):
+        raise ArgumentError(f"Unknown sus note (={sus})")
+    
+    chords: list[ChordData] = []
+    note_names = get_heptatonic_scale_notes(parent_structure, *keynote)
+    if sus == 2:
+        pattern = [0, 1, 4, 6, 8, 10, 12]
+    else:
+        pattern = [0, 3, 4, 6, 8, 10, 12]
+
+    for i in range(NOTES):
+        root = note_names[i]
+        chord_interval_structure = rotate_interval_structure(
+            parent_structure, i)
+        root_data = decode_note_name(root)
+        modal_names = get_heptatonic_scale_notes(
+            chord_interval_structure, *root_data)
+        interval_symbols = get_heptatonic_interval_symbols(
+            chord_interval_structure)
+        if number_of_notes > 4:
+            modal_names += modal_names
+            interval_symbols = get_heptatonic_interval_symbols(
+                chord_interval_structure, True)
+            chord_interval_structure = get_heptatonic_double_octave(
+                chord_interval_structure)
+
+        ch_names = [modal_names[i] for i in pattern][:number_of_notes]
+        ch_symbols = [interval_symbols[i] for i in pattern][:number_of_notes]
+        ch_structure = [chord_interval_structure[i] for i in pattern][:number_of_notes]
+        chords.append(ChordData(ch_names, ch_symbols, ch_structure))
+    return tuple(chords)
 
 def drop_voicing(chord_data: ChordData, drop_notes: Sequence[int]) -> ChordData:
     '''

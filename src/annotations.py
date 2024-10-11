@@ -75,5 +75,5 @@ class HeptatonicChordScale(TypedDict):
     keynote: str
     scale_name: str
     modal_name: str
-    triads: tuple[TriadInversions, ...]
-    tetrads: tuple[TetradInversions, ...]
+    tertial_triads: tuple[TriadInversions, ...]
+    tertial_tetrads: tuple[TetradInversions, ...]
