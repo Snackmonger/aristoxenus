@@ -12,6 +12,7 @@ CENTRAL_REFERENCE_NOTE_NAME = 'A4'
 CENTRAL_REFERENCE_NOTE_FREQUENCY = 440
 FLAT_SYMBOL = "b"
 SHARP_SYMBOL = '#'
+SLASH_SYMBOL = "/"
 
 ############
 # Keywords #
@@ -46,6 +47,13 @@ NEAPOLITAN_MAJOR = 'neapolitan_major'
 NEAPOLITAN_MINOR = 'neapolitan_minor'
 HUNGARIAN = 'hungarian'
 HARMONIC_MINOR = 'harmonic_minor'
+
+# Octatonic scale names
+# Barry Harris Scales
+MAJ_6_DIMINISHED = 'maj_6_diminished'
+MIN_6_DIMINISHED = 'min_6_diminished'
+DOM_7_DIMINISHED = 'dom_7_diminished'
+DOM_7_FLAT_5_DIMINISHED = 'dom_7_flat_5_diminished'
 
 # Modal names
 IONIAN = 'ionian'
@@ -111,6 +119,10 @@ NATURAL_MAP = tuple(
     (HEPTATONIC_SCALES[DIATONIC][i], NATURAL_NAMES[i]) for i in range(7)
 )
 
+BARRY_HARRIS_SCALES = {
+    MAJ_6_DIMINISHED: (0, 2, 4, 5, 7, 8, 9, 11),
+}
+
 #######################
 # Chord Voicing Forms #
 #######################
@@ -161,5 +173,6 @@ CHORD_HALFDIM_SYMBOLS = [CHORD_HALFDIM_OE]
 #######################
 # Regular Expressions #
 #######################
+RE_VALIDATE_NOTE_NAME = "[A-G](#|b)*"
 RE_SPLIT_NOTE_NAME = f"(?P<{NOTE_NAME}>[A-G])(?P<{ACCIDENTALS}>(#|b)*)"
 RE_PARSE_CHORD_SYMBOL = f"(?P<{NOTE_NAME}>[A-G](#|b)*|((#|b)*(VII|VI|V|IV|III|II|I)))(?P<{MAIN}>(maj|M|min|m|-|\\+|dim|aug|o|ø|Δ))?(?P<{EXTENSION}>((maj|M|Δ))?(13|11|9|7))?(?P<{MODIFICATION}>.*)"

@@ -1,7 +1,10 @@
 '''
-The functions in this module simplify the process of using the
-functions of the Aristoxenus library by organizing their outputs into
-logical groups.
+Aristoxenus General API
+
+The API provides bulk or selected data compiled from the backend functions.
+
+For a more object-oriented interface for accessing the backend functions, 
+see ``classes.py``.
 '''
 from typing import Literal
 from src.annotations import (
@@ -174,7 +177,7 @@ def heptatonic_chord_scale(
 ) -> HeptatonicChordScale:
     '''
     Return a complete report about the given scale's chords.
-    
+
     These will include triads and tetrads in tertial, sus2,
     and sus4 form, as well as their inversions and voicings.
 
@@ -209,12 +212,15 @@ def heptatonic_chord_scale(
     triads: list[TriadInversions] = []
     tetrads: list[TetradInversions] = []
     for i in range(7):
+        # Basic categorical information
         triad_chord_symbol = name_chord(close_triads[i].interval_symbols)
         tetrad_chord_symbol = name_chord(close_tetrads[i].interval_symbols)
         root_note = close_triads[i].note_names[0]
         degree = interval_names[i]
         roman = roman_names[i]
 
+        # Triads
+        # ------
         triad_rootpos = TriadProfile(
             close_voicing=SimpleChord(**vars(close_triads[i])),
             open_voicing=SimpleChord(**vars(
@@ -223,15 +229,13 @@ def heptatonic_chord_scale(
         triad_inversions: list[TriadProfile] = []
         inversions = (1, 2)
         for inversion in inversions:
+            rot_ch = rotate_chord(close_triads[i], inversion)
+            opench = drop_voicing(rot_ch, DROP_2_VOICING)
             triad_inversions.append(
-                TriadProfile(
-                    close_voicing=SimpleChord(**vars(
-                        rotate_chord(close_triads[i], inversion))),
-                    open_voicing=SimpleChord(**vars(drop_voicing(
-                        rotate_chord(close_triads[i], inversion), DROP_2_VOICING)))
-                )
+                TriadProfile(close_voicing=SimpleChord(**vars(rot_ch)),
+                             open_voicing=SimpleChord(**vars(opench))
+                             )
             )
-
         triads.append(
             TriadInversions(
                 chord_symbol=triad_chord_symbol,
@@ -243,6 +247,9 @@ def heptatonic_chord_scale(
                 second_inversion=triad_inversions[1]
             )
         )
+
+        # Tetrads
+        # -------
         tetrads_rootpos = TetradProfile(
             close_voicing=SimpleChord(**vars(close_tetrads[i])),
             drop_2_voicing=SimpleChord(**vars(drop_voicing(

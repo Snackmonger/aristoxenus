@@ -25,7 +25,7 @@ Get a keyword by encoding a number in a particular category:
 >>> Arithmology.encode(7, "basal")
 'septimal'
 >>> Arithmology.encode(5, "uple")
-'quntuple'
+'quintuple'
 
 Get a number by decoding a keyword:
 >>> Arithmology.decode("triskaidecad")

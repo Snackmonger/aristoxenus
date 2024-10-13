@@ -1,8 +1,9 @@
-'''Functions used in the program. 
+'''
+Functions used in the program. 
 
-This module is the meat of the program. Although the functions in this module
-can be used as-is, the API supplied by ``api.py`` makes it easier to get the
-end results.
+Although the functions in this module could be used as-is, they are not really
+meant to be accessed by the user. The interfaces exposed in the ``api.py`` and
+the ``classes.py`` make it much easier to get and manipulate the relevant data.
 '''
 import re
 from typing import (
@@ -276,8 +277,8 @@ def get_heptatonic_scale_notes(interval_structure: Sequence[int], root_note_idx:
         A tuple of the seven alphabetic names in the appropriate order and 
         with the appropriate number of accidentals.
 
-    Example
-    -------
+    Examples
+    --------
     >>> get_heptatonic_scale_notes([0, 2, 4, 5, 7, 9, 11], 0, 0)
     ('C', 'D', 'E', 'F', 'G', 'A', 'B')
     >>> get_heptatonic_scale_notes([0, 2, 4, 5, 7, 9, 11], 1, 1)
@@ -322,8 +323,9 @@ def get_binomial_structure_notes(interval_structure: Sequence[int], root_idx: in
     tuple[str, ...]
         A collection of note names representing the structure.
     '''
-    chromatic = ['C', 'C#|Db', 'D', 'D#|Eb', 'E',
-                 'F', 'F#|Gb', 'G', 'G#|Ab', 'A', 'A#|Bb', 'B']
+    chromatic = ['C', 'C#|Db', 'D', 'D#|Eb', 
+                 'E', 'F', 'F#|Gb', 'G', 
+                 'G#|Ab', 'A', 'A#|Bb', 'B']
     chromatic = chromatic[root_idx:] + chromatic[:root_idx]
     return tuple(chromatic[x % TONES] for x in interval_structure)
 
@@ -406,7 +408,6 @@ def romanize_intervals(interval_names: Sequence[str] | str) -> tuple[str, ...]:
     ArgumentError
         If the interval name cannot be parsed. We expect that interval names
         will consist of a numeral plus one or more preceding accidentals.
-        Numerals up to 3999 can be parsed, 
 
     Examples
     --------
@@ -531,6 +532,8 @@ def rotate_interval_structure(interval_structure: Sequence[int], mode_idx: int) 
         original_value = interval_structure[new_note_idx]
         tones_offset = ((i + mode_idx) // len(interval_structure)) * TONES
         new_value = original_value - modal_semitones_offset + tones_offset
+        if new_value < 0:
+            new_value *= -1
         pitches.append(new_value)
     return tuple(pitches)
 
@@ -624,6 +627,25 @@ def chordify_heptatonic_sus(
         number_of_notes: int,
         sus: int
         ) -> tuple[ChordData, ...]:
+    '''Create a sus chord scale with the given parameters.
+
+    Parameters
+    ----------
+    parent_structure : Sequence[int]
+        A list of intervals representing the scale from which the chords
+        will be derived.
+    keynote : tuple[int, int]
+        A pair containing 1) the index of the alphabetic keynote and 2) the
+        number of accidentals (+/-) of the keynote.
+    number_of_notes : int
+        How many notes to take in sequence.
+    sus : int
+        Which scale degree will be suspended (2 or 4).
+
+    Returns
+    -------
+    tuple[ChordData, ...]
+        A tuple of ChordData representing the requested chord scale.'''
     if number_of_notes > 7:
         raise ArgumentError("Chords can be generated with a maximum of 7 notes.")
     if not sus in (2, 4):
@@ -652,9 +674,10 @@ def chordify_heptatonic_sus(
             chord_interval_structure = get_heptatonic_double_octave(
                 chord_interval_structure)
 
-        ch_names = [modal_names[i] for i in pattern][:number_of_notes]
-        ch_symbols = [interval_symbols[i] for i in pattern][:number_of_notes]
-        ch_structure = [chord_interval_structure[i] for i in pattern][:number_of_notes]
+        _pattern = pattern[:number_of_notes]
+        ch_names = [modal_names[i] for i in _pattern]
+        ch_symbols = [interval_symbols[i] for i in _pattern]
+        ch_structure = [chord_interval_structure[i] for i in _pattern]
         chords.append(ChordData(ch_names, ch_symbols, ch_structure))
     return tuple(chords)
 

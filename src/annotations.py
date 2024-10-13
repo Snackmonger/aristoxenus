@@ -5,7 +5,7 @@ from typing import TypedDict
 
 class HeptatonicScaleForm(TypedDict):
     '''
-    Dictionary mapping the response from ``heptatonic_scale_form``
+    Dictionary mapping the response from ``api.heptatonic_scale_form``
     API endpoint.
     '''
     keynote: str
@@ -20,6 +20,8 @@ class HeptatonicScaleForm(TypedDict):
 class SimpleChord(TypedDict):
     '''
     Dictionary of chord structure information.
+    
+    (Segment of the ``api.heptatonic_chord_scale`` response)
     '''
     note_names: tuple[str, ...]
     interval_structure: tuple[int, ...]
@@ -28,6 +30,8 @@ class SimpleChord(TypedDict):
 class TriadProfile(TypedDict):
     ''' 
     Dictionary of triad variants.
+    
+    (Segment of the ``api.heptatonic_chord_scale`` response)
     '''
     close_voicing: SimpleChord
     open_voicing: SimpleChord
@@ -35,6 +39,8 @@ class TriadProfile(TypedDict):
 class TetradProfile(TypedDict):
     ''' 
     Dictionary of tetrad variants.
+    
+    (Segment of the ``api.heptatonic_chord_scale`` response)
     '''
     close_voicing: SimpleChord
     drop_2_voicing: SimpleChord
@@ -45,6 +51,8 @@ class TetradProfile(TypedDict):
 class TetradInversions(TypedDict):
     ''' 
     Dictionary of tetrad inversions and their variants.
+    
+    (Segment of the ``api.heptatonic_chord_scale`` response)
     '''
     chord_symbol: str
     root_note: str
@@ -58,6 +66,8 @@ class TetradInversions(TypedDict):
 class TriadInversions(TypedDict):
     ''' 
     Dictionary of triad inversions and their variants.
+
+    (Segment of the ``api.heptatonic_chord_scale`` response)
     '''
     chord_symbol:str
     root_note: str
@@ -69,7 +79,7 @@ class TriadInversions(TypedDict):
 
 class HeptatonicChordScale(TypedDict):
     '''
-    Dictionary mapping the response from ``heptatonic_chord_scale``
+    Dictionary mapping the response from ``api.heptatonic_chord_scale``
     API endpoint.
     '''
     keynote: str
