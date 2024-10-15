@@ -3,6 +3,9 @@
 ##############
 # Raw Values #
 ##############
+from ctypes.wintypes import DOUBLE
+
+
 NOTES = 7
 TONES = 12
 NATURAL_NAMES = "CDEFGAB"
@@ -17,6 +20,7 @@ SLASH_SYMBOL = "/"
 ############
 # Keywords #
 ############
+
 # Internal heptatonic scale names
 DIATONIC = 'diatonic'
 ALTERED = 'altered'
@@ -43,10 +47,12 @@ HEPTATONIC_ORDER_KEYS = (
 
 # Other heptatonic scale names
 ENIGMATIC = 'enigmatic'
-NEAPOLITAN_MAJOR = 'neapolitan_major'
-NEAPOLITAN_MINOR = 'neapolitan_minor'
-HUNGARIAN = 'hungarian'
+NEAPOLITAN = 'neapolitan'
+HUNGARIAN_MINOR = 'hungarian_minor'
+HUNGARIAN_MAJOR = 'hungarian_major'
 HARMONIC_MINOR = 'harmonic_minor'
+DOUBLE_HARMONIC = 'double_harmonic'
+PERSIAN = 'persian'
 
 # Octatonic scale names
 # Barry Harris Scales
@@ -79,7 +85,10 @@ MODAL_SERIES_KEYS = (
 ROOT = 'root'
 POSITION = 'position'
 ROOT_POSITION = 'root_position'
+MAIN = 'main'
 INVERSION = 'inversion'
+EXTENSION = 'extension'
+MODIFICATION = 'modification'
 OPEN = 'open'
 CLOSE = 'close'
 CHORD_SYMBOL = 'chord_symbol'
@@ -88,12 +97,10 @@ DROP_2 = 'drop_2'
 DROP_3 = 'drop_3'
 DROP_2_AND_4 = 'drop_2_and_4'
 
-# Chord Parsing Keywords
+# General music terms
+INTERVAL_STRUCTURE = 'interval_structure'
 NOTE_NAME = 'note_name'
 ACCIDENTALS = 'accidentals'
-EXTENSION = 'extension'
-MODIFICATION = 'modification'
-MAIN = 'main'
 
 ##############
 # Scaleforms #
@@ -104,16 +111,17 @@ HEPTATONIC_SCALES = {
     HEMITONIC: (0, 1, 4, 5, 7, 9, 11),
     HEMIOLIC: (0, 3, 4, 5, 7, 9, 11),
     DIMINISHED: (0, 2, 4, 5, 6, 9, 11),
-    AUGMENTED: (0, 2, 4, 6, 7, 9, 11),
+    AUGMENTED: (0, 2, 4, 5, 8, 9, 11),
+    HARMONIC: (0, 2, 4, 5, 7, 8, 11),
     BISEPTIMAL: (0, 2, 4, 5, 7, 10, 11),
     PALEOCHROMATIC: (0, 1, 4, 5, 6, 9, 11)
 }
 HEPTATONIC_SUPPLEMENT = {
     ENIGMATIC: (0, 1, 4, 6, 8, 10, 11),
-    NEAPOLITAN_MINOR: (0, 1, 3, 5, 7, 8, 11),
-    NEAPOLITAN_MAJOR: (0, 1, 3, 5, 7, 9, 11),
-    HUNGARIAN: (0, 2, 3, 6, 7, 8, 11),
-    HARMONIC_MINOR: (0, 2, 3, 5, 7, 8, 11)
+    DOUBLE_HARMONIC: (0,1,4,5,7,8,11),
+    NEAPOLITAN: (0, 1, 3, 5, 7, 9, 11),
+    HUNGARIAN_MAJOR: (0,3,4,6,7,9,10),
+    PERSIAN: (0,1,4,5,6,8,11)
 }
 NATURAL_MAP = tuple(
     (HEPTATONIC_SCALES[DIATONIC][i], NATURAL_NAMES[i]) for i in range(7)
@@ -121,6 +129,109 @@ NATURAL_MAP = tuple(
 
 BARRY_HARRIS_SCALES = {
     MAJ_6_DIMINISHED: (0, 2, 4, 5, 7, 8, 9, 11),
+}
+IN = 'in'
+INSEN = 'insen'
+ISTRIAN = 'istrian'
+IWATO = 'iwato'
+PENTATONIC_SUPPLEMENT = {
+    IN: (0,1,5,7,8),
+    INSEN: (0,1,5,7,10),
+    IWATO: (0,1,5,6,10)
+}
+HEXATONIC_SUPPLEMENT = {
+    ISTRIAN: (0,1,3,4,6,7)
+}
+
+SCALE_ALIASES = {
+    'ionian #1': (ALTERED, IONIAN),
+    'super locrian': (ALTERED, IONIAN),
+    'melodic minor': (ALTERED, DORIAN),
+    'dorian natural 7': (ALTERED, DORIAN),
+    'phrygian natural 6': (ALTERED, PHRYGIAN),
+    'lydian #5': (ALTERED, LYDIAN),
+    'lydian augmented': (ALTERED, LYDIAN),
+    'lydian dominant': (ALTERED, MIXOLYDIAN),
+    'mixolydian #4': (ALTERED, MIXOLYDIAN),
+    'aeolian natural 3': (ALTERED, AEOLIAN),
+    'locrian natural 2': (ALTERED, LOCRIAN),
+    'half diminished': (ALTERED, LOCRIAN),
+
+    'ionian b2': (HEMITONIC, IONIAN),
+    'dorian b1': (HEMITONIC, DORIAN),
+    'phrygian bb7': (HEMITONIC, PHRYGIAN),
+    'lydian b6': (HEMITONIC, LYDIAN),
+    'mixolydian b5': (HEMITONIC, MIXOLYDIAN),
+    'aeolian b4': (HEMITONIC, AEOLIAN),
+    'locrian bb3': (HEMITONIC, LOCRIAN),
+
+    'ionian #2': (HEMIOLIC, IONIAN),
+    'major #2': (HEMIOLIC, IONIAN),
+    'ultralocrian': (HEMIOLIC, DORIAN),
+    'dorian #1': (HEMIOLIC, DORIAN),
+    'altered diminished': (HEMIOLIC, DORIAN),
+    'neapolitan minor': (HEMIOLIC, PHRYGIAN),
+    'phrygian natural 7': (HEMIOLIC, PHRYGIAN),
+    'lydian natural 6': (HEMIOLIC, LYDIAN),
+    'mixolydian augmented': (HEMIOLIC, MIXOLYDIAN),
+    'mixolydian #5': (HEMIOLIC, MIXOLYDIAN),
+    'romani minor': (HEMIOLIC, AEOLIAN),
+    'gypsy minor': (HEMIOLIC, AEOLIAN),
+    'aeolian #4': (HEMIOLIC, AEOLIAN),
+    'minor #4': (HEMIOLIC, AEOLIAN),
+    'locrian dominant': (HEMIOLIC, LOCRIAN),
+    'locrian natural 3': (HEMIOLIC, LOCRIAN),
+
+    'ionian b5': (DIMINISHED, IONIAN),
+    'dorian b4': (DIMINISHED, DORIAN),
+    'phrygian bb3': (DIMINISHED, PHRYGIAN),
+    'lydian b2': (DIMINISHED, LYDIAN),
+    'mixolydian b1': (DIMINISHED, MIXOLYDIAN),
+    'aeolian bb7': (DIMINISHED, AEOLIAN),
+    'locrian bb6': (DIMINISHED, LOCRIAN),
+
+    'ionian #5': (AUGMENTED, IONIAN),
+    'dorian #4': (AUGMENTED, DORIAN),
+    'ukrainian dorian': (AUGMENTED, DORIAN),
+    'phrygian natural 3': (AUGMENTED, PHRYGIAN),
+    'phrygian dominant': (AUGMENTED, PHRYGIAN),
+    'lydian #2': (AUGMENTED, LYDIAN),
+    'mixolydian #1': (AUGMENTED, MIXOLYDIAN),
+    'aeolian natural 7': (AUGMENTED, AEOLIAN),
+    'harmonic minor': (AUGMENTED, AEOLIAN),
+    'locrian natural 6': (AUGMENTED, LOCRIAN),
+
+    'ionian b6': (HARMONIC, IONIAN),
+    'harmonic major': (HARMONIC, IONIAN),
+    'dorian b5': (HARMONIC, DORIAN),
+    'phrygian b4': (HARMONIC, PHRYGIAN),
+    'lydian b3': (HARMONIC, LYDIAN),
+    'mixolydian b2': (HARMONIC, MIXOLYDIAN),
+    'aeolian b1': (HARMONIC, AEOLIAN),
+    'locrian bb7': (HARMONIC, LOCRIAN),
+
+    'ionian #6': (BISEPTIMAL, IONIAN),
+    'dorian #5': (BISEPTIMAL, DORIAN),
+    'phrygian #4': (BISEPTIMAL, PHRYGIAN),
+    'lydian #3': (BISEPTIMAL, LYDIAN),
+    'mixolydian #2': (BISEPTIMAL, MIXOLYDIAN),
+    'aeolian #1': (BISEPTIMAL, AEOLIAN),
+    'locrian natural 7': (BISEPTIMAL, LOCRIAN),
+
+    'neapolitan major': (NEAPOLITAN, IONIAN),
+    'leading whole tone': (NEAPOLITAN, DORIAN),
+    'lydian augmented #6': (NEAPOLITAN, DORIAN),
+    'lydian augmented dominant': (NEAPOLITAN, PHRYGIAN),
+    'lydian dominant b6': (NEAPOLITAN, LYDIAN),
+    'major locrian': (NEAPOLITAN, MIXOLYDIAN),
+    'half diminished b4': (NEAPOLITAN, AEOLIAN),
+    'altered dominant #2': (NEAPOLITAN, AEOLIAN),
+    'altered dominant bb3': (NEAPOLITAN, LOCRIAN),
+    
+    'byzantine': (DOUBLE_HARMONIC, IONIAN),
+    'gypsy major': (DOUBLE_HARMONIC, IONIAN),
+    'hungarian minor': (DOUBLE_HARMONIC, LYDIAN),
+    'ultraphrygian': (DOUBLE_HARMONIC, PHRYGIAN),
 }
 
 #######################

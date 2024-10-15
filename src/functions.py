@@ -43,9 +43,12 @@ from src.constants import (
     CHORD_SUS,
     EXTENSION,
     FLAT_SYMBOL,
+    HEPTATONIC_SUPPLEMENT,
     MAIN,
+    MODAL_SERIES_KEYS,
     MODIFICATION,
     RE_PARSE_CHORD_SYMBOL,
+    SCALE_ALIASES,
     SHARP_SYMBOL,
     DIATONIC,
     HEPTATONIC_SCALES,
@@ -1412,3 +1415,54 @@ def rotate_chord(chord: ChordData, new_bass_idx: int) -> ChordData:
     intervals = rotate_interval_structure(
         chord.interval_structure, new_bass_idx)
     return ChordData(names, symbols, intervals)
+
+
+def resolve_scale_structure(scale_name: str, mode_name: Optional[str] = None) -> tuple[int, ...]:
+    '''
+    Attempt to resolve the given scale and mode name into a sequence of 
+    integers representing a scale's interval structure.
+
+    The function checks if the scale name is a known alias, or if it
+    conforms to our canonical system.
+
+    Parameters
+    ----------
+    scale_name : str
+        The scale name to search for.
+    mode_name : str
+        The mode to rotate the scale to.
+
+    Returns
+    -------
+    tuple[int, ...]
+        A collection of integers representing an interval structure.
+
+    Raises
+    ------
+    ArgumentError
+        If the name of the scale or mode cannot be resolved.
+
+    Examples
+    --------
+    >>> resolve_scale_structure('melodic minor')
+    (0, 2, 3, 5, 7, 9, 11)
+    '''
+    if scale_name in SCALE_ALIASES:
+        return resolve_scale_structure(*SCALE_ALIASES[scale_name])
+    # We expect that mode_name==None when scale_name is an alias,
+    # so None at this point presumably means 'ionian'.
+    if mode_name is None:
+        rotations = 0
+    elif mode_name in MODAL_SERIES_KEYS:
+        rotations = MODAL_SERIES_KEYS.index(mode_name)
+    else:
+        raise ArgumentError('Unknown mode name.')
+
+    if scale_name in MODAL_SERIES_KEYS:
+        rotations = MODAL_SERIES_KEYS.index(scale_name)
+        return rotate_interval_structure(HEPTATONIC_SCALES[DIATONIC], rotations)
+    if scale_name in HEPTATONIC_SCALES:
+        return rotate_interval_structure(HEPTATONIC_SCALES[scale_name], rotations)
+    if scale_name in HEPTATONIC_SUPPLEMENT:
+        return rotate_interval_structure(HEPTATONIC_SUPPLEMENT[scale_name], rotations)
+    raise ArgumentError('Unable to resolve scale name.')
