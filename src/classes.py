@@ -28,23 +28,26 @@ from src.functions import (
     drop_voicing,
     get_heptatonic_scale_notes,
     name_chord,
+    name_intervals,
     order_interval_names,
     rotate_chord,
     rotate_interval_structure
 )
 from src.structures import ChordData
 
+
 class Chord:
     '''
     The Chord class provides a simple interface for manipulating chord
     structures.
     '''
+
     def __init__(
         self,
         note_names: Sequence[str],
         interval_symbols: Sequence[str],
         interval_structure: Sequence[int]
-        ) -> None:
+    ) -> None:
         self.note_names = note_names
         self.interval_symbols = interval_symbols
         self.interval_structure = interval_structure
@@ -69,6 +72,12 @@ class Chord:
             return main + SLASH_SYMBOL + bass
         return self.root + name_chord(intervals)
 
+    def __repr__(self) -> str:
+        note_names = self.note_names
+        interval_symbols = self.interval_symbols
+        interval_structure = self.interval_structure
+        return self.__class__.__name__ + f"({note_names=}, {interval_symbols=}, {interval_structure=})"
+
     @property
     def __is_close(self) -> bool:
         ordered = order_interval_names(self.interval_symbols)
@@ -89,6 +98,14 @@ class Chord:
             if interval > 11:
                 intervals[i] = interval % TONES
         return self.__class__(tuple(names), tuple(symbols), tuple(intervals))
+    
+    @classmethod
+    def from_symbol(cls, symbol: str) -> 'Chord':
+        
+
+        # TODO: we need to rewrite the regex for chord parsing in case
+        # of slash chords
+        parsed = name_intervals(symbol)
 
     @classmethod
     def from_ChordData(cls, data: ChordData) -> 'Chord':
@@ -97,9 +114,10 @@ class Chord:
         ChordData instance.
         '''
         chord = cls(
-            data.note_names, 
-            data.interval_symbols, 
-            data.interval_structure)
+            tuple(data.note_names),
+            tuple(data.interval_symbols),
+            tuple(data.interval_structure)
+        )
         return chord
 
     def to_ChordData(self) -> ChordData:
@@ -108,12 +126,6 @@ class Chord:
         of Chord.
         '''
         return ChordData(self.note_names, self.interval_symbols, self.interval_structure)
-
-    def __repr__(self) -> str:
-        note_names = self.note_names
-        interval_symbols = self.interval_symbols
-        interval_structure = self.interval_structure
-        return self.__class__.__name__ + f"({note_names=}, {interval_symbols=}, {interval_structure=})"
 
     def invert(self, degree: int) -> 'Chord':
         '''
@@ -163,20 +175,25 @@ class Chord:
 class Scale:
     '''Middleman placeholder for now.'''
 
+
 class HeptatonicScale(Scale):
     '''
     This class provides a simple interface for manipulating scale forms and
     the chords derived from them.
     '''
+
     def __init__(
-        self, 
-        keynote: str = 'C', 
-        scale_name: str = 'diatonic', 
+        self,
+        keynote: str = 'C',
+        scale_name: str = 'diatonic',
         mode_name: str = 'ionian'
-        ) -> None:
+    ) -> None:
         self.keynote = keynote
         self.scale_name = scale_name
         self.mode_name = mode_name
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({" ".join(self.note_names)})"
 
     @property
     def __kn(self) -> tuple[int, int]:
@@ -189,14 +206,14 @@ class HeptatonicScale(Scale):
     def interval_structure(self) -> tuple[int, ...]:
         '''The interval structure of this scaleform.'''
         if (n := HEPTATONIC_SCALES[self.scale_name]) or (
-            n := HEPTATONIC_SUPPLEMENT[self.scale_name]):
+                n := HEPTATONIC_SUPPLEMENT[self.scale_name]):
             base = n
             if self.mode_name in MODAL_SERIES_KEYS:
                 m = MODAL_SERIES_KEYS.index(self.mode_name)
                 return rotate_interval_structure(base, m)
             raise ArgumentError(f"Unable to parse mode name {self.mode_name}")
         raise ArgumentError(f"Unable to parse scale name {self.scale_name}")
-    
+
     @property
     def note_names(self) -> tuple[str, ...]:
         '''The note names for this scaleform and keynote.'''
@@ -211,7 +228,7 @@ class HeptatonicScale(Scale):
             self.interval_structure, self.__kn, size)
         chord = ch_scale[degree]
         return Chord.from_ChordData(chord)
-    
+
     def __sus(self, degree: int, size: int, sus: int) -> Chord:
         '''Get a sus chord with the given parameters.'''
         degree -= 1
@@ -221,15 +238,15 @@ class HeptatonicScale(Scale):
             self.interval_structure, self.__kn, size, sus)
         chord = ch_scale[degree]
         return Chord.from_ChordData(chord)
-    
+
     def tertial_triad(self, degree: int) -> Chord:
         '''Get the tertial triad at the given scale degree.'''
         return self.__tertial(degree, 3)
-    
+
     def tertial_tetrad(self, degree: int) -> Chord:
         '''Get the tertial tetrad at the given scale degree.'''
         return self.__tertial(degree, 4)
- 
+
     def sus2_triad(self, degree: int) -> Chord:
         '''Get the sus2 triad at the given scale degree.'''
         return self.__sus(degree, 3, 2)
@@ -237,11 +254,11 @@ class HeptatonicScale(Scale):
     def sus4_triad(self, degree: int) -> Chord:
         '''Get the sus4 triad at the given scale degree.'''
         return self.__sus(degree, 3, 4)
-    
+
     def sus2_tetrad(self, degree: int) -> Chord:
         '''Get the sus2 tetrad at the given scale degree.'''
         return self.__sus(degree, 4, 2)
-    
+
     def sus4_tetrad(self, degree: int) -> Chord:
         '''Get the sus4 tetrad at the given scale degree.'''
         return self.__sus(degree, 4, 4)

@@ -3,9 +3,6 @@
 ##############
 # Raw Values #
 ##############
-from ctypes.wintypes import DOUBLE
-
-
 NOTES = 7
 TONES = 12
 NATURAL_NAMES = "CDEFGAB"
@@ -21,16 +18,72 @@ SLASH_SYMBOL = "/"
 # Keywords #
 ############
 
-# Internal heptatonic scale names
+# Scale names: We use one scale name as the absolute 'canonical' name for
+# identifying scale structures.
+
+# Primary
+# The ancient Greek scale comprised of two diatonic tetrachords.
 DIATONIC = 'diatonic'
-ALTERED = 'altered'
-HEMITONIC = 'hemitonic'
-HEMIOLIC = 'hemiolic'
-DIMINISHED = 'diminished'
-AUGMENTED = 'augmented'
-HARMONIC = 'harmonic'
-BISEPTIMAL = 'biseptimal'
+# The ancient Greek scale comprised of two chromatic tetrachords,
+# which should be called 'chromatic', but renamed to avoid conflict
+# with the modern sense of the name.
 PALEOCHROMATIC = 'paleochromatic'
+# Since the program just deals with 12-TET, we don't include the ancient
+# Greek enharmonic scale.
+
+
+# Synthetic scales: derived by moving each note of the primary scale into
+# any available neighbouring empty slot. The names are derived, when possible,
+# from some characteristic in the scale, or from a common name.
+
+# Diatonic synthetics
+ALTERED = 'altered' # common name "altered"
+HEMITONIC = 'hemitonic' # first interval is hemitone
+HEMIOLIC = 'hemiolic' # first interval is hemiolion
+DIMINISHED = 'diminished' # fifth note is diminished
+AUGMENTED = 'augmented' # fifth note is augmented
+HARMONIC = 'harmonic'   # common name "harmonic major"
+BISEPTIMAL = 'biseptimal' # sixth note sounds like extra seventh
+
+# Other heptatonic scale names
+ENIGMATIC = 'enigmatic'
+NEAPOLITAN = 'neapolitan'
+HUNGARIAN_MINOR = 'hungarian_minor'
+HUNGARIAN_MAJOR = 'hungarian_major'
+HARMONIC_MINOR = 'harmonic_minor'
+DOUBLE_HARMONIC = 'double_harmonic'
+PERSIAN = 'persian'
+
+# Heptatonic modal names: for all heptatonic scales, modal names are
+# considered as if the scale's canonical form is 'ionian'. Mode names
+# are treated as aliases for numbers of rotations, without any specific
+# intervals implied in the name (the mode names do not correspond to the
+# ancient Greek mode names anyay).
+IONIAN = 'ionian'
+DORIAN = 'dorian'
+PHRYGIAN = 'phrygian'
+LYDIAN = 'lydian'
+MIXOLYDIAN = 'mixolydian'
+AEOLIAN = 'aeolian'
+LOCRIAN = 'locrian'
+
+# Octatonic scale names
+HALF_WHOLE_DIMINISHED = 'half_whole_diminished'
+# Barry Harris Scales
+MAJ_6_DIMINISHED = 'maj_6_diminished'
+MIN_6_DIMINISHED = 'min_6_diminished'
+DOM_7_DIMINISHED = 'dom_7_diminished'
+DOM_7_FLAT_5_DIMINISHED = 'dom_7_flat_5_diminished'
+
+# Pentatonic scale names
+MINOR_PENTATONIC = 'minor_pentatonic'
+IN = 'in'
+INSEN = 'insen'
+IWATO = 'iwato'
+
+# Hexatonic scale names
+ISTRIAN = 'istrian'
+WHOLE_TONE = 'whole_tone'
 
 # Internal search order for heptatonic scale types.
 HEPTATONIC_ORDER_KEYS = (
@@ -44,31 +97,6 @@ HEPTATONIC_ORDER_KEYS = (
     BISEPTIMAL,
     PALEOCHROMATIC
 )
-
-# Other heptatonic scale names
-ENIGMATIC = 'enigmatic'
-NEAPOLITAN = 'neapolitan'
-HUNGARIAN_MINOR = 'hungarian_minor'
-HUNGARIAN_MAJOR = 'hungarian_major'
-HARMONIC_MINOR = 'harmonic_minor'
-DOUBLE_HARMONIC = 'double_harmonic'
-PERSIAN = 'persian'
-
-# Octatonic scale names
-# Barry Harris Scales
-MAJ_6_DIMINISHED = 'maj_6_diminished'
-MIN_6_DIMINISHED = 'min_6_diminished'
-DOM_7_DIMINISHED = 'dom_7_diminished'
-DOM_7_FLAT_5_DIMINISHED = 'dom_7_flat_5_diminished'
-
-# Modal names
-IONIAN = 'ionian'
-DORIAN = 'dorian'
-PHRYGIAN = 'phrygian'
-LYDIAN = 'lydian'
-MIXOLYDIAN = 'mixolydian'
-AEOLIAN = 'aeolian'
-LOCRIAN = 'locrian'
 
 # Internal search order for modal names
 MODAL_SERIES_KEYS = (
@@ -89,17 +117,13 @@ MAIN = 'main'
 INVERSION = 'inversion'
 EXTENSION = 'extension'
 MODIFICATION = 'modification'
-OPEN = 'open'
+SLASH = 'slash'
 CLOSE = 'close'
-CHORD_SYMBOL = 'chord_symbol'
-CHORD_NAME = 'chord_name'
-DROP_2 = 'drop_2'
-DROP_3 = 'drop_3'
-DROP_2_AND_4 = 'drop_2_and_4'
 
 # General music terms
 INTERVAL_STRUCTURE = 'interval_structure'
 NOTE_NAME = 'note_name'
+ROMAN_NAME = 'roman_name'
 ACCIDENTALS = 'accidentals'
 
 ##############
@@ -130,10 +154,7 @@ NATURAL_MAP = tuple(
 BARRY_HARRIS_SCALES = {
     MAJ_6_DIMINISHED: (0, 2, 4, 5, 7, 8, 9, 11),
 }
-IN = 'in'
-INSEN = 'insen'
-ISTRIAN = 'istrian'
-IWATO = 'iwato'
+
 PENTATONIC_SUPPLEMENT = {
     IN: (0,1,5,7,8),
     INSEN: (0,1,5,7,10),
@@ -227,7 +248,7 @@ SCALE_ALIASES = {
     'half diminished b4': (NEAPOLITAN, AEOLIAN),
     'altered dominant #2': (NEAPOLITAN, AEOLIAN),
     'altered dominant bb3': (NEAPOLITAN, LOCRIAN),
-    
+  
     'byzantine': (DOUBLE_HARMONIC, IONIAN),
     'gypsy major': (DOUBLE_HARMONIC, IONIAN),
     'hungarian minor': (DOUBLE_HARMONIC, LYDIAN),
@@ -284,6 +305,8 @@ CHORD_HALFDIM_SYMBOLS = [CHORD_HALFDIM_OE]
 #######################
 # Regular Expressions #
 #######################
-RE_VALIDATE_NOTE_NAME = "[A-G](#|b)*"
-RE_SPLIT_NOTE_NAME = f"(?P<{NOTE_NAME}>[A-G])(?P<{ACCIDENTALS}>(#|b)*)"
-RE_PARSE_CHORD_SYMBOL = f"(?P<{NOTE_NAME}>[A-G](#|b)*|((#|b)*(VII|VI|V|IV|III|II|I)))(?P<{MAIN}>(maj|M|min|m|-|\\+|dim|aug|o|ø|Δ))?(?P<{EXTENSION}>((maj|M|Δ))?(13|11|9|7))?(?P<{MODIFICATION}>.*)"
+RE_VALIDATE_NOTE_NAME = "^([A-G](?:#|b)*)$"
+RE_VALIDATE_ROMAN_NAME = "^((?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
+RE_PARSE_NOTE_NAME = f"^(?P<{NOTE_NAME}>[A-G])(?P<{ACCIDENTALS}>(#|b)*)$"
+RE_PARSE_ROMAN_NAME = f"^(?P<{ACCIDENTALS}>(#|b)*)(?P<{ROMAN_NAME}>(VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
+RE_PARSE_CHORD_SYMBOL = f"^(?P<{NOTE_NAME}>([A-G](?:#|b)*|(?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i)))(?P<{MAIN}>(?:maj|M|min|m|-|\\+|dim|aug|o|ø|Δ))?(?P<{EXTENSION}>(?:maj|M|Δ)?(?:13|11|9|7))?(?P<{MODIFICATION}>(?:[\\w\\d+#]+))?(?:\\/(?P<{SLASH}>([A-G](?:#|b)*|(?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))))?$"

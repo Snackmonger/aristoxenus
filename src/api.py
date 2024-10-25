@@ -199,6 +199,8 @@ def heptatonic_chord_scale(
     >>> x = heptatonic_chord_scale('C', 'diatonic', 'ionian')
     >>> from pprint import pprint
     >>> pprint(x)
+
+    TODO: Add sus2 and sus4 triads and tetrads using the 
     '''
     scale_data = heptatonic_scale_form(keynote, scale_name, modal_name)
     interval_structure = scale_data['interval_structure']
