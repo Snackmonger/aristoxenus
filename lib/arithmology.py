@@ -16,116 +16,108 @@ Uple: Latin adjectives describing n-sized groups
 Examples
 --------
 Get a keyword by encoding a number in a particular category:
->>> Arithmology.encode(1, "ordinal")
+>>> encode(1, "ordinal")
 'one'
->>> Arithmology.encode(2, "tonal")
+>>> encode(2, "tonal")
 'ditonic'
->>> Arithmology.encode(3, "polyad")
+>>> encode(3, "polyad")
 'triad'
->>> Arithmology.encode(7, "basal")
+>>> encode(7, "basal")
 'septimal'
->>> Arithmology.encode(5, "uple")
+>>> encode(5, "uple")
 'quintuple'
 
 Get a number by decoding a keyword:
->>> Arithmology.decode("triskaidecad")
+>>> decode("triskaidecad")
 13
->>> Arithmology.decode("four")
+>>> decode("four")
 4
->>> Arithmology.decode("seventh")
+>>> decode("seventh")
 7
->>> Arithmology.decode("pentatonic")
+>>> decode("pentatonic")
 5
->>> Arithmology.decode("tertial")
+>>> decode("tertial")
 3
->>> Arithmology.decode("triple")
+>>> decode("triple")
 3
 
 Get a keyword by encoding a number using a shortcut method:
->>> Arithmology.polyad(3)
+>>> polyad(3)
 'triad'
->>> Arithmology.tonal(7)
+>>> tonal(7)
 'heptatonic'
->>> Arithmology.ordinal(13)
+>>> ordinal(13)
 'thirteenth'
->>> Arithmology.uple(8)
+>>> uple(8)
 'octuple'
->>> Arithmology.cardinal(6)
+>>> cardinal(6)
 'six'
 '''
 
-class Arithmology:
-    '''
-    This class is a thin wrapper around a two dimensional array of terms for
-    numbers in various categories. 
-    '''
-    __table = [
-        ['polyad', 'tonal', 'basal', 'cardinal', 'ordinal', 'uple'],
-        ['monad', 'monotonic', 'primal', 'one', 'first', 'single'],
-        ['dyad', 'ditonic', 'secundal', 'two', 'second', 'double'],
-        ['triad', 'tritonic', 'tertial', 'three', 'third', 'triple'],
-        ['tetrad', 'tetratonic', 'quartal', 'four', 'fourth', 'quadruple'],
-        ['pentad', 'pentatonic', 'quintal', 'five', 'fifth', 'quintuple'],
-        ['hexad', 'hexatonic', 'sextal', 'six', 'sixth', 'sextuple'],
-        ['heptad', 'heptatonic', 'septimal', 'seven', 'seventh', 'septuple'],
-        ['octad', 'octatonic', 'octonal', 'eight', 'eighth', 'octuple'],
-        ['ennead', 'enneatonic', 'nonal', 'nine', 'ninth', 'nonuple'],
-        ['decad', 'decatonic', 'decimal', 'ten', 'tenth', 'decuple'],
-        ['hendecad', 'hendecatonic', 'undecimal',
-            'eleven', 'eleventh', 'hendecuple'],
-        ['duodecad', 'duodecatonic', 'duodecimal',
-            'twelve', 'twelfth', 'duodecuple'],
-        ['triskaidecad', 'triskaidecatonic', 'tredecimal',
-            'thirteen', 'thirteenth', 'tredecuple'],
-        ['tettarakaidecad', 'tettarakaidecatonic', 'quattuordecimal',
-            'fourteen', 'fourteenth', 'quattuordecuple'],
-        ['pentekaidecad', 'pentekaidecatonic', 'quindecimal',
-            'fifteen', 'fifteenth', 'quindecuple']
-    ]
+__all__ = ['columns', 'rows', 'decode', 'encode', 'polyad', 'tonal', 'basal', 'cardinal', 'uple']
+__table = [
+    ['polyad', 'tonal', 'basal', 'cardinal', 'ordinal', 'uple'],
+    ['monad', 'monotonic', 'primal', 'one', 'first', 'single'],
+    ['dyad', 'ditonic', 'secundal', 'two', 'second', 'double'],
+    ['triad', 'tritonic', 'tertial', 'three', 'third', 'triple'],
+    ['tetrad', 'tetratonic', 'quartal', 'four', 'fourth', 'quadruple'],
+    ['pentad', 'pentatonic', 'quintal', 'five', 'fifth', 'quintuple'],
+    ['hexad', 'hexatonic', 'sextal', 'six', 'sixth', 'sextuple'],
+    ['heptad', 'heptatonic', 'septimal', 'seven', 'seventh', 'septuple'],
+    ['octad', 'octatonic', 'octonal', 'eight', 'eighth', 'octuple'],
+    ['ennead', 'enneatonic', 'nonal', 'nine', 'ninth', 'nonuple'],
+    ['decad', 'decatonic', 'decimal', 'ten', 'tenth', 'decuple'],
+    ['hendecad', 'hendecatonic', 'undecimal',
+        'eleven', 'eleventh', 'hendecuple'],
+    ['duodecad', 'duodecatonic', 'duodecimal',
+        'twelve', 'twelfth', 'duodecuple'],
+    ['triskaidecad', 'triskaidecatonic', 'tredecimal',
+        'thirteen', 'thirteenth', 'tredecuple'],
+    ['tettarakaidecad', 'tettarakaidecatonic', 'quattuordecimal',
+        'fourteen', 'fourteenth', 'quattuordecuple'],
+    ['pentekaidecad', 'pentekaidecatonic', 'quindecimal',
+        'fifteen', 'fifteenth', 'quindecuple']
+]
 
-    @staticmethod
-    def columns() -> list[str]:
-        '''Return the headings of the table.'''
-        return Arithmology.__table[0]
 
-    @staticmethod
-    def rows() -> list[list[str]]:
-        '''Return the values of the table'''
-        return [Arithmology.__table[x] for x in range(1, len(Arithmology.__table))]
+def columns() -> list[str]:
+    '''Return the headings of the table.'''
+    return __table[0]
 
-    @staticmethod
-    def decode(keyword: str) -> int:
-        for i, row in enumerate(Arithmology.__table):
-            for word in row:
-                if keyword == word:
-                    return i
-        raise ValueError(f"Unknown keyword: {keyword}")
 
-    @staticmethod
-    def encode(category: str, number: int) -> str:
-        if not category in Arithmology.columns():
-            raise ValueError(f"Unknown category: {category}")
-        if not number in range(1, len(Arithmology.__table)):
-            raise ValueError(f"Cannot encode number: {number}")
-        i = Arithmology.columns().index(category)
-        return Arithmology.__table[number][i]
+def rows() -> list[list[str]]:
+    '''Return the values of the table'''
+    return [__table[x] for x in range(1, len(__table))]
 
-    @staticmethod
-    def polyad(number: int) -> str:
-        return Arithmology.encode("polyad", number)
+def decode(keyword: str) -> int:
+    for i, row in enumerate(__table):
+        for word in row:
+            if keyword == word:
+                return i
+    raise ValueError(f"Unknown keyword: {keyword}")
 
-    @staticmethod
-    def tonal(number: int) -> str:
-        return Arithmology.encode("tonal", number)
+def encode(category: str, number: int) -> str:
+    if not category in columns():
+        raise ValueError(f"Unknown category: {category}")
+    if not number in range(1, len(__table)):
+        raise ValueError(f"Cannot encode number: {number}")
+    i = columns().index(category)
+    return __table[number][i]
 
-    @staticmethod
-    def basal(number: int) -> str:
-        return Arithmology.encode("basal", number)
+def polyad(number: int) -> str:
+    return encode("polyad", number)
 
-    @staticmethod
-    def cardinal(number: int) -> str:
-        return Arithmology.encode("cardinal", number)
 
-    @staticmethod
-    def uple(number: int) -> str:
-        return Arithmology.encode("uple", number)
+def tonal(number: int) -> str:
+    return encode("tonal", number)
+
+def basal(number: int) -> str:
+    return encode("basal", number)
+
+
+def cardinal(number: int) -> str:
+    return encode("cardinal", number)
+
+
+def uple(number: int) -> str:
+    return encode("uple", number)

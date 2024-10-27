@@ -16,7 +16,7 @@ from src.constants import (
     HEPTATONIC_SCALES,
     HEPTATONIC_SUPPLEMENT,
     MODAL_SERIES_KEYS,
-    RE_VALIDATE_NOTE_NAME,
+    RE_PARSE_NOTE_NAME,
     SLASH_SYMBOL,
     TONES
 )
@@ -198,7 +198,7 @@ class HeptatonicScale(Scale):
     @property
     def __kn(self) -> tuple[int, int]:
         '''The deciphered keynote.'''
-        if not re.search(RE_VALIDATE_NOTE_NAME, self.keynote):
+        if not re.search(RE_PARSE_NOTE_NAME, self.keynote):
             raise ArgumentError('Unable to parse note name.')
         return decode_note_name(self.keynote)
 
@@ -217,7 +217,7 @@ class HeptatonicScale(Scale):
     @property
     def note_names(self) -> tuple[str, ...]:
         '''The note names for this scaleform and keynote.'''
-        return get_heptatonic_scale_notes(self.interval_structure, *self.__kn)
+        return get_heptatonic_scale_notes(*self.__kn, self.interval_structure)
 
     def __tertial(self, degree: int, size: int) -> Chord:
         '''Get a tertial chord with the given parameters.'''

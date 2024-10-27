@@ -164,7 +164,8 @@ HEXATONIC_SUPPLEMENT = {
     ISTRIAN: (0,1,3,4,6,7)
 }
 
-SCALE_ALIASES = {
+
+SCALE_ALIASES = { # or 'scaliases' :-)
     'ionian #1': (ALTERED, IONIAN),
     'super locrian': (ALTERED, IONIAN),
     'melodic minor': (ALTERED, DORIAN),
@@ -248,11 +249,11 @@ SCALE_ALIASES = {
     'half diminished b4': (NEAPOLITAN, AEOLIAN),
     'altered dominant #2': (NEAPOLITAN, AEOLIAN),
     'altered dominant bb3': (NEAPOLITAN, LOCRIAN),
-  
+ 
     'byzantine': (DOUBLE_HARMONIC, IONIAN),
     'gypsy major': (DOUBLE_HARMONIC, IONIAN),
     'hungarian minor': (DOUBLE_HARMONIC, LYDIAN),
-    'ultraphrygian': (DOUBLE_HARMONIC, PHRYGIAN),
+    'ultra phrygian': (DOUBLE_HARMONIC, PHRYGIAN),
 }
 
 #######################
@@ -262,6 +263,7 @@ DROP_2_VOICING: tuple[int, ...] = (1,)           # 1573 c e g b -> c g b e
 DROP_2_AND_4_VOICING: tuple[int, ...] = (1, 3)   # 1537 c e g b -> c g e b
 DROP_2_AND_3_VOICING: tuple[int, ...] = (2,)     # 1375 c e g b -> c e b g
 DROP_3_VOICING: tuple[int, ...] = (1, 2)         # 1735 c e g b -> c b e g
+SPREAD_TRIAD = DROP_2_VOICING                    # 153  c e g   -> c g e
 
 #################
 # Chord Symbols #
@@ -305,8 +307,8 @@ CHORD_HALFDIM_SYMBOLS = [CHORD_HALFDIM_OE]
 #######################
 # Regular Expressions #
 #######################
-RE_VALIDATE_NOTE_NAME = "^([A-G](?:#|b)*)$"
-RE_VALIDATE_ROMAN_NAME = "^((?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
+# RE_VALIDATE_NOTE_NAME = "^([A-G](?:#|b)*)$"
+# RE_VALIDATE_ROMAN_NAME = "^((?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
 RE_PARSE_NOTE_NAME = f"^(?P<{NOTE_NAME}>[A-G])(?P<{ACCIDENTALS}>(#|b)*)$"
 RE_PARSE_ROMAN_NAME = f"^(?P<{ACCIDENTALS}>(#|b)*)(?P<{ROMAN_NAME}>(VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
 RE_PARSE_CHORD_SYMBOL = f"^(?P<{NOTE_NAME}>([A-G](?:#|b)*|(?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i)))(?P<{MAIN}>(?:maj|M|min|m|-|\\+|dim|aug|o|ø|Δ))?(?P<{EXTENSION}>(?:maj|M|Δ)?(?:13|11|9|7))?(?P<{MODIFICATION}>(?:[\\w\\d+#]+))?(?:\\/(?P<{SLASH}>([A-G](?:#|b)*|(?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))))?$"
