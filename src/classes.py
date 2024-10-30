@@ -9,6 +9,10 @@ import re
 from typing import Sequence
 
 from src.constants import (
+    D2,
+    D23,
+    D24,
+    D3,
     DROP_2_AND_3_VOICING,
     DROP_2_AND_4_VOICING,
     DROP_2_VOICING,
@@ -23,6 +27,7 @@ from src.constants import (
 from src.errors import ArgumentError
 from src.core import (
     ChordData,
+    NoteData,
     chordify_heptatonic_sus,
     chordify_heptatonic_tertial,
     decode_note_name,
@@ -159,13 +164,13 @@ class Chord:
 
         '''
         if isinstance(voicing, str):
-            if voicing in ['d2', 'drop2', 'drop_2']:
+            if voicing in [D2, 'drop2', 'drop_2']:
                 voicing = DROP_2_VOICING
-            elif voicing in ['d3', 'drop3', 'drop_3']:
+            elif voicing in [D3, 'drop3', 'drop_3']:
                 voicing = DROP_3_VOICING
-            elif voicing in ['d23', 'drop23', 'drop2and3', 'drop_2_and_3', 'drop2_3']:
+            elif voicing in [D23, 'drop23', 'drop2and3', 'drop_2_and_3', 'drop2_3']:
                 voicing = DROP_2_AND_3_VOICING
-            elif voicing in ['d24', 'drop24', 'drop2and4', 'drop_2_and_4', 'drop2_4']:
+            elif voicing in [D24, 'drop24', 'drop2and4', 'drop_2_and_4', 'drop2_4']:
                 voicing = DROP_2_AND_4_VOICING
             else:
                 return self
@@ -198,7 +203,7 @@ class HeptatonicScale(Scale):
         return f"{self.__class__.__name__}({" ".join(self.note_names)})"
 
     @property
-    def __kn(self) -> tuple[int, int]:
+    def __kn(self) -> NoteData:
         '''The deciphered keynote.'''
         if not re.search(RE_PARSE_NOTE_NAME, self.keynote):
             raise ArgumentError('Unable to parse note name.')
@@ -219,15 +224,15 @@ class HeptatonicScale(Scale):
     @property
     def note_names(self) -> tuple[str, ...]:
         '''The note names for this scaleform and keynote.'''
-        return get_heptatonic_scale_notes(*self.__kn, self.interval_structure)
+        return get_heptatonic_scale_notes(self.__kn, self.interval_structure)
 
     def __tertial(self, degree: int, size: int) -> Chord:
         '''Get a tertial chord with the given parameters.'''
         degree -= 1
         if degree > len(self.note_names):
             degree %= len(self.note_names)
-        ch_scale = chordify_heptatonic_tertial(
-            self.interval_structure, self.__kn, size)
+        ch_scale = chordify_heptatonic_tertial(self.__kn,
+            self.interval_structure,  size)
         chord = ch_scale[degree]
         return Chord.from_ChordData(chord)
 
@@ -236,8 +241,8 @@ class HeptatonicScale(Scale):
         degree -= 1
         if degree > len(self.note_names):
             degree %= len(self.note_names)
-        ch_scale = chordify_heptatonic_sus(
-            self.interval_structure, self.__kn, size, sus)
+        ch_scale = chordify_heptatonic_sus(self.__kn,
+            self.interval_structure,  size, sus)
         chord = ch_scale[degree]
         return Chord.from_ChordData(chord)
 

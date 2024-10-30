@@ -184,7 +184,7 @@ def get_heptatonic_scale(
     interval_structure = rotate_interval_structure(
         base_scale, modal_rotations)
     interval_scale = get_heptatonic_interval_symbols(interval_structure)
-    requested_rendering = get_heptatonic_scale_notes(*note,
+    requested_rendering = get_heptatonic_scale_notes(note,
         interval_structure)
     recommended_rendering = get_best_heptatonic_spelling(
         keynote, interval_structure)
