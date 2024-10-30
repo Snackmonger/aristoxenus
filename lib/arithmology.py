@@ -54,7 +54,17 @@ Get a keyword by encoding a number using a shortcut method:
 'six'
 '''
 
-__all__ = ['columns', 'rows', 'decode', 'encode', 'polyad', 'tonal', 'basal', 'cardinal', 'uple']
+__all__ = [
+    'columns', 
+    'rows', 
+    'decode', 
+    'encode', 
+    'polyad', 
+    'tonal', 
+    'basal', 
+    'cardinal', 
+    'uple'
+]
 __table = [
     ['polyad', 'tonal', 'basal', 'cardinal', 'ordinal', 'uple'],
     ['monad', 'monotonic', 'primal', 'one', 'first', 'single'],
@@ -90,6 +100,7 @@ def rows() -> list[list[str]]:
     return [__table[x] for x in range(1, len(__table))]
 
 def decode(keyword: str) -> int:
+    '''Return the number represented by the given keyword.'''
     for i, row in enumerate(__table):
         for word in row:
             if keyword == word:
@@ -97,6 +108,9 @@ def decode(keyword: str) -> int:
     raise ValueError(f"Unknown keyword: {keyword}")
 
 def encode(category: str, number: int) -> str:
+    '''Return the keyword that represents the given number in the given 
+    category.
+    '''
     if not category in columns():
         raise ValueError(f"Unknown category: {category}")
     if not number in range(1, len(__table)):
@@ -105,19 +119,24 @@ def encode(category: str, number: int) -> str:
     return __table[number][i]
 
 def polyad(number: int) -> str:
+    '''Return the polyad keyword for the given number.'''
     return encode("polyad", number)
 
 
 def tonal(number: int) -> str:
+    '''Return the tonal keyword for the given number.'''
     return encode("tonal", number)
 
 def basal(number: int) -> str:
+    '''Return the basal keyword for the given number.'''
     return encode("basal", number)
 
 
 def cardinal(number: int) -> str:
+    '''Return the cardinal keyword for the given number.'''
     return encode("cardinal", number)
 
 
 def uple(number: int) -> str:
+    '''Return the -uple keyword for the given number.'''
     return encode("uple", number)

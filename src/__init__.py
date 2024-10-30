@@ -1,3 +1,15 @@
-from src.api import heptatonic_chord_scale, heptatonic_scale_form
+from src.api import (
+    get_heptatonic_chord, 
+    get_heptatonic_scale
+)
+from src.classes import (
+    HeptatonicScale, 
+    Chord
+)
 
-__all__ = ['heptatonic_chord_scale', 'heptatonic_scale_form']
+__all__ = [
+    'get_heptatonic_scale', 
+    'get_heptatonic_chord',
+    'HeptatonicScale', 
+    'Chord'
+]

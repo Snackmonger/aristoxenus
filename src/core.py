@@ -5,6 +5,7 @@ Although the functions in this module could be used as-is, they are not really
 meant to be accessed by the user. The interfaces exposed in the ``api.py`` and
 the ``classes.py`` make it much easier to get and manipulate the relevant data.
 '''
+from dataclasses import dataclass
 import re
 from typing import (
     Sequence,
@@ -13,8 +14,8 @@ from typing import (
 )
 
 from lib import (
-    humps, 
-    numerus
+    numerus,
+    humps
 )
 
 from src.constants import (
@@ -65,12 +66,33 @@ from src.constants import (
     TONES
 )
 from src.errors import ArgumentError
-from src.structures import ChordData
 
-
-def names_are_heptatonic(
+@dataclass
+class ChordData:
+    '''
+    Data about a chord's configuration.
+    '''
+    chord_symbol: str
     note_names: Sequence[str]
-) -> bool:
+    interval_symbols: Sequence[str]
+    interval_structure: Sequence[int]
+
+@dataclass
+class NoteData:
+    ''' 
+    Data about a note name.
+
+    note_name
+        The index of the base name in 'CDEFGAB'
+    accidentals
+        The number of accidentals (+ for sharps, - for flats).
+    '''
+    note_name: int
+    accidentals: int
+
+
+
+def is_heptatonic_spelling(note_names: Sequence[str]) -> bool:
     '''
     Return true if the given note names make up a valid heptatonic scale.
 
@@ -86,13 +108,13 @@ def names_are_heptatonic(
 
     Example
     -------
-    >>> names_are_heptatonic(['C#', 'D#', 'E#', 'F#', 'G#', 'A#', 'B#'])
+    >>> is_heptatonic_spelling(['C#', 'D#', 'E#', 'F#', 'G#', 'A#', 'B#'])
     True
-    >>> names_are_heptatonic(['C#', 'D#', 'E#', 'F', 'G#', 'A#', 'B#'])
+    >>> is_heptatonic_spelling(['C#', 'D#', 'E#', 'F', 'G#', 'A#', 'B#'])
     False
-    >>> names_are_heptatonic(['C', 'D#', 'E', 'F', 'G', 'Ab', 'Bb'])
+    >>> is_heptatonic_spelling(['C', 'D#', 'E', 'F', 'G', 'Ab', 'Bb'])
     True
-    >>> names_are_heptatonic(['C', 'D#', 'Eb', 'F', 'G', 'Ab', 'Bb'])
+    >>> is_heptatonic_spelling(['C', 'D#', 'Eb', 'F', 'G', 'Ab', 'Bb'])
     False
     '''
     new: list[int] = []
@@ -101,9 +123,7 @@ def names_are_heptatonic(
     return len(set(new)) == NOTES
 
 
-def structure_is_heptatonic(
-    interval_structure: Sequence[int]
-) -> bool:
+def is_heptatonic_structure(interval_structure: Sequence[int]) -> bool:
     '''
     Return true if the given interval structure makes up a valid heptatonic
     scale.
@@ -120,20 +140,77 @@ def structure_is_heptatonic(
 
     Example
     -------
-    >>> structure_is_heptatonic([1, 2, 3, 4, 5, 6, 7])
+    >>> is_heptatonic_structure([1, 2, 3, 4, 5, 6, 7])
     True
-    >>> structure_is_heptatonic([1, 3, 3, 4, 5, 6, 7])
+    >>> is_heptatonic_structure([1, 3, 3, 4, 5, 6, 7])
     False
-    >>> structure_is_heptatonic([1, 2, 4, 5, 6, 7])
+    >>> is_heptatonic_structure([1, 2, 4, 5, 6, 7])
     False
     '''
     return len(set(interval_structure)) == NOTES
 
 
-def encode_note_name(
-    natural_note_idx: int,
-    accidentals: int
-) -> str:
+def is_enharmonically_natural(name_idx: int, accidentals: int) -> bool:
+    '''
+    Test whether a note is equivalent to a natural note name, considering 
+    the enharmonic equivalence of any accidentals.
+
+    Parameters
+    ----------
+    note_name : str
+        Any note name.
+
+    Returns
+    -------
+    bool
+        True, if the note is enharmonically equivalent to a natural.
+
+    Examples
+    --------
+    >>> is_enharmonically_natural(2, 1)
+    True
+    >>> is_enharmonically_natural(1, 1)
+    False
+    '''
+    name_idx, accidentals = simplify_note_name(name_idx, accidentals)
+    return accidentals == 0
+
+
+def is_valid_alphabetic_name(note_name: str) -> bool:
+    '''
+    Check whether a string is a valid alphabetic note name.
+
+    Valid is any of A-G plus any number of sharps or flats, 
+    but not a mixture of both.
+
+    Parameters
+    ----------
+    note_name : str
+        The note name to be tested.
+
+    Returns
+    -------
+    bool
+        True, if the name is a valid alphabetic name.
+
+    Examples
+    --------
+    >>> is_valid_alphabetic_name("Mb")
+    False
+    >>> is_valid_alphabetic_name("Bb")
+    True
+    >>> is_valid_alphabetic_name("Abbbb")
+    True
+    '''
+    return re.match(RE_PARSE_NOTE_NAME, note_name) is not None
+
+
+def is_valid_roman_name(note_name: str) -> bool:
+    '''Check whether a string is a Roman interval name.'''
+    return re.match(RE_PARSE_ROMAN_NAME, note_name) is not None
+
+
+def encode_note_name(natural_note_idx: int, accidentals: int) -> str:
     '''
     Get a note symbol with the given name and number of accidentals.
 
@@ -167,9 +244,7 @@ def encode_note_name(
     return add_accidentals_to_note_name(natural_name, accidentals)
 
 
-def decode_note_name(
-    note_name: str
-) -> tuple[int, int]:
+def decode_note_name(note_name: str) -> tuple[int, int]:
     '''
     For the given note name, return a tuple containing two integers:
     the index of the alphabetic name and the number (+/-) of accidentals.
@@ -213,10 +288,7 @@ def decode_note_name(
     raise ArgumentError(f'Unknown note name symbol: {note_name}')
 
 
-def add_accidentals_to_note_name(
-    note_name: str,
-    accidentals: int
-) -> str:
+def add_accidentals_to_note_name(note_name: str, accidentals: int) -> str:
     '''
     Add the given number of accidentals to the given note name.
 
@@ -248,10 +320,7 @@ def add_accidentals_to_note_name(
     return note_name + 'b' * (-accidentals)
 
 
-def add_accidentals_to_interval_name(
-    interval_name: str,
-    accidentals: int
-) -> str:
+def add_accidentals_to_interval_name(interval_name: str, accidentals: int) -> str:
     '''
     Add the given number of accidentals to the given interval name.
 
@@ -282,11 +351,7 @@ def add_accidentals_to_interval_name(
     return 'b' * (-accidentals) + interval_name
 
 
-def get_heptatonic_scale_notes(
-        root_note_idx: int = 0,
-    root_accidentals: int = 0,
-    interval_structure: Sequence[int] = HEPTATONIC_SCALES[DIATONIC],
-) -> tuple[str, ...]:
+def get_heptatonic_scale_notes(root_note_idx: int = 0, root_accidentals: int = 0, interval_structure: Sequence[int] = HEPTATONIC_SCALES[DIATONIC]) -> tuple[str, ...]:
     '''
     Return the note names for the given scale form, root note, and root accidentals.
 
@@ -299,7 +364,7 @@ def get_heptatonic_scale_notes(
         Use negative numbers for flats.
     interval_structure : Sequence[int], default [0, 2, 4, 5, 7, 9, 11]
         A sequence of integers representing the intervals of a scale form.
-    
+
     Returns
     -------
     tuple[str, ...]
@@ -335,37 +400,79 @@ def get_heptatonic_scale_notes(
     return tuple(result)
 
 
-def get_binomial_structure_notes(
-    interval_structure: Sequence[int],
-    root_idx: int
-) -> tuple[str, ...]:
+def get_best_heptatonic_spelling(keynote: str, scale: Sequence[int]) -> tuple[str, ...]:
     '''
-    Return a neutrally-spelled version of a given interval structure, using binomial
-    note names wherever accidentals are needed (e.g. 'C#|Db'). 
+    Choose the best set of alphabetic note names for a given heptatonic scale
+    and keynote. 
 
     Parameters
     ----------
-    interval_structure : Sequence[int]
-        The interval structure you want to mask
-    root_idx : int
-        The 12-tone index of the note that will serve as the tonic/root.
+    keynote : str
+        An alphabetic keynote (not a Roman numeral).
+    scale : Sequence[int]
+        A collection of integers representing the intervals of a heptatonic
+        scale.
 
     Returns
     -------
     tuple[str, ...]
-        A collection of note names representing the structure.
+        A collection of the optimal note names for this scale and keynote.
+
+    Examples
+    --------
+    >>> get_best_heptatonic_spelling('A#', [0, 2, 4, 5, 7, 9, 11])
+    ('Bb', 'C', 'D', 'Eb', 'F', 'G', 'A')
     '''
-    chromatic = ['C', 'C#|Db', 'D', 'D#|Eb',
-                 'E', 'F', 'F#|Gb', 'G',
-                 'G#|Ab', 'A', 'A#|Bb', 'B']
-    chromatic = chromatic[root_idx:] + chromatic[:root_idx]
-    return tuple(chromatic[x % TONES] for x in interval_structure)
+    if not is_heptatonic_structure(scale):
+        raise ArgumentError(
+            'This function is intended only for heptatonic scale forms.')
+
+    note = simplify_note_name(*decode_note_name(keynote))
+    # Naturals' default name is always the best.
+    if is_enharmonically_natural(*note):
+        return get_heptatonic_scale_notes(*note, scale)
+
+    # Check both spelling variants of a binomial (black key) note.
+    k1, k2 = split_binomial_note(note)
+    s1 = get_heptatonic_scale_notes(*k1, scale)
+    s2 = get_heptatonic_scale_notes(*k2, scale)
+    s1_s, s1_f = 0, 0
+    s2_s, s2_f = 0, 0
+    for n in s1:
+        if SHARP_SYMBOL in n:
+            s1_s += n.count(SHARP_SYMBOL)
+        if FLAT_SYMBOL in n:
+            s1_f += n.count(FLAT_SYMBOL)
+    for n in s2:
+        if SHARP_SYMBOL in n:
+            s2_s += n.count(SHARP_SYMBOL)
+        if FLAT_SYMBOL in n:
+            s2_f += n.count(FLAT_SYMBOL)
+    t1 = s1_s + s1_f
+    t2 = s2_s + s2_f
+    # Best key is usually as simple as fewest total accidentals.
+    if t1 < t2:
+        return s1
+    if t2 < t1:
+        return s2
+    # If the accidentals are equal, the best key is the one that does not
+    # mix sharps and flats.
+    if t1 == t2:
+        m1 = s1_s > 0 and s1_f > 0
+        m2 = s2_s > 0 and s2_f > 0
+        if m1 and not m2:
+            return s2
+        if m2 and not m1:
+            return s1
+
+    # If both keys have the same number of sharps and flats, and they both
+    # mix both types of accidentals, fall back arbitrarily to sharps.
+    if SHARP_SYMBOL in encode_note_name(*k1):
+        return s1
+    return s2
 
 
-def get_heptatonic_interval_symbols(
-    interval_structue: Sequence[int] = HEPTATONIC_SCALES[DIATONIC],
-    octave: bool = False
-) -> tuple[str, ...]:
+def get_heptatonic_interval_symbols(interval_structue: Sequence[int] = HEPTATONIC_SCALES[DIATONIC], octave: bool = False) -> tuple[str, ...]:
     '''
     Return the numeric interval symbols for the given scale form.
 
@@ -407,7 +514,7 @@ def get_heptatonic_interval_symbols(
     >>> get_heptatonic_interval_symbols([0, 2, 4, 6, 7, 8, 11])
     ('1', '2', '3', '#4', '5', 'b6', '7')
     '''
-    if not structure_is_heptatonic(interval_structue):
+    if not is_heptatonic_structure(interval_structue):
         raise ArgumentError(
             f'Interval structure must be heptatonic (structure={interval_structue}).')
     result: list[str] = []
@@ -422,9 +529,7 @@ def get_heptatonic_interval_symbols(
     return tuple(result)
 
 
-def romanize_intervals(
-    interval_names: Sequence[str] | str
-) -> tuple[str, ...]:
+def convert_interval_names_to_roman(interval_names: Sequence[str] | str) -> tuple[str, ...]:
     '''
     Convert Indian numeral interval name(s) to use Roman numerals instead.
 
@@ -448,15 +553,15 @@ def romanize_intervals(
 
     Examples
     --------
-    >>> romanize_intervals('b3')
+    >>> convert_interval_names_to_roman('b3')
     ('bIII',)
-    >>> romanize_intervals(['#5', 'b6'])
+    >>> convert_interval_names_to_roman(['#5', 'b6'])
     ('#V', 'bVI')
-    >>> romanize_intervals('#3')
+    >>> convert_interval_names_to_roman('#3')
     ('#III',)
-    >>> romanize_intervals('bb7')
+    >>> convert_interval_names_to_roman('bb7')
     ('bbVII',)
-    >>> romanize_intervals('b6')
+    >>> convert_interval_names_to_roman('b6')
     ('bVI',)
     '''
     if isinstance(interval_names, str):
@@ -475,10 +580,7 @@ def romanize_intervals(
     return tuple(roman_intervals)
 
 
-def interpret_interval_symbols(
-    root: str,
-    interval_symbols: Iterable[str]
-) -> tuple[str, ...]:
+def convert_interval_names_to_note_names(root: str, interval_symbols: Iterable[str]) -> tuple[str, ...]:
     '''
     Return the note names that correspond to the given interval symbols, from
     the perspective of the given root note name.
@@ -503,14 +605,14 @@ def interpret_interval_symbols(
 
     Examples
     --------
-    >>> interpret_interval_symbols('Ab', ('1', '3', '#5', 'b7', '9'))
+    >>> convert_interval_names_to_note_names('Ab', ('1', '3', '#5', 'b7', '9'))
     ('Ab', 'C', 'E', 'Gb', 'Bb')
-    >>> interpret_interval_symbols('G##', ('1', 'b3', '5', 'bb7', '11')) 
+    >>> convert_interval_names_to_note_names('G##', ('1', 'b3', '5', 'bb7', '11')) 
     ('G##', 'B#', 'D##', 'F#', 'C##')
-    >>> interpret_interval_symbols('Bb', ('1', '3', '5', '7', '13'))     
+    >>> convert_interval_names_to_note_names('Bb', ('1', '3', '5', '7', '13'))     
     ('Bb', 'D', 'F', 'A', 'G')
     '''
-    if not note_is_alpha(root):
+    if not is_valid_alphabetic_name(root):
         raise ArgumentError(f'Unable to parse requested root ({root=})')
     scale = get_heptatonic_scale_notes(*decode_note_name(root))
     start = scale.index(root)
@@ -535,39 +637,7 @@ def interpret_interval_symbols(
     return tuple(names)
 
 
-def is_enharmonically_natural(
-    name_idx: int,
-    accidentals: int
-) -> bool:
-    '''
-    Test whether a note is equivalent to a natural note name, considering 
-    the enharmonic equivalence of any accidentals.
-
-    Parameters
-    ----------
-    note_name : str
-        Any note name.
-
-    Returns
-    -------
-    bool
-        True, if the note is enharmonically equivalent to a natural.
-
-    Examples
-    --------
-    >>> is_enharmonically_natural(2, 1)
-    True
-    >>> is_enharmonically_natural(1, 1)
-    False
-    '''
-    name_idx, accidentals = simplify_note_name(name_idx, accidentals)
-    return accidentals == 0
-
-
-def simplify_note_name(
-    name_idx: int,
-    accidentals: int
-) -> tuple[int, int]:
+def simplify_note_name(name_idx: int, accidentals: int) -> tuple[int, int]:
     '''
     Take a note name that has accidentals and return the simplest 
     enharmonically-equivalent name. 
@@ -605,10 +675,7 @@ def simplify_note_name(
     return HEPTATONIC_SCALES[DIATONIC].index(value), -1
 
 
-def rotate_interval_structure(
-    interval_structure: Sequence[int],
-    mode_idx: int
-) -> tuple[int, ...]:
+def rotate_interval_structure(interval_structure: Sequence[int], mode_idx: int) -> tuple[int, ...]:
     '''
     Rotate an interval structure so as to rephrase the intervals from the
     perspective of the new modal starting index.
@@ -644,9 +711,42 @@ def rotate_interval_structure(
     return tuple(pitches)
 
 
-def get_heptatonic_double_octave(
-        interval_structure: Sequence[int]
-) -> tuple[int, ...]:
+def rotate_chord(chord: ChordData, new_bass_idx: int) -> ChordData:
+    '''
+    Rotate the elements in a chord so that it has a new starting point.
+
+    Parameters
+    ----------
+    chord : ChordData
+        A collection of chord information.
+    new_bass_idx : int
+        The index that will be first in the rotated form.
+
+    Returns
+    -------
+    ChordData
+        The input chord information, but rotated so that the elements at
+        the given index are now first.
+
+    Examples
+    --------
+    >>> rotate_chord(ChordData('Cmaj', ['C', 'E', 'G'], ['1', '3', '5'], [0, 4, 7]), 1)
+    ChordData(chord_symbol='Cmaj', note_names=['E', 'G', 'C'], interval_symbols=['3', '5', '1'], interval_structure=(0, 3, 8))
+    >>> rotate_chord(ChordData(['C', 'E', 'G'], ['1', '3', '5'], [0, 4, 7]), 2)
+    ChordData(chord_symbol='Cmaj', note_names=['G', 'C', 'E'], interval_symbols=['5', '1', '3'], interval_structure=(0, 5, 9))
+    '''
+    if not new_bass_idx in range(len(chord.interval_structure)):
+        new_bass_idx %= len(chord.interval_structure)
+    names = list(chord.note_names[new_bass_idx:]) + \
+        list(chord.note_names[:new_bass_idx])
+    symbols = list(chord.interval_symbols[new_bass_idx:]) + \
+        list(chord.interval_symbols[:new_bass_idx])
+    intervals = rotate_interval_structure(
+        chord.interval_structure, new_bass_idx)
+    return ChordData(chord.chord_symbol, names, symbols, intervals)
+
+
+def get_double_octave(interval_structure: Sequence[int]) -> tuple[int, ...]:
     '''
     Extend the range of a scale pattern to two octaves.
 
@@ -672,11 +772,7 @@ def get_heptatonic_double_octave(
     return tuple(double_octave)
 
 
-def chordify_heptatonic_tertial(
-        parent_structure: Sequence[int],
-        keynote: tuple[int, int],
-        number_of_notes: int
-) -> tuple[ChordData, ...]:
+def chordify_heptatonic_tertial(parent_structure: Sequence[int], keynote: tuple[int, int], number_of_notes: int) -> tuple[ChordData, ...]:
     '''
     Create a tertial chord scale with the given parameters.
 
@@ -708,32 +804,30 @@ def chordify_heptatonic_tertial(
             parent_structure, i)
         root_data = decode_note_name(root)
         modal_names = get_heptatonic_scale_notes(*root_data,
-            chord_interval_structure)
+                                                 chord_interval_structure)
         interval_symbols = get_heptatonic_interval_symbols(
             chord_interval_structure)
         if number_of_notes > 4:
             modal_names += modal_names
             interval_symbols = get_heptatonic_interval_symbols(
                 chord_interval_structure, True)
-            chord_interval_structure = get_heptatonic_double_octave(
+            chord_interval_structure = get_double_octave(
                 chord_interval_structure)
 
+        chord_symbol = encode_chord_symbol(
+            interval_symbols[::2][:number_of_notes])
         chords.append(
             ChordData(
-                modal_names[::2][:number_of_notes],
-                interval_symbols[::2][:number_of_notes],
-                chord_interval_structure[::2][:number_of_notes]
+                chord_symbol=chord_symbol,
+                note_names=modal_names[::2][:number_of_notes],
+                interval_symbols=interval_symbols[::2][:number_of_notes],
+                interval_structure=chord_interval_structure[::2][:number_of_notes]
             )
         )
     return tuple(chords)
 
 
-def chordify_heptatonic_sus(
-        parent_structure: Sequence[int],
-        keynote: tuple[int, int],
-        number_of_notes: int,
-        sus: int
-) -> tuple[ChordData, ...]:
+def chordify_heptatonic_sus(parent_structure: Sequence[int], keynote: tuple[int, int], number_of_notes: int, sus: int) -> tuple[ChordData, ...]:
     '''Create a sus chord scale with the given parameters.
 
     Parameters
@@ -752,7 +846,8 @@ def chordify_heptatonic_sus(
     Returns
     -------
     tuple[ChordData, ...]
-        A tuple of ChordData representing the requested chord scale.'''
+        A tuple of ChordData representing the requested chord scale.
+    '''
     if number_of_notes > 7:
         raise ArgumentError(
             "Chords can be generated with a maximum of 7 notes.")
@@ -772,28 +867,33 @@ def chordify_heptatonic_sus(
             parent_structure, i)
         root_data = decode_note_name(root)
         modal_names = get_heptatonic_scale_notes(*root_data,
-            chord_interval_structure)
+                                                 chord_interval_structure)
         interval_symbols = get_heptatonic_interval_symbols(
             chord_interval_structure)
         if number_of_notes > 4:
             modal_names += modal_names
             interval_symbols = get_heptatonic_interval_symbols(
                 chord_interval_structure, True)
-            chord_interval_structure = get_heptatonic_double_octave(
+            chord_interval_structure = get_double_octave(
                 chord_interval_structure)
 
         _pattern = pattern[:number_of_notes]
-        ch_names = [modal_names[i] for i in _pattern]
-        ch_symbols = [interval_symbols[i] for i in _pattern]
-        ch_structure = [chord_interval_structure[i] for i in _pattern]
-        chords.append(ChordData(ch_names, ch_symbols, ch_structure))
+        ch_note_names = [modal_names[i] for i in _pattern]
+        ch_interval_symbols = [interval_symbols[i] for i in _pattern]
+        ch_interval_structure = [chord_interval_structure[i] for i in _pattern]
+        ch_symbol = encode_chord_symbol(ch_interval_symbols)
+        chords.append(
+            ChordData(
+                chord_symbol=ch_symbol,
+                note_names=ch_note_names,
+                interval_symbols=ch_interval_symbols,
+                interval_structure=ch_interval_structure
+            )
+        )
     return tuple(chords)
 
 
-def drop_voicing(
-    chord_data: ChordData,
-    drop_notes: Sequence[int]
-) -> ChordData:
+def apply_drop_voicing(chord_data: ChordData, drop_notes: Sequence[int]) -> ChordData:
     '''
     Create a drop voicing for the given chord.
 
@@ -825,15 +925,15 @@ def drop_voicing(
     --------
     >>> from src.structures import ChordData
     >>> from src.constants import DROP_2_VOICING, DROP_2_AND_4_VOICING, DROP_3_VOICING, DROP_2_AND_3_VOICING
-    >>> x = ChordData(['C', 'E', 'G', 'B'], ["1", "3", "5", "7"], [1, 4, 7, 11])
+    >>> x = ChordData('Cmaj7', ['C', 'E', 'G', 'B'], ["1", "3", "5", "7"], [1, 4, 7, 11])
     >>> drop_voicing(x, DROP_2_VOICING)
-    ChordData(note_names=('C', 'G', 'B', 'E'), interval_symbols=('1', '5', '7', '3'), interval_structure=(1, 7, 11, 16))
+    ChordData(chord_symbol='Cmaj7', note_names=('C', 'G', 'B', 'E'), interval_symbols=('1', '5', '7', '3'), interval_structure=(1, 7, 11, 16))
     >>> drop_voicing(x, DROP_3_VOICING)
-    ChordData(note_names=('C', 'B', 'E', 'G'), interval_symbols=('1', '7', '3', '5'), interval_structure=(1, 11, 16, 19))
+    ChordData(chord_symbol='Cmaj7', note_names=('C', 'B', 'E', 'G'), interval_symbols=('1', '7', '3', '5'), interval_structure=(1, 11, 16, 19))
     >>> drop_voicing(x, DROP_2_AND_4_VOICING)
-    ChordData(note_names=('C', 'G', 'E', 'B'), interval_symbols=('1', '5', '3', '7'), interval_structure=(1, 7, 16, 23))
+    ChordData(chord_symbol='Cmaj7', note_names=('C', 'G', 'E', 'B'), interval_symbols=('1', '5', '3', '7'), interval_structure=(1, 7, 16, 23))
     >>> drop_voicing(x, DROP_2_AND_3_VOICING)
-    ChordData(note_names=('C', 'E', 'B', 'G'), interval_symbols=('1', '3', '7', '5'), interval_structure=(1, 4, 11, 19))
+    ChordData(chord_symbol='Cmaj7', note_names=('C', 'E', 'B', 'G'), interval_symbols=('1', '3', '7', '5'), interval_structure=(1, 4, 11, 19))
     '''
     interval_structure = list(chord_data.interval_structure)
     note_names = list(chord_data.note_names)
@@ -851,14 +951,15 @@ def drop_voicing(
         interval_symbols.remove(symbol)
         interval_symbols.append(symbol)
 
-    return ChordData(note_names=tuple(note_names),
-                     interval_symbols=tuple(interval_symbols),
-                     interval_structure=tuple(interval_structure))
+    return ChordData(
+        chord_symbol=chord_data.chord_symbol,
+        note_names=tuple(note_names),
+        interval_symbols=tuple(interval_symbols),
+        interval_structure=tuple(interval_structure)
+    )
 
 
-def order_interval_names(
-    interval_names: Iterable[str]
-) -> tuple[str, ...]:
+def sort_interval_names(interval_names: Iterable[str]) -> tuple[str, ...]:
     '''Take an unordered iterable of interval names and order them according
     to their numerical digit.
 
@@ -869,21 +970,12 @@ def order_interval_names(
     >>> order_interval_names(["b7", "1", "5", "#11", "3"])
     ('1', '3', '5', 'b7', '#11')
     '''
-    def extract_digit(name: str) -> int:
-        digit = ''
-        for char in name:
-            if char.isdigit():
-                digit += char
-        return int(digit)
-    return tuple(sorted(interval_names, key=extract_digit))
+    def _d(name: str) -> int:
+        return int(''.join(c for c in name if c.isdigit()))
+    return tuple(sorted(interval_names, key=_d))
 
 
-def name_chord(
-    interval_names: Sequence[str],
-    maj_symbol: str = CHORD_MAJ,
-    min_symbol: str = CHORD_MIN,
-    dim_symbol: str = CHORD_DIM
-) -> str:
+def encode_chord_symbol(interval_names: Iterable[str], maj_symbol: str = CHORD_MAJ, min_symbol: str = CHORD_MIN, dim_symbol: str = CHORD_DIM) -> str:
     '''
     Parse a list of interval names into a chord symbol.
 
@@ -896,9 +988,12 @@ def name_chord(
 
     Sus chords are always 'sus', so they cannot be customized.
 
+    NOTE: Interval names are treated as a set, so this function will never 
+    return a chord in 'slash' notation.
+
     Parameters
     ----------
-    interval_names: Sequence[str]
+    interval_names: Iterable[str]
         The interval names you want to parse as a chord.
     maj_symbol : str, optional
         What symbol will represent major chords, by default "maj"
@@ -909,77 +1004,77 @@ def name_chord(
 
     Examples
     --------
-    >>> name_chord(["1","3","5"])
+    >>> encode_chord_symbol(["1","3","5"])
     'maj'
-    >>> name_chord(["1","3","5", "7"])
+    >>> encode_chord_symbol(["1","3","5", "7"])
     'maj7'
-    >>> name_chord(["1","3","5", "7", "9"])
+    >>> encode_chord_symbol(["1","3","5", "7", "9"])
     'maj9'
-    >>> name_chord(["1","3","5", "9"])
+    >>> encode_chord_symbol(["1","3","5", "9"])
     'majadd9'
-    >>> name_chord(["1","3","5", "7", "9", "11"])
+    >>> encode_chord_symbol(["1","3","5", "7", "9", "11"])
     'maj11'
-    >>> name_chord(["1","3","5", "7", "9", "11", "13"])
+    >>> encode_chord_symbol(["1","3","5", "7", "9", "11", "13"])
     'maj13'
-    >>> name_chord(["1","3","5","7", "11"])
+    >>> encode_chord_symbol(["1","3","5","7", "11"])
     'maj7add11'
-    >>> name_chord(["1","3","5","7","9", "13"])
+    >>> encode_chord_symbol(["1","3","5","7","9", "13"])
     'maj9add13'
-    >>> name_chord(["1","3","5", "b7"])
+    >>> encode_chord_symbol(["1","3","5", "b7"])
     '7'
-    >>> name_chord(["1","3","5", "b7", "9"])
+    >>> encode_chord_symbol(["1","3","5", "b7", "9"])
     '9'
-    >>> name_chord(["1","3","5", "b7", "9", "13"])
+    >>> encode_chord_symbol(["1","3","5", "b7", "9", "13"])
     '9add13'
-    >>> name_chord(["1","b3","5"])
+    >>> encode_chord_symbol(["1","b3","5"])
     'min'
-    >>> name_chord(["1","b3","5", "b7", "9"])
+    >>> encode_chord_symbol(["1","b3","5", "b7", "9"])
     'min9'
-    >>> name_chord(["1","b3","5", "9"])
+    >>> encode_chord_symbol(["1","b3","5", "9"])
     'minadd9'
-    >>> name_chord(["1","b3","5", "7"])
+    >>> encode_chord_symbol(["1","b3","5", "7"])
     'minmaj7'
-    >>> name_chord(["1","b3","5", "7", "9"])
+    >>> encode_chord_symbol(["1","b3","5", "7", "9"])
     'minmaj9'
-    >>> name_chord(["1","b3","5", "7", "11"])
+    >>> encode_chord_symbol(["1","b3","5", "7", "11"])
     'minmaj7add11'
-    >>> name_chord(["1","b3","5", "7", "9", "11", "13"])
+    >>> encode_chord_symbol(["1","b3","5", "7", "9", "11", "13"])
     'minmaj13'
-    >>> name_chord(["1","b3","b5", "b7"])
+    >>> encode_chord_symbol(["1","b3","b5", "b7"])
     'min7b5'
-    >>> name_chord(["1","b3","b5", "b7", "9"])
+    >>> encode_chord_symbol(["1","b3","b5", "b7", "9"])
     'min9b5'
-    >>> name_chord(["1","b3","b5", "b7", "9", "11", "13"])
+    >>> encode_chord_symbol(["1","b3","b5", "b7", "9", "11", "13"])
     'min13b5'
-    >>> name_chord(["1","b3","b5", "bb7"])
+    >>> encode_chord_symbol(["1","b3","b5", "bb7"])
     'dim7'
-    >>> name_chord(["1","b3","b5", "bb7", "9"])
+    >>> encode_chord_symbol(["1","b3","b5", "bb7", "9"])
     'dim9'
-    >>> name_chord(["1","b3","b5", "bb7", "9", "11"])
+    >>> encode_chord_symbol(["1","b3","b5", "bb7", "9", "11"])
     'dim11'
-    >>> name_chord(["1","3","7","9"])
+    >>> encode_chord_symbol(["1","3","7","9"])
     'maj9no5'
-    >>> name_chord(["1","2","5"])
+    >>> encode_chord_symbol(["1","2","5"])
     'sus2'
-    >>> name_chord(["1","bb3","5"])
+    >>> encode_chord_symbol(["1","bb3","5"])
     'susbb3'
-    >>> name_chord(["1","#3","5"])
+    >>> encode_chord_symbol(["1","#3","5"])
     'sus#3'
-    >>> name_chord(["1","4","5"])
+    >>> encode_chord_symbol(["1","4","5"])
     'sus4'
-    >>> name_chord(["1","2","5", "7"])
+    >>> encode_chord_symbol(["1","2","5", "7"])
     'maj7sus2'
-    >>> name_chord(["1","2","5", "b7"])
+    >>> encode_chord_symbol(["1","2","5", "b7"])
     '7sus2'
-    >>> name_chord(["1","2","5", "bb7"])
+    >>> encode_chord_symbol(["1","2","5", "bb7"])
     'sus2bb7'
-    >>> name_chord(["1","3","5", "bb7"])
+    >>> encode_chord_symbol(["1","3","5", "bb7"])
     'majbb7'
-    >>> name_chord(["1","bb3","#5","7"])
+    >>> encode_chord_symbol(["1","bb3","#5","7"])
     'maj7susbb3#5'
-    >>> name_chord(["1","bb3","b5","bb7","9"])
+    >>> encode_chord_symbol(["1","bb3","b5","bb7","9"])
     'susbb3b5bb7add9'
-    >>> name_chord(["1", "5","bb7","9"])
+    >>> encode_chord_symbol(["1", "5","bb7","9"])
     'no3bb7add9'
     '''
     DIM7 = [CHORD_FLAT_3, CHORD_FLAT_5, CHORD_DOUBLE_FLAT_7]
@@ -993,7 +1088,7 @@ def name_chord(
     # will be present (and in fact cannot all be present simultaneously).
     # They have been ordered with a view to making the resulting symbols
     # easier to read, including a few unusual chord structures implied
-    # in some of the more exotic parent scales.
+    # in some of the more exotic parent scales we offer.
     normal3: str = ""
     primary: str = ""
     secondary: str = ""
@@ -1005,11 +1100,11 @@ def name_chord(
     no3: str = ""
     extensions: str = ""
 
-    # Any note that has been accounted for by the parsing process is
-    # discarded so it can't be misinterpreted later.
+    # Any note that has already been handled is removed so it
+    # will not be misunderstood later.
     parse.discard(str(1))
 
-    # Convenience functions
+    # Convenience functions to help categorize the base structure.
     def has_third() -> Optional[str]:
         for x in [CHORD_3, CHORD_FLAT_3]:
             if x in interval_names:
@@ -1052,7 +1147,7 @@ def name_chord(
         # Exotic chords are allowed to have bb7 in our system, but since the
         # bb accidental might conflict with the note name in a 7th chord
         # (e.g. 'Bbb7'), we compel it to take the alt7 slot instead of the
-        # primary 7 slot.
+        # primary 7 slot (e.g. Bbmajbb7, Ebbminbb7).
         if CHORD_DOUBLE_FLAT_7 in parse:
             alt7 = CHORD_DOUBLE_FLAT_7
             parse.discard(CHORD_DOUBLE_FLAT_7)
@@ -1075,6 +1170,7 @@ def name_chord(
 
     # Main chord parsing is mostly a 1:1 symbol matching, with a few
     # exceptions.
+
     # Chords in our system are always given an explicit symbol for
     # their third, unless they are one of the implicit symbols
     # above, or they have a suspension in place of a third.
@@ -1101,7 +1197,7 @@ def name_chord(
     # Our system allows for sus chords with notes that could technically be
     # considered thirds. We categorize #3 and bb3 as 'sus' chords a) because
     # they cannot reasonably be labeled major or minor, b) so that their
-    # accidental cannot stand next to the root note (i.e. Dsusbb3 is less
+    # accidental cannot stand next to the root note (i.e. Dsusbb3 (e.g.) is less
     # ambiguous than Dbb3).
     elif (candidates := has_sus()):
         # Normally, we expect to have only one medial note (a third or a
@@ -1126,10 +1222,10 @@ def name_chord(
     else:
         no3 = CHORD_NO + CHORD_3
 
-    # Our system treats primary extension symbols as implying all previous
+    # Our system treats primary extension symbols as implying ALL previous
     # extensions in the series, i.e. a 13 chord includes 7, 9, 11, 13.
     # If this series is interrupted by a missing or altered note, then the
-    # primary extension is the last continuous extension, and any following
+    # primary extension is the last continuous extension, then any following
     # natural extensions are treated as additions (e.g. C9#11add13).
     largest: str = ""
     if primary:
@@ -1188,23 +1284,7 @@ def name_chord(
     return final_form
 
 
-def note_is_alpha(
-    note_name: str
-) -> bool:
-    '''Check whether a string is an alphabetic note name.'''
-    return re.match(RE_PARSE_NOTE_NAME, note_name) is not None
-
-
-def is_roman(
-    note_name: str
-) -> bool:
-    '''Check whether a string is a Roman interval name.'''
-    return re.match(RE_PARSE_ROMAN_NAME, note_name) is not None
-
-
-def name_intervals(
-    chord_symbol: str
-) -> tuple[str, ...]:
+def decode_chord_symbol(chord_symbol: str) -> tuple[str, ...]:
     '''
     Parse a chord symbol into a list of interval names.
 
@@ -1226,59 +1306,59 @@ def name_intervals(
 
     Examples
     --------
-    >>> name_intervals('C')          
+    >>> decode_chord_symbol('C')          
     ('1', '3', '5')
-    >>> name_intervals('Cmaj7')
+    >>> decode_chord_symbol('Cmaj7')
     ('1', '3', '5', '7')
-    >>> name_intervals('CM7')   
+    >>> decode_chord_symbol('CM7')   
     ('1', '3', '5', '7')
-    >>> name_intervals('Cm7') 
+    >>> decode_chord_symbol('Cm7') 
     ('1', 'b3', '5', 'b7')
-    >>> name_intervals('Cmin7') 
+    >>> decode_chord_symbol('Cmin7') 
     ('1', 'b3', '5', 'b7')
-    >>> name_intervals('CmΔ7')
+    >>> decode_chord_symbol('CmΔ7')
     ('1', 'b3', '5', '7')
-    >>> name_intervals('CmM7')
+    >>> decode_chord_symbol('CmM7')
     ('1', 'b3', '5', '7')
-    >>> name_intervals('Cmin11') 
+    >>> decode_chord_symbol('Cmin11') 
     ('1', 'b3', '5', 'b7', '9', '11')
-    >>> name_intervals('Cmin11b5') 
+    >>> decode_chord_symbol('Cmin11b5') 
     ('1', 'b3', 'b5', 'b7', '9', '11')
-    >>> name_intervals('C7aug')    
+    >>> decode_chord_symbol('C7aug')    
     ('1', '3', '#5', 'b7')
-    >>> name_intervals('Caug7')
+    >>> decode_chord_symbol('Caug7')
     ('1', '3', '#5', 'b7')
-    >>> name_intervals('C+7')
+    >>> decode_chord_symbol('C+7')
     ('1', '3', '#5', 'b7')
-    >>> name_intervals('C7+')
+    >>> decode_chord_symbol('C7+')
     ('1', '3', '#5', 'b7')
-    >>> name_intervals('Cdim11nobb7')
+    >>> decode_chord_symbol('Cdim11nobb7')
     ('1', 'b3', 'b5', '9', '11')
-    >>> name_intervals('Cmin11b5')    
+    >>> decode_chord_symbol('Cmin11b5')    
     ('1', 'b3', 'b5', 'b7', '9', '11')
-    >>> name_intervals('Co7')      
+    >>> decode_chord_symbol('Co7')      
     ('1', 'b3', 'b5', 'bb7')
-    >>> name_intervals('Cmin7b5add11') 
+    >>> decode_chord_symbol('Cmin7b5add11') 
     ('1', 'b3', 'b5', 'b7', '11')
-    >>> name_intervals('Cminmaj7')     
+    >>> decode_chord_symbol('Cminmaj7')     
     ('1', 'b3', '5', '7')
-    >>> name_intervals('CminM7')   
+    >>> decode_chord_symbol('CminM7')   
     ('1', 'b3', '5', '7')
-    >>> name_intervals('CmM7')   
+    >>> decode_chord_symbol('CmM7')   
     ('1', 'b3', '5', '7')
-    >>> name_intervals('Cmaj7sus2')
+    >>> decode_chord_symbol('Cmaj7sus2')
     ('1', '2', '5', '7')
-    >>> name_intervals('Csus4') 
+    >>> decode_chord_symbol('Csus4') 
     ('1', '4', '5')
-    >>> name_intervals('Csus2')
+    >>> decode_chord_symbol('Csus2')
     ('1', '2', '5')
-    >>> name_intervals('C7sus4') 
+    >>> decode_chord_symbol('C7sus4') 
     ('1', '4', '5', 'b7')
-    >>> name_intervals('Csusbb3bb7') 
+    >>> decode_chord_symbol('Csusbb3bb7') 
     ('1', 'bb3', '5', 'bb7')
-    >>> name_intervals('C9no3')
+    >>> decode_chord_symbol('C9no3')
     ('1', '5', 'b7', '9')
-    >>> name_intervals('Abbdim7nob5')
+    >>> decode_chord_symbol('Abbdim7nob5')
     ('1', 'b3', 'bb7')
     '''
     intervals: set[str] = {str(1), CHORD_5}
@@ -1298,7 +1378,7 @@ def name_intervals(
     root = match.group(NOTE_NAME)
     main = match.group(MAIN)
     extension = match.group(EXTENSION)
-    modifications = match.group(MODIFICATION) 
+    modifications = match.group(MODIFICATION)
     slash = match.group(SLASH)
     ext_series: list[str] = [CHORD_7, CHORD_9, CHORD_11, CHORD_13]
     sus_intervals: list[str] = [
@@ -1307,8 +1387,9 @@ def name_intervals(
     # Chords cannot use a mix of alphabetic and Roman note names
     # (e.g. Cmaj7/III, IVmaj7/E).
     if slash is not None:
-        _c1 = note_is_alpha(root) and not note_is_alpha(slash)
-        _c2 = is_roman(root) and not is_roman(slash)
+        _c1 = is_valid_alphabetic_name(
+            root) and not is_valid_alphabetic_name(slash)
+        _c2 = is_valid_roman_name(root) and not is_valid_roman_name(slash)
         if any((_c1, _c2)):
             raise ArgumentError(
                 f"Chord symbol cannot mix alphabetic and Roman numeral notation ({chord_symbol=})")
@@ -1437,12 +1518,10 @@ def name_intervals(
     # if slash:
     #     bass_interval = calculate_interval(lower=root, higher=slash)
 
-    return order_interval_names(intervals)
+    return sort_interval_names(intervals)
 
 
-def get_binomial(
-    keynote: tuple[int, int]
-) -> tuple[tuple[int, int], tuple[int, int]]:
+def split_binomial_note(keynote: tuple[int, int]) -> tuple[tuple[int, int], tuple[int, int]]:
     '''Take a tuple representing a note value that has another name and return
     a tuple of tuples with both variants.
 
@@ -1469,10 +1548,7 @@ def get_binomial(
     return keynote, (alpha, accidentals)
 
 
-def calculate_interval(
-    lower: str, 
-    higher: str
-) -> tuple[int, str]:
+def calculate_interval(lower: str, higher: str) -> tuple[int, str]:
     '''
     Describe the relationship between a lower note name and a higher 
     name. The output will respect the implicit enharmonic values of
@@ -1534,123 +1610,7 @@ def calculate_interval(
     return (v, bass_name)
 
 
-def best_heptatonic_spelling(
-    keynote: str,
-    scale: Sequence[int]
-) -> tuple[str, ...]:
-    '''
-    Choose the best set of alphabetic note names for a given heptatonic scale
-    and keynote. 
-
-    Parameters
-    ----------
-    keynote : str
-        An alphabetic keynote (not a Roman numeral).
-    scale : Sequence[int]
-        A collection of integers representing the intervals of a heptatonic
-        scale.
-
-    Returns
-    -------
-    tuple[str, ...]
-        A collection of the optimal note names for this scale and keynote.
-
-    Examples
-    --------
-    >>> best_heptatonic_spelling('A#', [0, 2, 4, 5, 7, 9, 11])
-    ('Bb', 'C', 'D', 'Eb', 'F', 'G', 'A')
-    '''
-    if not structure_is_heptatonic(scale):
-        raise ArgumentError(
-            'This function is intended only for heptatonic scale forms.')
-
-    note = simplify_note_name(*decode_note_name(keynote))
-    # Naturals' default name is always the best.
-    if is_enharmonically_natural(*note):
-        return get_heptatonic_scale_notes(*note, scale)
-
-    # Check both spelling variants of a binomial (black key) note.
-    k1, k2 = get_binomial(note)
-    s1 = get_heptatonic_scale_notes(*k1, scale)
-    s2 = get_heptatonic_scale_notes(*k2, scale)
-    s1_s, s1_f = 0, 0
-    s2_s, s2_f = 0, 0
-    for n in s1:
-        if SHARP_SYMBOL in n:
-            s1_s += n.count(SHARP_SYMBOL)
-        if FLAT_SYMBOL in n:
-            s1_f += n.count(FLAT_SYMBOL)
-    for n in s2:
-        if SHARP_SYMBOL in n:
-            s2_s += n.count(SHARP_SYMBOL)
-        if FLAT_SYMBOL in n:
-            s2_f += n.count(FLAT_SYMBOL)
-    t1 = s1_s + s1_f
-    t2 = s2_s + s2_f
-    # Best key is usually as simple as fewest total accidentals.
-    if t1 < t2:
-        return s1
-    if t2 < t1:
-        return s2
-    # If the accidentals are equal, the best key is the one that does not
-    # mix sharps and flats.
-    if t1 == t2:
-        m1 = s1_s > 0 and s1_f > 0
-        m2 = s2_s > 0 and s2_f > 0
-        if m1 and not m2:
-            return s2
-        if m2 and not m1:
-            return s1
-
-    # If both keys have the same number of sharps and flats, and they both
-    # mix both types of accidentals, fall back arbitrarily to sharps.
-    if SHARP_SYMBOL in encode_note_name(*k1):
-        return s1
-    return s2
-
-
-def rotate_chord(
-    chord: ChordData,
-    new_bass_idx: int
-) -> ChordData:
-    '''
-    Rotate the elements in a chord so that it has a new starting point.
-
-    Parameters
-    ----------
-    chord : ChordData
-        A collection of chord information.
-    new_bass_idx : int
-        The index that will be first in the rotated form.
-
-    Returns
-    -------
-    ChordData
-        The input chord information, but rotated so that the elements at
-        the given index are now first.
-
-    Examples
-    --------
-    >>> rotate_chord(ChordData(['C', 'E', 'G'], ['1', '3', '5'], [0, 4, 7]), 1)
-    ChordData(note_names=['E', 'G', 'C'], interval_symbols=['3', '5', '1'], interval_structure=(0, 3, 8))
-    >>> rotate_chord(ChordData(['C', 'E', 'G'], ['1', '3', '5'], [0, 4, 7]), 2)
-    ChordData(note_names=['G', 'C', 'E'], interval_symbols=['5', '1', '3'], interval_structure=(0, 5, 9))
-    '''
-    if not new_bass_idx in range(len(chord.interval_structure)):
-        new_bass_idx %= len(chord.interval_structure)
-    names = list(chord.note_names[new_bass_idx:]) + \
-        list(chord.note_names[:new_bass_idx])
-    symbols = list(chord.interval_symbols[new_bass_idx:]) + \
-        list(chord.interval_symbols[:new_bass_idx])
-    intervals = rotate_interval_structure(
-        chord.interval_structure, new_bass_idx)
-    return ChordData(names, symbols, intervals)
-
-
-def resolve_scale_structure(
-    scale_name: str,
-    mode_name: Optional[str | int] = None
-) -> tuple[int, ...]:
+def resolve_scale_name(scale_name: str, mode_name: Optional[str | int] = None) -> tuple[int, ...]:
     '''
     Attempt to resolve the given scale and mode name into a sequence of 
     integers representing a scale's interval structure.
@@ -1686,7 +1646,7 @@ def resolve_scale_structure(
     '''
     for alias, config in SCALE_ALIASES.items():
         if alias == scale_name:
-            return resolve_scale_structure(*config)
+            return resolve_scale_name(*config)
         elements = alias.split(" ")
         crammed = "".join(elements)
         snake = "_".join(e.lower() for e in elements)
@@ -1694,11 +1654,11 @@ def resolve_scale_structure(
         pascal = str(humps.pascalize(snake))
         for e in [snake, camel, pascal, crammed]:
             if scale_name == e:
-                return resolve_scale_structure(*config)
+                return resolve_scale_name(*config)
 
         for k, v in {'natural': 'nat', 'minor': 'min',
-                    'major': 'maj', 'diminished': 'dim',
-                    'augmented': 'aug', 'dominant': 'dom'}.items():
+                     'major': 'maj', 'diminished': 'dim',
+                     'augmented': 'aug', 'dominant': 'dom'}.items():
             if k in alias:
                 variant = alias.replace(k, v)
                 elements = variant.split(" ")
@@ -1708,14 +1668,14 @@ def resolve_scale_structure(
                 pascal = str(humps.pascalize(snake))
                 for e in [snake, camel, pascal, crammed]:
                     if scale_name == e:
-                        return resolve_scale_structure(*config)
+                        return resolve_scale_name(*config)
 
     # We expect that mode_name==None when scale_name is an alias,
     # so None at this point presumably means 'ionian'.
     if mode_name is None:
         rotations = 0
     elif isinstance(mode_name, int):
-        rotations = mode_name 
+        rotations = mode_name
     elif mode_name.isdigit():
         rotations = int(mode_name)
     elif mode_name in MODAL_SERIES_KEYS:

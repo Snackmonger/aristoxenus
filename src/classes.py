@@ -21,20 +21,21 @@ from src.constants import (
     TONES
 )
 from src.errors import ArgumentError
-from src.functions import (
+from src.core import (
+    ChordData,
     chordify_heptatonic_sus,
     chordify_heptatonic_tertial,
     decode_note_name,
-    drop_voicing,
+    apply_drop_voicing,
     get_heptatonic_scale_notes,
-    name_chord,
-    name_intervals,
-    order_interval_names,
+    encode_chord_symbol,
+    decode_chord_symbol,
+    sort_interval_names,
     rotate_chord,
     rotate_interval_structure
 )
-from src.structures import ChordData
 
+__all__ = ["Chord", 'HeptatonicScale']
 
 class Chord:
     '''
@@ -51,6 +52,7 @@ class Chord:
         self.note_names = note_names
         self.interval_symbols = interval_symbols
         self.interval_structure = interval_structure
+        self.slash = False
 
     @property
     def root(self) -> str:
@@ -65,12 +67,12 @@ class Chord:
         '''
         The basic symbol by which the chord can be identified.
         '''
-        intervals = order_interval_names(self.interval_symbols)
-        if self.note_names[0] != self.root:
-            main = self.root + name_chord(intervals)
+        intervals = sort_interval_names(self.interval_symbols)
+        if self.note_names[0] != self.root and self.slash:
+            main = self.root + encode_chord_symbol(intervals)
             bass = self.note_names[0]
             return main + SLASH_SYMBOL + bass
-        return self.root + name_chord(intervals)
+        return self.root + encode_chord_symbol(intervals)
 
     def __repr__(self) -> str:
         note_names = self.note_names
@@ -80,12 +82,12 @@ class Chord:
 
     @property
     def __is_close(self) -> bool:
-        ordered = order_interval_names(self.interval_symbols)
+        ordered = sort_interval_names(self.interval_symbols)
         return ordered == tuple(x for x in self.interval_symbols)
 
     def reset(self) -> 'Chord':
         '''Return the close voiced root position of this chord.'''
-        order = order_interval_names(self.interval_symbols)
+        order = sort_interval_names(self.interval_symbols)
         names: list[str] = []
         symbols: list[str] = []
         intervals: list[int] = []
@@ -105,7 +107,7 @@ class Chord:
 
         # TODO: we need to rewrite the regex for chord parsing in case
         # of slash chords
-        parsed = name_intervals(symbol)
+        parsed = decode_chord_symbol(symbol)
 
     @classmethod
     def from_ChordData(cls, data: ChordData) -> 'Chord':
@@ -125,7 +127,7 @@ class Chord:
         Return a ChordData object with the same data as this instance
         of Chord.
         '''
-        return ChordData(self.note_names, self.interval_symbols, self.interval_structure)
+        return ChordData(self.symbol, self.note_names, self.interval_symbols, self.interval_structure)
 
     def invert(self, degree: int) -> 'Chord':
         '''
@@ -168,7 +170,7 @@ class Chord:
             else:
                 return self
 
-        result = drop_voicing(self.to_ChordData(), voicing)
+        result = apply_drop_voicing(self.to_ChordData(), voicing)
         return self.from_ChordData(result)
 
 

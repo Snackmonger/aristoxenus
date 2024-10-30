@@ -119,6 +119,14 @@ EXTENSION = 'extension'
 MODIFICATION = 'modification'
 SLASH = 'slash'
 CLOSE = 'close'
+OPEN = 'open'
+D2 = 'd2'
+D24 = 'd24'
+D23 = 'd23'
+D3 = 'd3'
+TERTIAL = 'tertial'
+SUS2 = 'sus2'
+SUS4 = 'sus4'
 
 # General music terms
 INTERVAL_STRUCTURE = 'interval_structure'
@@ -137,15 +145,15 @@ HEPTATONIC_SCALES = {
     DIMINISHED: (0, 2, 4, 5, 6, 9, 11),
     AUGMENTED: (0, 2, 4, 5, 8, 9, 11),
     HARMONIC: (0, 2, 4, 5, 7, 8, 11),
-    BISEPTIMAL: (0, 2, 4, 5, 7, 10, 11),
-    PALEOCHROMATIC: (0, 1, 4, 5, 6, 9, 11)
+    BISEPTIMAL: (0, 2, 4, 5, 7, 10, 11)
 }
 HEPTATONIC_SUPPLEMENT = {
+    PALEOCHROMATIC: (0, 1, 4, 5, 6, 9, 11),
     ENIGMATIC: (0, 1, 4, 6, 8, 10, 11),
-    DOUBLE_HARMONIC: (0,1,4,5,7,8,11),
+    DOUBLE_HARMONIC: (0, 1, 4, 5, 7, 8, 11),
     NEAPOLITAN: (0, 1, 3, 5, 7, 9, 11),
-    HUNGARIAN_MAJOR: (0,3,4,6,7,9,10),
-    PERSIAN: (0,1,4,5,6,8,11)
+    HUNGARIAN_MAJOR: (0, 3, 4, 6, 7, 9, 10),
+    PERSIAN: (0, 1, 4, 5, 6, 8, 11)
 }
 NATURAL_MAP = tuple(
     (HEPTATONIC_SCALES[DIATONIC][i], NATURAL_NAMES[i]) for i in range(7)
@@ -156,16 +164,20 @@ BARRY_HARRIS_SCALES = {
 }
 
 PENTATONIC_SUPPLEMENT = {
-    IN: (0,1,5,7,8),
-    INSEN: (0,1,5,7,10),
-    IWATO: (0,1,5,6,10)
+    IN: (0, 1, 5, 7, 8),
+    INSEN: (0, 1, 5, 7, 10),
+    IWATO: (0, 1, 5, 6, 10)
 }
 HEXATONIC_SUPPLEMENT = {
-    ISTRIAN: (0,1,3,4,6,7)
+    ISTRIAN: (0, 1, 3, 4, 6, 7)
 }
 
 
-SCALE_ALIASES = { # or 'scaliases' :-)
+SCALE_ALIASES = {
+    'major': (DIATONIC, IONIAN),
+    'dominant': (DIATONIC, MIXOLYDIAN),
+    'minor': (DIATONIC, AEOLIAN),
+
     'ionian #1': (ALTERED, IONIAN),
     'super locrian': (ALTERED, IONIAN),
     'melodic minor': (ALTERED, DORIAN),
@@ -249,7 +261,7 @@ SCALE_ALIASES = { # or 'scaliases' :-)
     'half diminished b4': (NEAPOLITAN, AEOLIAN),
     'altered dominant #2': (NEAPOLITAN, AEOLIAN),
     'altered dominant bb3': (NEAPOLITAN, LOCRIAN),
- 
+
     'byzantine': (DOUBLE_HARMONIC, IONIAN),
     'gypsy major': (DOUBLE_HARMONIC, IONIAN),
     'hungarian minor': (DOUBLE_HARMONIC, LYDIAN),

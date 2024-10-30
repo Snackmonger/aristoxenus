@@ -1,12 +1,19 @@
-'''Tool for converting Roman numerals to Indian numerals and vice versa.'''
-__all__ = ['encode_roman_numeral', 'decode_roman_numeral']
-__numerals: tuple[tuple[str, int], ...] = (('M', 1000),
-                                            ('D', 500),
-                                            ('C', 100),
-                                            ('L', 50),
-                                            ('X', 10),
-                                            ('V', 5),
-                                            ('I', 1))
+'''
+Tool for converting Roman numerals to Indian numerals and vice versa.
+'''
+__all__ = [
+    'encode_roman_numeral', 
+    'decode_roman_numeral'
+]
+__numerals: tuple[tuple[str, int], ...] = (
+    ('M', 1000),
+    ('D', 500),
+    ('C', 100),
+    ('L', 50),
+    ('X', 10),
+    ('V', 5),
+    ('I', 1)
+)
 
 def encode_roman_numeral(indian_numeral: int) -> str:
     '''
