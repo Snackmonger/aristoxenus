@@ -1,19 +1,26 @@
 '''
 Aristoxenus Endpoint API
 
-The endpoints provides bulk or selected data compiled from the backend functions.
+The endpoints in this module assemble musical data produced by the various
+functions in the ``src.core`` module. All endpoints return JSON friendly 
+dictionaries.
 
-For a more object-oriented interface for accessing the backend functions, 
-see ``classes.py``.
+For a more behaviour-oriented interface for accessing the ``src.core`` 
+functions, see the ``src.classes`` module.
 '''
-from typing import Literal, TypedDict
+from typing import Any, Iterable, Literal, Optional, TypedDict
 from src.constants import (
+    ALTERED,
+    CHORD_DIM,
+    CHORD_MAJ,
+    CHORD_MIN,
     CLOSE,
     D2,
     D23,
     D24,
     D3,
     DIATONIC,
+    DIM_SYMBOL,
     DROP_2_AND_3_VOICING,
     DROP_2_AND_4_VOICING,
     DROP_2_VOICING,
@@ -22,11 +29,14 @@ from src.constants import (
     HEPTATONIC_SUPPLEMENT,
     INTERVAL_STRUCTURE,
     IONIAN,
+    MAJ_SYMBOL,
+    MIN_SYMBOL,
     MODAL_SERIES_KEYS,
     OPEN,
     SUS2,
     SUS4,
-    TERTIAL
+    TERTIAL,
+    TONES
 )
 from src.errors import ArgumentError
 from src.core import (
@@ -39,8 +49,10 @@ from src.core import (
     encode_chord_symbol,
     get_heptatonic_interval_symbols,
     get_heptatonic_scale_notes,
+    is_valid_interval_name,
     rotate_chord,
-    rotate_interval_structure
+    rotate_interval_structure,
+    sort_interval_names
 )
 
 __all__ = [
@@ -74,6 +86,11 @@ class HeptatonicChord(TypedDict):
     note_names: tuple[str, ...]
     interval_structure: tuple[int, ...]
     interval_names: tuple[str, ...]
+
+class ChordSymbol(TypedDict):
+    intervals: tuple[str, ...]
+    symbol: str
+
 
 
 def get_heptatonic_scale(
@@ -202,144 +219,6 @@ def get_heptatonic_scale(
     )
 
 
-# def heptatonic_chord_scale(
-#     keynote: str = 'C',
-#     scale_name: str = DIATONIC,
-#     modal_name: str = IONIAN
-# ) -> HeptatonicChordScale:
-#     '''
-#     Return a complete report about the given scale's chords.
-
-#     These will include triads and tetrads in tertial, sus2,
-#     and sus4 form, as well as their inversions and voicings.
-
-#     Parameters
-#     ----------
-#     keynote : str, optional
-#         The tonic of the parent scale, by default 'C'
-#     scale_name : str, optional
-#         The name of the parent scale, by default 'diatonic'
-#     modal_name : str, optional
-#         The name of the modal rotation, by default 'ionian'
-
-#     Returns
-#     -------
-#     HeptatonicChordScale
-#         _description_
-
-#     >>> from src.api import heptatonic_chord_scale
-#     >>> x = heptatonic_chord_scale('C', 'diatonic', 'ionian')
-#     >>> from pprint import pprint
-#     >>> pprint(x)
-
-#     TODO: Add sus2 and sus4 triads and tetrads using the 
-#     '''
-#     scale_data = heptatonic_scale_form(keynote, scale_name, modal_name)
-#     interval_structure = scale_data['interval_structure']
-#     interval_names = scale_data['interval_scale']
-#     note = decode_note_name(keynote)
-#     roman_names = romanize_intervals(interval_names)
-
-#     close_triads = chordify_heptatonic_tertial(interval_structure, note, 3)
-#     close_tetrads = chordify_heptatonic_tertial(interval_structure, note, 4)
-
-#     close_sus2_triads = chordify_heptatonic_sus(interval_structure, note, 3, 2)
-#     close_sus4_triads = chordify_heptatonic_sus(interval_structure, note, 3, 4)
-
-#     close_sus2_tetrads = chordify_heptatonic_sus(interval_structure, note, 4, 2)
-#     close_sus4_tetrads = chordify_heptatonic_sus(interval_structure, note, 4, 4)
-
-#     triads: list[TriadInversions] = []
-#     tetrads: list[TetradInversions] = []
-#     for i in range(7):
-#         # Basic categorical information
-#         triad_chord_symbol = name_chord(close_triads[i].interval_symbols)
-#         tetrad_chord_symbol = name_chord(close_tetrads[i].interval_symbols)
-#         root_note = close_triads[i].note_names[0]
-#         degree = interval_names[i]
-#         roman = roman_names[i]
-
-#         # Triads
-#         # ------
-#         triad_rootpos = TriadProfile(
-#             close_voicing=SimpleChord(**vars(close_triads[i])),
-#             open_voicing=SimpleChord(**vars(
-#                 drop_voicing(close_triads[i], DROP_2_VOICING)))
-#         )
-#         triad_inversions: list[TriadProfile] = []
-#         inversions = (1, 2)
-#         for inversion in inversions:
-#             rot_ch = rotate_chord(close_triads[i], inversion)
-#             opench = drop_voicing(rot_ch, DROP_2_VOICING)
-#             triad_inversions.append(
-#                 TriadProfile(close_voicing=SimpleChord(**vars(rot_ch)),
-#                              open_voicing=SimpleChord(**vars(opench))
-#                              )
-#             )
-#         triads.append(
-#             TriadInversions(
-#                 chord_symbol=triad_chord_symbol,
-#                 root_note=root_note,
-#                 scale_degree=degree,
-#                 roman_degree=roman,
-#                 root_position=triad_rootpos,
-#                 first_inversion=triad_inversions[0],
-#                 second_inversion=triad_inversions[1]
-#             )
-#         )
-
-#         # Tetrads
-#         # -------
-#         tetrads_rootpos = TetradProfile(
-#             close_voicing=SimpleChord(**vars(close_tetrads[i])),
-#             drop_2_voicing=SimpleChord(**vars(drop_voicing(
-#                 close_tetrads[i], DROP_2_VOICING))),
-#             drop_3_voicing=SimpleChord(**vars(drop_voicing(
-#                 close_tetrads[i], DROP_3_VOICING))),
-#             drop_2_and_3_voicing=SimpleChord(**vars(drop_voicing(
-#                 close_tetrads[i], DROP_2_AND_3_VOICING))),
-#             drop_2_and_4_voicing=SimpleChord(**vars(drop_voicing(
-#                 close_tetrads[i], DROP_2_AND_4_VOICING)))
-#         )
-#         inversions = (1, 2, 3)
-#         tetrad_inversions: list[TetradProfile] = []
-#         for inversion in inversions:
-#             tetrad_inversions.append(
-#                 TetradProfile(
-#                     close_voicing=SimpleChord(**vars(
-#                         rotate_chord(close_tetrads[i], inversion))),
-#                     drop_2_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
-#                         close_tetrads[i], inversion), DROP_2_VOICING))),
-#                     drop_3_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
-#                         close_tetrads[i], inversion), DROP_3_VOICING))),
-#                     drop_2_and_3_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
-#                         close_tetrads[i], inversion), DROP_2_AND_3_VOICING))),
-#                     drop_2_and_4_voicing=SimpleChord(**vars(drop_voicing(rotate_chord(
-#                         close_tetrads[i], inversion), DROP_2_AND_4_VOICING)))
-#                 )
-#             )
-#         tetrads.append(
-#             TetradInversions(
-#                 chord_symbol=tetrad_chord_symbol,
-#                 root_note=root_note,
-#                 scale_degree=degree,
-#                 roman_degree=roman,
-#                 root_position=tetrads_rootpos,
-#                 first_inversion=tetrad_inversions[0],
-#                 second_inversion=tetrad_inversions[1],
-#                 third_inversion=tetrad_inversions[2]
-#             )
-#         )
-
-#     return HeptatonicChordScale(
-#         keynote=keynote,
-#         scale_name=scale_name,
-#         modal_name=modal_name,
-#         tertial_triads=tuple(triads),
-#         tertial_tetrads=tuple(tetrads)
-#     )
-
-
 def get_heptatonic_chord(
         keynote: str = 'C',
         scale_name: str = DIATONIC,
@@ -371,6 +250,9 @@ def get_heptatonic_chord(
         Which inversion the chord be in, by default 0
     chord_voicing : Literal['open', 'close','d2', 'd3', 'd23', 'd24'], optional
         Which voicing the chord should be in, by default 'close'
+    use_slash : bool, by default False
+        If True, the chord symbol will represent the inversion with slash 
+        notation.
 
     Returns
     -------
@@ -442,3 +324,35 @@ def get_heptatonic_chord(
 
     voicing = voicings[chord_voicing]
     return HeptatonicChord(**vars(apply_drop_voicing(chord, voicing)))
+
+
+def get_chord_symbol_from_intervals(intervals: Iterable[int | str | Any], config: Optional[dict[str, str]] = None) -> ChordSymbol:
+
+    # Dummy names are used in place of integers.
+    d = get_heptatonic_interval_symbols()
+    a = get_heptatonic_interval_symbols(HEPTATONIC_SCALES[ALTERED])
+    supplement = d + a
+    dummy_names = sort_interval_names(set(supplement))
+    _intervals: list[str] = []
+    for i, interval in enumerate(intervals):
+        if isinstance(interval, int):
+            interval %= TONES
+            _intervals[i] = dummy_names[interval]
+        elif isinstance(interval, str):
+            if is_valid_interval_name(interval):
+                _intervals.append(interval)
+
+    _config: dict[str, str] = {}
+    if not config:
+        config = {}
+
+    _config[MAJ_SYMBOL] = config.get(MAJ_SYMBOL, CHORD_MAJ)
+    _config[MIN_SYMBOL] = config.get(MIN_SYMBOL, CHORD_MIN)
+    _config[DIM_SYMBOL] = config.get(DIM_SYMBOL, CHORD_DIM)
+
+    symbol = encode_chord_symbol(_intervals, **_config)
+    return ChordSymbol(intervals=sort_interval_names(_intervals), symbol=symbol)
+
+
+def get_chord_intervals_from_symbol(chord_symbol: str) -> HeptatonicChord | ChordSymbol:
+    ...

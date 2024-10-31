@@ -13,6 +13,9 @@ CENTRAL_REFERENCE_NOTE_FREQUENCY = 440
 FLAT_SYMBOL = "b"
 SHARP_SYMBOL = '#'
 SLASH_SYMBOL = "/"
+EMPTY_STRING = ''
+WHITESPACE = ' '
+UNDERSCORE = '_'
 
 ############
 # Keywords #
@@ -130,9 +133,13 @@ SUS4 = 'sus4'
 
 # General music terms
 INTERVAL_STRUCTURE = 'interval_structure'
+INTERVAL_NAME = 'interval_name'
 NOTE_NAME = 'note_name'
 ROMAN_NAME = 'roman_name'
 ACCIDENTALS = 'accidentals'
+MAJ_SYMBOL = 'maj_symbol'
+MIN_SYMBOL = 'min_symbol'
+DIM_SYMBOL = 'dim_symbol'
 
 ##############
 # Scaleforms #
@@ -319,8 +326,18 @@ CHORD_HALFDIM_SYMBOLS = [CHORD_HALFDIM_OE]
 #######################
 # Regular Expressions #
 #######################
-# RE_VALIDATE_NOTE_NAME = "^([A-G](?:#|b)*)$"
-# RE_VALIDATE_ROMAN_NAME = "^((?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
+_MAJ = "|".join(CHORD_MAJOR_SYMBOLS)
+_MIN = "|".join(CHORD_MINOR_SYMBOLS)
+_ROM = 'VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i'
+_DIM = "|".join(CHORD_DIM_SYMBOLS)
+_HD = "|".join(CHORD_HALFDIM_SYMBOLS)
+_NAME = f"(?P<{NOTE_NAME}>([A-G](?:#|b)*|(?:#|b)*(?:{_ROM})))"
+_MAIN = f"(?P<{MAIN}>(?:{_MAJ}|{_MIN}|{_DIM}|aug|\\+|{_HD}))?"
+_EXT = f"(?P<{EXTENSION}>(?:{_MAJ}?(?:13|11|9|7))?"
+_MOD = f'(?P<{MODIFICATION}>(?:[\\w\\d+#]+))?'
+_SL = f'(?:\\/(?P<{SLASH}>([A-G](?:#|b)*|(?:#|b)*(?:{_ROM}))))?'
+
 RE_PARSE_NOTE_NAME = f"^(?P<{NOTE_NAME}>[A-G])(?P<{ACCIDENTALS}>(#|b)*)$"
-RE_PARSE_ROMAN_NAME = f"^(?P<{ACCIDENTALS}>(#|b)*)(?P<{ROMAN_NAME}>(VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))$"
-RE_PARSE_CHORD_SYMBOL = f"^(?P<{NOTE_NAME}>([A-G](?:#|b)*|(?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i)))(?P<{MAIN}>(?:maj|M|min|m|-|\\+|dim|aug|o|ø|Δ))?(?P<{EXTENSION}>(?:maj|M|Δ)?(?:13|11|9|7))?(?P<{MODIFICATION}>(?:[\\w\\d+#]+))?(?:\\/(?P<{SLASH}>([A-G](?:#|b)*|(?:#|b)*(?:VII|vii|VI|vi|V|v|IV|iv|III|iii|II|ii|I|i))))?$"
+RE_PARSE_INTERVAL_NAME = f'^(?P<{INTERVAL_NAME}>(?:#|b)*(?:[1-7]|1[13]|9))$'
+RE_PARSE_ROMAN_NAME = f"^(?P<{ACCIDENTALS}>(#|b)*)(?P<{ROMAN_NAME}>({_ROM}))$"
+RE_PARSE_CHORD_SYMBOL = f"^{_NAME}{_MAIN}{_EXT}{_MOD}{_SL}$"

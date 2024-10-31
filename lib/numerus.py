@@ -31,7 +31,7 @@ def encode_roman_numeral(indian_numeral: int) -> str:
 
     Raises
     ------
-    errors.BadValueError
+    ValueError
         If the number exceeds 3,999 in the Indian form.
 
     Examples
@@ -46,7 +46,7 @@ def encode_roman_numeral(indian_numeral: int) -> str:
     'CCLXIII'
     '''
     if indian_numeral not in range(1, 4000):
-        raise ValueError(f"Can only convert numbers 1-399 (number={indian_numeral})")
+        raise ValueError(f"Can only convert numbers 1-399 ({indian_numeral=})")
     roman_numeral_: str = ''
     for numeral, value in __numerals:
         while indian_numeral >= value:

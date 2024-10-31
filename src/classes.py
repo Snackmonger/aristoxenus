@@ -1,9 +1,9 @@
 '''
 This module provides a set of object-oriented interfaces for manipulating
-musical data using the functions in the ``functions`` module.
+musical data using the functions in the ``src.core`` module.
 
-For a more data-oriented interface for accessing the backend functions, 
-see ``api.py``.
+For a more data-oriented interface for accessing the ``src.core`` functions,
+see the ``src.api`` module.
 '''
 import re
 from typing import Sequence
@@ -35,12 +35,16 @@ from src.core import (
     get_heptatonic_scale_notes,
     encode_chord_symbol,
     decode_chord_symbol,
+    resolve_scale_name,
     sort_interval_names,
     rotate_chord,
     rotate_interval_structure
 )
 
-__all__ = ["Chord", 'HeptatonicScale']
+__all__ = [
+    'Chord', 
+    'HeptatonicScale'
+]
 
 class Chord:
     '''
@@ -64,7 +68,7 @@ class Chord:
         '''
         The note name that serves as the root of the chord's structure.
         '''
-        i = self.interval_symbols.index("1")
+        i = self.interval_symbols.index(str(1))
         return self.note_names[i]
 
     @property
@@ -112,7 +116,8 @@ class Chord:
 
         # TODO: we need to rewrite the regex for chord parsing in case
         # of slash chords
-        parsed = decode_chord_symbol(symbol)
+        parsed_intervals = decode_chord_symbol(symbol)
+
 
     @classmethod
     def from_ChordData(cls, data: ChordData) -> 'Chord':
@@ -164,13 +169,13 @@ class Chord:
 
         '''
         if isinstance(voicing, str):
-            if voicing in [D2, 'drop2', 'drop_2']:
+            if voicing == D2:
                 voicing = DROP_2_VOICING
-            elif voicing in [D3, 'drop3', 'drop_3']:
+            elif voicing == D3:
                 voicing = DROP_3_VOICING
-            elif voicing in [D23, 'drop23', 'drop2and3', 'drop_2_and_3', 'drop2_3']:
+            elif voicing in D23:
                 voicing = DROP_2_AND_3_VOICING
-            elif voicing in [D24, 'drop24', 'drop2and4', 'drop_2_and_4', 'drop2_4']:
+            elif voicing in D24:
                 voicing = DROP_2_AND_4_VOICING
             else:
                 return self
@@ -212,22 +217,48 @@ class HeptatonicScale(Scale):
     @property
     def interval_structure(self) -> tuple[int, ...]:
         '''The interval structure of this scaleform.'''
-        if (n := HEPTATONIC_SCALES[self.scale_name]) or (
-                n := HEPTATONIC_SUPPLEMENT[self.scale_name]):
-            base = n
-            if self.mode_name in MODAL_SERIES_KEYS:
-                m = MODAL_SERIES_KEYS.index(self.mode_name)
-                return rotate_interval_structure(base, m)
-            raise ArgumentError(f"Unable to parse mode name {self.mode_name}")
-        raise ArgumentError(f"Unable to parse scale name {self.scale_name}")
+        return resolve_scale_name(self.scale_name, self.mode_name)
 
     @property
     def note_names(self) -> tuple[str, ...]:
         '''The note names for this scaleform and keynote.'''
         return get_heptatonic_scale_notes(self.__kn, self.interval_structure)
+    
+    @staticmethod
+    def __validate_degree(degree: int) -> bool:
+        if degree not in range(1, 8):
+            raise ArgumentError(f"Scale degree must be between 1 and 7 ({degree=})")
+        return True
+    
+    @staticmethod
+    def __validate_size(size: int) -> bool:
+        if size not in range(3, 8):
+            raise ArgumentError(f"Chord size must be between 3 and 7 ({size=})")
+        return True
 
-    def __tertial(self, degree: int, size: int) -> Chord:
-        '''Get a tertial chord with the given parameters.'''
+    def get_tertial_chord(self, degree: int, size: int) -> Chord:
+        '''
+        Derive a tertial chord from the current scale configuration.
+
+        Parameters
+        ----------
+        degree : int
+            The scale degree that will serve as the chord's root (1 to 7)
+        size : int
+            The number of notes to include in the chord (3 to 7)
+
+        Returns
+        -------
+        Chord
+            A chord derived from this scale.
+
+        Raises
+        ------
+        ArgumentError
+            If any of the parameters does not adhere to the limits above.
+        '''
+        self.__validate_degree(degree)
+        self.__validate_size(size)
         degree -= 1
         if degree > len(self.note_names):
             degree %= len(self.note_names)
@@ -236,36 +267,60 @@ class HeptatonicScale(Scale):
         chord = ch_scale[degree]
         return Chord.from_ChordData(chord)
 
-    def __sus(self, degree: int, size: int, sus: int) -> Chord:
-        '''Get a sus chord with the given parameters.'''
+    def get_sus_chord(self, degree: int, size: int, sus: int) -> Chord:
+        '''
+        Derive a suspended chord from the current scale configuration.
+
+        Parameters
+        ----------
+        degree : int
+            The scale degree that will serve as the chord's root (1 to 7)
+        size : int
+            The number of notes to include in the chord (3 to 7)
+        sus : int
+            The scale degree that will replace the third of the chord (2 or 4)
+
+        Returns
+        -------
+        Chord
+            A chord derived from this scale.
+
+        Raises
+        ------
+        ArgumentError
+            If any of the parameters does not adhere to the limits above.
+        '''
+        self.__validate_degree(degree)
+        self.__validate_size(size)
+        if sus not in [2, 4]:
+            raise ArgumentError(f"Can only suspend 2 or 4 ({sus=})")
         degree -= 1
         if degree > len(self.note_names):
             degree %= len(self.note_names)
-        ch_scale = chordify_heptatonic_sus(self.__kn,
-            self.interval_structure,  size, sus)
+        ch_scale = chordify_heptatonic_sus(self.__kn, self.interval_structure,  size, sus)
         chord = ch_scale[degree]
         return Chord.from_ChordData(chord)
 
     def tertial_triad(self, degree: int) -> Chord:
         '''Get the tertial triad at the given scale degree.'''
-        return self.__tertial(degree, 3)
+        return self.get_tertial_chord(degree, 3)
 
     def tertial_tetrad(self, degree: int) -> Chord:
         '''Get the tertial tetrad at the given scale degree.'''
-        return self.__tertial(degree, 4)
+        return self.get_tertial_chord(degree, 4)
 
     def sus2_triad(self, degree: int) -> Chord:
         '''Get the sus2 triad at the given scale degree.'''
-        return self.__sus(degree, 3, 2)
+        return self.get_sus_chord(degree, 3, 2)
 
     def sus4_triad(self, degree: int) -> Chord:
         '''Get the sus4 triad at the given scale degree.'''
-        return self.__sus(degree, 3, 4)
+        return self.get_sus_chord(degree, 3, 4)
 
     def sus2_tetrad(self, degree: int) -> Chord:
         '''Get the sus2 tetrad at the given scale degree.'''
-        return self.__sus(degree, 4, 2)
+        return self.get_sus_chord(degree, 4, 2)
 
     def sus4_tetrad(self, degree: int) -> Chord:
         '''Get the sus4 tetrad at the given scale degree.'''
-        return self.__sus(degree, 4, 4)
+        return self.get_sus_chord(degree, 4, 4)
